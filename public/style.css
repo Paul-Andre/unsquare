@@ -1,0 +1,524 @@
+			@font-face {
+	font-family: headerFont;
+	src: url('urw-chancery-l-medium-italic.ttf');
+}
+
+
+			
+			@bookMenuDiv{
+			margin-bottom:25px;
+			
+			}
+			
+			.levelIcon {
+				border: solid;
+				border-radius: 5px;
+				overflow: hide;	
+				
+				display:inline-block;
+				position:relative;
+			}		
+		
+			.hidden{
+							border-color: #778499;
+				background-color:#aaaaaa;
+				
+			
+			}
+			
+			.closed{
+			
+				border-color: #778499;
+				box-shadow: inset 0px 0px 40px 20px #aaaaaa;
+				-webkit-box-shadow: inset 0px 0px 40px 20px #aaaaaa;
+				-moz-box-shadow: inset 0px 0px 40px 20px #aaaaaa;
+				-o-box-shadow: inset 0px 0px 40px 20px #aaaaaa;
+			}
+			
+			
+			.open{
+			
+				border: solid #222222;	
+			
+			
+			}
+			
+			.done{
+				
+				border: dashed #777779;
+				border-radius: 6px;
+			}
+			
+			.par{
+			
+				border: solid #FFDA00;
+				box-shadow: inset 0px 0px 40px 0px gold;
+				-webkit-box-shadow: inset 0px 0px 40px 0px gold;
+				-moz-box-shadow: inset 0px 0px 40px 0px gold;
+				-o-box-shadow: inset 0px 0px 40px 0px gold;
+						
+			}
+			
+			.no-touch .done:hover,.no-touch .open:hover,.no-touch .par:hover{
+				border: solid red;
+			}
+			
+			.no-touch .done:active,.no-touch .open:active,.no-touch .par:active{
+				border: solid #dd2222;
+			}
+			
+			.done:active, .open:active, .par:active{
+				border: solid #dd2222;
+			}
+			
+		/*	.no-touch .done:hover {
+				border: solid red;
+			}	
+			.no-touch .open:hover  {
+				border: solid red;
+			}
+			.no-touch .par:hover {
+				border: solid red;
+			}	
+			
+			.done:hover {
+				border: solid red;
+			}	
+			.no-touch .open:hover  {
+				border: solid red;
+			}
+			.no-touch .par:hover {
+				border: solid red;
+			}	*/
+			
+						
+			.bookIcon {
+				border: solid 7px #222222;
+				border-radius: 5px;
+				/*display:inline;*/
+				float:left;
+				overflow: hide;
+				width:200px;
+				height:200px;
+				margin:2px;
+				float: none;
+display: inline-block;
+position: relative;
+			}
+			
+			.no-touch .bookIcon:hover {
+			
+				border-color: red;
+				
+			}
+			
+			.no-touch .bookIcon:active {
+			
+				border-color:  #dd2222;
+				
+			}
+			
+			.bookIcon:active {
+			
+				border-color:  #dd2222;;
+				
+			}
+			
+				.gameCanvas{
+			
+			 border:solid; border-radius:5px; position: relative; bottom: 0px;
+			
+			}
+					
+						
+			.levelMenuHeader{
+				/*position: fixed;*/
+				top:0px; width: 100%;
+			}
+			
+		/*	
+			button{
+			
+				border:solid black;
+				border-radius:5px;
+				font-weight:bold;
+			
+			}
+	
+			.no-touch button:hover{
+			
+				border:solid red;
+			
+			}
+			
+			button:active{
+				
+				box-shadow: inset 0px 0px 26px 0px gold;
+				-webkit-box-shadow: inset 0px 0px 26px 0px gold;
+				-moz-box-shadow: inset 0px 0px 26px 0px gold;
+				-o-box-shadow: inset 0px 0px 26px 0px gold;
+			
+			}*/
+				
+			button {
+  background: white;
+  border: 2px solid #999;
+  border-radius: 5px;
+  color: #555;
+  font-weight:bold;
+ 
+  text-align: center;
+ }
+  
+ .no-touch button:hover {
+      border-color:#555;
+   
+    box-shadow: inset 0 0 1px 1px #eaeaea;
+    color: #222;
+    }
+    
+  button:active,  .no-touch button:active  {
+  
+    background: #d0d0d0;
+    -webkit-box-shadow: inset 0 0 5px 5px #e3e3e3;
+    box-shadow: inset 0 0 1px 1px #e3e3e3;
+    color: #000; 
+        -webkit-box-shadow: inset 0 0 1px 1px #eaeaea;
+    box-shadow: inset 0 0 1px 1px #eaeaea;
+    
+  text-shadow: 0 -1px 0 #fff;
+  }
+    	
+			
+			
+			.mobileBannerContainer{
+			
+				margin-top:0px;
+				margin-right:auto;
+				margin-left:auto;
+				padding:0px;
+				width:320px;
+				height:50px;
+			
+			}
+			
+			
+				h1{
+			
+			font-family: headerFont;
+			font-weight:normal;
+			font-size:50px;
+			}
+			
+			
+			h2{
+			font-family: headerFont;
+			font-weight:bold;
+			}
+			
+			
+			h3{
+			font-style:italic;
+			font-family: Times New Roman, Serif;
+font-size: 1.17em;
+font-weight: bold;
+margin:2px;
+			}
+			
+			
+			.gameMovesIndicater {
+				font-family:sans-serif;
+				font-style:italic;
+			}
+			
+				
+			@media (max-width:440px) {
+			
+			h1{
+			
+			font-size:20px;
+			color:black;
+			}
+			
+			
+			h2{
+			
+			font-size:17px;
+			margin:2px;
+			
+			color:black;
+			}
+			
+			h3 {
+font-style: italic;
+font-size:16px;
+
+			
+			}
+			
+			#allContainer {
+			
+				width: 320px; height: 416px; position:relative; margin-left: auto; margin-right: auto;
+			
+			}
+			
+			.gameHeader{
+				height: 54px;
+				
+				overflow:hide;
+				
+				
+			
+			}
+			
+			.textShower{
+			
+				height:33px;
+			}
+			
+			
+			#iconContainer{
+			
+				
+				display:block;
+				width: 301px;
+				margin:0 auto;
+				left:9px;
+				
+			padding-bottom:50px;
+			
+			
+				font-size: 0;
+				
+				display:block;
+			
+			
+			
+			}
+			
+			
+			.levelMenuHeader{
+				top:0px;
+				height:75px;
+				background-color:silver;
+			
+			}
+			
+			.gameMovesIndicater{
+				
+				font-size:12px;
+				
+				
+			}
+			
+			
+			#bookIconContainer {
+			
+				width: 320px;
+				
+				
+  text-align: center;
+			
+			padding-bottom:25px
+			}
+			
+			
+			.bookIcon {
+				/*border: solid 7px;
+				border-radius: 5px;
+				float:left;
+				overflow: hide;
+				width:200px;
+				height:200px;*/
+				
+				float:none;
+				display:inline-block;
+				position:relative;
+				margin: 0 auto;
+			}
+			
+			
+			
+			
+			
+			
+			
+			.closed{
+				box-shadow: inset 0px 0px 26px 10px #aaaaaa;
+				-webkit-box-shadow: inset 0px 0px 26px 10px #aaaaaa;
+				-moz-box-shadow: inset 0px 0px 26px 10px #aaaaaa;
+				-o-box-shadow: inset 0px 0px 26px 10px #aaaaaa;
+			}
+			
+			
+			.par{
+			
+				border: solid #FFDA00;
+				box-shadow: inset 0px 0px 26px 0px gold;
+				-webkit-box-shadow: inset 0px 0px 26px 0px gold;
+				-moz-box-shadow: inset 0px 0px 26px 0px gold;
+				-o-box-shadow: inset 0px 0px 26px 0px gold;
+						
+			}
+			
+			
+			
+			
+
+			.gameCanvas{
+			margin-left:2px;
+			
+			}
+			
+			
+			
+			
+			
+			
+			}
+			
+			
+			
+			
+			
+			
+			
+			@media (min-width:440px) {
+			
+			
+			body{
+	
+				color:black;
+
+			}
+
+
+			#allContainer {
+			
+				width: 440px; height: 650px; position:relative; margin-left: auto; margin-right: auto;
+			
+			}
+			
+			
+			
+						.textShower{
+			
+				height:46px
+			
+			}
+			
+			#iconContainer{
+			
+			
+				font-size: 0;
+				display:block;
+				/*width: 440px;*/
+				margin-top:10px;
+			
+			}			
+
+			
+			#bookIconContainer {
+				display:block;
+				margin-bottom:25px;
+			
+			
+			}
+			
+			
+			button{
+			margin:4px;
+			font-size:15px;
+			height:33px;
+			border-radius:5px;
+			padding-left:10px;
+			padding-right:10px;
+			
+			}
+			
+			
+			.gameMovesIndicater {
+				margin: 4px;
+			}
+		
+			#moveIndicContainer{
+			margin-top:39px;
+			
+			}
+			
+
+			}
+			
+			@media (max-height:690px) and (orientation : landscape)
+			{
+			
+				#inGameShareButton{}
+				
+				#allContainer {
+			
+				width: 780px; height: 440px; position:relative; margin-left: auto; margin-right: auto;
+			
+				}
+			
+				.smallDiv {
+				
+					width:440px; margin-left:auto; margin-right:auto;
+				}
+				
+				.gameHeader{
+				
+				width:330px;
+				float: left;
+				
+				}
+			
+				.gameCanvas {
+				
+				float:right;
+				
+				}
+				
+			.mobileBannerContainer{
+			
+				/*margin-top:0px;
+				margin-right:auto;
+				margin-left:auto;
+				padding:0px;*/
+				
+				width:320px;
+				height:50px;
+				position:absolute;
+				bottom:0px;
+			
+			}
+			
+			#iconContainer{
+			
+				
+				display:block;
+				/*width: 300px;*/
+				margin:0 auto;
+				left:10px;
+				
+			padding-bottom:50px;
+			
+			
+				font-size: 0;
+				
+				display:block;
+				width: 720px;
+			
+			
+			}
+			
+			#gameDiv {
+				margin-top: 20px;
+			}
+			
+			body{
+	
+	color:black;
+
+}
+			
+			}

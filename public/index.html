@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html >
+<head>
+	<meta charset="utf-8"/>
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+	<meta name="apple-mobile-web-app-capable" content="yes" />  
+		<link rel="stylesheet" type="text/css" href="style.css">
+	<title> page </title>
+		<script src="api.js"></script>
+		<script src="binaryData.js"></script>
+		<script src="Book1.js"></script>
+		<script src="Book2.js"></script>
+		<script src="colors.js"></script>
+		<script src="helpers.js"></script>
+		<script src="drawing.js"></script>
+		
+		<meta name="appsfuel_code" content="4b0e6820fa5dc37"/>
+</head>
+<body style="background-color:silver;" class="no-touch">
+
+<div id="allContainer">
+
+
+
+<div id="gameDiv" style="display:none;">
+	<div class="gameHeader">
+		<div style="float: left; width: 75%">
+		<h2 id="LevelIndicater">Level ? </h2>
+		<h3 id="TextShower" class="textShower"> &zwnj; </h3>
+		</div>
+		<div style="float: right; width:25%;" id="moveIndicContainer">
+		 <div class="gameMovesIndicater" id="BestIndicater"></div>  <div class="gameMovesIndicater" id="ParIndicater"></div>  <div class="gameMovesIndicater" id="MovesIndicater"></div> 
+		</div>
+	
+		<div  style="clear:both; bottom:0px">
+		<button onclick="toMenu();" style="float:left" >&#8592; Levels</button>
+		<!--<button onclick="share();" style="float:left" id="inGameShareButton" > &#9733; Share</button>--!>
+		<button onclick="game.restart();" style="float:right;" >Restart</button>
+		<button onclick="game.undo();"  style="float:right;" >Undo</button>
+		</div>
+	</div>
+	<canvas id="gameCanvas" class="gameCanvas"></canvas>
+		<div class="mobileBannerContainer" id="mobileGameAd"></div>
+</div>
+
+
+
+<div id="editorDiv" style="display:none;">
+	<div style="float: left; width: 75%">
+	<h1 id="LevelIndicater">Level ? </h1>
+	<h3 class="textShower"> &zwnj; </h3>
+	</div>
+	<div style="float: right; width:25%;">
+	<br/>
+	<p id="EditorMovesIndicater"></p>
+	<p id="ParIndicater"></p>
+	</div>
+	<div  style="clear:both; bottom:0px">
+	<button onclick="toMenu();" style="float:left" >Menu</button>
+	<button onclick="editor.restart();" style="float:right;" >Restart</button>
+	<button onclick="editor.undo();"  style="float:right;" >undo</button>
+	<button onclick="editor.clearMoves();"  style="float:right;" >Moves to 0</button>
+	<button onclick="editor.saveLevel();"  style="float:right;" >Save</button>
+	<form>
+	Reverse:<input type="checkbox" id="reverseCheckbox" onClick="editor.toggleReverse();">
+	</form>
+	<a></a>
+	</div>
+	<canvas width="440" height="440" id="editorCanvas" class="gameCanvas"></canvas>
+</div>
+
+
+
+<div id="levelMenuDiv" style="display:none;">
+	
+	<div class="levelMenuHeader">
+	<h1 id="bookName">Levels:</h1>
+	
+	<button onclick="toBookMenu();">&#8592; Menu</button>
+	<!--
+		<button onclick="share();" style="float:right;" >
+
+	 &#9733; Share This
+	</button>
+	--!>
+	</div>
+	
+	<div id="iconContainer" >
+	</div>
+	
+	
+	
+</div>
+
+
+
+
+
+<div id="bookMenuDiv" style="display:none;" class="smallDiv">
+	<div style="float: left; width: 100%">
+	<h1>Puzzle Books:</h1>
+	</div>
+	<div id="bookIconContainer">
+	</div>
+	<button onclick="showAbout();">
+	About
+	</button>
+	
+	<!--
+	<button onclick="showReset();"  style="float:right;" > Reset</button>
+	-->
+	<!--
+	<button onclick="share();"  style="float:right;" > Please Share This </button>
+	--!>
+</div>
+
+<div id="aboutDiv" style="display:none;" class="smallDiv">
+	<div style="float: left; width: 100%">
+	<h1>About:</h1>
+	</div>
+	<h3>
+	This game was developed by Paul-Andre Henegar,<br/>
+	chapeaufeutre@gmail.com<br/>
+	<br/>
+	Summer 2013.
+	</h3>
+	<button onclick="toBookMenu();" >
+	&#8592; Menu
+	</button>
+</div>
+
+
+<div id="resetDiv" style="display:none;" class="smallDiv">
+	<div style="float: left; width: 100%">
+	<h1>Reset game?</h1>
+	</div>
+	<h3>
+	Are you sure you want to reset this game for whatever reason?<br/>
+	</h3>
+	<button onclick="toBookMenu();" >
+	&#8592; Cancel
+	</button>
+	
+	<button onclick="resetGame();"  style="float:right;" > Yes, reset game</button>
+</div>
+
+
+<div id="loadingScreenDiv" class="smallDiv">
+	<div style="float: left; width: 100%">
+	<h1 id="bookName" style="font-family: Times New Roman, Serif; font-style:italic; font-weight:normal;">Loading...</h1>
+	</div>
+
+</div>
+
+
+
+
+
+
+
+</div>
+
+
+<script src="sizes.js"></script>
+		<script src="levelDataManager.js"></script>
+		<script src="levelStats.js"></script>
+<script src="game.js"></script>
+<script src="levelMenu.js"></script>
+<script>
+	loadingScreen={books:books}
+	
+	loadingScreen.hide=function(){
+
+		document.getElementById("loadingScreenDiv").style.display="none";
+	
+	}
+
+	loadingScreen.show=function(){
+
+		document.getElementById("loadingScreenDiv").style.display="";
+	
+	}
+	
+</script>
+<script>
+	bookMenu={books:books}
+	
+	bookMenu.showBooks=function(){
+	
+		var container = document.getElementById("bookIconContainer");
+	
+		for(var i=0;i<books.length;i++){
+			
+			var book = books[i];
+			var icon = document.createElement("div");
+			
+			icon.setAttribute("class","bookIcon");
+			icon.setAttribute("onclick","bookMenu.openBook("+i+");");
+			icon.style.backgroundImage="url("+book.icon+")";
+			//icon.innerText=book.name;
+			container.appendChild(icon);
+		
+		}
+		
+	}
+	
+	bookMenu.hide=function(){
+
+		document.getElementById("bookMenuDiv").style.display="none";
+	
+	}
+
+	bookMenu.show=function(){
+
+		document.getElementById("bookMenuDiv").style.display="";
+		
+		
+	
+	}
+	
+	bookMenu.openBook=function(n){
+		this.hide();
+		levelMenu.loadBook(books[n]);
+		levelMenu.show();
+	};
+</script>
+<script>
+
+dataManager.finishedLoading=function(){
+	loadingScreen.hide();
+	bookMenu.showBooks();
+	bookMenu.show();
+}
+				
+dataManager.prepareAllBooks();
+//levelMenu.loadBook(books[0]);
+//levelMenu.show();
+
+function toMenu(){
+	game.hide();
+	levelMenu.loadBook(levelMenu.book);
+	levelMenu.show();
+
+}
+
+
+function toBookMenu(){
+	levelMenu.hide();
+	bookMenu.show();
+document.getElementById("aboutDiv").style.display="none";
+document.getElementById("resetDiv").style.display="none";
+
+}
+
+
+function showAbout(){
+
+	bookMenu.hide();
+	document.getElementById("aboutDiv").style.display="";
+	
+
+}
+
+
+function showReset(){
+
+	bookMenu.hide();
+	document.getElementById("resetDiv").style.display="";
+	
+
+}
+
+function resetGame(){
+
+	dataManager.resetBook(books[0]);
+	dataManager.resetBook(books[1]);
+	toBookMenu();
+
+}
+
+
+
+</script>
+
+
+</body>
+</html>
