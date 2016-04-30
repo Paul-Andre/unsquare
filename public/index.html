@@ -37,6 +37,7 @@
 		<!--<button onclick="share();" style="float:left" id="inGameShareButton" > &#9733; Share</button>--!>
 		<button onclick="game.restart();" style="float:right;" >Restart</button>
 		<button onclick="game.undo();"  style="float:right;" >Undo</button>
+		<button onclick="game.displayTutorial();" style="float:right;">Help?</button>
 		</div>
 	</div>
 	<canvas id="gameCanvas" class="gameCanvas"></canvas>
@@ -102,9 +103,8 @@
 	</div>
 	<div id="bookIconContainer">
 	</div>
-	<button onclick="showAbout();">
-	About
-	</button>
+	<button onclick="showAbout();">About</button>
+	<button onclick="bookMenu.displayTutorial();" style="float:right;">Tutorial</button>
 	
 	<!--
 	<button onclick="showReset();"  style="float:right;" > Reset</button>
@@ -157,12 +157,8 @@
 
 </div>
 
-
-
-
-
-
 </div>
+<!-- End of allContainer -->
 
 
 <script src="sizes.js"></script>
