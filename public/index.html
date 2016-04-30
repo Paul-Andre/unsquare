@@ -14,6 +14,7 @@
 		<script src="helpers.js"></script>
 		<script src="drawing.js"></script>
 		<script src="tutorial.js"></script>
+		<script src="exportSave.js"></script>
 		
 </head>
 <body style="background-color:silver;" class="no-touch">
@@ -28,6 +29,7 @@
 		<h2 id="LevelIndicater">Level ? </h2>
 		<h3 id="TextShower" class="textShower"> &zwnj; </h3>
 		</div>
+		<button onclick="game.displayTutorial();" style="float:right;">Help?</button>
 		<div style="float: right; width:25%;" id="moveIndicContainer">
 		 <div class="gameMovesIndicater" id="BestIndicater"></div>  <div class="gameMovesIndicater" id="ParIndicater"></div>  <div class="gameMovesIndicater" id="MovesIndicater"></div> 
 		</div>
@@ -38,7 +40,6 @@
 		<button id="skipButton" onclick="game.skip();" style="float:right;">Skip</button>
 		<button onclick="game.restart();" style="float:right;">Restart</button>
 		<button onclick="game.undo();"  style="float:right;">Undo</button>
-		<button onclick="game.displayTutorial();" style="float:right;">Help?</button>
 		</div>
 	</div>
 	<canvas id="gameCanvas" class="gameCanvas"></canvas>
@@ -102,6 +103,7 @@
 	</div>
 	<button onclick="showAbout();">About</button>
 	<button onclick="bookMenu.displayTutorial();" style="float:right;">Tutorial</button>
+	<button onclick="displaySaveStr();" style="float:right;">Export save</button>
 	
 	<!--
 	<button onclick="showReset();"  style="float:right;" > Reset</button>
