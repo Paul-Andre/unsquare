@@ -13,6 +13,7 @@
 		<script src="colors.js"></script>
 		<script src="helpers.js"></script>
 		<script src="drawing.js"></script>
+		<script src="tutorial.js"></script>
 		
 		<meta name="appsfuel_code" content="4b0e6820fa5dc37"/>
 </head>
@@ -34,7 +35,7 @@
 	
 		<div  style="clear:both; bottom:0px">
 		<button onclick="toMenu();" style="float:left" >&#8592; Levels</button>
-		<!--<button onclick="share();" style="float:left" id="inGameShareButton" > &#9733; Share</button>--!>
+		<!--<button onclick="share();" style="float:left" id="inGameShareButton" > &#9733; Share</button>-->
 		<button onclick="game.restart();" style="float:right;" >Restart</button>
 		<button onclick="game.undo();"  style="float:right;" >Undo</button>
 		<button onclick="game.displayTutorial();" style="float:right;">Help?</button>
@@ -73,7 +74,6 @@
 
 
 <div id="levelMenuDiv" style="display:none;">
-	
 	<div class="levelMenuHeader">
 	<h1 id="bookName">Levels:</h1>
 	
@@ -83,14 +83,11 @@
 
 	 &#9733; Share This
 	</button>
-	--!>
+	-->
 	</div>
 	
 	<div id="iconContainer" >
 	</div>
-	
-	
-	
 </div>
 
 
@@ -111,7 +108,7 @@
 	-->
 	<!--
 	<button onclick="share();"  style="float:right;" > Please Share This </button>
-	--!>
+	-->
 </div>
 
 <div id="aboutDiv" style="display:none;" class="smallDiv">
@@ -124,9 +121,7 @@
 	<br/>
 	Summer 2013.
 	</h3>
-	<button onclick="toBookMenu();" >
-	&#8592; Menu
-	</button>
+	<button onclick="toBookMenu();">&#8592; Menu</button>
 </div>
 
 
@@ -137,11 +132,9 @@
 	<h3>
 	Are you sure you want to reset this game for whatever reason?<br/>
 	</h3>
-	<button onclick="toBookMenu();" >
-	&#8592; Cancel
-	</button>
+	<button onclick="toBookMenu();">&#8592; Cancel</button>
 	
-	<button onclick="resetGame();"  style="float:right;" > Yes, reset game</button>
+	<button onclick="resetGame();"  style="float:right;">Yes, reset game</button>
 </div>
 
 
@@ -149,12 +142,12 @@
 	<div style="float: left; width: 100%">
 	<h1 id="bookName" style="font-family: Times New Roman, Serif; font-style:italic; font-weight:normal;">Loading...</h1>
 	</div>
-
 </div>
 
 <div id="tutorialDiv" style="display:none;" class="smallDiv">
 	<h1>Tutorial</h1>
 
+	<button onclick="tutorial.return();" style="float:left;">
 </div>
 
 </div>
