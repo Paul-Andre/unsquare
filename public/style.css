@@ -220,9 +220,9 @@ position: relative;
 			h3{
 			font-style:italic;
 			font-family: Times New Roman, Serif;
-font-size: 1.17em;
-font-weight: bold;
-margin:2px;
+			font-size: 1.17em;
+			font-weight: bold;
+			margin:2px;
 			}
 			
 			
@@ -250,8 +250,8 @@ margin:2px;
 			}
 			
 			h3 {
-font-style: italic;
-font-size:16px;
+				font-style: italic;
+				font-size:16px;
 
 			
 			}
