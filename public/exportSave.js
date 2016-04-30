@@ -23,7 +23,7 @@ function displaySaveStr() {
 	encodeSaveStr(str);
 
 	//For now
-	alert("This is your save string:\n" + str);
+	prompt("This is your save string:\n", str);
 }
 
 //Do this
@@ -36,4 +36,14 @@ function decodeSaveStr(str) {
 	return str;
 }
 
-function importSave() {}
+function importSave() {
+	var saveStr=prompt("Paste your save string in the text box below.");
+
+	saveStr = decodeSaveStr(saveStr);
+
+	store(saveStr);
+}
+
+function store(str) {
+	
+}
