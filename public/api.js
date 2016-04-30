@@ -34,19 +34,22 @@ return api;
 
 
 var storage=(function(){
+
 	var storage={
 
 	}
 
 	storage.load=function(id,callback){
 
-		callback({data:undefined});
+		callback({data:localStorage.getItem(id)});
 
 	}
 
 	storage.save=function(id,data,callback){
 
-		callback&&callback({data:undefined});
+		localStorage.setItem(id,data);
+		callback&&callback({data:data});
+
 	
 	}
 
