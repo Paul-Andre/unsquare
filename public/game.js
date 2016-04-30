@@ -232,7 +232,7 @@ function makeGame(canvasId, divId){
 			ctx.fillStyle=that.color.cells[value].fill;
 			ctx.strokeStyle=that.color.cells[value].stroke;
 
-			var smallSquareSize = Math.floor(size*0.7);
+			var smallSquareSize = Math.floor(size*0.7*0.5)*2;
 			ctx.fillRect((x+0.5)*size-0.5*smallSquareSize,(y+0.5)*size-0.5*smallSquareSize,smallSquareSize,smallSquareSize);
 		//	ctx.strokeRect(x*size,y*size,size,size);		
 			}
