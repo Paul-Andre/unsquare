@@ -231,7 +231,9 @@ function makeGame(canvasId, divId){
 			if (that.color.cells[value]){	
 			ctx.fillStyle=that.color.cells[value].fill;
 			ctx.strokeStyle=that.color.cells[value].stroke;
-			ctx.fillRect(x*size+5,y*size+5,size-10,size-10);
+
+			var smallSquareSize = Math.floor(size*0.7);
+			ctx.fillRect((x+0.5)*size-0.5*smallSquareSize,(y+0.5)*size-0.5*smallSquareSize,smallSquareSize,smallSquareSize);
 		//	ctx.strokeRect(x*size,y*size,size,size);		
 			}
 			
