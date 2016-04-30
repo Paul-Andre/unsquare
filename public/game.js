@@ -510,6 +510,16 @@ function makeGame(canvasId, divId){
 		helperCanvas.width=helperCanvas.width;
 	}
 
+	game.displayTutorial=function(){
+		this.hide();
+		var that = this;
+		//show the tutorial such that the back button returns to the game
+		tutorial.display(function(){
+			that.show();
+		});
+	}
+		
+
 
 
 	return game;
