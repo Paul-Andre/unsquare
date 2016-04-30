@@ -511,11 +511,10 @@ function makeGame(canvasId, divId){
 	}
 
 	game.displayTutorial=function(){
-		this.hide();
-		var that = this;
+		document.getElementById(divId).style.display="none";
 		//show the tutorial such that the back button returns to the game
 		tutorial.display(function(){
-			that.show();
+			document.getElementById(divId).style.display="";
 		});
 	}
 		
