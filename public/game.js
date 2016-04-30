@@ -32,14 +32,17 @@ function makeGame(canvasId, divId) {
 		size: null
 	};
 
+	game.isSkippable = function() {
+		return this.data.index+1<=this.book.levels.length && this.book.levels[this.data.index+1].state>=0;
+	}
 
-
-	game.loadLevel = function(data, book) {
+	game.loadLevel = function(data) {
 
 		var w = window.innerWidth;
 		var h = window.innerHeight;
 
 		this.data = data;
+		this.book = data.book;
 		var w = this.data.map.length;
 		var h = this.data.map[0].length;
 		if (this.grid !== null && w == this.grid.width && h == this.grid.height) {
@@ -67,7 +70,14 @@ function makeGame(canvasId, divId) {
 		document.getElementById("MovesIndicater").innerHTML = "Moves: " + 0;
 
 		document.getElementById("BestIndicater").innerHTML = "Best: " + ((data.best == 0) ? "-" : data.best);
-		// init();
+
+		if (this.isSkippable()) {
+			document.getElementById("skipButton").disabled = false;
+		}
+		else {
+			document.getElementById("skipButton").disabled = true;
+		}
+
 
 		this.color = data.color;
 
@@ -77,12 +87,11 @@ function makeGame(canvasId, divId) {
 		this.disactivateEvents();
 		var that = this;
 		this.swap(function() {
-			that.init()
+			that.initEventListeners()
 		});
 		this.moves = 0;
 		this.undoList.length = 0;
 
-		this.book = data.book
 			//console.log(data);
 
 		levelStats.open(data);
@@ -126,17 +135,14 @@ function makeGame(canvasId, divId) {
 		this.grid.forEach(function(v) {
 
 			if (v != 1) {
-
 				clear = false;
-
 			}
 
 		});
 
-
-		(clear) && this.finishedLevel();
-
-
+		if(clear){
+			this.finishedLevel();
+		}
 
 	}
 
@@ -222,7 +228,7 @@ function makeGame(canvasId, divId) {
 			document.getElementById("MovesIndicater").innerHTML = "Moves: " + this.moves;
 			if (this.finished) {
 				this.finished = false;
-				this.init();
+				this.initEventListeners();
 			}
 		}
 	}
@@ -372,8 +378,7 @@ function makeGame(canvasId, divId) {
 
 	}
 
-
-	game.init = function() {
+	game.initEventListeners = function() {
 
 		var canvasOffset = {
 			left: 0,
@@ -388,15 +393,7 @@ function makeGame(canvasId, divId) {
 			element = element.parentNode;
 		}
 
-
-
-
 		var that = this;
-
-
-		//if (touchable){
-
-		//alert("touchable");
 
 		canvas.ontouchstart = function doMouseDown(event) {
 			var x, y;
@@ -408,7 +405,6 @@ function makeGame(canvasId, divId) {
 				alert("something fishy")
 			}
 
-			//alert(x+"  "+y);
 			mouseStart.pressed = true;
 			that.doMouseDown(x, y);
 			return cancelEvent(event);
@@ -435,12 +431,6 @@ function makeGame(canvasId, divId) {
 			//alert("touchmove");
 			return cancelEvent(event);
 		}
-
-		//}else{
-
-
-		//alert("not touchable");
-
 
 		canvas.onmousedown = function doMouseDown(event) {
 			var x, y;
@@ -514,7 +504,7 @@ function makeGame(canvasId, divId) {
 	game.show = function() {
 
 		document.getElementById(divId).style.display = "";
-		game.init();
+		game.initEventListeners();
 		adManager.show();
 		setTimeout(function() {
 			adManager.reposition();
@@ -536,6 +526,17 @@ function makeGame(canvasId, divId) {
 	}
 
 
+	game.skip = function(){
+		if(this.isSkippable()){
+			this.loadLevel(this.book.levels[this.data.index+1]);
+		}
+	}
+
+
+
+
+
+		
 
 
 	return game;
