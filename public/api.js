@@ -101,7 +101,7 @@ var adPosition= {
     };
 
 //console.log(adPosition);
-advertisement.setPosition( adPosition );
+//advertisement.setPosition( adPosition );
 
 }
 
