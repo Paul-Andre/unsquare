@@ -5,12 +5,10 @@ finishedLoading:function(){},
 
 
 dataManager.prepareBook=function (book){
-	console.log("preparing book in prepareBook");
 	var that=this;
 	var load=3;
 	function loaded(){
 		load--;
-		console.log("load is"+load);
 		if (load == 0){
 			book.loaded=true;
 			that.loading--;
@@ -51,7 +49,6 @@ dataManager.prepareBook=function (book){
 
 			//load++;
 			for(var i=1;i<book.levels.length;i++){
-				console.log(i);
 		
 								var level=book.levels[i]
 								level.index=i;
@@ -79,7 +76,6 @@ dataManager.prepareBook=function (book){
 								}
 		
 			
-								//console.log(level)
 								var iconMultiplier=level.size.iconMultiplier
 			
 							level.icon=document.createElement("canvas");
@@ -110,9 +106,7 @@ dataManager.prepareBook=function (book){
 
 
 dataManager.prepareAllBooks=function(){
-	console.log("preparing all books...");
 	for(var i=0;i<books.length;i++){
-		console.log("starting to prepare this certain book");
 		if(!books[i].loaded){
 			this.loading++;
 			this.prepareBook(books[i]);
@@ -127,7 +121,6 @@ dataManager.setState =function setState(level,state){
 	level.book.saved[level.index]=state;
 	storage.save( level.book.id, serialize(level.book.saved), function( response ) {
 		// response.success is a boolean of whether or not it was successfully stored
-		//console.log( response );
 	} );
 	
 	
@@ -180,7 +173,6 @@ function deserialize(s){
 dataManager.saveBookBests=function saveBookBests(book){
 	
 	var s="";
-	//console.log(book);
 	for (var i=1; i<book.levels.length;i++){
 		//alert(i+"  "+book.levels[i].best);
 		s+=book.levels[i].best.toString(36);
@@ -206,7 +198,6 @@ function loadBookBests(book,callback){
 		if(typeof response.data!="undefined" &&response.data!==null){
 	
 			var b = response.data.split(" ")
-			console.log(b);
 			a=[];
 			b.forEach(function(value,index,array){
 				
@@ -223,7 +214,6 @@ function loadBookBests(book,callback){
 			}
 		}
 		
-		console.log(a);
 		
 		a.forEach(function(v,i,a){
 		
@@ -260,7 +250,6 @@ function loadBookStates(book,callback){
 		
 
 
-													//console.log(response);
 												if 	(typeof response.data!="undefined"&& response.data!==null){
 	
 													book.saved=deserialize(response.data);
@@ -311,7 +300,6 @@ dataManager.saveState=function(book){
 
 	storage.save( book.id, serialize(book.saved), function( response ) {
 		// response.success is a boolean of whether or not it was successfully stored
-		//console.log( response );
 	} );
 	
 	this.saveBookBests(book);
