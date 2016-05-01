@@ -1,5 +1,12 @@
 var levelMenu={book:null};
 levelMenu.loadBook=function(book){
+
+		//To keep track of the statistics
+		var totalPar = 0;
+		var totalMoves = 0;
+		var numCompleted = 0;
+		var numPar = 0;
+		var numLevels;
 	
 	
 	//if(this.book!=book){
@@ -11,21 +18,31 @@ levelMenu.loadBook=function(book){
 		
 		iconContainer.innerHTML = '';
 	
+		numLevels = book.levels.length - 1;
 
 		for(var i=1;i<book.levels.length;i++){
-			var level=book.levels[i]
+			var level=book.levels[i];
 			//console.log(level.state);
 			var icon=document.createElement("div");
-			if(level.state==0){
-			icon.setAttribute("class", "levelIcon open");
-			} else if(level.state==1){
-			icon.setAttribute("class", "levelIcon done");
-			} else if(level.state==2){
-			icon.setAttribute("class", "levelIcon par");
-			} else if(level.state==-1){
-			icon.setAttribute("class", "levelIcon closed");
-			} else if(level.state==-2){
-			icon.setAttribute("class", "levelIcon hidden");
+			if(level.state == 0){
+				icon.setAttribute("class", "levelIcon open");
+			} else if(level.state == 1){
+				totalMoves += book.levels[i].best;
+				totalPar += book.levels[i].par;
+				numCompleted++;
+
+				icon.setAttribute("class", "levelIcon done");
+			} else if(level.state == 2){
+				totalMoves += book.levels[i].best;
+				totalPar += book.levels[i].par;
+				numCompleted++;
+				numPar++;
+
+				icon.setAttribute("class", "levelIcon par");
+			} else if(level.state == -1){
+				icon.setAttribute("class", "levelIcon closed");
+			} else if(level.state == -2){
+				icon.setAttribute("class", "levelIcon hidden");
 			}
 			icon.style.width=level.size.iconWidth+"px";
 			icon.style.height=level.size.iconHeight+"px";
@@ -35,6 +52,11 @@ levelMenu.loadBook=function(book){
 
 		}
 	//}
+
+		document.getElementById("ExtraMovesIndicator").innerHTML = "Moves over par: " + (totalMoves - totalPar);
+		document.getElementById("PercentCompletion").innerHTML = "Completed: " + numCompleted + " / " + numLevels;
+		document.getElementById("PercentPar").innerHTML = "Completed with par: " + numPar + " / " + numCompleted + " completed";
+		//document.getElementById("").innerHTML = "Percent " + ;
 
 }
 levelMenu.startLevel=function(n){
