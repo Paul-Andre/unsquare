@@ -41,9 +41,17 @@ function importSave() {
 
 	saveStr = decodeSaveStr(saveStr);
 
-	store(saveStr);
+	if(confirm("Are you sure you want to load from string? All progress will be overwritten.")){
+		var pairStrings = saveStr.split(";");
+		localStorage.clear();
+		for (var i = 0; i<pairStrings.length; i++){
+			console.log(pairStrings[i]);
+
+			var pairArray = pairStrings[i].split(":");
+			localStorage.setItem(pairArray[0],pairArray[1]);
+		}
+		location.reload();
+	}
 }
 
-function store(str) {
-	
-}
+
