@@ -181,25 +181,9 @@
 <script src="game.js"></script>
 <script src="levelMenu.js"></script>
 <script>
-	loadingScreen={books:books}
-	
-	loadingScreen.hide=function(){
-
-		document.getElementById("loadingScreenDiv").style.display="none";
-	
-	}
-
-	loadingScreen.show=function(){
-
-		document.getElementById("loadingScreenDiv").style.display="";
-	
-	}
-	
-</script>
-<script>
 
 dataManager.finishedLoading=function(){
-	loadingScreen.hide();
+	document.getElementById("loadingScreenDiv").remove();
 	bookMenu.showBooks();
 	bookMenu.show();
 }
