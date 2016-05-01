@@ -39,7 +39,7 @@ function decodeSaveStr(str) {
 function importSave() {
 	var saveStr=prompt("Paste your save string in the text box below.");
 	
-	if (saveStr="") {
+	if (saveStr=="") {
 		alert("String is empty.");
 		return;
 	}
