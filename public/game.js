@@ -63,13 +63,13 @@ function makeGame(canvasId, divId) {
 			document.getElementById("TextShower").innerHTML = "&zwnj;";
 		}
 
-		document.getElementById("LevelIndicater").innerHTML = "Level " + data.index;
+		document.getElementById("LevelIndicator").innerHTML = "Level " + data.index;
 
-		document.getElementById("ParIndicater").innerHTML = "Par: " + data.par;
+		document.getElementById("ParIndicator").innerHTML = "Par: " + data.par;
 
-		document.getElementById("MovesIndicater").innerHTML = "Moves: " + 0;
+		document.getElementById("MovesIndicator").innerHTML = "Moves: " + 0;
 
-		document.getElementById("BestIndicater").innerHTML = "Best: " + ((data.best == 0) ? "-" : data.best);
+		document.getElementById("BestIndicator").innerHTML = "Best: " + ((data.best == 0) ? "-" : data.best);
 
 		if (this.isSkippable()) {
 			document.getElementById("skipButton").disabled = false;
@@ -213,7 +213,7 @@ function makeGame(canvasId, divId) {
 			})
 			this.grid.forEachSet(this.color.unsquare, x, y, w, h);
 			this.moves++;
-			document.getElementById("MovesIndicater").innerHTML = "Moves: " + this.moves;
+			document.getElementById("MovesIndicator").innerHTML = "Moves: " + this.moves;
 		}
 		this.draw(ctx);
 		this.checkIfClear();
@@ -225,7 +225,7 @@ function makeGame(canvasId, divId) {
 			this.grid.paste(undo.x, undo.y, undo.data)
 			this.draw(ctx);
 			this.moves--;
-			document.getElementById("MovesIndicater").innerHTML = "Moves: " + this.moves;
+			document.getElementById("MovesIndicator").innerHTML = "Moves: " + this.moves;
 			if (this.finished) {
 				this.finished = false;
 				this.initEventListeners();

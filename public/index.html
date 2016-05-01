@@ -27,12 +27,12 @@
 <div id="gameDiv" style="display:none;">
 	<div class="gameHeader">
 		<div style="float: left; width: 75%">
-		<h2 id="LevelIndicater">Level ? </h2>
+		<h2 id="LevelIndicator">Level ? </h2>
 		<h3 id="TextShower" class="textShower"> &zwnj; </h3>
 		</div>
 		<button onclick="game.displayTutorial();" style="float:right;">Help?</button>
 		<div style="float: right; width:25%;" id="moveIndicContainer">
-		 <div class="gameMovesIndicater" id="BestIndicater"></div>  <div class="gameMovesIndicater" id="ParIndicater"></div>  <div class="gameMovesIndicater" id="MovesIndicater"></div> 
+		 <div class="gameMovesIndicator" id="BestIndicator"></div>  <div class="gameMovesIndicator" id="ParIndicator"></div>  <div class="gameMovesIndicator" id="MovesIndicator"></div> 
 		</div>
 	
 		<div  style="clear:both; bottom:0px">
@@ -51,13 +51,13 @@
 
 <div id="editorDiv" style="display:none;">
 	<div style="float: left; width: 75%">
-	<h1 id="LevelIndicater">Level ? </h1>
+	<h1 id="LevelIndicator">Level ? </h1>
 	<h3 class="textShower"> &zwnj; </h3>
 	</div>
 	<div style="float: right; width:25%;">
 	<br/>
-	<p id="EditorMovesIndicater"></p>
-	<p id="ParIndicater"></p>
+	<p id="EditorMovesIndicator"></p>
+	<p id="ParIndicator"></p>
 	</div>
 	<div  style="clear:both; bottom:0px">
 	<button onclick="toMenu();" style="float:left" >Menu</button>
@@ -78,7 +78,12 @@
 <div id="levelMenuDiv" style="display:none;">
 	<div class="levelMenuHeader">
 	<h1 id="bookName">Levels:</h1>
-	
+	<div style="" id="levelIndicContainer">
+		<div class="levelIndicator" id="ExtraMovesIndicator"></div>
+		<div class="levelIndicator" id="PercentCompletion"></div>
+		<div class="levelIndicator" id=""></div>
+	</div>
+		
 	<button onclick="toBookMenu();">&#8592; Menu</button>
 	<!--
 		<button onclick="share();" style="float:right;" >
