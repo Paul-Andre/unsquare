@@ -33,7 +33,7 @@ function makeGame(canvasId, divId) {
 	};
 
 	game.isSkippable = function() {
-		return this.data.index+1<=this.book.levels.length && this.book.levels[this.data.index+1].state>=0;
+		return this.data.index+1<this.book.levels.length && this.book.levels[this.data.index+1].state>=0;
 	}
 
 	game.loadLevel = function(data) {

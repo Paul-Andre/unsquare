@@ -62,7 +62,7 @@ levelMenu.loadBook=function(book){
 levelMenu.startLevel=function(n){
 	this.hide();
 	game.clearScreen();
-	game.loadLevel(this.book.levels[n],this.book);
+	game.loadLevel(this.book.levels[n]);
 	game.show();
 }
 
