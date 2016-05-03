@@ -287,6 +287,7 @@ button:active:enabled,  .no-touch button:active:enabled  {
 				display:block;
 				width: 301px;
 				margin:0 auto;
+				margin-top: 30px;
 				left:9px;
 				
 			padding-bottom:50px;
@@ -373,6 +374,22 @@ button:active:enabled,  .no-touch button:active:enabled  {
 			margin-left:2px;
 			
 			}
+
+			.IndicContainer {
+				float: right;
+				margin-top: 9px;
+				margin-bottom: 10px;
+				font-size: 14px;
+				width: 25%;
+			}
+
+			#statsIndicator {
+				position: absolute;
+				width: 50%;
+				top: 4px;
+				right: 0;
+				font-size: 14px;
+			}
 			
 			
 			
@@ -445,8 +462,9 @@ button:active:enabled,  .no-touch button:active:enabled  {
 				margin: 4px;
 			}
 		
-			#moveIndicContainer{
-			margin-top:39px;
+			#IndicContainer{
+				float:right;
+				margin-top:39px;
 			
 			}
 			
