@@ -230,7 +230,7 @@ button:active:enabled,  .no-touch button:active:enabled  {
 			}
 			
 			
-			.gameMovesIndicator {
+			.Indicator {
 				font-family:sans-serif;
 				font-style:italic;
 			}
@@ -309,7 +309,7 @@ button:active:enabled,  .no-touch button:active:enabled  {
 			
 			}
 			
-			.gameMovesIndicator{
+			.Indicator{
 				
 				font-size:12px;
 				
@@ -374,6 +374,7 @@ button:active:enabled,  .no-touch button:active:enabled  {
 			margin-left:2px;
 			
 			}
+
 
 			.IndicContainer {
 				float: right;
@@ -458,18 +459,27 @@ button:active:enabled,  .no-touch button:active:enabled  {
 			}
 			
 			
-			.gameMovesIndicator {
+			.Indicator {
 				margin: 4px;
 			}
-		
-			#IndicContainer{
-				float:right;
-				margin-top:39px;
-			
+
+			.IndicContainer {
+				float: right;
+				margin-top: 9px;
+				margin-bottom: 10px;
+				width: 25%;
 			}
+
+			#statsIndicator {
+				position: absolute;
+				width: 50%;
+				top: 8px;
+				right: 0;
+			}
+		
 			
 
-			}
+			
 			
 			@media (max-height:690px) and (orientation : landscape)
 			{
@@ -541,6 +551,6 @@ button:active:enabled,  .no-touch button:active:enabled  {
 	
 	color:black;
 
-}
+			}
 			
 			}
