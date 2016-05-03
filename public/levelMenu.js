@@ -55,7 +55,7 @@ levelMenu.loadBook=function(book){
 
 		document.getElementById("ExtraMovesIndicator").innerHTML = "Moves over par: " + (totalMoves - totalPar);
 		document.getElementById("PercentCompletion").innerHTML = "Completed: " + numCompleted + " / " + numLevels;
-		document.getElementById("PercentPar").innerHTML = "Completed with par: " + numPar + " / " + numCompleted + " completed";
+		document.getElementById("PercentPar").innerHTML = "Completed with par: " + numPar + " / " + numCompleted;
 		//document.getElementById("").innerHTML = "Percent " + ;
 
 }
