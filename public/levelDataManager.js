@@ -4,6 +4,13 @@ finishedLoading:function(){},
 };
 
 
+dataManager.finishedLoading = function() {
+	document.getElementById("loadingScreenDiv").remove();
+	bookMenu.showBooks();
+	bookMenu.show();
+}
+
+
 dataManager.prepareBook=function (book){
 	var that=this;
 	var load=3;
