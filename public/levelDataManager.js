@@ -241,7 +241,7 @@ function loadBookStates(book,callback){
 
 		storage.load( book.id, function( response ) {
 
-			if 	(typeof response.data!="undefined"&& response.data!==null){
+			if(typeof response.data!="undefined" && response.data!==null){
 				book.saved=deserialize(response.data);
 			}
 			else{
@@ -287,4 +287,5 @@ dataManager.saveState=function(book){
 	
 	this.saveBookBests(book);
 }
+
 

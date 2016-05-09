@@ -1,3 +1,10 @@
+//TODO Really need to update this file
+// I don't know how old I was when I wrote this.
+// Then binary arrays for performance.
+// 
+// But really all that I need is a representation of a grid.
+
+
 var binaryData=function(){
 
 	

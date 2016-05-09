@@ -150,7 +150,9 @@
 
 		<div id="loadingScreenDiv" class="smallDiv">
 			<div style="float: left; width: 100%">
-				<h1 id="bookName" style="font-family: Times New Roman, Serif; font-style:italic; font-weight:normal;">Loading...</h1>
+				<h1 id="bookName" style="font-family: Times New Roman, Serif; font-style:italic; font-weight:normal;">
+					Loading...
+				</h1>
 			</div>
 		</div>
 
@@ -170,7 +172,6 @@
 	</div>
 	<!-- End of allContainer -->
 
-
 	<script src="sizes.js"></script>
 	<script src="levelDataManager.js"></script>
 	<script src="levelStats.js"></script>
@@ -178,9 +179,11 @@
 	<script src="levelMenu.js"></script>
 	<script src="miscInterface.js"></script>
 	<script>
+		// Now that all has been loaded, we basically preprocess the books to make icons and stuff.
 		dataManager.prepareAllBooks();
 	</script>
 
 </body>
 
 </html>
+
