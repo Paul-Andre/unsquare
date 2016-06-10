@@ -3,9 +3,6 @@ function makeGame(canvasId, divId) {
 	var ctx = canvas.getContext("2d");
 	var size = 40;
 
-
-
-
 	var mouseStart = {
 		x: 0,
 		y: 0,
@@ -152,25 +149,69 @@ function makeGame(canvasId, divId) {
 
 	game.doMouseMove = function(x, y) {
 		if (mouseStart.pressed) {
-
-
+			this.updatePreGrid(mouseStart.x / size, mouseStart.y / size, x / size, y / size);
 			this.requestRedraw(ctx);
-
-
-			this.updatePreGrid(Math.floor(mouseStart.x / size), Math.floor(mouseStart.y / size), Math.floor(x / size), Math.floor(y / size));
-
 		}
-
 	};
 
 
 
 	game.doMouseUp = function(x, y) {
-
 		this.preGrid.setAll(0);
-		this.unsquareGrid(Math.floor(mouseStart.x / size), Math.floor(mouseStart.y / size), Math.floor(x / size), Math.floor(y / size));
-
+		this.unsquareGrid(mouseStart.x / size, mouseStart.y / size, x / size, y / size);
 	};
+
+	/// Given fractional positions the two corners of the dragged rectangle relative to the grid,
+	/// returns the top right corner and size of square to be inverted.
+	/// Output is in the form of {x: int, y: int, size: int}
+	/// You still need to check if the "size" of the output is bigger than 1.
+	function calculateSquare(x1, y1, x2, y2) {
+		
+		var xd = x2-x1;
+		var yd = y2-y1;
+
+		var xSign = Math.sign(xd) || 1;
+		var ySign = Math.sign(yd) || 1;
+
+
+		var x = Math.floor(x1);
+		var y = Math.floor(y1);
+
+
+		var size = Math.max(Math.abs(Math.floor(x2)-x), Math.abs(Math.floor(y2) - y)) + 1;
+
+		if (xSign == -1) {
+			x+=1;
+		}
+		if (ySign == -1) {
+			y+=1;
+		}
+
+		//console.log("x, y =", x, y, "; size =", size);
+		
+		if (x + size*xSign < 0) {
+			size = x;
+		}
+		else if (x + size*xSign >= game.grid.width) {
+			size = game.grid.width-x;
+		}
+
+		if (y + size*ySign < 0) {
+			size = y;
+		}
+		else if (y + size*ySign >= game.grid.height) {
+			size = game.grid.height-y;
+		}
+
+		//console.log("size =", size);
+		return {
+			x: Math.min(x, x+size*xSign),
+			y: Math.min(y, y+size*ySign),
+			size: size,
+		}
+	}
+
+
 
 
 
@@ -178,34 +219,30 @@ function makeGame(canvasId, divId) {
 	game.updatePreGrid = function(x1, y1, x2, y2) {
 
 		this.preGrid.setAll(0);
+		
+		var invertingSquare = calculateSquare(x1, y1, x2, y2);
 
-		var x = Math.min(x1, x2);
-		var y = Math.min(y1, y2);
-		var w = Math.max(x1, x2) - x + 1;
-		var h = Math.max(y1, y2) - y + 1;
 		var that = this;
 
-		if ((w == h && w > 1)) {
+		if (invertingSquare.size > 1) {
 			this.preGrid.forEachSet(function(value, x, y) {
 
 				return that.color.unsquare(that.grid.get(x, y));
 
-			}, x, y, w, h);
+			}, invertingSquare.x, invertingSquare.y, invertingSquare.size, invertingSquare.size);
 		}
-
 
 	}
 
 	game.unsquareGrid = function(x1, y1, x2, y2) {
 
-		var x = Math.min(x1, x2);
-		var y = Math.min(y1, y2);
-		var w = Math.min(Math.max(x1, x2) - x + 1);
-		var h = Math.min(Math.max(y1, y2) - y + 1);
+		var invertingSquare = calculateSquare(x1, y1, x2, y2);
+		var x = invertingSquare.x;
+		var y = invertingSquare.y;
+		var w = invertingSquare.size;
+		var h = invertingSquare.size;
 
-
-
-		if ((w == h && w > 1)) {
+		if (invertingSquare.size > 1) {
 			this.undoList.push({
 				x: x,
 				y: y,
