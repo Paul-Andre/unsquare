@@ -312,6 +312,7 @@ function makeGame(canvasId, divId) {
 
 		});
 
+		/*
 		if (mouseStart.pressed) {
 			ctx.save()
 			ctx.strokeStyle = this.color.mouse[0];
@@ -320,6 +321,7 @@ function makeGame(canvasId, divId) {
 			ctx.strokeRect(mouseStart.x - 0.5, mouseStart.y - 0.5, mouseNow.x - mouseStart.x, mouseNow.y - mouseStart.y);
 			ctx.restore();
 		}
+		*/
 	}
 
 
