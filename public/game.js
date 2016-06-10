@@ -144,7 +144,9 @@ function makeGame(canvasId, divId) {
 	}
 
 
-	game.doMouseDown = function(x, y) {};
+	game.doMouseDown = function(x, y) {
+			mouseStart.pressed = true;
+	};
 
 
 	game.doMouseMove = function(x, y) {
@@ -157,6 +159,7 @@ function makeGame(canvasId, divId) {
 
 
 	game.doMouseUp = function(x, y) {
+		mouseStart.pressed = false;
 		this.preGrid.setAll(0);
 		this.unsquareGrid(mouseStart.x / size, mouseStart.y / size, x / size, y / size);
 	};
@@ -167,28 +170,26 @@ function makeGame(canvasId, divId) {
 	/// You still need to check if the "size" of the output is bigger than 1.
 	function calculateSquare(x1, y1, x2, y2) {
 		
-		var xd = x2-x1;
-		var yd = y2-y1;
+		// Specify the direction in which the square goes. 1 is the default value.
+		var xSign = Math.sign(x2 - x1) || 1;
+		var ySign = Math.sign(y2 - y1) || 1;
 
-		var xSign = Math.sign(xd) || 1;
-		var ySign = Math.sign(yd) || 1;
-
-
+		// Get the starting cell.
 		var x = Math.floor(x1);
 		var y = Math.floor(y1);
 
+		// The size of the square
+		var size = Math.max(Math.abs(Math.floor(x2) - x), Math.abs(Math.floor(y2) - y)) + 1;
 
-		var size = Math.max(Math.abs(Math.floor(x2)-x), Math.abs(Math.floor(y2) - y)) + 1;
-
+		// Adjustments if the square goes in negative directions
 		if (xSign == -1) {
 			x+=1;
 		}
 		if (ySign == -1) {
 			y+=1;
 		}
-
-		//console.log("x, y =", x, y, "; size =", size);
-		
+	
+		// Making sure that the square doesn't exit the screen.
 		if (x + size*xSign < 0) {
 			size = x;
 		}
@@ -203,7 +204,7 @@ function makeGame(canvasId, divId) {
 			size = game.grid.height-y;
 		}
 
-		//console.log("size =", size);
+		// Return a square with x,y representing the top left corner.
 		return {
 			x: Math.min(x, x+size*xSign),
 			y: Math.min(y, y+size*ySign),
@@ -453,7 +454,6 @@ function makeGame(canvasId, divId) {
 				alert("something fishy")
 			}
 
-			mouseStart.pressed = true;
 			that.doMouseDown(x, y);
 			return cancelEvent(event);
 		}
@@ -464,7 +464,6 @@ function makeGame(canvasId, divId) {
 				x = Math.max(0, Math.min(canvas.width - 2, event.changedTouches[0].pageX - canvasOffset.left));
 				y = Math.max(0, Math.min(canvas.height - 2, event.changedTouches[0].pageY - canvasOffset.top));
 			}
-			mouseStart.pressed = false;
 			that.doMouseUp(x, y);
 			return cancelEvent(event);
 		}
@@ -493,7 +492,6 @@ function makeGame(canvasId, divId) {
 			}
 
 			//alert(x+"  "+y);
-			mouseStart.pressed = true;
 			that.doMouseDown(x, y);
 			return cancelEvent(event);
 		}
@@ -507,7 +505,6 @@ function makeGame(canvasId, divId) {
 				x = Math.max(0, Math.min(canvas.width - 2, event.layerX));
 				y = Math.max(0, Math.min(canvas.height - 2, event.layerY));
 			}
-			mouseStart.pressed = false;
 			that.doMouseUp(x, y);
 			return cancelEvent(event);
 		}
