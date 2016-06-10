@@ -272,13 +272,22 @@ function makeGame(canvasId, divId) {
 
 	game.draw = function(ctx) {
 		var that = this;
+
+		ctx.fillStyle = "#999999";
+		ctx.fillRect(0,0,canvas.width,canvas.height);
 		this.grid.forEach(function(value, x, y) {
 
+			var padding = size*0.1;
 			if (that.color.cells[value]) {
 				ctx.fillStyle = that.color.cells[value].fill;
-				ctx.strokeStyle = that.color.cells[value].stroke;
-				ctx.fillRect(x * size, y * size, size, size);
-				ctx.strokeRect(x * size, y * size, size, size);
+				//ctx.strokeStyle = that.color.cells[value].stroke;
+				ctx.fillRect(
+					Math.floor(x * size +padding*0.5),
+					Math.floor(y * size+padding*0.5),
+					Math.floor( size-padding),
+					Math.floor(size-padding)
+				);
+				//ctx.strokeRect(x * size, y * size, size, size);
 			}
 
 		});
@@ -290,7 +299,7 @@ function makeGame(canvasId, divId) {
 				ctx.fillStyle = that.color.cells[value].fill;
 				ctx.strokeStyle = that.color.cells[value].stroke;
 
-				var smallSquareSize = Math.floor(size * 0.66 * 0.5) * 2;
+				var smallSquareSize = Math.floor(size * 0.6 * 0.5) * 2;
 				ctx.fillRect((x + 0.5) * size - 0.5 * smallSquareSize, (y + 0.5) * size - 0.5 * smallSquareSize, smallSquareSize, smallSquareSize);
 				//	ctx.strokeRect(x*size,y*size,size,size);		
 			}
