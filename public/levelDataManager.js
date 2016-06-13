@@ -74,7 +74,6 @@ dataManager.prepareBook=function (book){
 		}
 
 
-		level.size=sizes[level.sizeType];
 
 		var h=level.map.length;
 		var w=level.map[0].length;		
@@ -82,11 +81,10 @@ dataManager.prepareBook=function (book){
 		if(grid!=null && w==grid.width && h==grid.height){
 			grid.paste(0,0,level.map)
 		}else{
-			grid=new binaryData.Grid(level.map,8,false);
+			grid=new Grid.from2dArray(level.map);
 		}
 
-
-		var iconMultiplier=level.size.iconMultiplier;
+		var iconMultiplier=5;
 
 		level.icon=document.createElement("canvas");
 		level.icon.width=level.icon.height=iconMultiplier*11;

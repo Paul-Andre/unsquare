@@ -44,8 +44,8 @@ levelMenu.loadBook=function(book){
 			} else if(level.state == -2){
 				icon.setAttribute("class", "levelIcon hidden");
 			}
-			icon.style.width=level.size.iconWidth+"px";
-			icon.style.height=level.size.iconHeight+"px";
+			icon.style.width="100px";
+			icon.style.height="100px";
 			if(level.state>=-1){icon.style.backgroundImage="url("+book.levels[i].iconData+")";}
 			if(level.state>=0){icon.setAttribute("onclick", "levelMenu.startLevel("+i+")");}
 			iconContainer.appendChild(icon);
