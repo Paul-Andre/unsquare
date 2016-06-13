@@ -8,6 +8,7 @@ function makeGame(canvasId, divId) {
 		y: 0,
 		pressed: false
 	}
+
 	var mouseNow = {
 		x: 0,
 		y: 0
@@ -26,7 +27,6 @@ function makeGame(canvasId, divId) {
 		color: null,
 		undoList: [],
 		finished: false,
-		size: null
 	};
 
 	game.isSkippable = function() {
@@ -34,24 +34,11 @@ function makeGame(canvasId, divId) {
 	}
 
 	game.loadLevel = function(data) {
-
-		var w = window.innerWidth;
-		var h = window.innerHeight;
-
 		this.data = data;
 		this.book = data.book;
-		var w = this.data.map.length;
-		var h = this.data.map[0].length;
-		if (this.grid !== null && w == this.grid.width && h == this.grid.height) {
-			this.grid.paste(0, 0, data.map)
-			this.preGrid.setAll(0);
-		} else {
-			this.grid = new binaryData.Grid(data.map, 8, false);
-			this.preGrid = new binaryData.Grid(this.grid.width, this.grid.height, 8, false);
-		}
 
-		// if(canvas.width!=this.data.size.gameWidth)canvas.width=this.data.size.gameWidth;
-		//  if(canvas.height!=this.data.size.gameHeight)canvas.height=this.data.size.gameHeight;
+		this.grid = Grid.from2dArray(data.map);
+		this.preGrid = Grid.empty(this.grid.width, this.grid.height);
 
 
 		if (typeof data.text == "string") {
@@ -78,8 +65,6 @@ function makeGame(canvasId, divId) {
 
 		this.color = data.color;
 
-		size = data.size.tileSize;
-
 		mouseStart.pressed = false;
 		this.disactivateEvents();
 		var that = this;
@@ -89,7 +74,6 @@ function makeGame(canvasId, divId) {
 		this.moves = 0;
 		this.undoList.length = 0;
 
-			//console.log(data);
 
 		levelStats.open(data);
 
@@ -99,8 +83,8 @@ function makeGame(canvasId, divId) {
 		var initialTime = Date.now();
 		var that = this;
 		helperCtx.drawImage(canvas, 0, 0);
-		canvas.width = this.data.size.gameWidth;
-		canvas.height = this.data.size.gameHeight;
+		canvas.width = this.grid.width*size;
+		canvas.height = this.grid.height*size;
 
 		function update() {
 
@@ -108,8 +92,8 @@ function makeGame(canvasId, divId) {
 			if (time > 300) {
 				game.draw(ctx)
 				callback();
-				helperCanvas.width = that.data.size.gameWidth;
-				helperCanvas.height = that.data.size.gameHeight;
+				helperCanvas.width = canvas.width;
+				helperCanvas.height = canvas.height;
 			} else {
 				ctx.save();
 				ctx.translate(canvas.width * (1 - time / 300), 0)
@@ -218,19 +202,19 @@ function makeGame(canvasId, divId) {
 
 
 	game.updatePreGrid = function(x1, y1, x2, y2) {
-
-		this.preGrid.setAll(0);
 		
 		var invertingSquare = calculateSquare(x1, y1, x2, y2);
 
 		var that = this;
 
+		this.preGrid.setAll(0);
 		if (invertingSquare.size > 1) {
-			this.preGrid.forEachSet(function(value, x, y) {
+			this.preGrid.window(invertingSquare.x, invertingSquare.y, invertingSquare.size, invertingSquare.size)
+				.forEachSet(function(value, x, y) {
+					//console.log(that.color.unsquare(that.grid.get(x, y)));
+					return(that.color.unsquare(that.grid.get(x + invertingSquare.x, y + invertingSquare.y)));
 
-				return that.color.unsquare(that.grid.get(x, y));
-
-			}, invertingSquare.x, invertingSquare.y, invertingSquare.size, invertingSquare.size);
+				}) ;
 		}
 
 	}
@@ -244,12 +228,8 @@ function makeGame(canvasId, divId) {
 		var h = invertingSquare.size;
 
 		if (invertingSquare.size > 1) {
-			this.undoList.push({
-				x: x,
-				y: y,
-				data: this.grid.copy(x, y, w, h)
-			})
-			this.grid.forEachSet(this.color.unsquare, x, y, w, h);
+			this.undoList.push(this.grid.clone());
+			this.grid.window(x,y,w,h).forEachSet(this.color.unsquare);
 			this.moves++;
 			document.getElementById("MovesIndicator").innerHTML = "Moves: " + this.moves;
 		}
@@ -260,7 +240,7 @@ function makeGame(canvasId, divId) {
 	game.undo = function() {
 		if (this.undoList.length > 0) {
 			var undo = this.undoList.pop();
-			this.grid.paste(undo.x, undo.y, undo.data)
+			this.grid = undo;
 			this.draw(ctx);
 			this.moves--;
 			document.getElementById("MovesIndicator").innerHTML = "Moves: " + this.moves;
@@ -275,7 +255,7 @@ function makeGame(canvasId, divId) {
 		var that = this;
 
 		ctx.fillStyle = "#999999";
-		ctx.fillRect(0,0,canvas.width,canvas.height);
+		ctx.fillRect(0,0,canvas.width, canvas.height);
 		this.grid.forEach(function(value, x, y) {
 
 			var padding = size*0.1;
@@ -283,8 +263,8 @@ function makeGame(canvasId, divId) {
 				ctx.fillStyle = that.color.cells[value].fill;
 				//ctx.strokeStyle = that.color.cells[value].stroke;
 				ctx.fillRect(
-					Math.floor(x * size +padding*0.5),
-					Math.floor(y * size+padding*0.5),
+					Math.floor(x * size + padding*0.5),
+					Math.floor(y * size + padding*0.5),
 					Math.floor( size-padding),
 					Math.floor(size-padding)
 				);

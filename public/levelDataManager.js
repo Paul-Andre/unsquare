@@ -47,8 +47,6 @@ dataManager.prepareBook=function (book){
 	var defaultColorType=book.defaultColorType;
 	var defaultSizeType= book.defaultSizeType;
 
-	var grid=null;
-
 	book.saved=null;
 	book.loaded=false;
 
@@ -78,11 +76,7 @@ dataManager.prepareBook=function (book){
 		var h=level.map.length;
 		var w=level.map[0].length;		
 
-		if(grid!=null && w==grid.width && h==grid.height){
-			grid.paste(0,0,level.map)
-		}else{
-			grid=new Grid.from2dArray(level.map);
-		}
+		var grid=new Grid.from2dArray(level.map);
 
 		var iconMultiplier=5;
 
@@ -91,6 +85,7 @@ dataManager.prepareBook=function (book){
 
 		var ctx=level.icon.getContext("2d");
 
+		//console.log(grid);
 		grid.forEach(function(v,x,y){
 
 			ctx.fillStyle=level.color.cells[v].fill;
