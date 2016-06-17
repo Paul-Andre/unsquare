@@ -14,7 +14,7 @@ BoundedGrid.prototype.forEach=function(f){
 			f(this.get(i,j),i,j,this);
 		}
 	}
-}
+};
 
 BoundedGrid.prototype.forEachSet=function(f){
 //f(v,x,y,grid)
@@ -23,11 +23,11 @@ BoundedGrid.prototype.forEachSet=function(f){
 			this.set(i,j,f(this.get(i,j),i,j,this));
 		}
 	}
-}
+};
 
 BoundedGrid.prototype.setAll=function(v){
 	this.forEachSet(function(){return v});
-}
+};
 
 function GridWindow(original,x,y,w,h){
 	this.original=original;
@@ -41,16 +41,16 @@ GridWindow.prototype=Object.create(BoundedGrid.prototype);
 
 GridWindow.prototype.get=function(x,y){
 	return this.original.get(x+this.x,y+this.y);
-}
+};
 
 GridWindow.prototype.set=function(x,y,v){
 	return this.original.set(x+this.x,y+this.y,v);
-}
+};
 
 	
 Grid.prototype.window=function(x,y,w,h){
 	return new GridWindow(this,x,y,w,h);
-}
+};
 
 
 //Either cells of the original grid, otherwise access `virtual`
@@ -68,11 +68,11 @@ VirtualGrid.prototype.get=function(x,y){
 	else{
 		return this.original.get(x,y)
 	}
-}
+};
 
 BoundedGrid.prototype.virtual=function(fn){
 	return new VirtualGrid(this,fn);
-}
+};
 
 function GridFromArray(a,w,h){
 	this.array=a;
@@ -84,16 +84,16 @@ GridFromArray.prototype=Object.create(BoundedGrid.prototype);
 
 GridFromArray.prototype.get=function(x,y){
 	return this.array[this.width*y+x];
-}
+};
 
 GridFromArray.prototype.set=function(x,y,v){
 	return (this.array[this.width*y+x]=v);
-}
+};
 
 GridFromArray.prototype.clone=function(){
 	return new GridFromArray(this.array.slice(),this.width,this.height);
-}
-	
+};
+
 
 Grid.from2dArray = function(a){
 	var h = a.length;
@@ -106,9 +106,10 @@ Grid.usingFlatArray=function(a,w,h){
 	return new GridFromArray(a,w,h);
 };
 
+
 Grid.empty = function(w,h){
 	return new GridFromArray(new Array(w*h),w,h);
-}
+};
 
 
 // I'll have to rethink what all of this is doing
@@ -132,4 +133,4 @@ Grid.withArrayConstructor={
 		});
 		return grid;
 	}
-}
+};
