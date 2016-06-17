@@ -1,3 +1,7 @@
+/*
+ * This file is written in a pseudo-classical object oriented manner.
+ */
+
 function Grid(){}
 //abstract function get(x,y);
 //abstract function set(x,y,v);
