@@ -62,7 +62,6 @@ function makeGame(canvasId, divId) {
 			document.getElementById("skipButton").disabled = true;
 		}
 
-
 		this.color = data.color;
 
 		mouseStart.pressed = false;
@@ -73,7 +72,6 @@ function makeGame(canvasId, divId) {
 		});
 		this.moves = 0;
 		this.undoList.length = 0;
-
 
 		levelStats.open(data);
 
@@ -104,9 +102,6 @@ function makeGame(canvasId, divId) {
 			}
 		}
 		update();
-
-
-
 	}
 
 
@@ -196,17 +191,9 @@ function makeGame(canvasId, divId) {
 		}
 	}
 
-
-
-
-
-
 	game.updatePreGrid = function(x1, y1, x2, y2) {
-		
 		var invertingSquare = calculateSquare(x1, y1, x2, y2);
-
 		var that = this;
-
 		this.preGrid.setAll(0);
 		if (invertingSquare.size > 1) {
 			this.preGrid.window(invertingSquare.x, invertingSquare.y, invertingSquare.size, invertingSquare.size)
@@ -268,9 +255,7 @@ function makeGame(canvasId, divId) {
 					Math.floor( size-padding),
 					Math.floor(size-padding)
 				);
-				//ctx.strokeRect(x * size, y * size, size, size);
 			}
-
 		});
 
 
@@ -281,37 +266,9 @@ function makeGame(canvasId, divId) {
 				ctx.strokeStyle = that.color.cells[value].stroke;
 
 				var smallSquareSize = Math.floor(size * 0.6 * 0.5) * 2;
-				ctx.fillRect((x + 0.5) * size - 0.5 * smallSquareSize, (y + 0.5) * size - 0.5 * smallSquareSize, smallSquareSize, smallSquareSize);
-				//	ctx.strokeRect(x*size,y*size,size,size);		
+				ctx.fillRect((x + 0.5) * size - 0.5 * smallSquareSize, (y + 0.5) * size - 0.5 * smallSquareSize, smallSquareSize, smallSquareSize);	
 			}
-
-
-
-			/*if(value==1){
-			ctx.fillStyle="white";
-			ctx.fillRect(x*size+5,y*size+5,size-10,size-10);
-			ctx.strokeStyle="black";
-			ctx.strokeRect(x*size+5,y*size+5,size-10,size-10);
-			}
-			if(value==2){
-			ctx.fillStyle="black";
-			ctx.fillRect(x*size+5,y*size+5,size-10,size-10);
-			ctx.strokeStyle="white";
-			ctx.strokeRect(x*size+5,y*size+5,size-10,size-10);
-			}*/
-
 		});
-
-		/*
-		if (mouseStart.pressed) {
-			ctx.save()
-			ctx.strokeStyle = this.color.mouse[0];
-			ctx.strokeRect(mouseStart.x, mouseStart.y, mouseNow.x - mouseStart.x, mouseNow.y - mouseStart.y);
-			ctx.strokeStyle = this.color.mouse[1];
-			ctx.strokeRect(mouseStart.x - 0.5, mouseStart.y - 0.5, mouseNow.x - mouseStart.x, mouseNow.y - mouseStart.y);
-			ctx.restore();
-		}
-		*/
 	}
 
 
@@ -464,14 +421,10 @@ function makeGame(canvasId, divId) {
 			if (event.offsetX) {
 				x = mouseStart.x = Math.max(0, Math.min(canvas.width - 2, event.offsetX));
 				y = mouseStart.y = Math.max(0, Math.min(canvas.height - 2, event.offsetY));
-				//alert("offsetX: yep")
 			} else if (event.layerX) {
 				x = mouseStart.x = Math.max(0, Math.min(canvas.width - 2, event.layerX));
 				y = mouseStart.y = Math.max(0, Math.min(canvas.height - 2, event.layerY));
-				//alert("layerX: yep")
 			}
-
-			//alert(x+"  "+y);
 			that.doMouseDown(x, y);
 			return cancelEvent(event);
 		}
@@ -499,13 +452,8 @@ function makeGame(canvasId, divId) {
 				y = mouseNow.y = Math.max(0, Math.min(canvas.height - 2, event.layerY));
 			}
 			that.doMouseMove(x, y);
-			//alert("touchmove");
 			return cancelEvent(event);
 		}
-
-
-
-
 	}
 
 	game.disactivateEvents = function() {
@@ -556,13 +504,6 @@ function makeGame(canvasId, divId) {
 			this.loadLevel(this.book.levels[this.data.index+1]);
 		}
 	}
-
-
-
-
-
-		
-
 
 	return game;
 }
