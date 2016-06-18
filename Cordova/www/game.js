@@ -1,3 +1,5 @@
+"use strict";
+
 function makeGame(canvasId, divId) {
 	var canvas = document.getElementById(canvasId);
 	var ctx = canvas.getContext("2d");
@@ -14,6 +16,15 @@ function makeGame(canvasId, divId) {
 		y: 0
 	};
 
+	function onResize(){
+		//console.log(document.body.offsetWidth, document.body.offsetHeight);
+		var canvasSize = Math.min(480, document.body.offsetWidth, document.body.offsetHeight);
+	}
+
+	onResize();
+
+	window.addEventListener("resize", onResize, false);
+
 	var helperCanvas = document.createElement("canvas")
 	var helperCtx = helperCanvas.getContext("2d");
 	helperCanvas.width = canvas.width;
@@ -22,38 +33,35 @@ function makeGame(canvasId, divId) {
 	var game = {
 		grid: null,
 		pregrid: null,
-		data: null,
-		book: null,
-		color: null,
+		level: null,
 		undoList: [],
 		finished: false,
 	};
 
 	game.isSkippable = function() {
-		return this.data.index+1<this.book.levels.length && this.book.levels[this.data.index+1].state>=0;
+		return this.level.index+1<this.level.book.levels.length && this.level.book.levels[this.level.index+1].state>=0;
 	}
 
-	game.loadLevel = function(data) {
-		this.data = data;
-		this.book = data.book;
+	game.loadLevel = function(level) {
+		this.level = level;
 
-		this.grid = Grid.from2dArray(data.map);
+		this.grid = Grid.from2dArray(level.map);
 		this.preGrid = Grid.empty(this.grid.width, this.grid.height);
 
 
-		if (typeof data.text == "string") {
-			document.getElementById("TextShower").innerHTML = data.text;
+		if (typeof level.text == "string") {
+			document.getElementById("TextShower").innerHTML = level.text;
 		} else {
 			document.getElementById("TextShower").innerHTML = "&zwnj;";
 		}
 
-		document.getElementById("LevelIndicator").innerHTML = "Level " + data.index;
+		document.getElementById("LevelIndicator").innerHTML = "Level " + level.index;
 
-		document.getElementById("ParIndicator").innerHTML = "Par: " + data.par;
+		document.getElementById("ParIndicator").innerHTML = "Par: " + level.par;
 
 		document.getElementById("MovesIndicator").innerHTML = "Moves: " + 0;
 
-		document.getElementById("BestIndicator").innerHTML = "Best: " + ((data.best == 0) ? "-" : data.best);
+		document.getElementById("BestIndicator").innerHTML = "Best: " + ((level.best == 0) ? "-" : level.best);
 
 		if (this.isSkippable()) {
 			document.getElementById("skipButton").disabled = false;
@@ -61,9 +69,6 @@ function makeGame(canvasId, divId) {
 		else {
 			document.getElementById("skipButton").disabled = true;
 		}
-
-
-		this.color = data.color;
 
 		mouseStart.pressed = false;
 		this.disactivateEvents();
@@ -75,7 +80,7 @@ function makeGame(canvasId, divId) {
 		this.undoList.length = 0;
 
 
-		levelStats.open(data);
+		levelStats.open(level);
 
 	}
 
@@ -86,6 +91,7 @@ function makeGame(canvasId, divId) {
 		canvas.width = this.grid.width*size;
 		canvas.height = this.grid.height*size;
 
+		// This is used to draw the grid that gets translated
 		function update() {
 
 			var time = Date.now() - initialTime;
@@ -104,9 +110,6 @@ function makeGame(canvasId, divId) {
 			}
 		}
 		update();
-
-
-
 	}
 
 
@@ -197,10 +200,6 @@ function makeGame(canvasId, divId) {
 	}
 
 
-
-
-
-
 	game.updatePreGrid = function(x1, y1, x2, y2) {
 		
 		var invertingSquare = calculateSquare(x1, y1, x2, y2);
@@ -211,8 +210,7 @@ function makeGame(canvasId, divId) {
 		if (invertingSquare.size > 1) {
 			this.preGrid.window(invertingSquare.x, invertingSquare.y, invertingSquare.size, invertingSquare.size)
 				.forEachSet(function(value, x, y) {
-					//console.log(that.color.unsquare(that.grid.get(x, y)));
-					return(that.color.unsquare(that.grid.get(x + invertingSquare.x, y + invertingSquare.y)));
+					return(that.level.color.unsquare(that.grid.get(x + invertingSquare.x, y + invertingSquare.y)));
 
 				}) ;
 		}
@@ -229,7 +227,7 @@ function makeGame(canvasId, divId) {
 
 		if (invertingSquare.size > 1) {
 			this.undoList.push(this.grid.clone());
-			this.grid.window(x,y,w,h).forEachSet(this.color.unsquare);
+			this.grid.window(x,y,w,h).forEachSet(this.level.color.unsquare);
 			this.moves++;
 			document.getElementById("MovesIndicator").innerHTML = "Moves: " + this.moves;
 		}
@@ -259,9 +257,9 @@ function makeGame(canvasId, divId) {
 		this.grid.forEach(function(value, x, y) {
 
 			var padding = size*0.1;
-			if (that.color.cells[value]) {
-				ctx.fillStyle = that.color.cells[value].fill;
-				//ctx.strokeStyle = that.color.cells[value].stroke;
+			if (that.level.color.cells[value]) {
+				ctx.fillStyle = that.level.color.cells[value].fill;
+				//ctx.strokeStyle = that.level.color.cells[value].stroke;
 				ctx.fillRect(
 					Math.floor(x * size + padding*0.5),
 					Math.floor(y * size + padding*0.5),
@@ -276,42 +274,14 @@ function makeGame(canvasId, divId) {
 
 		this.preGrid.forEach(function(value, x, y) {
 
-			if (that.color.cells[value]) {
-				ctx.fillStyle = that.color.cells[value].fill;
-				ctx.strokeStyle = that.color.cells[value].stroke;
+			if (that.level.color.cells[value]) {
+				ctx.fillStyle = that.level.color.cells[value].fill;
+				ctx.strokeStyle = that.level.color.cells[value].stroke;
 
 				var smallSquareSize = Math.floor(size * 0.6 * 0.5) * 2;
 				ctx.fillRect((x + 0.5) * size - 0.5 * smallSquareSize, (y + 0.5) * size - 0.5 * smallSquareSize, smallSquareSize, smallSquareSize);
-				//	ctx.strokeRect(x*size,y*size,size,size);		
 			}
-
-
-
-			/*if(value==1){
-			ctx.fillStyle="white";
-			ctx.fillRect(x*size+5,y*size+5,size-10,size-10);
-			ctx.strokeStyle="black";
-			ctx.strokeRect(x*size+5,y*size+5,size-10,size-10);
-			}
-			if(value==2){
-			ctx.fillStyle="black";
-			ctx.fillRect(x*size+5,y*size+5,size-10,size-10);
-			ctx.strokeStyle="white";
-			ctx.strokeRect(x*size+5,y*size+5,size-10,size-10);
-			}*/
-
 		});
-
-		/*
-		if (mouseStart.pressed) {
-			ctx.save()
-			ctx.strokeStyle = this.color.mouse[0];
-			ctx.strokeRect(mouseStart.x, mouseStart.y, mouseNow.x - mouseStart.x, mouseNow.y - mouseStart.y);
-			ctx.strokeStyle = this.color.mouse[1];
-			ctx.strokeRect(mouseStart.x - 0.5, mouseStart.y - 0.5, mouseNow.x - mouseStart.x, mouseNow.y - mouseStart.y);
-			ctx.restore();
-		}
-		*/
 	}
 
 
@@ -330,12 +300,11 @@ function makeGame(canvasId, divId) {
 			});
 			requestedRedraw = true;
 		}
-
 	}
 
 	game.restart = function restart() {
-		levelStats.close(this.data);
-		game.loadLevel(this.data);
+		levelStats.close(this.level);
+		game.loadLevel(this.level);
 		game.draw(ctx);
 	}
 
@@ -346,23 +315,23 @@ function makeGame(canvasId, divId) {
 		var initialTime = Date.now();
 		var clicked = false
 
-		if (this.data.best == 0 || this.moves < this.data.best) {
+		if (this.level.best == 0 || this.moves < this.level.best) {
 
-			this.data.best = this.moves;
-			dataManager.saveBookBests(this.data.book);
+			this.level.best = this.moves;
+			dataManager.saveBookBests(this.level.book);
 
 		}
 
 		var par = false;
 
-		if (this.moves <= this.data.par) {
+		if (this.moves <= this.level.par) {
 
-			nextLevel = this.book.updateState(this.data, 2);
+			nextLevel = this.level.book.updateState(this.level, 2);
 			par = true;
 
 		} else {
 
-			nextLevel = this.book.updateState(this.data, 1);
+			nextLevel = this.level.book.updateState(this.level, 1);
 
 		}
 
@@ -394,17 +363,14 @@ function makeGame(canvasId, divId) {
 
 
 		var that = this;
-		if (typeof this.data.index == "number") {
+		if (typeof this.level.index == "number") {
 			game.disactivateEvents();
 			canvas.onmousedown = canvas.ontouchstart = function(evt) {
 				game.loadLevel(nextLevel);
 				return cancelEvent(evt);
 			}
 		}
-
-		levelStats.pass(this.data);
-
-
+		levelStats.pass(this.level);
 	}
 
 	game.initEventListeners = function() {
@@ -499,13 +465,8 @@ function makeGame(canvasId, divId) {
 				y = mouseNow.y = Math.max(0, Math.min(canvas.height - 2, event.layerY));
 			}
 			that.doMouseMove(x, y);
-			//alert("touchmove");
 			return cancelEvent(event);
 		}
-
-
-
-
 	}
 
 	game.disactivateEvents = function() {
@@ -523,7 +484,7 @@ function makeGame(canvasId, divId) {
 
 		adManager.hide();
 
-		(game.data) && (levelStats.close(this.data));
+		(game.level) && (levelStats.close(this.level));
 	}
 
 	game.show = function() {
@@ -553,15 +514,9 @@ function makeGame(canvasId, divId) {
 
 	game.skip = function(){
 		if(this.isSkippable()){
-			this.loadLevel(this.book.levels[this.data.index+1]);
+			this.loadLevel(this.level.book.levels[this.level.index+1]);
 		}
 	}
-
-
-
-
-
-		
 
 
 	return game;
