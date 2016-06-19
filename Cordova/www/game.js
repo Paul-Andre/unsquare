@@ -3,7 +3,6 @@
 function makeGame(canvasId, divId) {
 	var canvas = document.getElementById(canvasId);
 	var ctx = canvas.getContext("2d");
-	var size = 40;
 
 	var mouseStart = {
 		x: 0,
@@ -16,19 +15,13 @@ function makeGame(canvasId, divId) {
 		y: 0
 	};
 
-	function onResize(){
-		//console.log(document.body.offsetWidth, document.body.offsetHeight);
-		var canvasSize = Math.min(480, document.body.offsetWidth, document.body.offsetHeight);
-	}
-
-	onResize();
-
-	window.addEventListener("resize", onResize, false);
-
 	var helperCanvas = document.createElement("canvas")
 	var helperCtx = helperCanvas.getContext("2d");
-	helperCanvas.width = canvas.width;
-	helperCanvas.height = canvas.height;
+	var canvasSize = 480;
+
+	canvas.width = canvas.height = canvasSize;
+
+	var size = 0;
 
 	var game = {
 		grid: null,
@@ -37,6 +30,9 @@ function makeGame(canvasId, divId) {
 		undoList: [],
 		finished: false,
 	};
+
+	helperCanvas.width = canvas.width;
+	helperCanvas.height = canvas.height;
 
 	game.isSkippable = function() {
 		return this.level.index+1<this.level.book.levels.length && this.level.book.levels[this.level.index+1].state>=0;
@@ -88,8 +84,8 @@ function makeGame(canvasId, divId) {
 		var initialTime = Date.now();
 		var that = this;
 		helperCtx.drawImage(canvas, 0, 0);
-		canvas.width = this.grid.width*size;
-		canvas.height = this.grid.height*size;
+		canvas.width = canvasSize;
+		canvas.height = canvasSize;
 
 		// This is used to draw the grid that gets translated
 		function update() {
@@ -97,13 +93,13 @@ function makeGame(canvasId, divId) {
 			var time = Date.now() - initialTime;
 			if (time > 300) {
 				game.draw(ctx)
-				callback();
+					callback();
 				helperCanvas.width = canvas.width;
 				helperCanvas.height = canvas.height;
 			} else {
 				ctx.save();
 				ctx.translate(canvas.width * (1 - time / 300), 0)
-				ctx.drawImage(helperCanvas, -canvas.width, 0);
+					ctx.drawImage(helperCanvas, -canvas.width, 0);
 				game.draw(ctx);
 				ctx.restore();
 				requestAnimationFrame(update);
@@ -113,7 +109,7 @@ function makeGame(canvasId, divId) {
 	}
 
 
-	game.checkIfClear = function checkIfClear() {
+	game.isClear = function isClear() {
 		var clear = true;
 
 		this.grid.forEach(function(v) {
@@ -124,19 +120,21 @@ function makeGame(canvasId, divId) {
 
 		});
 
-		if(clear){
-			this.finishedLevel();
-		}
-
+		return clear;
 	}
 
 
 	game.doMouseDown = function(x, y) {
-			mouseStart.pressed = true;
+		mouseStart.x = x;
+		mouseStart.y = y;
+		mouseStart.pressed = true;
 	};
 
 
 	game.doMouseMove = function(x, y) {
+		mouseNow.x = x;
+		mouseNow.y = y;
+		var size = canvasSize / this.grid.width;
 		if (mouseStart.pressed) {
 			this.updatePreGrid(mouseStart.x / size, mouseStart.y / size, x / size, y / size);
 			this.requestRedraw(ctx);
@@ -144,10 +142,10 @@ function makeGame(canvasId, divId) {
 	};
 
 
-
 	game.doMouseUp = function(x, y) {
 		mouseStart.pressed = false;
 		this.preGrid.setAll(0);
+		var size = canvasSize / this.grid.width;
 		this.unsquareGrid(mouseStart.x / size, mouseStart.y / size, x / size, y / size);
 	};
 
@@ -156,7 +154,7 @@ function makeGame(canvasId, divId) {
 	/// Output is in the form of {x: int, y: int, size: int}
 	/// You still need to check if the "size" of the output is bigger than 1.
 	function calculateSquare(x1, y1, x2, y2) {
-		
+
 		// Specify the direction in which the square goes. 1 is the default value.
 		var xSign = Math.sign(x2 - x1) || 1;
 		var ySign = Math.sign(y2 - y1) || 1;
@@ -175,7 +173,7 @@ function makeGame(canvasId, divId) {
 		if (ySign == -1) {
 			y+=1;
 		}
-	
+
 		// Making sure that the square doesn't exit the screen.
 		if (x + size*xSign < 0) {
 			size = x;
@@ -201,7 +199,7 @@ function makeGame(canvasId, divId) {
 
 
 	game.updatePreGrid = function(x1, y1, x2, y2) {
-		
+
 		var invertingSquare = calculateSquare(x1, y1, x2, y2);
 
 		var that = this;
@@ -211,7 +209,6 @@ function makeGame(canvasId, divId) {
 			this.preGrid.window(invertingSquare.x, invertingSquare.y, invertingSquare.size, invertingSquare.size)
 				.forEachSet(function(value, x, y) {
 					return(that.level.color.unsquare(that.grid.get(x + invertingSquare.x, y + invertingSquare.y)));
-
 				}) ;
 		}
 
@@ -222,17 +219,20 @@ function makeGame(canvasId, divId) {
 		var invertingSquare = calculateSquare(x1, y1, x2, y2);
 		var x = invertingSquare.x;
 		var y = invertingSquare.y;
-		var w = invertingSquare.size;
-		var h = invertingSquare.size;
+		var size = invertingSquare.size;
 
 		if (invertingSquare.size > 1) {
 			this.undoList.push(this.grid.clone());
-			this.grid.window(x,y,w,h).forEachSet(this.level.color.unsquare);
+			this.grid.window(x,y,size,size).forEachSet(this.level.color.unsquare);
 			this.moves++;
 			document.getElementById("MovesIndicator").innerHTML = "Moves: " + this.moves;
 		}
 		this.draw(ctx);
-		this.checkIfClear();
+
+		if(this.isClear()){
+			this.finishedLevel();
+		}
+
 	}
 
 	game.undo = function() {
@@ -250,25 +250,24 @@ function makeGame(canvasId, divId) {
 	}
 
 	game.draw = function(ctx) {
+
 		var that = this;
 
 		ctx.fillStyle = "#999999";
 		ctx.fillRect(0,0,canvas.width, canvas.height);
+
 		this.grid.forEach(function(value, x, y) {
 
 			var padding = size*0.1;
 			if (that.level.color.cells[value]) {
 				ctx.fillStyle = that.level.color.cells[value].fill;
-				//ctx.strokeStyle = that.level.color.cells[value].stroke;
 				ctx.fillRect(
-					Math.floor(x * size + padding*0.5),
-					Math.floor(y * size + padding*0.5),
-					Math.floor( size-padding),
-					Math.floor(size-padding)
-				);
-				//ctx.strokeRect(x * size, y * size, size, size);
+						(x * size + padding*0.5),
+						(y * size + padding*0.5),
+						( size-padding),
+						(size-padding)
+						);
 			}
-
 		});
 
 
@@ -282,12 +281,11 @@ function makeGame(canvasId, divId) {
 				ctx.fillRect((x + 0.5) * size - 0.5 * smallSquareSize, (y + 0.5) * size - 0.5 * smallSquareSize, smallSquareSize, smallSquareSize);
 			}
 		});
+
+		ctx.fillStyle = "red";
+		ctx.fillRect(mouseNow.x, mouseNow.y, 1, 1);
 	}
 
-
-	game.drawGrid = function() {
-		this.draw(ctx);
-	}
 
 	var requestedRedraw = false;
 	game.requestRedraw = function() {
@@ -295,7 +293,7 @@ function makeGame(canvasId, divId) {
 
 		if (!requestedRedraw) {
 			requestAnimationFrame(function() {
-				that.drawGrid();
+				that.draw(ctx);
 				requestedRedraw = false
 			});
 			requestedRedraw = true;
@@ -313,7 +311,7 @@ function makeGame(canvasId, divId) {
 		this.finished = true;
 
 		var initialTime = Date.now();
-		var clicked = false
+		var clicked = false;
 
 		if (this.level.best == 0 || this.moves < this.level.best) {
 
@@ -324,15 +322,14 @@ function makeGame(canvasId, divId) {
 
 		var par = false;
 
-		if (this.moves <= this.level.par) {
+		var nextLevel;
 
+		if (this.moves <= this.level.par) {
 			nextLevel = this.level.book.updateState(this.level, 2);
 			par = true;
-
-		} else {
-
+		}
+		else {
 			nextLevel = this.level.book.updateState(this.level, 1);
-
 		}
 
 
@@ -343,13 +340,13 @@ function makeGame(canvasId, divId) {
 				if (time > 150) {
 					game.draw(ctx)
 
-					drawCheck(ctx, canvas.width / 440);
+						drawCheck(ctx, canvas.width / 440);
 				} else {
 					game.draw(ctx)
-					ctx.save()
-					ctx.globalAlpha = time / 150
+						ctx.save()
+						ctx.globalAlpha = time / 150
 
-					drawCheck(ctx, canvas.width / 440);
+						drawCheck(ctx, canvas.width / 440);
 					ctx.restore();
 					requestAnimationFrame(draw);
 				}
@@ -357,10 +354,6 @@ function makeGame(canvasId, divId) {
 		}
 
 		draw();
-
-		var nextLevel;
-
-
 
 		var that = this;
 		if (typeof this.level.index == "number") {
@@ -373,100 +366,81 @@ function makeGame(canvasId, divId) {
 		levelStats.pass(this.level);
 	}
 
-	game.initEventListeners = function() {
+	game.onResize = function(){
+		//console.log(document.body.offsetWidth, document.body.offsetHeight);
+		canvasSize = Math.min(480, document.body.offsetWidth, document.body.offsetHeight);
+		canvas.width = canvas.height = canvasSize;
+		size = canvasSize / this.grid.width;
+		this.draw(ctx);
+	}
 
-		var canvasOffset = {
-			left: 0,
-			top: 0
-		};
-		var element = canvas;
-		while (element) {
-			if (typeof element.offsetLeft !== 'undefined') {
-				canvasOffset.left += element.offsetLeft;
-				canvasOffset.top += element.offsetTop;
-			}
-			element = element.parentNode;
-		}
+	function onResize(){
+		game.onResize();
+	}
+
+
+
+	game.initEventListeners = function() {
 
 		var that = this;
 
-		canvas.ontouchstart = function doMouseDown(event) {
-			var x, y;
+		// Gets the coordinates of the touch/mouse relative to the canvas element.
+		//http://www.jacklmoore.com/notes/mouse-position/
+		function getCoordinates(event) {
+			var style = window.getComputedStyle(canvas, null);
+			var borderLeftWidth = parseInt(style.borderLeftWidth, 10);
+			var borderTopWidth = parseInt(style.borderTopWidth, 10);
+			var rect = canvas.getBoundingClientRect();
+			return {
+				x: Math.max(0, Math.min(canvas.width - 2, event.clientX - rect.left - borderLeftWidth)),
+				y: Math.max(0, Math.min(canvas.height - 2, event.clientY - rect.top - borderTopWidth)),
+			};
+		}
+
+		canvas.ontouchstart = function(event) {
 			if (event.targetTouches) {
-				x = mouseStart.x = Math.max(0, Math.min(canvas.width - 2, event.targetTouches[0].pageX - canvasOffset.left));
-				y = mouseStart.y = Math.max(0, Math.min(canvas.height - 2, event.targetTouches[0].pageY - canvasOffset.top));
-				//alert("targetTouches: yep")
-			} else {
-				alert("something fishy")
+				var coords = getCoordinates(event.targetTouches[0]);
+				that.doMouseDown(coords.x, coords.y);
 			}
-
-			that.doMouseDown(x, y);
 			return cancelEvent(event);
 		}
 
-		canvas.ontouchend = function doMouseUp(event) {
-			var x, y;
+		canvas.ontouchend = function(event) {
 			if (event.changedTouches) {
-				x = Math.max(0, Math.min(canvas.width - 2, event.changedTouches[0].pageX - canvasOffset.left));
-				y = Math.max(0, Math.min(canvas.height - 2, event.changedTouches[0].pageY - canvasOffset.top));
+				var coords = getCoordinates(event.changedTouches[0]);
+				that.doMouseUp(coords.x, coords.y);
 			}
-			that.doMouseUp(x, y);
 			return cancelEvent(event);
 		}
 
-		canvas.ontouchmove = function doMouseMove(event) {
-			var x, y
+		canvas.ontouchmove = function(event) {
 			if (event.changedTouches) {
-				x = mouseNow.x = Math.max(0, Math.min(canvas.width - 2, event.changedTouches[0].pageX - canvasOffset.left));;
-				y = mouseNow.y = Math.max(0, Math.min(canvas.height - 2, event.changedTouches[0].pageY - canvasOffset.top));
+				var coords = getCoordinates(event.changedTouches[0]);
+				that.doMouseMove(coords.x, coords.y);
 			}
-			that.doMouseMove(x, y);
-			//alert("touchmove");
 			return cancelEvent(event);
 		}
 
-		canvas.onmousedown = function doMouseDown(event) {
-			var x, y;
-			if (event.offsetX) {
-				x = mouseStart.x = Math.max(0, Math.min(canvas.width - 2, event.offsetX));
-				y = mouseStart.y = Math.max(0, Math.min(canvas.height - 2, event.offsetY));
-				//alert("offsetX: yep")
-			} else if (event.layerX) {
-				x = mouseStart.x = Math.max(0, Math.min(canvas.width - 2, event.layerX));
-				y = mouseStart.y = Math.max(0, Math.min(canvas.height - 2, event.layerY));
-				//alert("layerX: yep")
-			}
-
-			//alert(x+"  "+y);
-			that.doMouseDown(x, y);
+		canvas.onmousedown = function(event) {
+			var coords = getCoordinates(event);
+			that.doMouseDown(coords.x, coords.y);
 			return cancelEvent(event);
 		}
 
-		canvas.onmouseup = function doMouseUp(event) {
-			var x, y
-			if (event.offsetX) {
-				x = Math.max(0, Math.min(canvas.width - 2, event.offsetX));
-				y = Math.max(0, Math.min(canvas.height - 2, event.offsetY));
-			} else if (event.layerX) {
-				x = Math.max(0, Math.min(canvas.width - 2, event.layerX));
-				y = Math.max(0, Math.min(canvas.height - 2, event.layerY));
-			}
-			that.doMouseUp(x, y);
+		canvas.onmouseup = function(event) {
+			var coords = getCoordinates(event);
+			that.doMouseUp(coords.x, coords.y);
 			return cancelEvent(event);
 		}
 
-		canvas.onmousemove = function doMouseMove(event) {
-			var x, y
-			if (event.offsetX) {
-				x = mouseNow.x = Math.max(0, Math.min(canvas.width - 2, event.offsetX));
-				y = mouseNow.y = Math.max(0, Math.min(canvas.height - 2, event.offsetY));
-			} else if (event.layerX) {
-				x = mouseNow.x = Math.max(0, Math.min(canvas.width - 2, event.layerX));
-				y = mouseNow.y = Math.max(0, Math.min(canvas.height - 2, event.layerY));
-			}
-			that.doMouseMove(x, y);
+		canvas.onmousemove = function(event) {
+			var coords = getCoordinates(event);
+			that.doMouseMove(coords.x, coords.y);
 			return cancelEvent(event);
 		}
+		
+		window.addEventListener("resize", onResize, false);
+
 	}
 
 	game.disactivateEvents = function() {
@@ -474,6 +448,7 @@ function makeGame(canvasId, divId) {
 		canvas.ontouchstart = canvas.onmousedown = null;
 		canvas.ontouchend = canvas.onmouseup = null;
 		canvas.ontouchmove = canvas.onmousemove = null;
+		window.removeEventListener("resize", onResize);
 	}
 
 
@@ -490,6 +465,7 @@ function makeGame(canvasId, divId) {
 	game.show = function() {
 
 		document.getElementById(divId).style.display = "";
+		onResize();
 		game.initEventListeners();
 		adManager.show();
 		setTimeout(function() {
@@ -498,7 +474,6 @@ function makeGame(canvasId, divId) {
 	}
 
 	game.clearScreen = function() {
-
 		canvas.width = canvas.width;
 		helperCanvas.width = helperCanvas.width;
 	}
@@ -511,13 +486,11 @@ function makeGame(canvasId, divId) {
 		});
 	}
 
-
 	game.skip = function(){
 		if(this.isSkippable()){
 			this.loadLevel(this.level.book.levels[this.level.index+1]);
 		}
 	}
-
 
 	return game;
 }

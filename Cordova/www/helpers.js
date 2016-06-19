@@ -11,10 +11,7 @@ function cancelEvent(e)   //used to cancel all default behavior for events. Cont
 	return false;
 }
 
-
-
 var touchable=false;
-
 
 window.addEventListener("load",function(){
 	if ('ontouchstart' in document) {
@@ -23,7 +20,4 @@ window.addEventListener("load",function(){
 		window.touchable = true;
 	}
 }, false)
-
-
-
 
