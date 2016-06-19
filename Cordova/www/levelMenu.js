@@ -44,12 +44,11 @@ levelMenu.loadBook=function(book){
 			} else if(level.state == -2){
 				icon.setAttribute("class", "levelIcon hidden");
 			}
-			icon.style.width="100px";
-			icon.style.height="100px";
+			icon.style.width="55px";
+			icon.style.height="55px";
 			if(level.state>=-1){icon.style.backgroundImage="url("+book.levels[i].iconData+")";}
 			if(level.state>=0){icon.setAttribute("onclick", "levelMenu.startLevel("+i+")");}
 			iconContainer.appendChild(icon);
-
 		}
 	//}
 
@@ -59,14 +58,13 @@ levelMenu.loadBook=function(book){
 		//document.getElementById("").innerHTML = "Percent " + ;
 
 }
+
 levelMenu.startLevel=function(n){
 	this.hide();
 	game.clearScreen();
 	game.loadLevel(this.book.levels[n]);
 	game.show();
 }
-
-
 
 
 levelMenu.hide=function(){

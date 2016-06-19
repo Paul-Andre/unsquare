@@ -33,10 +33,6 @@ bookMenu.show=function(){
 
 }
 
-bookMenu.displayTutorial=function(){
-	
-}
-
 bookMenu.openBook=function(n){
 	this.hide();
 	levelMenu.loadBook(books[n]);
@@ -51,4 +47,6 @@ bookMenu.displayTutorial=function(){
 		that.show();
 	});
 }
+
+//alert(window.devicePixelRatio);
 

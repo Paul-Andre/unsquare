@@ -19,6 +19,7 @@ function makeGame(canvasId, divId) {
 	var helperCtx = helperCanvas.getContext("2d");
 	var maxCanvasSize = 440;
 	var canvasSize = maxCanvasSize;
+	var canvasVirtualSize = maxCanvasSize;
 
 	canvas.width = canvas.height = canvasSize;
 
@@ -85,8 +86,8 @@ function makeGame(canvasId, divId) {
 		var initialTime = Date.now();
 		var that = this;
 		helperCtx.drawImage(canvas, 0, 0);
-		canvas.width = canvasSize;
-		canvas.height = canvasSize;
+		canvas.width = canvas.height = canvasSize;
+		canvas.style.width = canvas.style.height = canvasVirtualSize + "px";
 
 		// This is used to draw the grid that gets translated
 		function update() {
@@ -368,8 +369,11 @@ function makeGame(canvasId, divId) {
 
 	game.onResize = function(){
 		//console.log(document.body.offsetWidth, document.body.offsetHeight);
-		canvasSize = Math.min(maxCanvasSize, document.body.offsetWidth, document.body.offsetHeight);
+		canvasVirtualSize = 
+		canvasVirtualSize = Math.min(maxCanvasSize, document.body.offsetWidth, document.body.offsetHeight);
+		canvasSize = canvasVirtualSize*(window.devicePixelRatio || 1);
 		canvas.width = canvas.height = canvasSize;
+		canvas.style.width = canvas.style.height = canvasVirtualSize + "px";
 		size = canvasSize / this.grid.width;
 		this.draw(ctx);
 	}
@@ -392,8 +396,8 @@ function makeGame(canvasId, divId) {
 			var borderTopWidth = parseInt(style.borderTopWidth, 10);
 			var rect = canvas.getBoundingClientRect();
 			return {
-				x: Math.max(0, Math.min(canvas.width - 2, event.clientX - rect.left - borderLeftWidth)),
-				y: Math.max(0, Math.min(canvas.height - 2, event.clientY - rect.top - borderTopWidth)),
+				x: Math.max(0, Math.min(canvas.width - 2, (event.clientX - rect.left - borderLeftWidth)*(window.devicePixelRatio || 1))),
+				y: Math.max(0, Math.min(canvas.height - 2, (event.clientY - rect.top - borderTopWidth)*(window.devicePixelRatio || 1))),
 			};
 		}
 
