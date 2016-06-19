@@ -1,13 +1,12 @@
-var drawCheck = function(ctx,scaleValue,fillStyle,strokeStyle) {
+var drawCheck = function(ctx,scaleValue,fillStyle) {
 
-	var scaleValue= scaleValue||1
+	scaleValue= scaleValue||1
 
-	var fillStyle=fillStyle||"#000000";
+	fillStyle=fillStyle||"#000000";
 	//alert(scaleValue)
 	ctx.save();
 	ctx.scale(scaleValue,scaleValue);
 	ctx.fillStyle = fillStyle;
-	ctx.strokeStyle = strokeStyle;
 	ctx.save();
 	ctx.miterLimit = 4;
 	ctx.translate(0,-612.36218);

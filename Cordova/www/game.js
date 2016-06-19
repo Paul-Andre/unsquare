@@ -17,7 +17,8 @@ function makeGame(canvasId, divId) {
 
 	var helperCanvas = document.createElement("canvas")
 	var helperCtx = helperCanvas.getContext("2d");
-	var canvasSize = 480;
+	var maxCanvasSize = 440;
+	var canvasSize = maxCanvasSize;
 
 	canvas.width = canvas.height = canvasSize;
 
@@ -275,15 +276,12 @@ function makeGame(canvasId, divId) {
 
 			if (that.level.color.cells[value]) {
 				ctx.fillStyle = that.level.color.cells[value].fill;
-				ctx.strokeStyle = that.level.color.cells[value].stroke;
 
 				var smallSquareSize = Math.floor(size * 0.6 * 0.5) * 2;
 				ctx.fillRect((x + 0.5) * size - 0.5 * smallSquareSize, (y + 0.5) * size - 0.5 * smallSquareSize, smallSquareSize, smallSquareSize);
 			}
 		});
 
-		ctx.fillStyle = "red";
-		ctx.fillRect(mouseNow.x, mouseNow.y, 1, 1);
 	}
 
 
@@ -338,15 +336,17 @@ function makeGame(canvasId, divId) {
 			var time = Date.now() - initialTime;
 			if (!clicked) {
 				if (time > 150) {
-					game.draw(ctx)
+					game.draw(ctx);
 
-						drawCheck(ctx, canvas.width / 440);
+					drawCheck(ctx, canvas.width / 440);
 				} else {
-					game.draw(ctx)
-						ctx.save()
-						ctx.globalAlpha = time / 150
+					game.draw(ctx);
+					{
+						ctx.save();
+						ctx.globalAlpha = time / 150;
 
 						drawCheck(ctx, canvas.width / 440);
+					}
 					ctx.restore();
 					requestAnimationFrame(draw);
 				}
@@ -368,7 +368,7 @@ function makeGame(canvasId, divId) {
 
 	game.onResize = function(){
 		//console.log(document.body.offsetWidth, document.body.offsetHeight);
-		canvasSize = Math.min(480, document.body.offsetWidth, document.body.offsetHeight);
+		canvasSize = Math.min(maxCanvasSize, document.body.offsetWidth, document.body.offsetHeight);
 		canvas.width = canvas.height = canvasSize;
 		size = canvasSize / this.grid.width;
 		this.draw(ctx);
