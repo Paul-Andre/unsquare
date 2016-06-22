@@ -281,4 +281,3 @@ dataManager.saveState=function(book){
 	this.saveBookBests(book);
 }
 
-
