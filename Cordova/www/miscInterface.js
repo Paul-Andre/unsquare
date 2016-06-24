@@ -32,7 +32,6 @@ function showReset() {
 	bookMenu.hide();
 	document.getElementById("resetDiv").style.display = "";
 
-
 }
 
 //For debugging
