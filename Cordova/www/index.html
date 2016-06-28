@@ -12,6 +12,7 @@
 	<script src="colors.js"></script>
 	<script src="helpers.js"></script>
 	<script src="screenManager.js"></script>
+	<script src="bookMenu.js"></script>
 	<script src="drawing.js"></script>
 	<script src="exportSave.js"></script>
 	<script src="loading.js"></script>
@@ -27,7 +28,6 @@
 					<h2 id="LevelIndicator">Level ? </h2>
 					<h3 id="TextShower" class="textShower"> &zwnj; </h3>
 				</div>
-				<button onclick="game.displayTutorial();" style="float:right;">?</button>
 				<div style="float: right; width:25%;" class="IndicContainer">
 					<div class="Indicator" id="BestIndicator"></div>
 					<div class="Indicator" id="ParIndicator"></div>
@@ -83,7 +83,7 @@
 					<div class="Indicator" id="PercentPar"></div>
 				</div>
 
-				<button onclick="toBookMenu();">&#8592; Menu</button>
+				<button onclick="screenManager.goBack();">&#8592; Menu</button>
 
 			</div>
 
@@ -103,6 +103,8 @@
 			<br>
 			<button onclick="displaySaveStr();" style="float:right;">Export save</button>
 			<button onclick="importSave();" style="float:right;">Import save</button>
+
+			<button onclick="bookMenu.newBook();" style="float:right;">Add book</button>
 
 			<!--
 			<button onclick="showReset();"  style="float:right;" > Reset</button>
@@ -135,7 +137,7 @@
 			<p>
 				Are you sure you want to reset this game for whatever reason?<br/>
 			</p>
-			<button onclick="toBookMenu();">&#8592; Cancel</button>
+			<button onclick="screenManager.goBack();">&#8592; Cancel</button>
 			<button onclick="resetGame();" style="float:right;">Yes, reset game</button>
 		</div>
 

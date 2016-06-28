@@ -1,29 +1,51 @@
-var bookMenu={books:books}
+var bookMenu={}
+
+bookMenu.onShow = function() {
+	this.showBooks();
+}
         
 bookMenu.showBooks=function(){
 
 	var container = document.getElementById("bookIconContainer");
+	container.innerHTML = "";
 
 	for(var i=0;i<books.length;i++){
 		
 		var book = books[i];
-		var icon = document.createElement("div");
+		var bookButton = document.createElement("div");
+		bookButton.innerText = "Book "+i;
+		bookButton.book = book;
+		bookButton.onclick = function(event) {
+			bookMenu.openBook(this.book);
+		}
 		
-		icon.setAttribute("class","bookIcon");
-		icon.setAttribute("onclick","bookMenu.openBook("+i+");");
-		icon.style.backgroundImage="url("+book.icon+")";
+		/*
+		 * TODO
+		 * At this point, the icon of the book should be created (drawing on a canvas is cheap)
+		 *
+		 * The books will be a list of small icons next to the name of the book.
+		 */
+
 		//icon.innerText=book.name;
-		container.appendChild(icon);
+		container.appendChild(bookButton);
 	
 	}
-	
 }
 
-bookMenu.openBook=function(n){
-	this.hide();
-	levelMenu.loadBook(books[n]);
-	levelMenu.show();
+
+
+bookMenu.openBook=function(book){
+	levelMenu.loadBook(book);
+	screenManager.switchTo("levelMenuScreen");
 };
+
+
+bookMenu.newBook=function(){
+	var book = {"levels":[]};
+	books.push(book);
+	this.showBooks();
+};
+
 
 
 //alert(window.devicePixelRatio);
