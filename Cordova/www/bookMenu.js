@@ -25,14 +25,6 @@ bookMenu.openBook=function(n){
 	levelMenu.show();
 };
 
-bookMenu.displayTutorial=function(){
-	this.hide();
-	var that = this;
-	// display the tutorial, such that the user returns to the menu when back is hit
-	tutorial.display(function(){
-		that.show();
-	});
-}
 
 //alert(window.devicePixelRatio);
 

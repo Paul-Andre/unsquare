@@ -1,11 +1,13 @@
 "use strict";
 
 function hideElement(element) {
-	element.style.display="none";
+	//element.style.display="none";
+	element.classList.remove("show");
 }
 
 function showElement(element) {
-	element.style.display="";
+	//element.style.display="";
+	element.classList.add("show");
 }
 
 var screenManager = {

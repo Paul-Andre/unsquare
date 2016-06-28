@@ -134,34 +134,56 @@ button:active:enabled,  .no-touch button:active:enabled  {
 
 }
 
-
-h1{
-
-	font-family: headerFont;
-	font-weight:normal;
-	font-size:50px;
-}
-
-
-h2{
-	font-family: headerFont;
-	font-weight:bold;
-}
-
-
-h3{
-	font-style:italic;
-	font-family: Times New Roman, Serif;
-	font-size: 1.17em;
-	font-weight: bold;
-	margin:2px;
-}
-
-
 .Indicator {
 	font-family:sans-serif;
 	font-style:italic;
 }
+
+.screen {
+	position: absolute;
+	opacity: 0;
+	-webkit-transition: 0.5s ease-in-out;
+	-moz-transition: 0.5s ease-in-out;
+	transition: 0.5s ease-in-out;
+	
+	-webkit-transition-property: opacity, transform;
+	-moz-transition-property: opacity, transform;
+	transition-property: opacity, transform;
+	
+	-webkit-transform: translateX(15px);
+	-moz-transform: translateX(15px);
+	transform: translateX(15px);
+	
+}
+
+.screen.show {
+	opacity: 1;
+	z-index: 5;
+	-webkit-transform: translateX(0px);
+	-moz-transform: translateX(0px);
+	transform: translateX(0px);
+}
+
+
+/*@-webkit-keyframes fadeIn {
+    from { opacity: 0; }
+      to { opacity: 1; }
+}  
+@keyframes fadeIn {
+    from { opacity: 0; }
+      to { opacity: 1; }
+}
+
+.screen {
+	display: none;
+}
+
+.screen.show {
+	display: block;
+    -webkit-animation: fadeIn 1s;
+    animation: fadeIn 1s;
+}*/
+
 
 
 @media (max-width:440px) {
