@@ -466,10 +466,8 @@ function makeGame(canvasId, divId) {
 		(game.level) && (levelStats.close(this.level));
 	}
 
-	game.show = function() {
-
-		document.getElementById(divId).style.display = "";
-		onResize();
+	game.onShow = function() {
+		//onResize();
 		game.initEventListeners();
 		adManager.show();
 		setTimeout(function() {
@@ -499,4 +497,5 @@ function makeGame(canvasId, divId) {
 	return game;
 }
 
-var game = makeGame("gameCanvas", "gameDiv");
+var game = makeGame("gameCanvas", "gameScreen");
+screenManager.additionalFunctions.gameScreen = game;

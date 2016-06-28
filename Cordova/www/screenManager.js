@@ -12,14 +12,16 @@ var screenManager = {
 	additionalFunctions: {},
 	stack: [],
 	currentScreenName: "loadingScreen",
-	currentScreen: document.getElementById("loadingScreen"),
+	currentScreen: document.getElementById("loadingScreen"), // This doesn't exist when it is called at this point.
 	executeFunction: function(screenName, funcName) {
 		if(screenName in this.additionalFunctions && funcName in this.additionalFunctions[screenName]){
 			this.additionalFunctions[screenName][funcName]();
 		}
 	},
 	switchTo: function(screenName, keepAsIs) {
-		hideElement(this.currentScreen);
+
+		hideElement(this.currentScreen!==null?this.currentScreen:document.getElementById(this.currentScreenName));
+
 		this.stack.push({name: this.currentScreenName, keepAsIs: !!keepAsIs});
 		if (!keepAsIs) {
 			this.executeFunction(this.currentScreenName, "onHide");
@@ -44,8 +46,10 @@ var screenManager = {
 	}
 }
 
-screenManager.additionalFunctions.loadingScreen.onHide = function(){
-	getElementById("loadingScreen").remove();
-	screenManager.stack.shift(); // This is to remove the loadingScreen from the stack.
-	delete screenManager.additionalFunctions.loadingScreen;
+screenManager.additionalFunctions.loadingScreen = {
+	onHide:function(){
+		document.getElementById("loadingScreen").remove();
+		screenManager.stack.shift(); // This is to remove the loadingScreen from the stack.
+		delete screenManager.additionalFunctions.loadingScreen;
+	}
 }

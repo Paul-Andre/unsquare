@@ -5,9 +5,8 @@ finishedLoading:function(){},
 
 
 dataManager.finishedLoading = function() {
-	document.getElementById("loadingScreenDiv").remove();
 	bookMenu.showBooks();
-	bookMenu.show();
+	screenManager.switchTo("bookMenuScreen");
 }
 
 

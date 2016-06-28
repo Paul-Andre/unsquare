@@ -60,28 +60,13 @@ levelMenu.loadBook=function(book){
 }
 
 levelMenu.startLevel=function(n){
-	this.hide();
 	game.clearScreen();
 	game.loadLevel(this.book.levels[n]);
-	game.show();
-}
-
-
-levelMenu.hide=function(){
-
-	document.getElementById("levelMenuDiv").style.display="none";
-	
-}
-
-levelMenu.show=function(){
-
-	document.getElementById("levelMenuDiv").style.display="";
-	
+	screenManager.switchTo("gameScreen");
 }
 
 levelMenu.resetBook=function(){
 	dataManager.resetBook(this.book);
 	this.loadBook(this.book);
-
 }
 

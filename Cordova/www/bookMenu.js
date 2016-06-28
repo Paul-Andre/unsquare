@@ -19,20 +19,6 @@ bookMenu.showBooks=function(){
 	
 }
 
-bookMenu.hide=function(){
-
-	document.getElementById("bookMenuDiv").style.display="none";
-
-}
-
-bookMenu.show=function(){
-
-	document.getElementById("bookMenuDiv").style.display="";
-	
-	
-
-}
-
 bookMenu.openBook=function(n){
 	this.hide();
 	levelMenu.loadBook(books[n]);

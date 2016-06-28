@@ -11,16 +11,17 @@
 	<script src="Grid.js"></script>
 	<script src="colors.js"></script>
 	<script src="helpers.js"></script>
+	<script src="screenManager.js"></script>
 	<script src="drawing.js"></script>
 	<script src="exportSave.js"></script>
-	<script src="bookMenu.js"></script>
+	<script src="loading.js"></script>
 </head>
 
 <body style="background-color:silver;" class="no-touch">
 
 	<div id="allContainer">
 
-		<div id="gameDiv" style="display:none;">
+		<div id="gameScreen" style="display:none;">
 			<div class="gameHeader">
 				<div style="float: left; width: 75%">
 					<h2 id="LevelIndicator">Level ? </h2>
@@ -46,7 +47,7 @@
 		</div>
 
 
-		<div id="editorDiv" style="display:none;">
+		<div id="editorScreen" style="display:none;">
 			<div style="float: left; width: 75%">
 				<h1 id="LevelIndicator">Level ? </h1>
 				<h3 class="textShower"> &zwnj; </h3>
@@ -72,7 +73,7 @@
 		</div>
 
 
-		<div id="levelMenuDiv" style="display:none;">
+		<div id="levelMenuScreen" style="display:none;">
 			<div class="levelMenuHeader">
 				<h1 id="bookName">Levels:</h1>
 
@@ -91,7 +92,7 @@
 		</div>
 
 
-		<div id="bookMenuDiv" style="display:none;" class="screen">
+		<div id="bookMenuScreen" style="display:none;" class="screen">
 			<div style="float: left; width: 100%">
 				<h1>Puzzle Books:</h1>
 			</div>
@@ -112,7 +113,7 @@
 			-->
 		</div>
 
-		<div id="aboutDiv" style="display:none;" class="screen">
+		<div id="aboutScreen" style="display:none;" class="screen">
 			<div style="float: left; width: 100%">
 				<h1>About Unsquare:</h1>
 			</div>
@@ -128,7 +129,7 @@
 		</div>
 
 
-		<div id="resetDiv" style="display:none;" class="screen">
+		<div id="resetScreen" style="display:none;" class="screen">
 			<div style="float: left; width: 100%">
 				<h1>Reset game?</h1>
 			</div>
@@ -140,7 +141,7 @@
 		</div>
 
 
-		<div id="loadingScreenDiv" class="screen">
+		<div id="loadingScreen" class="screen">
 			Loading...
 		</div>
 
