@@ -1,72 +1,41 @@
-var levelMenu={book:null};
+var levelMenu = {book:null}
+
 levelMenu.loadBook=function(book){
 
-		//To keep track of the statistics
-		var totalPar = 0;
-		var totalMoves = 0;
-		var numCompleted = 0;
-		var numPar = 0;
-		var numLevels;
-	
-	
-	//if(this.book!=book){
-		this.book=book;
+	this.book=book;
 
-		var iconContainer=document.getElementById("iconContainer");
+	var iconContainer=document.getElementById("iconContainer");
 
-		document.getElementById("bookName").innerText=book.name;		
-		
-		iconContainer.innerHTML = '';
-	
-		numLevels = book.levels.length - 1;
 
-		for(var i=1;i<book.levels.length;i++){
-			var level=book.levels[i];
-			//console.log(level.state);
-			var icon=document.createElement("div");
-			if(level.state == 0){
-				icon.setAttribute("class", "levelIcon open");
-			} else if(level.state == 1){
-				totalMoves += book.levels[i].best;
-				totalPar += book.levels[i].par;
-				numCompleted++;
+	iconContainer.innerHTML = '';
 
-				icon.setAttribute("class", "levelIcon done");
-			} else if(level.state == 2){
-				totalMoves += book.levels[i].best;
-				totalPar += book.levels[i].par;
-				numCompleted++;
-				numPar++;
+	for(var i=0;i<book.levels.length;i++){
+		var level=book.levels[i];
+		var icon=document.createElement("canvas");
+		icon.classList.add("levelIcon");
 
-				icon.setAttribute("class", "levelIcon par");
-			} else if(level.state == -1){
-				icon.setAttribute("class", "levelIcon closed");
-			} else if(level.state == -2){
-				icon.setAttribute("class", "levelIcon hidden");
-			}
-			icon.style.width="55px";
-			icon.style.height="55px";
-			if(level.state>=-1){icon.style.backgroundImage="url("+book.levels[i].iconData+")";}
-			if(level.state>=0){icon.setAttribute("onclick", "levelMenu.startLevel("+i+")");}
-			iconContainer.appendChild(icon);
-		}
-	//}
-
-		document.getElementById("ExtraMovesIndicator").innerHTML = "Moves over par: " + (totalMoves - totalPar);
-		document.getElementById("PercentCompletion").innerHTML = "Completed: " + numCompleted + " / " + numLevels;
-		document.getElementById("PercentPar").innerHTML = "Completed with par: " + numPar + " / " + numCompleted;
-		//document.getElementById("").innerHTML = "Percent " + ;
-
+		icon.style.width="55px";
+		icon.style.height="55px";
+		icon.width=55*window.devicePixelRatio;
+		icon.height=55*window.devicePixelRatio;
+		drawIcon(level, icon);
+		icon.level = level;
+		icon.onclick = function() {
+			levelMenu.startLevel(this.level);
+		};
+		iconContainer.appendChild(icon);
+	}
 }
 
-levelMenu.startLevel=function(n){
+levelMenu.startLevel = function(level){
 	game.clearScreen();
-	game.loadLevel(this.book.levels[n]);
+	game.loadLevel(level);
 	screenManager.switchTo("gameScreen");
 }
 
-levelMenu.resetBook=function(){
-	dataManager.resetBook(this.book);
+levelMenu.newLevel = function(){
+	var level = {};
+	this.book.levels.push(level);
 	this.loadBook(this.book);
 }
 

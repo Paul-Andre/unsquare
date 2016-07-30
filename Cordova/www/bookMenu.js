@@ -26,7 +26,6 @@ bookMenu.showBooks=function(){
 		 * The books will be a list of small icons next to the name of the book.
 		 */
 
-		//icon.innerText=book.name;
 		container.appendChild(bookButton);
 	
 	}
@@ -45,8 +44,4 @@ bookMenu.newBook=function(){
 	books.push(book);
 	this.showBooks();
 };
-
-
-
-//alert(window.devicePixelRatio);
 

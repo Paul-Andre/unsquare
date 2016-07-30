@@ -2,45 +2,36 @@
 
 var colors={
 
-	"2":{
+	BW: {
 		cells:{
 			1: {
 				fill:"white",
 			},
-
 			2:{
 				fill:"black",
 			},
-
 		},
 
 		unsquare:function(e){
-
 			return(e==1)?2:(e==2)?1:0;
-
 		},
 
 		resquare:function(e){
-
 			return(e==1)?2:(e==2)?1:0;
-
 		},
 	},
 
-	"3":{
+	tri: {
 		cells:{
 			1: {
 				fill:"#F9FAC8",
 			},
-
 			2:{
 				fill:"#0431D4",
 			},
-
 			3:{
 				fill:"#FF0040",
 			},
-
 		},
 
 		unsquare:function(e){
@@ -50,7 +41,6 @@ var colors={
 		resquare:function(e){
 			return(e==3)?1:(e==2)?3:(e==1)?2:0;
 		},
-
 	},
 
 	"rainbow":{
@@ -83,7 +73,6 @@ var colors={
 			7: {
 				fill:"#FA5858",
 			},
-
 		},
 
 		unsquare:function(e){
@@ -137,19 +126,15 @@ var colors={
 		},
 
 		unsquare:function(e){
-
 			e++;
 			if(e==9){e=1};
 			return e;
-
 		},
 
 		resquare:function(e){
-
 			e--;
 			if(e==0){e=8};
 			return e;
-
 		},
 	},
 }

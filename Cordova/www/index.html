@@ -10,6 +10,7 @@
 	<script src="api.js"></script>
 	<script src="Grid.js"></script>
 	<script src="colors.js"></script>
+	<script src="icon.js"></script>
 	<script src="helpers.js"></script>
 	<script src="screenManager.js"></script>
 	<script src="bookMenu.js"></script>
@@ -75,15 +76,11 @@
 
 		<div id="levelMenuScreen" class="screen">
 			<div class="levelMenuHeader">
-				<h1 id="bookName">Levels:</h1>
-
 				<div class="IndicContainer" id="statsIndicator">
-					<div class="Indicator" id="ExtraMovesIndicator"></div>
-					<div class="Indicator" id="PercentCompletion"></div>
-					<div class="Indicator" id="PercentPar"></div>
 				</div>
 
 				<button onclick="screenManager.goBack();">&#8592; Menu</button>
+			<button onclick="levelMenu.newLevel();" style="float:right;">Add level</button>
 
 			</div>
 
@@ -142,7 +139,7 @@
 		</div>
 
 
-		<div id="loadingScreen" class="screen">
+		<div id="loadingScreen" class="screen show">
 			Loading...
 		</div>
 
