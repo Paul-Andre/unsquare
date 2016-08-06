@@ -5,7 +5,7 @@
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 	<meta name="apple-mobile-web-app-capable" content="yes" />
-	<link rel="stylesheet" type="text/css" href="style.css">
+	<link rel="stylesheet" type="text/css" href="style2.css">
 	<title> Unsquare </title>
 	<script src="api.js"></script>
 	<script src="Grid.js"></script>
@@ -25,7 +25,7 @@
 
 		<section id="gameScreen" class="screen">
 			<div class="gameHeader">
-				<div style="float: left; width: 75%">
+				<div class="header" style="float: left; width: 75%">
 					<h2 id="LevelIndicator">Level ?</h2>
 					<h3 id="TextShower" class="textShower"> &zwnj; </h3>
 				</div>
@@ -49,7 +49,7 @@
 
 
 		<section id="editorScreen"  class="screen">
-			<div style="float: left; width: 75%">
+			<div class="header" style="float: left; width: 75%">
 				<h1 id="LevelIndicator">Level ? </h1>
 				<h3 class="textShower"> &zwnj; </h3>
 			</div>
@@ -76,8 +76,7 @@
 
 		<section id="levelMenuScreen" class="screen">
 			<div class="levelMenuHeader">
-				<div class="IndicContainer" id="statsIndicator">
-				</div>
+				<div class="IndicContainer" id="statsIndicator"></div>
 
 				<button onclick="screenManager.goBack();">&#8592; Menu</button>
 			<button onclick="levelMenu.newLevel();" style="float:right;">Add level</button>
@@ -90,7 +89,7 @@
 
 
 		<section id="bookMenuScreen" class="screen">
-			<div style="float: left; width: 100%">
+			<div class="header" style="float: left; width: 100%">
 				<h1>Puzzle Books:</h1>
 			</div>
 			<div id="bookIconContainer">
@@ -112,7 +111,7 @@
 		</section>
 
 		<section id="aboutScreen" class="screen">
-			<div style="float: left; width: 100%">
+			<div class="header" style="float: left; width: 100%">
 				<h1>About Unsquare:</h1>
 			</div>
 			<p>
@@ -128,7 +127,7 @@
 
 
 		<section id="resetScreen" class="screen">
-			<div style="float: left; width: 100%">
+			<div class="header" style="float: left; width: 100%">
 				<h1>Reset game?</h1>
 			</div>
 			<p>
