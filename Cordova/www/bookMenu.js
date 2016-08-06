@@ -13,7 +13,7 @@ bookMenu.showBooks=function(){
 		
 		var book = books[i];
 		var bookButton = document.createElement("div");
-		bookButton.innerText = "Book "+i;
+		bookButton.innerHTML = "Book "+i;
 		bookButton.book = book;
 		bookButton.onclick = function(event) {
 			bookMenu.openBook(this.book);
@@ -34,13 +34,14 @@ bookMenu.showBooks=function(){
 
 
 bookMenu.openBook=function(book){
+	console.log(book);
 	levelMenu.loadBook(book);
 	screenManager.switchTo("levelMenuScreen");
 };
 
 
 bookMenu.newBook=function(){
-	var book = {"levels":[]};
+	var book = {levels:[]};
 	books.push(book);
 	this.showBooks();
 };
