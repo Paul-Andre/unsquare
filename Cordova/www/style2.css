@@ -1,0 +1,168 @@
+/**
+
+**/
+
+body {
+	width: 440px;
+	position: relative;
+	margin: auto;
+}
+
+section {
+	position: absolute;
+	opacity: 0;
+	-webkit-transition: 0.5s ease-in-out;
+	-moz-transition: 0.5s ease-in-out;
+	transition: 0.5s ease-in-out;
+	
+	-webkit-transition-property: opacity, transform;
+	-moz-transition-property: opacity, transform;
+	transition-property: opacity, transform;
+	
+	-webkit-transform: translateX(15px);
+	-moz-transform: translateX(15px);
+	transform: translateX(15px);
+}
+
+section.show {
+	opacity: 1;
+	z-index: 5;
+	-webkit-transform: translateX(0px);
+	-moz-transform: translateX(0px);
+	transform: translateX(0px);
+}
+
+section#levelMenuScreen .header {
+	float: left;
+	width: 100%;
+	height:75px;
+	top:0 ;
+	background-color:silver;
+}
+
+/** ---------------Containers-------------- **/
+
+/* Headers */
+
+section#gameScreen .header {
+
+}
+
+section#editorScreen .header {
+
+}
+
+section#bookMenuScreen .header,
+section#aboutScreen .header,
+section#resetScreen .header {
+	float: left;
+	width: 100%;
+}
+
+/* Content */
+
+section#editorScreen .content {
+
+}
+
+section#bookMenuScreen .content {
+
+}
+
+section#levelMenuScreen .content {
+
+}
+
+section#aboutScreen .content {
+
+}
+
+section#resetScreen .content {
+
+}
+
+/* Footers */
+
+section#editorScreen .footer {
+
+}
+
+section#bookMenuScreen .footer {
+
+}
+
+section#levelMenuScreen .footer {
+
+}
+
+section#aboutScreen .footer {
+
+}
+
+section#resetScreen .footer {
+
+}
+
+/** ------------end of containers------------- **/
+
+/** Buttons **/
+
+section#gameScreen button {
+	margin:4px;
+	font-size:15px;
+	height:33px;
+	border-radius:5px;
+	padding-left:10px;
+	padding-right:10px;
+
+	background: white;
+	border: 2px solid #999;
+	border-radius: 5px;
+	color: #555;
+	font-weight:bold;
+
+	text-align: center;
+}
+section#gameScreen button:disabled{
+	background: #aaa;
+}
+
+section#editorScreen button {
+
+}
+
+section#bookMenuScreen button {
+
+}
+
+section#levelMenuScreen button {
+
+}
+
+section#aboutScreen button {
+
+}
+
+section#resetScreen button {
+
+}
+
+/** end of buttons **/
+
+
+
+section#bookMenuScreen .header h1 {
+	font-style: italic
+}
+
+section#levelMenuScreen .header h1 {
+
+}
+
+section#aboutScreen .header h1 {
+
+}
+
+section#resetScreen .header h1 {
+
+}
