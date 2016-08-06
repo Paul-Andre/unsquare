@@ -1,7 +1,3 @@
 "use strict";
 
-var shapes = {
-	square: {
-		name: "square",
-	}
-}
+var shapes = {};
