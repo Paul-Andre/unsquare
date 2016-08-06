@@ -3,6 +3,6 @@
 function drawIcon(level, canvas) {
 	var ctx = canvas.getContext("2d");
 	ctx.fillStyle = "#000000";
-	ctx.fillRect(canvas.width/3, canvas.height/3, canvas.width/3*2, canvas.height/3*2);
+	ctx.fillRect(canvas.width/3, canvas.height/3, canvas.width/3, canvas.height/3);
 }
 

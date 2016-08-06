@@ -1,5 +1,7 @@
 "use strict";
 
+/// This is what does the basics of drawing the tiles to the screen.
+///
 function makeGame(canvasId, divId) {
 	var canvas = document.getElementById(canvasId);
 	var ctx = canvas.getContext("2d");
@@ -43,9 +45,10 @@ function makeGame(canvasId, divId) {
 	game.loadLevel = function(level) {
 		this.level = level;
 
-		this.grid = Grid.from2dArray(level.map);
+		this.grid = level.tiles.clone();
 		this.preGrid = Grid.empty(this.grid.width, this.grid.height);
 
+		// TODO use <span>s instead of this mess.
 
 		if (typeof level.text == "string") {
 			document.getElementById("TextShower").innerHTML = level.text;
@@ -151,9 +154,9 @@ function makeGame(canvasId, divId) {
 		this.unsquareGrid(mouseStart.x / size, mouseStart.y / size, x / size, y / size);
 	};
 
-	/// Given fractional positions the two corners of the dragged rectangle relative to the grid,
-	/// returns the top right corner and size of square to be inverted.
-	/// Output is in the form of {x: int, y: int, size: int}
+	/// Given fractional positions the two corners of the dragged rectangle
+	/// relative to the grid, returns the top right corner and size of square
+	/// to be inverted.  Output is in the form of {x: int, y: int, size: int}
 	/// You still need to check if the "size" of the output is bigger than 1.
 	function calculateSquare(x1, y1, x2, y2) {
 
@@ -210,7 +213,7 @@ function makeGame(canvasId, divId) {
 		if (invertingSquare.size > 1) {
 			this.preGrid.window(invertingSquare.x, invertingSquare.y, invertingSquare.size, invertingSquare.size)
 				.forEachSet(function(value, x, y) {
-					return(that.level.color.unsquare(that.grid.get(x + invertingSquare.x, y + invertingSquare.y)));
+					return(that.level.type.color.unsquare(that.grid.get(x + invertingSquare.x, y + invertingSquare.y)));
 				}) ;
 		}
 
@@ -261,8 +264,8 @@ function makeGame(canvasId, divId) {
 		this.grid.forEach(function(value, x, y) {
 
 			var padding = size*0.1;
-			if (that.level.color.cells[value]) {
-				ctx.fillStyle = that.level.color.cells[value].fill;
+			if (that.level.type.color.cells[value]) {
+				ctx.fillStyle = that.level.type.color.cells[value].fill;
 				ctx.fillRect(
 						(x * size + padding*0.5),
 						(y * size + padding*0.5),
@@ -275,8 +278,8 @@ function makeGame(canvasId, divId) {
 
 		this.preGrid.forEach(function(value, x, y) {
 
-			if (that.level.color.cells[value]) {
-				ctx.fillStyle = that.level.color.cells[value].fill;
+			if (that.level.type.color.cells[value]) {
+				ctx.fillStyle = that.level.type.color.cells[value].fill;
 
 				var smallSquareSize = Math.floor(size * 0.6 * 0.5) * 2;
 				ctx.fillRect((x + 0.5) * size - 0.5 * smallSquareSize, (y + 0.5) * size - 0.5 * smallSquareSize, smallSquareSize, smallSquareSize);
@@ -456,9 +459,8 @@ function makeGame(canvasId, divId) {
 	}
 
 
-	game.hide = function() {
+	game.onHide = function() {
 
-		document.getElementById(divId).style.display = "none";
 		game.disactivateEvents();
 
 		adManager.hide();
@@ -478,14 +480,6 @@ function makeGame(canvasId, divId) {
 	game.clearScreen = function() {
 		canvas.width = canvas.width;
 		helperCanvas.width = helperCanvas.width;
-	}
-
-	game.displayTutorial = function() {
-		document.getElementById(divId).style.display = "none";
-		//show the tutorial such that the back button returns to the game
-		tutorial.display(function() {
-			document.getElementById(divId).style.display = "";
-		});
 	}
 
 	game.skip = function(){

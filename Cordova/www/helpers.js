@@ -15,8 +15,7 @@ var touchable=false;
 
 window.addEventListener("load",function(){
 	if ('ontouchstart' in document) {
-		document.body.className =
-			document.body.className.replace(/\bno-touch\b/,'');
+		document.body.classList.remove("no-touch");
 		window.touchable = true;
 	}
 }, false)

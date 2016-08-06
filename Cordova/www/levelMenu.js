@@ -1,3 +1,5 @@
+"use strict";
+
 var levelMenu = {book:null}
 
 levelMenu.loadBook=function(book){
@@ -34,7 +36,8 @@ levelMenu.startLevel = function(level){
 }
 
 levelMenu.newLevel = function(){
-	var level = {};
+	var level = makeLevel();
+	level.book = this.book;
 	this.book.levels.push(level);
 	this.loadBook(this.book);
 }
