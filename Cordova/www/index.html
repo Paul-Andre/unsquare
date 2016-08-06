@@ -23,12 +23,10 @@
 
 <body class="no-touch">
 
-	<div id="allContainer">
-
-		<div id="gameScreen" class="screen">
+		<section id="gameScreen" class="screen">
 			<div class="gameHeader">
 				<div style="float: left; width: 75%">
-					<h2 id="LevelIndicator">Level ? </h2>
+					<h2 id="LevelIndicator">Level ?</h2>
 					<h3 id="TextShower" class="textShower"> &zwnj; </h3>
 				</div>
 				<div style="float: right; width:25%;" class="IndicContainer">
@@ -47,10 +45,10 @@
 			</div>
 			<canvas id="gameCanvas" class="gameCanvas"></canvas>
 			<div class="mobileBannerContainer" id="mobileGameAd"></div>
-		</div>
+		</section>
 
 
-		<div id="editorScreen"  class="screen">
+		<section id="editorScreen"  class="screen">
 			<div style="float: left; width: 75%">
 				<h1 id="LevelIndicator">Level ? </h1>
 				<h3 class="textShower"> &zwnj; </h3>
@@ -73,10 +71,10 @@
 				<a></a>
 			</div>
 			<canvas width="440" height="440" id="editorCanvas" class="gameCanvas"></canvas>
-		</div>
+		</section>
 
 
-		<div id="levelMenuScreen" class="screen">
+		<section id="levelMenuScreen" class="screen">
 			<div class="levelMenuHeader">
 				<div class="IndicContainer" id="statsIndicator">
 				</div>
@@ -88,10 +86,10 @@
 
 			<div id="iconContainer">
 			</div>
-		</div>
+		</section>
 
 
-		<div id="bookMenuScreen" class="screen">
+		<section id="bookMenuScreen" class="screen">
 			<div style="float: left; width: 100%">
 				<h1>Puzzle Books:</h1>
 			</div>
@@ -111,9 +109,9 @@
 			<!--
 			<button onclick="share();"  style="float:right;" > Please Share This </button>
 			-->
-		</div>
+		</section>
 
-		<div id="aboutScreen" class="screen">
+		<section id="aboutScreen" class="screen">
 			<div style="float: left; width: 100%">
 				<h1>About Unsquare:</h1>
 			</div>
@@ -126,10 +124,10 @@
 				(youri.tamitegama@mail.mcgill.ca)
 			</p>
 			<button onclick="screenManager.goBack();">&#8592; Menu</button>
-		</div>
+		</section>
 
 
-		<div id="resetScreen" class="screen">
+		<section id="resetScreen" class="screen">
 			<div style="float: left; width: 100%">
 				<h1>Reset game?</h1>
 			</div>
@@ -138,14 +136,13 @@
 			</p>
 			<button onclick="screenManager.goBack();">&#8592; Cancel</button>
 			<button onclick="resetGame();" style="float:right;">Yes, reset game</button>
-		</div>
+		</section>
 
 
-		<div id="loadingScreen" class="screen show">
+		<section id="loadingScreen" class="screen show">
 			Loading...
-		</div>
+		</section>
 
-	</div>
 	<!-- End of allContainer -->
 
 	<script src="levelStats.js"></script>
