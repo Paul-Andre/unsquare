@@ -31,13 +31,13 @@
     </div>
 
     <div class="content">
-      <button id="toPlay">
+      <button class="toBooks">
         Play now!
       </button>
-      <button id="toOptions">
+      <button class="toOptions">
         Options
       </button>
-      <button id="toAbout">
+      <button onclick="screenManager.switchTo('About');">
         About
       </button>
     </div>
@@ -66,7 +66,7 @@
 
       <div>
         <label for="music">
-          Sound Effects
+          Music
         </label>
         <input id="music" type="checkbox">
       </div>
@@ -117,7 +117,7 @@
     </div>
   </section>
 
-  <section id="Chapters">
+  <section id="Levels">
     <div class="header">
       <h1>
         Chapters
@@ -128,7 +128,7 @@
     </div>
 
     <div class="content">
-      {{ ChapterList }}
+      {{ levelList }}
     </div>
 
     <div class="footer">

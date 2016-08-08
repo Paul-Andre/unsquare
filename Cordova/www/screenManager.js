@@ -1,3 +1,18 @@
+//** Event Listeners **//
+$(document).ready(function() {
+  $(".back").click(function() {
+          screenManager.goBack();
+  });
+
+  $(".toBooks").click(function() {
+          screenManager.switchTo("Books");
+  });
+
+  $(".toOptions").click(function() {
+          screenManager.switchTo("Options");
+  });
+});
+
 //** Library to switch between screens **//
 
 "use strict";
