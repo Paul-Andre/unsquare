@@ -354,7 +354,7 @@ function makeGame(canvasId, divId) {
 		canvas.width = canvas.width;
 	}
 
-	// will be replaced by next and previous buttons, and stay in base
+	// will be replaced by next and previous buttons, and are special to game.
 	game.skip = function(){
 		if(this.isSkippable()){
 			this.loadLevel(this.level.book.levels[this.level.index+1]);

@@ -1,14 +1,9 @@
 
-
-// Square file
-
 /// Given fractional positions the two corners of the dragged rectangle
 /// relative to the grid, returns the top right corner and size of square
 /// to be inverted.  Output is in the form of {x: int, y: int, size: int}
 /// You still need to check if the "size" of the output is bigger than 1.
 function calculateSquare(x1, y1, x2, y2) {
-	
-
 
 	// Specify the direction in which the square goes. 1 is the default value.
 	var xSign = Math.sign(x2 - x1) || 1;
@@ -53,8 +48,7 @@ function calculateSquare(x1, y1, x2, y2) {
 }
 
 
-// Square
-game.updatePreGrid = function(x1, y1, x2, y2) {
+let updatePreGrid = function(x1, y1, x2, y2) {
 
 	var invertingSquare = calculateSquare(x1, y1, x2, y2);
 
