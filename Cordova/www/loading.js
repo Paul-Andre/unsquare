@@ -12,5 +12,5 @@
 var books = [];
 
 window.addEventListener("load", function() {
-screenManager.switchTo("bookMenuScreen");
+screenManager.switchTo("Home");
 }, false);
