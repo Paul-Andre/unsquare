@@ -14,8 +14,8 @@ var screenManager = {
 		}
 	},
 	switchTo: function(screenName, keepAsIs) {
-                if (this.currentScreen) { this.currentScreen.hide() }
-                else { $("#" + this.currentScreenName).hide() }
+                if (this.currentScreen) { this.currentScreen.hide(100) }
+                else { $("#" + this.currentScreenName).hide(100) }
 
 		this.stack.push({name: this.currentScreenName, keepAsIs: !!keepAsIs});
 		if (!keepAsIs) {
@@ -23,18 +23,18 @@ var screenManager = {
 		}
 
 		this.currentScreenName = screenName;
-		this.currentScreen = $("#" + screenName).get();
-		this.currentScreen.show();
+		this.currentScreen = $("#" + screenName);
+		this.currentScreen.show(100);
 		this.executeFunction(this.currentScreenName, "onShow");
 	},
 	goBack: function() {
-		this.currentScreen.hide();
+		this.currentScreen.hide(100);
 		var popped = this.stack.pop();
 		this.executeFunction(this.currentScreenName, "onHide");
 		
 		this.currentScreenName = popped.name;
-		this.currentScreen = $("#" + this.currentScreenName).get();
-		this.currentScreen.show();
+		this.currentScreen = $("#" + this.currentScreenName);
+		this.currentScreen.show(100);
 		if (!popped.keepAsIs) {
 			this.executeFunction(this.currentScreenName, "onShow");
 		}
