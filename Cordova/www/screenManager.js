@@ -1,31 +1,21 @@
-
 //** Library to switch between screens **//
 
 "use strict";
 
-function hideElement(element) {
-	//element.style.display="none";
-	element.classList.remove("show");
-}
-
-function showElement(element) {
-	//element.style.display="";
-	element.classList.add("show");
-}
-
 var screenManager = {
 	additionalFunctions: {},
 	stack: [],
-	currentScreenName: "loadingScreen",
-	currentScreen: document.getElementById("loadingScreen"), // This doesn't exist when it is called at this point.
+	currentScreenName: "loading",
+	currentScreen: $("#loading"), // This doesn't exist when it is called at this point.
 	executeFunction: function(screenName, funcName) {
-		if(screenName in this.additionalFunctions && funcName in this.additionalFunctions[screenName]){
+		if(screenName in this.additionalFunctions
+                   && funcName in this.additionalFunctions[screenName]){
 			this.additionalFunctions[screenName][funcName]();
 		}
 	},
 	switchTo: function(screenName, keepAsIs) {
-
-		hideElement(this.currentScreen!==null?this.currentScreen:document.getElementById(this.currentScreenName));
+                if (this.currentScreen) { this.currentScreen.hide() }
+                else { $("#" + this.currentScreenName).hide() }
 
 		this.stack.push({name: this.currentScreenName, keepAsIs: !!keepAsIs});
 		if (!keepAsIs) {
@@ -33,18 +23,18 @@ var screenManager = {
 		}
 
 		this.currentScreenName = screenName;
-		this.currentScreen = document.getElementById(screenName);
-		showElement(this.currentScreen);
+		this.currentScreen = $("#" + screenName).get();
+		this.currentScreen.show();
 		this.executeFunction(this.currentScreenName, "onShow");
 	},
 	goBack: function() {
-		hideElement(this.currentScreen);
+		this.currentScreen.hide();
 		var popped = this.stack.pop();
 		this.executeFunction(this.currentScreenName, "onHide");
 		
 		this.currentScreenName = popped.name;
-		this.currentScreen = document.getElementById(this.currentScreenName);
-		showElement(this.currentScreen);
+		this.currentScreen = $("#" + this.currentScreenName).get();
+		this.currentScreen.show();
 		if (!popped.keepAsIs) {
 			this.executeFunction(this.currentScreenName, "onShow");
 		}
@@ -53,7 +43,7 @@ var screenManager = {
 
 screenManager.additionalFunctions.loadingScreen = {
 	onHide:function(){
-		document.getElementById("loadingScreen").remove();
+		$("#loading").get().remove();
 		screenManager.stack.shift(); // This is to remove the loadingScreen from the stack.
 		delete screenManager.additionalFunctions.loadingScreen;
 	}
