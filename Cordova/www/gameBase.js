@@ -73,7 +73,6 @@ function makeGame(canvasId, divId) {
 
 
 
-
 	// These should be in the base file
 	game.doMouseDown = function(x, y) {
 		mouseStart.x = x;

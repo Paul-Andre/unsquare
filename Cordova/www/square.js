@@ -63,3 +63,28 @@ let updatePreGrid = function(x1, y1, x2, y2) {
 	}
 
 }
+
+	game.unsquareGrid = function(x1, y1, x2, y2) {
+
+		var invertingSquare = calculateSquare(x1, y1, x2, y2);
+		var x = invertingSquare.x;
+		var y = invertingSquare.y;
+		var size = invertingSquare.size;
+
+		if (invertingSquare.size > 1) {
+			this.undoList.push(this.grid.clone());
+			this.grid.window(x,y,size,size).forEachSet(this.level.color.unsquare);
+			this.moves++;
+			document.getElementById("MovesIndicator").innerHTML = "Moves: " + this.moves;
+		}
+		this.draw(ctx);
+
+		if(this.isClear()){
+			this.finishedLevel();
+		}
+
+	}
+
+shapes.square = {
+	name: "square",
+

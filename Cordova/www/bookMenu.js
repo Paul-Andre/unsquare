@@ -34,7 +34,6 @@ bookMenu.showBooks=function(){
 
 
 bookMenu.openBook=function(book){
-	console.log(book);
 	levelMenu.loadBook(book);
 	screenManager.switchTo("levelMenuScreen");
 };
