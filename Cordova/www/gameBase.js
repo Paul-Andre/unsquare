@@ -2,7 +2,7 @@
 
 /// This is what does the basics of drawing the tiles to the screen.
 ///
-function makeGame(canvasId, divId) {
+function makeGameBase(canvasId, divId) {
 
 	var canvas = document.getElementById(canvasId);
 	var ctx = canvas.getContext("2d");
@@ -18,22 +18,29 @@ function makeGame(canvasId, divId) {
 		y: 0
 	};
 
-	// This should be in the base
-	var canvasSize = maxCanvasSize;
-	var canvasVirtualSize = maxCanvasSize;
-
-	canvas.width = canvas.height = canvasSize;
-
-	var size = 0;
 
 	var game = {
 		gameState: null,
 	}
+	
+	var canvasVirtualSize;
+	var canvasSize;
+
+	game.onResize = function(){
+		//console.log(document.body.offsetWidth, document.body.offsetHeight);
+		canvasVirtualSize = Math.min(window.innerWidth, window.innerHeight, 500);
+		canvasSize = canvasVirtualSize*(window.devicePixelRatio || 1);
+		canvas.width = canvas.height = canvasSize;
+		canvas.style.width = canvas.style.height = canvasVirtualSize + "px";
+		this.draw();
+	}
+
+
 
 	// This is central to both editor and game
 	game.loadLevel = function(level) {
 
-		this.gameState = makeGameState(level);
+		this.gameState = new GameState(level);
 
 		mouseStart.pressed = false;
 		levelStats.open(level); // this will only happen in the actual game
@@ -68,7 +75,6 @@ function makeGame(canvasId, divId) {
 
 
 
-	// base
 	var requestedRedraw = false;
 	game.requestRedraw = function() {
 		var that = this;
@@ -82,18 +88,6 @@ function makeGame(canvasId, divId) {
 	}
 
 
-
-
-
-	game.onResize = function(){
-		//console.log(document.body.offsetWidth, document.body.offsetHeight);
-		canvasVirtualSize = Math.min(maxCanvasSize, document.body.offsetWidth, document.body.offsetHeight);
-		canvasSize = canvasVirtualSize*(window.devicePixelRatio || 1);
-		canvas.width = canvas.height = canvasSize;
-		canvas.style.width = canvas.style.height = canvasVirtualSize + "px";
-		size = canvasSize / this.grid.width;
-		this.draw(ctx);
-	}
 
 
 	// Gets the coordinates of the touch/mouse relative to the canvas element.
@@ -112,11 +106,13 @@ function makeGame(canvasId, divId) {
 	}
 
 	function createTouchListener(fn) {
-		if (event.targetTouches) {
-			var coords = getCoordinates(event.targetTouches[0]);
-			fn(coords.x, coords.y);
-		}
-		return cancelEvent(event);
+		return function(event){
+			if (event.targetTouches) {
+				var coords = getCoordinates(event.targetTouches[0]);
+				fn(coords.x, coords.y);
+			}
+			return cancelEvent(event);
+		};
 	}
 
 	canvas.ontouchstart = createTouchListener(game.doMouseDown.bind(game));
@@ -124,9 +120,11 @@ function makeGame(canvasId, divId) {
 	canvas.ontouchend = createTouchListener(game.doMouseDown.bind(game));
 
 	function createMouseListener(fn) {
-		var coords = getCoordinates(event);
-		fn(coords.x, coords.y);
-		return cancelEvent(event);
+		return function(event) {
+			var coords = getCoordinates(event);
+			fn(coords.x, coords.y);
+			return cancelEvent(event);
+		};
 	}
 
 	canvas.onmousedown = createTouchListener(game.doMouseDown.bind(game));
@@ -136,7 +134,24 @@ function makeGame(canvasId, divId) {
 	window.addEventListener("resize", function(){
 		game.onResize()
 	}, false);
+	
 
+	game.draw = function(){
+		if(this.gameState){
+			this.gameState.level.type.shape.draw(ctx,this.gameState,
+					this.gameState.level.type.color.unsquare);
+		}
+	};
+
+	game.onShow = function(){this
+		this.draw();
+	};
+
+	game.onHide = function(){
+	};
+
+
+	game.onResize();
 	return game;
 }
 

@@ -73,12 +73,12 @@
 	}
 
 	function draw(ctx, gameState, changeFunction) {
-
-		var padding = size*0.1;
 		ctx.clearRect(0,0,ctx.canvas.width, ctx.canvas.height);
 
 		var width = ctx.canvas.width/gameState.tiles.width;
 		var height = ctx.canvas.height/gameState.tiles.height;
+
+		var padding = width*0.1;
 
 		gameState.tiles.forEach(function(value, x, y) {
 			var tileState = gameState.tileStates.get(x,y);

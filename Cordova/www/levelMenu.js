@@ -30,7 +30,6 @@ levelMenu.loadBook=function(book){
 }
 
 levelMenu.startLevel = function(level){
-	game.clearScreen();
 	game.loadLevel(level);
 	screenManager.switchTo("gameScreen");
 }

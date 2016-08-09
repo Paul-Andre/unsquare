@@ -1,4 +1,4 @@
-var game = makeGame("gameCanvas", "gameScreen");
+var game = makeGameBase("gameCanvas", "gameScreen");
 
 game.restart = function restart() {
 	levelStats.close(this.level);
@@ -40,3 +40,5 @@ game.finishedLevel = function() {
 	}
 	levelStats.pass(this.level);
 }
+
+screenManager.additionalFunctions.gameScreen = game;
