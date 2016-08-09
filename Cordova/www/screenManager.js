@@ -1,5 +1,5 @@
 //** Event Listeners **//
-$(document).ready(function() {
+$(window).ready(function() {
   $(".back").click(function() {
           screenManager.goBack();
   });

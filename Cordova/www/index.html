@@ -5,21 +5,28 @@
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 	<meta name="apple-mobile-web-app-capable" content="yes" />
-	<link rel="stylesheet" type="text/css" href="style2.css">
 	<title> Unsquare </title>
-        <script src="jquery-3.1.0.min.js"></script>
-	<script src="api.js"></script>
-	<script src="Grid.js"></script>
-	<script src="colors.js"></script>
-	<script src="shapes.js"></script>
-	<script src="icon.js"></script>
-	<script src="helpers.js"></script>
-	<script src="screenManager.js"></script>
-	<script src="bookMenu.js"></script>
-	<script src="drawing.js"></script>
-	<script src="exportSave.js"></script>
-	<script src="loading.js"></script>
-	<script src="level.js"></script>
+        
+	<!-- CSS -->
+  <link href='https://fonts.googleapis.com/css?family=Passion+One:700' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <link rel="stylesheet" type="text/css" href="main.css">
+
+
+  <!-- Scripts -->
+  <script src="jquery-3.1.0.min.js"></script>
+  <script src="api.js"></script>
+  <script src="Grid.js"></script>
+  <script src="colors.js"></script>
+  <script src="shapes.js"></script>
+  <script src="icon.js"></script>
+  <script src="helpers.js"></script>
+  <script src="screenManager.js"></script>
+  <script src="bookMenu.js"></script>
+  <script src="drawing.js"></script>
+  <script src="exportSave.js"></script>
+  <script src="loading.js"></script>
+  <script src="level.js"></script>
 </head>
 
 <body>
@@ -30,14 +37,14 @@
       </h1>
     </div>
 
-    <div class="content">
-      <button class="toBooks">
+    <div class="wrapper">
+      <button class="btn-default btn pulse-button toBooks" type="button">
         Play now!
       </button>
-      <button class="toOptions">
+      <button class="btn btn-default toOptions" type="button">
         Options
       </button>
-      <button onclick="screenManager.switchTo('About');">
+      <button class="btn btn-default" onclick="screenManager.switchTo('About');" type="button">
         About
       </button>
     </div>
