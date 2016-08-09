@@ -1,11 +1,13 @@
 {
 	"version": "0.0.1",
 	"books": [
-		{
-			"name": "Basic Black & White",
-			"free": true,
-			"requiredGameVersion": "0.1",
-			"link": "basicBlackWhite.json"
-		}
+                {
+                        "name": "Basic Black & White",
+                        "link": "basicBlackWhite.json",
+                        "icon": "BWicon.gif",
+                        "locked": false,
+                        "price": "",
+                        "cleared": 0
+                }
 	]
 }

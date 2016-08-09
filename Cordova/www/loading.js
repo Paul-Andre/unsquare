@@ -12,5 +12,6 @@
 var books = [];
 
 window.addEventListener("load", function() {
-screenManager.switchTo("Home");
+  screenManager.switchTo("Home");
+  Books.loadBooks();
 }, false);
