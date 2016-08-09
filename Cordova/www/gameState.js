@@ -26,7 +26,7 @@ GameState.prototype.isClear = function isClear() {
 	var clear = true;
 
 	this.tiles.forEach(function(v) {
-		// TODO: use a function defined in colors to see if it is clear
+		// TODO: use a function defined in colors to see if it is clear.
 		if (v != 1) {
 			clear = false;
 		}
@@ -34,3 +34,13 @@ GameState.prototype.isClear = function isClear() {
 
 	return clear;
 }
+
+
+GameState.prototype.undo = function() {
+	if (this.undoList.length > 0) {
+		var undo = this.undoList.pop();
+		this.tiles = undo;
+		this.draw(ctx);
+	}
+}
+
