@@ -87,7 +87,7 @@ Books.prepareBook = function(book) {
         //onclick event
         node.prop("book", book);
         node.click(function() {
-                Books.openBook(node.prop(book));
+                Books.openBook(book);
         });
 
         return node;
