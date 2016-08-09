@@ -1,3 +1,6 @@
+
+//** Library to switch between screens **//
+
 "use strict";
 
 function hideElement(element) {
