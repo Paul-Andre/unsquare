@@ -27,7 +27,7 @@ function makeGame(canvasId, divId) {
 
 	var size = 0;
 
-	var game = {
+	var Game = {
 		tiles: null,
 		selectedTiles: null,
 		transitionStateOfTiles: null,
@@ -39,25 +39,25 @@ function makeGame(canvasId, divId) {
 
 	// this depends on the book and nothing specific about the level.
 	// but this assumes the concept of a book
-	game.isSkippable = function() {
+	Game.isSkippable = function() {
 		return this.level.index+1<this.level.book.levels.length
 		&& this.level.book.levels[this.level.index+1].state>=0;
 	}
 
 
-	// This is central to both editor and game
-	game.loadLevel = function(level) {
+	// This is central to both editor and Game
+	Game.loadLevel = function(level) {
 		this.level = level;
 
 		mouseStart.pressed = false;
 
-		levelStats.open(level); // this will only happen in the actual game
+		levelStats.open(level); // this will only happen in the actual Game
 	}
 
 
 
 	// this 
-	game.isClear = function isClear() {
+	Game.isClear = function isClear() {
 		var clear = true;
 
 		this.grid.forEach(function(v) {
@@ -75,14 +75,14 @@ function makeGame(canvasId, divId) {
 
 
 	// These should be in the base file
-	game.doMouseDown = function(x, y) {
+	Game.doMouseDown = function(x, y) {
 		mouseStart.x = x;
 		mouseStart.y = y;
 		mouseStart.pressed = true;
 	};
 
 
-	game.doMouseMove = function(x, y) {
+	Game.doMouseMove = function(x, y) {
 		mouseNow.x = x;
 		mouseNow.y = y;
 		var size = canvasSize / this.grid.width;
@@ -93,7 +93,7 @@ function makeGame(canvasId, divId) {
 	};
 
 
-	game.doMouseUp = function(x, y) {
+	Game.doMouseUp = function(x, y) {
 		mouseStart.pressed = false;
 		this.preGrid.setAll(0);
 		var size = canvasSize / this.grid.width;
@@ -106,7 +106,7 @@ function makeGame(canvasId, divId) {
 
 	// square or base
 
-	game.unsquareGrid = function(x1, y1, x2, y2) {
+	Game.unsquareGrid = function(x1, y1, x2, y2) {
 
 		var invertingSquare = calculateSquare(x1, y1, x2, y2);
 		var x = invertingSquare.x;
@@ -129,7 +129,7 @@ function makeGame(canvasId, divId) {
 
 
 	// base 
-	game.undo = function() {
+	Game.undo = function() {
 		if (this.undoList.length > 0) {
 			var undo = this.undoList.pop();
 			this.grid = undo;
@@ -145,7 +145,7 @@ function makeGame(canvasId, divId) {
 
 
 	// square
-	game.draw = function(ctx) {
+	Game.draw = function(ctx) {
 
 		var that = this;
 
@@ -182,7 +182,7 @@ function makeGame(canvasId, divId) {
 
 	// base
 	var requestedRedraw = false;
-	game.requestRedraw = function() {
+	Game.requestRedraw = function() {
 		var that = this;
 
 		if (!requestedRedraw) {
@@ -195,16 +195,16 @@ function makeGame(canvasId, divId) {
 	}
 
 
-	// specific to game
-	game.restart = function restart() {
+	// specific to Game
+	Game.restart = function restart() {
 		levelStats.close(this.level);
-		game.loadLevel(this.level);
-		game.draw(ctx);
+		Game.loadLevel(this.level);
+		Game.draw(ctx);
 	}
 
 
 	// someting to 
-	game.finishedLevel = function() {
+	Game.finishedLevel = function() {
 		this.finished = true;
 
 		var clicked = false;
@@ -230,9 +230,9 @@ function makeGame(canvasId, divId) {
 
 		var that = this;
 		if (typeof this.level.index == "number") {
-			game.disactivateEvents();
+			Game.disactivateEvents();
 			canvas.onmousedown = canvas.ontouchstart = function(evt) {
-				game.loadLevel(nextLevel);
+				Game.loadLevel(nextLevel);
 				return cancelEvent(evt);
 			}
 		}
@@ -240,7 +240,7 @@ function makeGame(canvasId, divId) {
 	}
 
 	// the base definitel
-	game.onResize = function(){
+	Game.onResize = function(){
 		//console.log(document.body.offsetWidth, document.body.offsetHeight);
 		canvasVirtualSize = Math.min(maxCanvasSize, document.body.offsetWidth, document.body.offsetHeight);
 		canvasSize = canvasVirtualSize*(window.devicePixelRatio || 1);
@@ -251,13 +251,13 @@ function makeGame(canvasId, divId) {
 	}
 
 	function onResize(){
-		game.onResize();
+		Game.onResize();
 	}
 
 
 
 	// base, I guess, if it's really needed
-	game.initEventListeners = function() {
+	Game.initEventListeners = function() {
 
 		var that = this;
 
@@ -322,7 +322,7 @@ function makeGame(canvasId, divId) {
 
 
 	// same here, base
-	game.disactivateEvents = function() {
+	Game.disactivateEvents = function() {
 
 		canvas.ontouchstart = canvas.onmousedown = null;
 		canvas.ontouchend = canvas.onmouseup = null;
@@ -332,16 +332,16 @@ function makeGame(canvasId, divId) {
 
 
 	// save here, base
-	game.onHide = function() {
-		game.disactivateEvents();
+	Game.onHide = function() {
+		Game.disactivateEvents();
 		adManager.hide();
-		//(game.level) && (levelStats.close(this.level));
+		//(Game.level) && (levelStats.close(this.level));
 	}
 
 	// same here, base
-	game.onShow = function() {
+	Game.onShow = function() {
 		//onResize();
-		game.initEventListeners();
+		Game.initEventListeners();
 		adManager.show();
 		setTimeout(function() {
 			adManager.reposition();
@@ -349,20 +349,20 @@ function makeGame(canvasId, divId) {
 	}
 
 	// base, but probably not really needed
-	game.clearScreen = function() {
+	Game.clearScreen = function() {
 		// TODO: do this the correct way
 		canvas.width = canvas.width;
 	}
 
-	// will be replaced by next and previous buttons, and are special to game.
-	game.skip = function(){
+	// will be replaced by next and previous buttons, and are special to Game.
+	Game.skip = function(){
 		if(this.isSkippable()){
 			this.loadLevel(this.level.book.levels[this.level.index+1]);
 		}
 	}
 
-	return game;
+	return Game;
 }
 
-var game = makeGame("gameCanvas", "gameScreen");
-screenManager.additionalFunctions.gameScreen = game;
+var Game = makeGame("gameCanvas", "Game");
+screenManager.additionalFunctions.GameScreen = Game;

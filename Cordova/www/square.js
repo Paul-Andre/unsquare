@@ -28,15 +28,15 @@ function calculateSquare(x1, y1, x2, y2) {
 	if (x + size*xSign < 0) {
 		size = x;
 	}
-	else if (x + size*xSign >= game.grid.width) {
-		size = game.grid.width-x;
+	else if (x + size*xSign >= Game.grid.width) {
+		size = Game.grid.width-x;
 	}
 
 	if (y + size*ySign < 0) {
 		size = y;
 	}
-	else if (y + size*ySign >= game.grid.height) {
-		size = game.grid.height-y;
+	else if (y + size*ySign >= Game.grid.height) {
+		size = Game.grid.height-y;
 	}
 
 	// Return a square with x,y representing the top left corner.

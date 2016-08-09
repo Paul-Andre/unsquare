@@ -1,10 +1,10 @@
-var bookMenu={}
+var Books={}
 
-bookMenu.onShow = function() {
+Books.onShow = function() {
 	this.showBooks();
 }
         
-bookMenu.showBooks=function(){
+Books.showBooks=function(){
 
 	var container = document.getElementById("bookIconContainer");
 	container.innerHTML = "";
@@ -16,7 +16,7 @@ bookMenu.showBooks=function(){
 		bookButton.innerHTML = "Book "+i;
 		bookButton.book = book;
 		bookButton.onclick = function(event) {
-			bookMenu.openBook(this.book);
+			Books.openBook(this.book);
 		}
 		
 		/*
@@ -33,14 +33,14 @@ bookMenu.showBooks=function(){
 
 
 
-bookMenu.openBook=function(book){
+Books.openBook=function(book){
 	console.log(book);
-	levelMenu.loadBook(book);
-	screenManager.switchTo("levelMenuScreen");
+	Levels.loadBook(book);
+	screenManager.switchTo("Levels");
 };
 
 
-bookMenu.newBook=function(){
+Books.newBook=function(){
 	var book = {levels:[]};
 	books.push(book);
 	this.showBooks();
