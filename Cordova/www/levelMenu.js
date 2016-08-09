@@ -1,8 +1,8 @@
 "use strict";
 
-var levelMenu = {book:null}
+var Levels = {book:null}
 
-levelMenu.loadBook=function(book){
+Levels.loadBook=function(book){
 
 	this.book=book;
 
@@ -23,19 +23,19 @@ levelMenu.loadBook=function(book){
 		drawIcon(level, icon);
 		icon.level = level;
 		icon.onclick = function() {
-			levelMenu.startLevel(this.level);
+			Levels.startLevel(this.level);
 		};
 		iconContainer.appendChild(icon);
 	}
 }
 
-levelMenu.startLevel = function(level){
-	game.clearScreen();
-	game.loadLevel(level);
-	screenManager.switchTo("gameScreen");
+Levels.startLevel = function(level){
+	Game.clearScreen();
+	Game.loadLevel(level);
+	screenManager.switchTo("Game");
 }
 
-levelMenu.newLevel = function(){
+Levels.newLevel = function(){
 	var level = makeLevel();
 	level.book = this.book;
 	this.book.levels.push(level);
