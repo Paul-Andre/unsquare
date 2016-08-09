@@ -75,8 +75,8 @@
 	function draw(ctx, gameState, changeFunction) {
 		ctx.clearRect(0,0,ctx.canvas.width, ctx.canvas.height);
 
-		var width = ctx.canvas.width/gameState.tiles.width;
-		var height = ctx.canvas.height/gameState.tiles.height;
+		var width = ctx.canvas.width/(gameState.tiles.width+0.1);
+		var height = ctx.canvas.height/(gameState.tiles.height+0.1);
 
 		var padding = width*0.1;
 
@@ -85,8 +85,8 @@
 
 			ctx.fillStyle = gameState.level.type.color.cells[value].fill;
 			ctx.fillRect(
-					(x * width + padding*0.5),
-					(y * height + padding*0.5),
+					(x * width + padding),
+					(y * height + padding),
 					(width-padding),
 					(height-padding)
 					);
@@ -95,8 +95,8 @@
 			
 			if(tileState.selected){
 				ctx.fillRect(
-						(x * width + padding*0.5),
-						(y * height + padding*0.5),
+						(x * width + padding),
+						(y * height + padding),
 						(width-padding)*tileState.transitionState,
 						(height-padding)*tileState.transitionState
 						);
