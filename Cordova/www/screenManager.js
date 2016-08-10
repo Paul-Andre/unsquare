@@ -4,11 +4,6 @@ $(window).ready(function() {
           screenManager.goBack();
   });
 
-  $(".toBookMenu").click(function() {
-          screenManager.switchTo("bookMenu");
-          bookMenu.showBooks();
-  });
-
   $(".toOptions").click(function() {
           screenManager.switchTo("Options");
   });
