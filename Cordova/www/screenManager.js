@@ -5,7 +5,7 @@ $(window).ready(function() {
   });
 
   $(".toOptions").click(function() {
-          screenManager.switchTo("Options");
+          screenManager.switchTo("options");
   });
 });
 
