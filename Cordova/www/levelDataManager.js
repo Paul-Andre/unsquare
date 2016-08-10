@@ -6,7 +6,7 @@ finishedLoading:function(){},
 
 dataManager.finishedLoading = function() {
 	bookMenu.showBooks();
-	screenManager.switchTo("bookMenuScreen");
+	screenManager.switchTo("bookMenu");
 }
 
 

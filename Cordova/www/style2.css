@@ -11,14 +11,14 @@ body {
 
 section {
 	position: absolute;
-	opacity: 0;
+        display: none;
 	-webkit-transition: 0.5s ease-in-out;
 	-moz-transition: 0.5s ease-in-out;
 	transition: 0.5s ease-in-out;
 	
-	-webkit-transition-property: opacity, transform;
+	/*-webkit-transition-property: opacity, transform;
 	-moz-transition-property: opacity, transform;
-	transition-property: opacity, transform;
+	transition-property: opacity, transform;*/
 	
 	-webkit-transform: translateX(15px);
 	-moz-transform: translateX(15px);

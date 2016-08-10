@@ -7,6 +7,7 @@
 	<meta name="apple-mobile-web-app-capable" content="yes" />
 	<link rel="stylesheet" type="text/css" href="style2.css">
 	<title> Unsquare </title>
+        <script src="http://code.jquery.com/jquery-3.1.0.min.js"></script>
 	<script src="api.js"></script>
 	<script src="Grid.js"></script>
 	<script src="colors.js"></script>
@@ -24,7 +25,7 @@
 </head>
 
 <body class="no-touch">
-	<section id="gameScreen" class="screen">
+	<section id="game" class="screen">
 		<div class="header">
 			<div class="" style="float: left; width: 75%">
 				<h2 id="LevelIndicator">Level ?</h2>
@@ -53,7 +54,7 @@
 	</section>
 
 
-	<section id="editorScreen"  class="screen">
+	<section id="editor"  class="screen">
 		<div class="header">
 			<div class="" style="float: left; width: 75%">
 				<h1 id="LevelIndicator">Level ? </h1>
@@ -83,7 +84,7 @@
 	</section>
 
 
-	<section id="levelMenuScreen" class="screen">
+	<section id="levelMenu" class="screen">
 		<div class="header">
 			<div class="IndicContainer" id="statsIndicator"></div>
 			<button onclick="screenManager.goBack();">&#8592; Menu</button>
@@ -97,7 +98,7 @@
 	</section>
 
 
-	<section id="bookMenuScreen" class="screen">
+	<section id="bookMenu" class="screen">
 		<div class="header">
 			<h1>Puzzle Books:</h1>
 		</div>
@@ -105,7 +106,7 @@
 
 		</div>
 		<div class="footer">
-			<button onclick="screenManager.switchTo('aboutScreen');">About</button>
+			<button onclick="screenManager.switchTo('about');">About</button>
 			<br>
 			<button onclick="displaySaveStr();" style="float:right;">Export save</button>
 			<button onclick="importSave();" style="float:right;">Import save</button>
@@ -121,7 +122,7 @@
 		-->
 	</section>
 
-	<section id="loadingScreen" class="screen show">
+	<section id="loading" class="screen show">
 		Loading...
 	</section>
 
