@@ -1,11 +1,16 @@
 /* CSS FILE FOR INDEX.HTML */
 @import "compass/css3";
 
+body {
+  
+}
+
 /* SECTION */
 section {
 	font-family: Passion One;
 	width: 100%;
 	display: none;
+
 }
 
 
@@ -19,10 +24,11 @@ section {
 
 .wrapper {
 	text-align: center;
+	padding-top: 5em;
 }
 
 .wrapper button {
-	margin-top: 2em;
+	margin-top: 1em;
 	width: 200px;
 	display: block;
 	text-align: center;
@@ -32,6 +38,10 @@ section {
 	margin-right: -50%;
 	transform: translate(-50%, -50%);
 	font-family: Passion One;
+}
+
+#adjustment {
+	margin-top: 2em;
 }
 
 .pulse-button {
@@ -69,5 +79,695 @@ section {
     -webkit-transform: scale(1);
     transform: scale(1);
     box-shadow: 0 0 0 0 rgba(90, 153, 212, 0);
+  }
+}
+
+@media screen and (min-device-width : 768px)
+{
+  #Home h1 {
+  font-size: 120px;
+  margin-top: 200px;
+  }
+
+  .wrapper button {
+  
+  width: 300px;
+  height: 75px;
+  font-size: 35px;
+  }
+
+  .pulse-button {
+  position: relative;
+  margin-left: -147px;
+  line-height: 50px;
+  width: 300px;
+  }
+}
+
+
+@media screen and (max-device-width : 767px)
+{
+  #Home h1 {
+  font-size: 80px;
+  text-align: center;
+  margin-top: 120px;
+  }
+}
+
+@media screen and (max-device-width : 365px)
+{
+  #Home h1 {
+  font-size: 70px;
+  text-align: center;
+  margin-top: 90px;
+  }
+}
+
+
+
+
+/* OPTIONS SCREEN */
+
+.header h1 {
+  text-align: center;
+  font-size: 50px
+}
+
+.back {
+  width: 30px;
+  height: auto;
+  -moz-transform: scaleX(-1);
+  -o-transform: scaleX(-1);
+  -webkit-transform: scaleX(-1);
+  transform: scaleX(-1);
+  filter: FlipH;
+  -ms-filter: "FlipH";
+  margin-top: -92px;
+  margin-left: 7%;
+}
+
+.options-content {
+  text-align: center;
+  font-size: 30px;
+  margin-top: 30px;
+}
+
+.footer {
+  text-align: center;
+  margin-top: 50px;
+    
+}
+
+.footer .btn {
+  font-size: 20px;
+}
+
+/* CHECKBOX */
+.radio{
+  position: absolute;
+}
+
+.radio .switch{
+  position:absolute;
+  text-align: center;
+  background: #56e26e;
+  transition: all 0.2s ease;
+  border-radius: 25px;
+}
+
+.radio .switch span {
+  position: absolute;
+  width: 20px;
+  height: 4px;
+  top: 50%;
+  left: 50%;
+  margin: -2px 0px 0px -4px;
+  background: white;
+  display: block;
+  transform: rotate(-45deg);
+  transition: all 0.2s ease;
+}
+
+.radio .switch span:after{
+  content: "";
+  display: block;
+  position: absolute;
+  width: 4px;
+  height: 12px;
+  margin-top: -8px;
+  background: white;
+  transition: all 0.2s ease;
+}
+
+.radio input[type=radio]{
+  display: none;
+}
+    
+
+.radio .switch label{
+  cursor: pointer;
+  color: rgba(#000, .2);
+  width: 60px;
+  line-height: 50px;
+  transition: all 0.2s ease;
+}
+
+.radio label[for=yessfx]{
+  position: absolute;
+  left: 20px;
+  height: 15px;
+}
+
+.radio label[for=nosfx]{
+  position: absolute;
+  right: 30px;
+  height: 15px;
+}
+
+.radio label[for=yesmusic]{
+  position: absolute;
+  left: 20px;
+  height: 15px;
+}
+
+.radio label[for=nomusic]{
+  position: absolute;
+  right: 30px;
+  height: 15px;
+}
+
+.radio #nosfx:checked ~ .switch{
+  background: #ff6c61;
+}
+
+.radio #nosfx:checked ~ .switch span{
+  background: white;
+  margin-left: -8px;
+}
+
+.radio #nosfx:checked ~ .switch span:after{
+  background: white;
+  height: 20px;
+  margin-top: -8px;
+  margin-left: 8px;
+}
+
+.radio #yessfx:checked ~ .switch label[for=yessfx]{
+  color: white;
+}
+    
+
+.radio #nosfx:checked ~ .switch label[for=nosfx]{
+  color: white;
+}
+
+
+.radio #nomusic:checked ~ .switch{
+  background: #ff6c61;
+}
+
+.radio #nomusic:checked ~ .switch span{
+  background: white;
+  margin-left: -8px;
+}
+
+.radio #nomusic:checked ~ .switch span:after{
+  background: white;
+  height: 20px;
+  margin-top: -8px;
+  margin-left: 8px;
+}
+
+.radio #yesmusic:checked ~ .switch label[for=yesmusic]{
+  color: white;
+}
+    
+
+.radio #nomusic:checked ~ .switch label[for=nomusic]{
+  color: white;
+}
+
+
+    
+.radio #switch:checked ~ label {
+  background-color: #11baf5;         
+}
+
+.radio #switch:checked ~ label:after{
+  margin: -2px 0px 0px -6px;
+  width: 18px;
+}
+
+.radio #switch:checked ~ label:before {
+  width: 11px;
+  margin: 0px 0px 0px -10px;
+}
+
+
+@media screen and (min-device-width : 768px)
+{
+  .header h1 {
+    text-align: center;
+    font-size: 80px
+  }
+
+  .back {
+    width: 40px;
+    height: auto;
+    margin-top: -120px;
+    margin-left: 15%;
+  }
+
+  .options-content {
+    margin-top: 150px;
+  }
+
+  .options-content h1 {
+    font-size: 50px;
+  }
+
+  .radio {
+    margin-top: 50px;
+  }
+
+  .radio .switch{
+    width: 280px;
+    height: 60px;
+    margin-left: 240px;
+  }
+
+  .radio label[for=yessfx]{
+    position: absolute;
+    left: 20px;
+    height: 15px;
+    top: 5px;
+    font-size: 30px;
+}
+
+  .radio label[for=nosfx]{
+    position: absolute;
+    right: 40px;
+    height: 15px;
+    top: 5px;
+    font-size: 30px;
+}
+
+  .radio #yessfx:checked ~ .switch label[for=yessfx]{
+    color: white;
+    font-size: 50px;
+  }
+      
+
+  .radio #nosfx:checked ~ .switch label[for=nosfx]{
+    color: white;
+    font-size: 50px;
+  }
+
+  .radio label[for=yesmusic]{
+      position: absolute;
+      left: 20px;
+      height: 15px;
+      top: 5px;
+      font-size: 30px;
+  }
+
+    .radio label[for=nomusic]{
+      position: absolute;
+      right: 40px;
+      height: 15px;
+      top: 5px;
+      font-size: 30px;
+  }
+
+  .radio #yesmusic:checked ~ .switch label[for=yesmusic]{
+    color: white;
+    font-size: 50px;
+  }
+      
+
+  .radio #nomusic:checked ~ .switch label[for=nomusic]{
+    color: white;
+    font-size: 50px;
+  }
+
+  #music {
+    margin-top: 200px;
+  } 
+}
+
+@media screen and (min-device-width : 410px) and (max-device-width : 766px)
+{
+  .header h1 {
+    text-align: center;
+    font-size: 60px
+  }
+
+  .back {
+    width: 30px;
+    height: auto;
+    margin-top: -110px;
+    margin-left: 10%;
+  }
+
+  .options-content {
+    margin-top: 75px;
+  }
+
+  .options-content h1 {
+    font-size: 40px;
+  }
+
+  .radio {
+    margin-top: 30px;
+  }
+
+  .radio .switch{
+    width: 175px;
+    height: 40px;
+    margin-left: 115px;
+  }
+
+  .radio label[for=yessfx]{
+    position: absolute;
+    left: 5px;
+    height: 15px;
+    font-size: 25px;
+    top: -5px;
+}
+
+  .radio label[for=nosfx]{
+    position: absolute;
+    right: 20px;
+    top: -5px;
+    font-size: 25px;
+}
+
+  .radio #yessfx:checked ~ .switch label[for=yessfx]{
+    color: white;
+    font-size: 40px;
+    top: -5px;
+  }
+      
+
+  .radio #nosfx:checked ~ .switch label[for=nosfx]{
+    color: white;
+    font-size: 40px;
+    top: -5px;
+  }
+
+  .radio label[for=yesmusic]{
+      position: absolute;
+      left: 5px;
+      height: 15px;
+      font-size: 25px;
+      top: -5px;
+  }
+
+    .radio label[for=nomusic]{
+      position: absolute;
+      right: 20px;
+      top: -5px;
+      font-size: 25px;
+  }
+
+  .radio #yesmusic:checked ~ .switch label[for=yesmusic]{
+    color: white;
+    font-size: 40px;
+    top: -5px;
+  }
+      
+
+  .radio #nomusic:checked ~ .switch label[for=nomusic]{
+    color: white;
+    font-size: 40px;
+    top: -5px;
+  }
+
+  #music {
+    margin-top: 150px;
+  }
+}
+
+
+@media screen and (min-device-width : 366px) and (max-device-width : 378px)
+{
+  .header h1 {
+    text-align: center;
+    font-size: 60px
+  }
+
+  .back {
+    width: 30px;
+    height: auto;
+    margin-top: -110px;
+    margin-left: 10%;
+  }
+
+  .options-content {
+    margin-top: 75px;
+  }
+
+  .options-content h1 {
+    font-size: 40px;
+  }
+
+  .radio {
+    margin-top: 30px;
+  }
+
+  .radio .switch{
+    width: 225px;
+    height: 40px;
+    margin-left: 80px;
+  }
+
+  .radio label[for=yessfx]{
+    position: absolute;
+    left: 5px;
+    height: 15px;
+    font-size: 25px;
+    top: -5px;
+}
+
+  .radio label[for=nosfx]{
+    position: absolute;
+    right: 20px;
+    top: -5px;
+    font-size: 25px;
+}
+
+  .radio #yessfx:checked ~ .switch label[for=yessfx]{
+    color: white;
+    font-size: 40px;
+    top: -5px;
+  }
+      
+
+  .radio #nosfx:checked ~ .switch label[for=nosfx]{
+    color: white;
+    font-size: 40px;
+    top: -5px;
+  }
+
+  .radio label[for=yesmusic]{
+      position: absolute;
+      left: 5px;
+      height: 15px;
+      font-size: 25px;
+      top: -5px;
+  }
+
+    .radio label[for=nomusic]{
+      position: absolute;
+      right: 20px;
+      top: -5px;
+      font-size: 25px;
+  }
+
+  .radio #yesmusic:checked ~ .switch label[for=yesmusic]{
+    color: white;
+    font-size: 40px;
+    top: -5px;
+  }
+      
+
+  .radio #nomusic:checked ~ .switch label[for=nomusic]{
+    color: white;
+    font-size: 40px;
+    top: -5px;
+  }
+
+  #music {
+    margin-top: 150px;
+  }
+}
+
+@media screen and (min-device-width : 323px) and (max-device-width : 361px)
+{
+  .header h1 {
+    text-align: center;
+    font-size: 50px
+  }
+
+  .back {
+    width: 25px;
+    height: auto;
+    margin-top: -100px;
+    margin-left: 10%;
+  }
+
+  .options-content {
+    margin-top: 75px;
+    width: 100%;
+  }
+
+  .options-content h1 {
+    font-size: 30px;
+  }
+
+  .radio {
+    margin-top: 30px;
+    width: 100%;
+  }
+
+  .radio .switch{
+    width: 175px;
+    height: 40px;
+    left: 25%;
+  }
+
+  .radio label[for=yessfx]{
+    position: absolute;
+    left: 5px;
+    height: 15px;
+    font-size: 20px;
+    top: -5px;
+}
+
+  .radio label[for=nosfx]{
+    position: absolute;
+    right: 20px;
+    top: -5px;
+    font-size: 20px;
+}
+
+  .radio #yessfx:checked ~ .switch label[for=yessfx]{
+    color: white;
+    font-size: 35px;
+    top: -5px;
+  }
+      
+
+  .radio #nosfx:checked ~ .switch label[for=nosfx]{
+    color: white;
+    font-size: 35px;
+    top: -5px;
+  }
+
+  .radio label[for=yesmusic]{
+      position: absolute;
+      left: 5px;
+      height: 15px;
+      font-size: 20px;
+      top: -5px;
+  }
+
+    .radio label[for=nomusic]{
+      position: absolute;
+      right: 20px;
+      top: -5px;
+      font-size: 20px;
+  }
+
+  .radio #yesmusic:checked ~ .switch label[for=yesmusic]{
+    color: white;
+    font-size: 35px;
+    top: -5px;
+  }
+      
+
+  .radio #nomusic:checked ~ .switch label[for=nomusic]{
+    color: white;
+    font-size: 35px;
+    top: -5px;
+  }
+
+  #music {
+    margin-top: 120px;
+  }
+}
+
+@media screen and (max-device-width : 322px)
+{
+  .header h1 {
+    text-align: center;
+    font-size: 50px
+  }
+
+  .back {
+    width: 25px;
+    height: auto;
+    margin-top: -100px;
+    margin-left: 10%;
+  }
+
+  .options-content {
+    margin-top: 75px;
+    width: 100%;
+  }
+
+  .options-content h1 {
+    font-size: 30px;
+  }
+
+  .radio {
+    margin-top: 30px;
+    width: 100%;
+  }
+
+  .radio .switch{
+    width: 175px;
+    height: 40px;
+    left: 23%;
+  }
+
+  .radio label[for=yessfx]{
+    position: absolute;
+    left: 5px;
+    height: 15px;
+    font-size: 20px;
+    top: -5px;
+}
+
+  .radio label[for=nosfx]{
+    position: absolute;
+    right: 20px;
+    top: -5px;
+    font-size: 20px;
+}
+
+  .radio #yessfx:checked ~ .switch label[for=yessfx]{
+    color: white;
+    font-size: 35px;
+    top: -5px;
+  }
+      
+
+  .radio #nosfx:checked ~ .switch label[for=nosfx]{
+    color: white;
+    font-size: 35px;
+    top: -5px;
+  }
+
+  .radio label[for=yesmusic]{
+      position: absolute;
+      left: 5px;
+      height: 15px;
+      font-size: 20px;
+      top: -5px;
+  }
+
+    .radio label[for=nomusic]{
+      position: absolute;
+      right: 20px;
+      top: -5px;
+      font-size: 20px;
+  }
+
+  .radio #yesmusic:checked ~ .switch label[for=yesmusic]{
+    color: white;
+    font-size: 35px;
+    top: -5px;
+  }
+      
+
+  .radio #nomusic:checked ~ .switch label[for=nomusic]{
+    color: white;
+    font-size: 35px;
+    top: -5px;
+  }
+
+  #music {
+    margin-top: 120px;
   }
 }

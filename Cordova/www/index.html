@@ -41,11 +41,11 @@
       <button class="btn-default btn pulse-button toBooks" type="button">
         Play now!
       </button>
-      <button class="btn btn-default toOptions" type="button">
+      <button class="btn btn-default toOptions" id="adjustment" type="button">
         Options
       </button>
       <button class="btn btn-default" onclick="screenManager.switchTo('About');" type="button">
-        About
+        Credits
       </button>
     </div>
 
@@ -58,31 +58,34 @@
       <h1>
         Options
       </h1>
-      <button class="back">
-        &#8592;
-      </button>
+      <img src="back7.svg" class="back">
     </div>
 
-    <div class="content">
-      <div>
-        <label for="sfx">
-          Sound Effects
-        </label>
-        <input id="sfx" type="checkbox">
+    <div class="options-content">
+      <h1> Sound Effects </h1>
+      <div class="radio">
+        <form action="">
+        <input type="radio" name="rdo" id="yessfx" checked />
+        <input type="radio" name="rdo" id="nosfx"/>
+        <div class="switch">
+          <label for="yessfx">On</label>
+          <label for="nosfx">Off</label>
+          <span></span>
+        </div>
+      </form>
       </div>
-
-      <div>
-        <label for="music">
-          Music
-        </label>
-        <input id="music" type="checkbox">
+      <h1 id="music"> Music </h1>
+      <div class="radio">
+        <form action="">
+        <input type="radio" name="rdo" id="yesmusic" checked />
+        <input type="radio" name="rdo" id="nomusic"/>
+        <div class="switch">
+          <label for="yesmusic">On</label>
+          <label for="nomusic">Off</label>
+          <span></span>
       </div>
+      </form>
     </div>
-
-    <div class="footer">
-      <button id="saveOptions">
-        Save
-      </button>
     </div>
   </section>
 
