@@ -1,41 +1,38 @@
 "use strict";
 
-var Levels = {book:null}
+var levelMenu = {}
 
-Levels.loadBook=function(book){
+levelMenu.loadBook = function(book){
+	console.log(book.link);
+	$.getJSON(book.link, {}, function(data) {
+		var container = $("#levelMenu .content");
+		container.html("");
 
-	this.book=book;
-
-	var iconContainer=document.getElementById("iconContainer");
-
-
-	iconContainer.innerHTML = '';
-
-	for(var i=0;i<book.levels.length;i++){
-		var level=book.levels[i];
-		var icon=document.createElement("canvas");
-		icon.classList.add("levelIcon");
-
-		icon.style.width="55px";
-		icon.style.height="55px";
-		icon.width=55*window.devicePixelRatio;
-		icon.height=55*window.devicePixelRatio;
-		drawIcon(level, icon);
-		icon.level = level;
-		icon.onclick = function() {
-			Levels.startLevel(this.level);
-		};
-		iconContainer.appendChild(icon);
-	}
+		for (var i=0; i<data.levels.length; i++) {
+			var level = data.levels[i];
+			var icon = $(document.createElement("canvas"));
+			icon.attr("class", "levelIcon");
+			icon.css("width", "55px");
+			icon.css("height","55px");
+			icon.prop("width", 55*window.devicePixelRatio);
+			icon.prop("height", 55*window.devicePixelRatio);
+			drawIcon(level, icon.get()[0]);
+			icon.prop("level", level);
+			icon.click(function() {
+				levelMenu.startLevel(level);
+			});
+			container.append(icon);
+		}
+	});
 }
 
-Levels.startLevel = function(level){
-	Game.clearScreen();
-	Game.loadLevel(level);
-	screenManager.switchTo("Game");
+levelMenu.startLevel = function(level){
+        game.clearScreen();
+	game.loadLevel(level);
+	screenManager.switchTo("gameScreen");
 }
 
-Levels.newLevel = function(){
+levelMenu.newLevel = function(){
 	var level = makeLevel();
 	level.book = this.book;
 	this.book.levels.push(level);

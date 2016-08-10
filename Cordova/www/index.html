@@ -18,9 +18,12 @@
   <script src="api.js"></script>
   <script src="Grid.js"></script>
   <script src="colors.js"></script>
+  <script src="gameBase.js"></script>
+  <script src="levelDataManager.js"></script>
   <script src="shapes.js"></script>
   <script src="icon.js"></script>
   <script src="helpers.js"></script>
+  <script src="levelMenu.js"></script>
   <script src="screenManager.js"></script>
   <script src="bookMenu.js"></script>
   <script src="drawing.js"></script>
@@ -30,7 +33,7 @@
 </head>
 
 <body>
-  <section id="Home">
+  <section id="home">
     <div class="header">
       <h1>
         Unsquare
@@ -38,13 +41,13 @@
     </div>
 
     <div class="wrapper">
-      <button class="btn-default btn pulse-button toBooks" type="button">
-        Play now!
+      <button class="btn-default btn pulse-button toBookMenu" onclick="screenManager.switchTo('bookMenu');" type="button">
+        Play
       </button>
       <button class="btn btn-default toOptions" id="adjustment" type="button">
         Options
       </button>
-      <button class="btn btn-default" onclick="screenManager.switchTo('About');" type="button">
+      <button class="btn btn-default" onclick="screenManager.switchTo('about');" type="button">
         Credits
       </button>
     </div>
@@ -53,7 +56,7 @@
     </div>
   </section>
 
-  <section id="Options">
+  <section id="options">
     <div class="header">
       <h1>
         Options
@@ -89,7 +92,7 @@
     </div>
   </section>
 
-  <section id="About">
+  <section id="about">
     <div class="header">
       <h1>
         Credits
@@ -101,7 +104,24 @@
 
     <div class="content">
       <p>
-        bla bla bla
+        <table>
+          <tr>
+            <td>Original Idea</td>
+            <td>Paul-Andre Henegar</td>
+          </tr>
+          <tr>
+            <td>Styling</td>
+            <td>James Brace</td>
+          </tr>
+          <tr>
+            <td>Random Restructuring</td>
+            <td>Youri Tamitegama</td>
+          </tr>
+          <tr>
+            <td>SFX/Marketing</td>
+            <td><a href="http://facebook.com/hyroglyphik">Hyroglyphik games {{ logo or whatever }}</a></td>
+          </tr>
+        </table>
       </p>
     </div>
 
@@ -109,7 +129,7 @@
     </div>
   </section>
 
-  <section id="Books">
+  <section id="bookMenu">
     <div class="header">
       <h1>
         Books
@@ -119,14 +139,14 @@
       </button>
     </div>
 
-    <div id="bookIconContainer" class="content">
+    <div id="bookContainer" class="content">
     </div>
 
     <div class="footer">
     </div>
   </section>
 
-  <section id="Levels">
+  <section id="levelMenu">
     <div class="header">
       <h1>
         Chapters
@@ -144,7 +164,7 @@
     </div>
   </section>
 
-  <section id="Game">
+  <section id="game">
     <div class="header">
       <h1>
         {{ Name }}
@@ -158,7 +178,7 @@
     </div>
 
     <div class="content">
-      <canvas id="gamCanvas"></canvas>
+      <canvas id="gameCanvas"></canvas>
     </div>
 
     <div class="footer">

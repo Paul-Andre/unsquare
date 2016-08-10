@@ -40,20 +40,22 @@ section {
 	font-family: Passion One;
 }
 
+
 #adjustment {
 	margin-top: 2em;
 }
 
-.pulse-button {
+
+button.pulse-button {
   position: relative;
   margin-left: -98px;
-  text-transform: uppercase;
   line-height: 50px;
   width: 230px;
   color: white;
   border: none;
   background: #5a99d4;
   cursor: pointer;
+  font-size: 32px;
   box-shadow: 0 0 0 0 rgba(90, 153, 212, 0.5);
   -webkit-animation: pulse 1.5s infinite;
 }

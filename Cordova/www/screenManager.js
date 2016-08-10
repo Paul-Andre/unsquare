@@ -4,10 +4,6 @@ $(window).ready(function() {
           screenManager.goBack();
   });
 
-  $(".toBooks").click(function() {
-          screenManager.switchTo("Books");
-  });
-
   $(".toOptions").click(function() {
           screenManager.switchTo("Options");
   });
@@ -29,8 +25,8 @@ var screenManager = {
 		}
 	},
 	switchTo: function(screenName, keepAsIs) {
-                if (this.currentScreen) { this.currentScreen.hide(100) }
-                else { $("#" + this.currentScreenName).hide(100) }
+                if (this.currentScreen) { this.currentScreen.hide(1000) }
+                else { $("#" + this.currentScreenName).hide(1000) }
 
 		this.stack.push({name: this.currentScreenName, keepAsIs: !!keepAsIs});
 		if (!keepAsIs) {
@@ -39,17 +35,17 @@ var screenManager = {
 
 		this.currentScreenName = screenName;
 		this.currentScreen = $("#" + screenName);
-		this.currentScreen.show(100);
+		this.currentScreen.show(1000);
 		this.executeFunction(this.currentScreenName, "onShow");
 	},
 	goBack: function() {
-		this.currentScreen.hide(100);
+		this.currentScreen.hide(1000);
 		var popped = this.stack.pop();
 		this.executeFunction(this.currentScreenName, "onHide");
 		
 		this.currentScreenName = popped.name;
 		this.currentScreen = $("#" + this.currentScreenName);
-		this.currentScreen.show(100);
+		this.currentScreen.show(1000);
 		if (!popped.keepAsIs) {
 			this.executeFunction(this.currentScreenName, "onShow");
 		}

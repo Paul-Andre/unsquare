@@ -12,6 +12,7 @@
 	<script src="Grid.js"></script>
 	<script src="colors.js"></script>
 	<script src="shapes.js"></script>
+	<script src="square.js"></script>
 	<script src="icon.js"></script>
 	<script src="helpers.js"></script>
 	<script src="screenManager.js"></script>
@@ -20,114 +21,116 @@
 	<script src="exportSave.js"></script>
 	<script src="loading.js"></script>
 	<script src="level.js"></script>
+	<script src="gameState.js"></script>
 </head>
 
 <body class="no-touch">
-		<section id="gameScreen" class="screen">
-			<div class="header">
-				<div class="" style="float: left; width: 75%">
-					<h2 id="LevelIndicator">Level ?</h2>
-					<h3 id="TextShower" class="textShower"> &zwnj; </h3>
-				</div>
-				<div style="float: right; width:25%;" class="IndicContainer">
-					<div class="Indicator" id="BestIndicator"></div>
-					<div class="Indicator" id="ParIndicator"></div>
-					<div class="Indicator" id="MovesIndicator"></div>
-				</div>
+	<section id="game" class="screen">
+		<div class="header">
+			<div class="" style="float: left; width: 75%">
+				<h2 id="LevelIndicator">Level ?</h2>
+				<h3 id="TextShower" class="textShower"> &zwnj; </h3>
+			</div>
+			<div style="float: right; width:25%;" class="IndicContainer">
+				<div class="Indicator" id="BestIndicator"></div>
+				<div class="Indicator" id="ParIndicator"></div>
+				<div class="Indicator" id="MovesIndicator"></div>
+			</div>
 
-				<div style="clear:both; bottom:0px">
-					<button onclick="screenManager.goBack();" style="float:left">&#8592; Levels</button>
-					<!--<button onclick="share();" style="float:left" id="inGameShareButton" > &#9733; Share</button>-->
-					<button id="skipButton" onclick="game.skip();" style="float:right;">Skip</button>
-					<button onclick="game.restart();" style="float:right;">Restart</button>
-					<button onclick="game.undo();" style="float:right;">Undo</button>
-				</div>
+			<div style="clear:both; bottom:0px">
+				<button onclick="screenManager.goBack();" style="float:left">&#8592; Levels</button>
+				<!--<button onclick="share();" style="float:left" id="inGameShareButton" > &#9733; Share</button>-->
+				<button id="skipButton" onclick="game.skip();" style="float:right;">Skip</button>
+				<button onclick="game.restart();" style="float:right;">Restart</button>
+				<button onclick="game.undo();" style="float:right;">Undo</button>
 			</div>
-			<div class="content">
-				<canvas id="gameCanvas" class="gameCanvas"></canvas>
-			</div>
-			<div class="footer">
-				<div class="mobileBannerContainer" id="mobileGameAd"></div>
-			</div>
-		</section>
-
-
-		<section id="editorScreen"  class="screen">
-			<div class="header">
-				<div class="" style="float: left; width: 75%">
-					<h1 id="LevelIndicator">Level ? </h1>
-					<h3 class="textShower"> &zwnj; </h3>
-				</div>
-				<div style="float: right; width:25%;">
-					<br/>
-					<p id="EditorMovesIndicator"></p>
-					<p id="ParIndicator"></p>
-				</div>
-			</div>
-			<div class=? style="clear:both; bottom:0px">
-				<button onclick="screenManager.goBack();" style="float:left">Menu</button>
-				<button onclick="editor.restart();" style="float:right;">Restart</button>
-				<button onclick="editor.undo();" style="float:right;">undo</button>
-				<button onclick="editor.clearMoves();" style="float:right;">Moves to 0</button>
-				<button onclick="editor.saveLevel();" style="float:right;">Save</button>
-				<form>
-					Reverse:
-					<input type="checkbox" id="reverseCheckbox" onClick="editor.toggleReverse();">
-				</form>
-				<a></a>
-			</div>
-			<div class="content">
-				<canvas width="440" height="440" id="editorCanvas" class="gameCanvas"></canvas>
-			</div>
-		</section>
+		</div>
+		<div class="content">
+			<canvas id="gameCanvas" class="gameCanvas"></canvas>
+		</div>
+		<div class="footer">
+			<div class="mobileBannerContainer" id="mobileGameAd"></div>
+		</div>
+	</section>
 
 
-		<section id="levelMenuScreen" class="screen">
-			<div class="header">
-				<div class="IndicContainer" id="statsIndicator"></div>
-				<button onclick="screenManager.goBack();">&#8592; Menu</button>
+	<section id="editor"  class="screen">
+		<div class="header">
+			<div class="" style="float: left; width: 75%">
+				<h1 id="LevelIndicator">Level ? </h1>
+				<h3 class="textShower"> &zwnj; </h3>
+			</div>
+			<div style="float: right; width:25%;">
+				<br/>
+				<p id="EditorMovesIndicator"></p>
+				<p id="ParIndicator"></p>
+			</div>
+		</div>
+		<div class=? style="clear:both; bottom:0px">
+			<button onclick="screenManager.goBack();" style="float:left">Menu</button>
+			<button onclick="editor.restart();" style="float:right;">Restart</button>
+			<button onclick="editor.undo();" style="float:right;">undo</button>
+			<button onclick="editor.clearMoves();" style="float:right;">Moves to 0</button>
+			<button onclick="editor.saveLevel();" style="float:right;">Save</button>
+			<form>
+				Reverse:
+				<input type="checkbox" id="reverseCheckbox" onClick="editor.toggleReverse();">
+			</form>
+			<a></a>
+		</div>
+		<div class="content">
+			<canvas width="440" height="440" id="editorCanvas" class="gameCanvas"></canvas>
+		</div>
+	</section>
+
+
+	<section id="levelMenu" class="screen">
+		<div class="header">
+			<div class="IndicContainer" id="statsIndicator"></div>
+			<button onclick="screenManager.goBack();">&#8592; Menu</button>
 			<button onclick="levelMenu.newLevel();" style="float:right;">Add level</button>
-			</div>
+		</div>
 
-			<div id="iconContainer" class="content">
-			</div>
-			<div class="footer">
-			</div>
-		</section>
+		<div id="iconContainer" class="content">
+		</div>
+		<div class="footer">
+		</div>
+	</section>
 
 
-		<section id="bookMenuScreen" class="screen">
-			<div class="header">
-				<h1>Puzzle Books:</h1>
-			</div>
-			<div id="bookIconContainer" class="content">
+	<section id="bookMenu" class="screen">
+		<div class="header">
+			<h1>Puzzle Books:</h1>
+		</div>
+		<div id="bookIconContainer" class="content">
 
-			</div>
-			<div class="footer">
-				<button onclick="screenManager.switchTo('aboutScreen');">About</button>
-				<br>
-				<button onclick="displaySaveStr();" style="float:right;">Export save</button>
-				<button onclick="importSave();" style="float:right;">Import save</button>
+		</div>
+		<div class="footer">
+			<button onclick="screenManager.switchTo('about');">About</button>
+			<br>
+			<button onclick="displaySaveStr();" style="float:right;">Export save</button>
+			<button onclick="importSave();" style="float:right;">Import save</button>
 
-				<button onclick="bookMenu.newBook();" style="float:right;">Add book</button>
-			</div>
+			<button onclick="bookMenu.newBook();" style="float:right;">Add book</button>
+		</div>
 
-			<!--
-			<button onclick="showReset();"  style="float:right;" > Reset</button>
-			-->
-			<!--
-			<button onclick="share();"  style="float:right;" > Please Share This </button>
-			-->
-		</section>
+		<!--
+	  <button onclick="showReset();"  style="float:right;" > Reset</button>
+		-->
+		<!--
+	  <button onclick="share();"  style="float:right;" > Please Share This </button>
+		-->
+	</section>
 
-		<section id="loadingScreen" class="screen show">
-			Loading...
-		</section>
+	<section id="loading" class="screen show">
+		Loading...
+	</section>
 
-	<!-- End of allContainer -->
 
 	<script src="levelStats.js"></script>
 	<script src="gameBase.js"></script>
+	<script src="game.js"></script>
+	<script src="editor.js"></script>
 	<script src="levelMenu.js"></script>
 
 </body>
