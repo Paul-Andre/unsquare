@@ -20,10 +20,9 @@ Books.showBooks = function() {
 
 
 
-Books.openBook = function(book) {
-	console.log(book);
-	Levels.loadBook(book);
-	screenManager.switchTo("Levels");
+bookMenu.openBook = function(book) {
+	levelMenu.loadBook(book);
+	screenManager.switchTo("levelMenu");
 };
 
 

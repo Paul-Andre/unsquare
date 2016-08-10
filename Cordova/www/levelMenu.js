@@ -26,10 +26,10 @@ Levels.loadBook = function(book){
 	});
 }
 
-Levels.startLevel = function(level){
-	Game.clearScreen();
-	Game.loadLevel(level);
-	screenManager.switchTo("Game");
+levelMenu.startLevel = function(level){
+        game.clearScreen();
+	game.loadLevel(level);
+	screenManager.switchTo("gameScreen");
 }
 
 Levels.newLevel = function(){
