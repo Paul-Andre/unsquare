@@ -4,9 +4,9 @@ $(window).ready(function() {
           screenManager.goBack();
   });
 
-  $(".toBooks").click(function() {
-          screenManager.switchTo("Books");
-          Books.showBooks();
+  $(".toBookMenu").click(function() {
+          screenManager.switchTo("bookMenu");
+          bookMenu.showBooks();
   });
 
   $(".toOptions").click(function() {

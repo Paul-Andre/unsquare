@@ -1,10 +1,10 @@
-var Books={}
+var bookMenu={}
 
-Books.onShow = function() {
+bookMenu.onShow = function() {
 	this.showBooks();
 }
         
-Books.showBooks = function() {
+bookMenu.showBooks = function() {
         console.log("showing books");
         console.log(books);
 
@@ -26,19 +26,19 @@ bookMenu.openBook = function(book) {
 };
 
 
-Books.newBook = function() {
+bookMenu.newBook = function() {
 	var book = {levels:[]};
 	books.push(book);
 	this.showBooks();
 };
 
-Books.loadBooks = function() {
+bookMenu.loadBooks = function() {
         $.getJSON("bookList.json", {}, function(data) {
 		var container = $("#bookContainer");
 		container.html("");
 
 		for (var i=0;i<data.books.length;i++) {
-			container.append(Books.prepareBook(data.books[i]));
+			container.append(bookMenu.prepareBook(data.books[i]));
 			var book = books[i];
                 }
         });
@@ -61,7 +61,7 @@ Books.loadBooks = function() {
 </div>
 
 */
-Books.prepareBook = function(book) {
+bookMenu.prepareBook = function(book) {
         var node = $(document.createElement("div")).attr("class", "book");
         var icon = $(document.createElement("div")).attr("class", "bookIconContainer")
                                                    .html("<img src='" + book.icon + "'>");
@@ -86,7 +86,7 @@ Books.prepareBook = function(book) {
         //onclick event
         node.prop("book", book);
         node.click(function() {
-                Books.openBook(book);
+                bookMenu.openBook(book);
         });
 
         return node;
