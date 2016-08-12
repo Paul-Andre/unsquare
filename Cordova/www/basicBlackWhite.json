@@ -2,10 +2,8 @@
 	"version": "0.0.1",
 	"levels": [
 		{
-			"type": {
-				"shape": "square",
-				"color": "BW"
-			},
+			"shape": "square",
+			"colorScheme": "BW",
 			"tiles": [
 				[1, 1, 1, 1],
 				[1, 2, 2, 1],
@@ -18,10 +16,8 @@
 			]
 		},
 		{
-			"type": {
-				"shape": "square",
-				"color": "BW"
-			},
+			"shape": "square",
+			"colorScheme": "BW",
 			"tiles": [
 				[1, 2, 2, 1],
 				[1, 1, 1, 1],
@@ -30,7 +26,8 @@
 			],
 			"par": 1,
 			"solution": [
-				{"x":1, "y":1, "size":2}
+				{"x":1, "y":0, "size":2},
+				{"x":1, "y":2, "size":2}
 			]
 		}
 	]

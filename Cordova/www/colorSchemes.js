@@ -1,6 +1,6 @@
 "use strict";
 
-var colors={
+var colorSchemes={
 
 	BW: {
 		cells:{

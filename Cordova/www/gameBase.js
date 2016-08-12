@@ -38,9 +38,10 @@ function makeGameBase(canvasId, divId) {
 
 
 	// This is central to both editor and game
-	game.loadLevel = function(level) {
+	game.openLevel = function(level) {
 
 		this.gameState = new GameState(level);
+		this.level = level;
 
 		mouseStart.pressed = false;
 		levelStats.open(level); // this will only happen in the actual game
@@ -138,8 +139,8 @@ function makeGameBase(canvasId, divId) {
 
 	game.draw = function(){
 		if(this.gameState){
-			this.gameState.level.type.shape.draw(ctx,this.gameState,
-					this.gameState.level.type.color.unsquare);
+			this.gameState.level.shape.draw(ctx,this.gameState,
+					this.gameState.level.colorScheme.unsquare);
 		}
 	};
 
