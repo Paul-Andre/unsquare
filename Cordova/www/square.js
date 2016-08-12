@@ -5,7 +5,7 @@
 	/// relative to the grid, returns the top right corner and size of square
 	/// to be inverted.  Output is in the form of {x: int, y: int, size: int}
 	/// You still need to check if the "size" of the output is bigger than 1.
-	function calculateSquare(x1, y1, x2, y2) {
+	function calculateSquare(x1, y1, x2, y2, gridWidth, gridHeight) {
 
 		// Specify the direction in which the square goes. 1 is the default value.
 		var xSign = Math.sign(x2 - x1) || 1;
@@ -30,15 +30,15 @@
 		if (x + size*xSign < 0) {
 			size = x;
 		}
-		else if (x + size*xSign >= game.grid.width) {
-			size = game.grid.width-x;
+		else if (x + size*xSign >= gridWidth) {
+			size = gridWidth-x;
 		}
 
 		if (y + size*ySign < 0) {
 			size = y;
 		}
-		else if (y + size*ySign >= game.grid.height) {
-			size = game.grid.height-y;
+		else if (y + size*ySign >= gridHeight) {
+			size = gridHeight-y;
 		}
 
 		// Return a square with x,y representing the top left corner.
@@ -52,10 +52,11 @@
 
 	function select(x1, y1, x2, y2, tileStates) {
 
-		var width = gameStates.width;
-		var height = gameStates.height;
+		var width = tileStates.width;
+		var height = tileStates.height;
 
-		var invertingSquare = calculateSquare(x1*width, y1*height, x2*width, y2*height);
+		var invertingSquare =
+			calculateSquare(x1*width, y1*height, x2*width, y2*height, width, height);
 		var x = invertingSquare.x;
 		var y = invertingSquare.y;
 		var size = invertingSquare.size;
@@ -69,7 +70,6 @@
 				v.selected = true;
 			});
 		}
-
 	}
 
 	function draw(ctx, gameState, changeFunction) {
@@ -81,7 +81,6 @@
 		var padding = width*0.1;
 
 		gameState.tiles.forEach(function(value, x, y) {
-			console.log(value);
 
 			var tileState = gameState.tileStates.get(x,y);
 

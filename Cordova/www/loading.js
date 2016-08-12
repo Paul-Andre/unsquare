@@ -29,7 +29,9 @@ $.getJSON("bookList.json", {}, function(data) {
 						var level = book.levels[j];
 						level.colorScheme = colorSchemes[level.colorScheme];
 						level.shape = shapes[level.shape];
+						console.log(level.tiles);
 						level.tiles = Grid.from2dArray(level.tiles);
+						console.log(level.tiles);
 					}
 				});
 			}

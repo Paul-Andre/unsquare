@@ -59,30 +59,21 @@ function makeGameBase(canvasId, divId) {
 	game.doMouseMove = function(x, y) {
 		mouseNow.x = x / canvasVirtualSize;
 		mouseNow.y = y / canvasVirtualSize;
-		this.level.shape(mouseStart.x, mouseStart.y, mouseNow.x, mouseNow.y,
-				this.gameState.tileStates);
+		if(mouseStart.pressed){
+			this.level.shape.select(mouseStart.x, mouseStart.y, mouseNow.x, mouseNow.y,
+					this.gameState.tileStates);
+		}
 	};
 
 
 	game.doMouseUp = function(x, y) {
-		mouseStart.pressed = false;
-	};
-
-
-
-	var requestedRedraw = false;
-	game.requestRedraw = function() {
-		var that = this;
-		if (!requestedRedraw) {
-			requestAnimationFrame(function() {
-				that.draw(ctx);
-				requestedRedraw = false
-			});
-			requestedRedraw = true;
+		if(mouseStart.pressed){
+			this.level.shape.select(mouseStart.x, mouseStart.y, mouseNow.x, mouseNow.y,
+					this.gameState.tileStates);
+			tiles 
+			mouseStart.pressed = false;
 		}
-	}
-
-
+	};
 
 
 	// Gets the coordinates of the touch/mouse relative to the canvas element.
@@ -112,7 +103,7 @@ function makeGameBase(canvasId, divId) {
 
 	canvas.ontouchstart = createTouchListener(game.doMouseDown.bind(game));
 	canvas.ontouchmove = createTouchListener(game.doMouseMove.bind(game));
-	canvas.ontouchend = createTouchListener(game.doMouseDown.bind(game));
+	canvas.ontouchend = createTouchListener(game.doMouseUp.bind(game));
 
 	function createMouseListener(fn) {
 		return function(event) {
@@ -122,9 +113,9 @@ function makeGameBase(canvasId, divId) {
 		};
 	}
 
-	canvas.onmousedown = createTouchListener(game.doMouseDown.bind(game));
-	canvas.onmousemove = createTouchListener(game.doMouseMove.bind(game));
-	canvas.onmouseup = createTouchListener(game.doMouseDown.bind(game));
+	canvas.onmousedown = createMouseListener(game.doMouseDown.bind(game));
+	canvas.onmousemove = createMouseListener(game.doMouseMove.bind(game));
+	canvas.onmouseup = createMouseListener(game.doMouseUp.bind(game));
 
 	window.addEventListener("resize", function(){
 		game.onResize()
@@ -134,11 +125,20 @@ function makeGameBase(canvasId, divId) {
 	var hidden = true;
 	game.draw = function(){
 		if(!hidden && this.gameState){
-			this.level.shape.draw(ctx,this.gameState,
-					this.level.colorScheme.unsquare);
-			requestAnimationFrame(function(){
+			requestAnimationFrame(function(timeStamp){
+				var previousTimestamp = game.gameState.lastUpdateTimestamp;
+				game.gameState.tileStates.forEach(function(v){
+					if(v.selected){
+						v.transitionState = Math.min(1,
+								v.transitionState + (timeStamp - previousTimestamp)*0.001);
+					}
+				});
+				game.gameState.lastUpdateTimestamp = timeStamp;
 				game.draw();
 			});
+
+			this.level.shape.draw(ctx,this.gameState,
+					this.level.colorScheme.unsquare);
 		}
 	};
 

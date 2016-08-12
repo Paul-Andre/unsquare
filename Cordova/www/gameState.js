@@ -19,6 +19,7 @@ function GameState(level) {
 	};
 	this.level = level;
 	this.undoList = [];
+	this.lastUpdateTimestamp = performance.now();
 }
 
 

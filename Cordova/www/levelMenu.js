@@ -18,7 +18,7 @@ levelMenu.openBook = function(book){
 		drawIcon(level, icon.get()[0]);
 		icon.prop("level", level);
 		icon.click(function() {
-			levelMenu.startLevel(level);
+			levelMenu.startLevel(this.level);
 		});
 		container.append(icon);
 	}
