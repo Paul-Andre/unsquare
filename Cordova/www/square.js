@@ -50,22 +50,22 @@
 	}
 
 
-	function select(x1, y1, x2, y2, tileState) {
+	function select(x1, y1, x2, y2, tileStates) {
 
-		var width = ctx.canvas.width/gameState.tiles.width;
-		var height = ctx.canvas.height/gameState.tiles.height;
+		var width = gameStates.width;
+		var height = gameStates.height;
 
-		var invertingSquare = calculateSquare(x1/width, y1/height, x2/width, y2/height);
+		var invertingSquare = calculateSquare(x1*width, y1*height, x2*width, y2*height);
 		var x = invertingSquare.x;
 		var y = invertingSquare.y;
 		var size = invertingSquare.size;
 
-		tileState.forEach(function(v){
+		tileStates.forEach(function(v){
 			v.selected = false;
 		});
 
 		if (invertingSquare.size > 1) {
-			tileState.window(x,y,size,size).forEach(function(v){
+			tileStates.window(x,y,size,size).forEach(function(v){
 				v.selected = true;
 			});
 		}
@@ -81,9 +81,11 @@
 		var padding = width*0.1;
 
 		gameState.tiles.forEach(function(value, x, y) {
+			console.log(value);
+
 			var tileState = gameState.tileStates.get(x,y);
 
-			ctx.fillStyle = gameState.level.type.color.cells[value].fill;
+			ctx.fillStyle = gameState.level.colorScheme.cells[value].fill;
 			ctx.fillRect(
 					(x * width + padding),
 					(y * height + padding),
@@ -91,7 +93,7 @@
 					(height-padding)
 					);
 
-			ctx.fillStyle = gameState.level.type.color.cells[changeFunction(value)].fill;
+			ctx.fillStyle = gameState.level.colorScheme.cells[changeFunction(value)].fill;
 			
 			if(tileState.selected){
 				ctx.fillRect(

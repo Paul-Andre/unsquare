@@ -50,28 +50,22 @@ function makeGameBase(canvasId, divId) {
 
 	// These should be in the base file
 	game.doMouseDown = function(x, y) {
-		mouseStart.x = x;
-		mouseStart.y = y;
+		mouseStart.x = x / canvasVirtualSize;
+		mouseStart.y = y / canvasVirtualSize;
 		mouseStart.pressed = true;
 	};
 
 
 	game.doMouseMove = function(x, y) {
-		mouseNow.x = x;
-		mouseNow.y = y;
-		var size = canvasSize / this.grid.width;
-		if (mouseStart.pressed) {
-			this.updatePreGrid(mouseStart.x / size, mouseStart.y / size, x / size, y / size);
-			this.requestRedraw(ctx);
-		}
+		mouseNow.x = x / canvasVirtualSize;
+		mouseNow.y = y / canvasVirtualSize;
+		this.level.shape(mouseStart.x, mouseStart.y, mouseNow.x, mouseNow.y,
+				this.gameState.tileStates);
 	};
 
 
 	game.doMouseUp = function(x, y) {
 		mouseStart.pressed = false;
-		this.preGrid.setAll(0);
-		var size = canvasSize / this.grid.width;
-		this.unsquareGrid(mouseStart.x / size, mouseStart.y / size, x / size, y / size);
 	};
 
 
@@ -137,18 +131,24 @@ function makeGameBase(canvasId, divId) {
 	}, false);
 	
 
+	var hidden = true;
 	game.draw = function(){
-		if(this.gameState){
-			this.gameState.level.shape.draw(ctx,this.gameState,
-					this.gameState.level.colorScheme.unsquare);
+		if(!hidden && this.gameState){
+			this.level.shape.draw(ctx,this.gameState,
+					this.level.colorScheme.unsquare);
+			requestAnimationFrame(function(){
+				game.draw();
+			});
 		}
 	};
 
-	game.onShow = function(){this
+	game.onShow = function(){
+		hidden = false;
 		this.draw();
 	};
 
 	game.onHide = function(){
+		hidden = true;
 	};
 
 
