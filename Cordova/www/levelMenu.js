@@ -2,40 +2,39 @@
 
 var levelMenu = {}
 
-levelMenu.loadBook = function(book){
-	console.log(book.link);
-	$.getJSON(book.link, {}, function(data) {
-		var container = $("#levelMenu .content");
-		container.html("");
+levelMenu.openBook = function(book){
+	this.book = book;
+	var container = $("#levelMenu .content");
+	container.html("");
 
-		for (var i=0; i<data.levels.length; i++) {
-			var level = data.levels[i];
-			var icon = $(document.createElement("canvas"));
-			icon.attr("class", "levelIcon");
-			icon.css("width", "55px");
-			icon.css("height","55px");
-			icon.prop("width", 55*window.devicePixelRatio);
-			icon.prop("height", 55*window.devicePixelRatio);
-			drawIcon(level, icon.get()[0]);
-			icon.prop("level", level);
-			icon.click(function() {
-				levelMenu.startLevel(level);
-			});
-			container.append(icon);
-		}
-	});
+	for (var i=0; i<book.levels.length; i++) {
+		var level = book.levels[i];
+		var icon = $(document.createElement("canvas"));
+		icon.attr("class", "levelIcon");
+		icon.css("width", "55px");
+		icon.css("height","55px");
+		icon.prop("width", 55*window.devicePixelRatio);
+		icon.prop("height", 55*window.devicePixelRatio);
+		drawIcon(level, icon.get()[0]);
+		icon.prop("level", level);
+		icon.click(function() {
+			levelMenu.startLevel(this.level);
+		});
+		container.append(icon);
+	}
 }
 
+
 levelMenu.startLevel = function(level){
-        game.clearScreen();
-	game.loadLevel(level);
-	screenManager.switchTo("gameScreen");
+	game.openLevel(level);
+	screenManager.switchTo("game");
 }
 
 levelMenu.newLevel = function(){
 	var level = makeLevel();
 	level.book = this.book;
 	this.book.levels.push(level);
-	this.loadBook(this.book);
+	this.openBook(this.book);
 }
+
 

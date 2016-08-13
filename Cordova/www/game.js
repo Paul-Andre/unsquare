@@ -2,7 +2,7 @@ var game = makeGameBase("gameCanvas", "gameScreen");
 
 game.restart = function restart() {
 	levelStats.close(this.level);
-	game.loadLevel(this.level);
+	game.openLevel(this.level);
 	game.draw(ctx);
 };
 
@@ -34,11 +34,11 @@ game.finishedLevel = function() {
 	if (typeof this.level.index == "number") {
 		game.disactivateEvents();
 		canvas.onmousedown = canvas.ontouchstart = function(evt) {
-			game.loadLevel(nextLevel);
+			game.openLevel(nextLevel);
 			return cancelEvent(evt);
 		}
 	}
 	levelStats.pass(this.level);
 }
 
-screenManager.additionalFunctions.gameScreen = game;
+screenManager.additionalFunctions.game = game;

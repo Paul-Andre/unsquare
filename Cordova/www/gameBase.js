@@ -32,14 +32,16 @@ function makeGameBase(canvasId, divId) {
 		canvasSize = canvasVirtualSize*(window.devicePixelRatio || 1);
 		canvas.width = canvas.height = canvasSize;
 		canvas.style.width = canvas.style.height = canvasVirtualSize + "px";
+		this.draw();
 	}
 
 
 
 	// This is central to both editor and game
-	game.loadLevel = function(level) {
+	game.openLevel = function(level) {
 
 		this.gameState = new GameState(level);
+		this.level = level;
 
 		mouseStart.pressed = false;
 		levelStats.open(level); // this will only happen in the actual game
@@ -57,26 +59,20 @@ function makeGameBase(canvasId, divId) {
 	game.doMouseMove = function(x, y) {
 		mouseNow.x = x / canvasVirtualSize;
 		mouseNow.y = y / canvasVirtualSize;
-		var size = canvasSize / this.grid.width;
-		if (mouseStart.pressed) {
-			this.gameState.level.type.shape.select(
-					mouseStart.x,
-					mouseStart.y,
-					mouseNow.x,
-					mouseNow.y,
+		if(mouseStart.pressed){
+			this.level.shape.select(mouseStart.x, mouseStart.y, mouseNow.x, mouseNow.y,
 					this.gameState.tileStates);
 		}
 	};
 
 
 	game.doMouseUp = function(x, y) {
-		mouseStart.pressed = false;
-		//this.preGrid.setAll(0);
-		//var size = canvasSize / this.grid.width;
-		//this.unsquareGrid(mouseStart.x / size, mouseStart.y / size, x / size, y / size);
+		if(mouseStart.pressed){
+			this.level.shape.select(mouseStart.x, mouseStart.y, mouseNow.x, mouseNow.y,
+					this.gameState.tileStates);
+			mouseStart.pressed = false;
+		}
 	};
-
-
 
 
 	// Gets the coordinates of the touch/mouse relative to the canvas element.
@@ -87,7 +83,6 @@ function makeGameBase(canvasId, divId) {
 		var borderTopWidth = parseInt(style.borderTopWidth, 10);
 		var rect = canvas.getBoundingClientRect();
 		return {
-			// TODO: replace the magic number 2
 			x: Math.max(0, Math.min(canvas.width - 2, (event.clientX - rect.left - borderLeftWidth)
 						*(window.devicePixelRatio || 1))),
 			y: Math.max(0, Math.min(canvas.height - 2, (event.clientY - rect.top - borderTopWidth)
@@ -117,43 +112,50 @@ function makeGameBase(canvasId, divId) {
 		};
 	}
 
-	canvas.onmousedown = createTouchListener(game.doMouseDown.bind(game));
-	canvas.onmousemove = createTouchListener(game.doMouseMove.bind(game));
-	canvas.onmouseup = createTouchListener(game.doMouseUp.bind(game));
+	canvas.onmousedown = createMouseListener(game.doMouseDown.bind(game));
+	canvas.onmousemove = createMouseListener(game.doMouseMove.bind(game));
+	canvas.onmouseup = createMouseListener(game.doMouseUp.bind(game));
 
 	window.addEventListener("resize", function(){
 		game.onResize()
 	}, false);
 	
-	
-	// TODO check if the section is actually hidden instead of using this.
+
 	var hidden = true;
 	game.draw = function(){
-		if(this.gameState){
-			this.gameState.tileStates.forEach(function(v){
-				if(v.selected){
-					v.transitionState = Math.min(1, v.transitionState+0.1)
-				}
-			});
-			this.gameState.level.type.shape.draw(ctx,this.gameState,
-					this.gameState.level.type.color.unsquare);
-		}
-		if(!hidden){
-			requestAnimationFrame(function(){
+		if(!hidden && this.gameState){
+			requestAnimationFrame(function(timeStamp){
+				var previousTimestamp = game.gameState.lastUpdateTimestamp;
+				game.gameState.tileStates.forEach(function(v){
+					if(v.selected){
+						v.transitionState = Math.min(1,
+								v.transitionState + (timeStamp - previousTimestamp)/500);
+					}
+					else{
+						v.transitionState = Math.max(0,
+								v.transitionState - (timeStamp - previousTimestamp)/500);
+					}
+				});
+				game.gameState.lastUpdateTimestamp = timeStamp;
 				game.draw();
 			});
+
+			this.level.shape.draw(ctx,this.gameState,
+					this.level.colorScheme.unsquare);
 		}
 	};
 
-	game.onShow = function(){this
+	game.onShow = function(){
 		hidden = false;
-		game.draw();
+		this.draw();
 	};
 
 	game.onHide = function(){
 		hidden = true;
 	};
 
+
 	game.onResize();
 	return game;
 }
+

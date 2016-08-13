@@ -5,23 +5,18 @@ bookMenu.onShow = function() {
 }
         
 bookMenu.showBooks = function() {
-        console.log("showing books");
-        console.log(books);
 
-		
-		/*
-		 * TODO
-		 * At this point, the icon of the book should be created (drawing on a canvas is cheap)
-		 *
-		 * The books will be a list of small icons next to the name of the book.
-		 */
-	
+	var container = $("#bookContainer");
+	container.html("");
+
+	for (var i=0;i<books.length;i++) {
+		container.append(bookMenu.prepareBook(books[i]));
+	}
 }
 
 
-
 bookMenu.openBook = function(book) {
-	levelMenu.loadBook(book);
+	levelMenu.openBook(book);
 	screenManager.switchTo("levelMenu");
 };
 
@@ -33,15 +28,7 @@ bookMenu.newBook = function() {
 };
 
 bookMenu.loadBooks = function() {
-	$.getJSON("bookList.json", {}, function(data) {
-		var container = $("#bookContainer");
-		container.html("");
 
-		for (var i=0;i<data.books.length;i++) {
-			container.append(bookMenu.prepareBook(data.books[i]));
-			var book = books[i];
-		}
-	});
 };
 
 //Creates a DOM element from the book info
@@ -92,3 +79,4 @@ bookMenu.prepareBook = function(book) {
         return node;
 };
 
+screenManager.additionalFunctions.bookMenu = bookMenu;
