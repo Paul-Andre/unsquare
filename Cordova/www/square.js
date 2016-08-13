@@ -50,22 +50,23 @@
 	}
 
 
-	function select(x1, y1, x2, y2, tileState) {
+	function select(x1, y1, x2, y2, tileStates) {
 
-		var width = ctx.canvas.width/gameState.tiles.width;
-		var height = ctx.canvas.height/gameState.tiles.height;
+		var invertingSquare = calculateSquare(x1*tileStates.width,
+				y1*tileStates.height,
+				x2*tileStates.width,
+				y2*tileStates.height);
 
-		var invertingSquare = calculateSquare(x1/width, y1/height, x2/width, y2/height);
 		var x = invertingSquare.x;
 		var y = invertingSquare.y;
 		var size = invertingSquare.size;
 
-		tileState.forEach(function(v){
+		tileStates.forEach(function(v){
 			v.selected = false;
 		});
 
 		if (invertingSquare.size > 1) {
-			tileState.window(x,y,size,size).forEach(function(v){
+			tileStates.window(x,y,size,size).forEach(function(v){
 				v.selected = true;
 			});
 		}

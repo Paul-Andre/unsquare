@@ -32,7 +32,6 @@ function makeGameBase(canvasId, divId) {
 		canvasSize = canvasVirtualSize*(window.devicePixelRatio || 1);
 		canvas.width = canvas.height = canvasSize;
 		canvas.style.width = canvas.style.height = canvasVirtualSize + "px";
-		this.draw();
 	}
 
 
@@ -49,43 +48,33 @@ function makeGameBase(canvasId, divId) {
 
 	// These should be in the base file
 	game.doMouseDown = function(x, y) {
-		mouseStart.x = x;
-		mouseStart.y = y;
+		mouseStart.x = x / canvasVirtualSize;
+		mouseStart.y = y / canvasVirtualSize;
 		mouseStart.pressed = true;
 	};
 
 
 	game.doMouseMove = function(x, y) {
-		mouseNow.x = x;
-		mouseNow.y = y;
+		mouseNow.x = x / canvasVirtualSize;
+		mouseNow.y = y / canvasVirtualSize;
 		var size = canvasSize / this.grid.width;
 		if (mouseStart.pressed) {
-			this.updatePreGrid(mouseStart.x / size, mouseStart.y / size, x / size, y / size);
-			this.requestRedraw(ctx);
+			this.gameState.level.type.shape.select(
+					mouseStart.x,
+					mouseStart.y,
+					mouseNow.x,
+					mouseNow.y,
+					this.gameState.tileStates);
 		}
 	};
 
 
 	game.doMouseUp = function(x, y) {
 		mouseStart.pressed = false;
-		this.preGrid.setAll(0);
-		var size = canvasSize / this.grid.width;
-		this.unsquareGrid(mouseStart.x / size, mouseStart.y / size, x / size, y / size);
+		//this.preGrid.setAll(0);
+		//var size = canvasSize / this.grid.width;
+		//this.unsquareGrid(mouseStart.x / size, mouseStart.y / size, x / size, y / size);
 	};
-
-
-
-	var requestedRedraw = false;
-	game.requestRedraw = function() {
-		var that = this;
-		if (!requestedRedraw) {
-			requestAnimationFrame(function() {
-				that.draw(ctx);
-				requestedRedraw = false
-			});
-			requestedRedraw = true;
-		}
-	}
 
 
 
@@ -98,6 +87,7 @@ function makeGameBase(canvasId, divId) {
 		var borderTopWidth = parseInt(style.borderTopWidth, 10);
 		var rect = canvas.getBoundingClientRect();
 		return {
+			// TODO: replace the magic number 2
 			x: Math.max(0, Math.min(canvas.width - 2, (event.clientX - rect.left - borderLeftWidth)
 						*(window.devicePixelRatio || 1))),
 			y: Math.max(0, Math.min(canvas.height - 2, (event.clientY - rect.top - borderTopWidth)
@@ -117,7 +107,7 @@ function makeGameBase(canvasId, divId) {
 
 	canvas.ontouchstart = createTouchListener(game.doMouseDown.bind(game));
 	canvas.ontouchmove = createTouchListener(game.doMouseMove.bind(game));
-	canvas.ontouchend = createTouchListener(game.doMouseDown.bind(game));
+	canvas.ontouchend = createTouchListener(game.doMouseUp.bind(game));
 
 	function createMouseListener(fn) {
 		return function(event) {
@@ -129,29 +119,41 @@ function makeGameBase(canvasId, divId) {
 
 	canvas.onmousedown = createTouchListener(game.doMouseDown.bind(game));
 	canvas.onmousemove = createTouchListener(game.doMouseMove.bind(game));
-	canvas.onmouseup = createTouchListener(game.doMouseDown.bind(game));
+	canvas.onmouseup = createTouchListener(game.doMouseUp.bind(game));
 
 	window.addEventListener("resize", function(){
 		game.onResize()
 	}, false);
 	
-
+	
+	// TODO check if the section is actually hidden instead of using this.
+	var hidden = true;
 	game.draw = function(){
 		if(this.gameState){
+			this.gameState.tileStates.forEach(function(v){
+				if(v.selected){
+					v.transitionState = Math.min(1, v.transitionState+0.1)
+				}
+			});
 			this.gameState.level.type.shape.draw(ctx,this.gameState,
 					this.gameState.level.type.color.unsquare);
+		}
+		if(!hidden){
+			requestAnimationFrame(function(){
+				game.draw();
+			});
 		}
 	};
 
 	game.onShow = function(){this
-		this.draw();
+		hidden = false;
+		game.draw();
 	};
 
 	game.onHide = function(){
+		hidden = true;
 	};
-
 
 	game.onResize();
 	return game;
 }
-

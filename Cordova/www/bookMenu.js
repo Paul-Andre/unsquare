@@ -33,15 +33,15 @@ bookMenu.newBook = function() {
 };
 
 bookMenu.loadBooks = function() {
-        $.getJSON("bookList.json", {}, function(data) {
+	$.getJSON("bookList.json", {}, function(data) {
 		var container = $("#bookContainer");
 		container.html("");
 
 		for (var i=0;i<data.books.length;i++) {
 			container.append(bookMenu.prepareBook(data.books[i]));
 			var book = books[i];
-                }
-        });
+		}
+	});
 };
 
 //Creates a DOM element from the book info
