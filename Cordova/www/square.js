@@ -94,14 +94,16 @@
 
 			ctx.fillStyle = gameState.level.colorScheme.cells[changeFunction(value)].fill;
 			
-			if(tileState.selected){
+				var squareWidth = (width-padding)*tileState.transitionState;
+				var squareHeight = (height-padding)*tileState.transitionState;
+				var squareOffsetX = (width-padding)*(1-tileState.transitionState)*0.5;
+				var squareOffsetY = (height-padding)*(1-tileState.transitionState)*0.5;
 				ctx.fillRect(
-						(x * width + padding),
-						(y * height + padding),
-						(width-padding)*tileState.transitionState,
-						(height-padding)*tileState.transitionState
+						(x * width + padding)+squareOffsetX,
+						(y * height + padding)+squareOffsetY,
+						squareWidth,
+						squareHeight
 						);
-			}
 		});
 	}
 

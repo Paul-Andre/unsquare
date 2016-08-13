@@ -70,7 +70,6 @@ function makeGameBase(canvasId, divId) {
 		if(mouseStart.pressed){
 			this.level.shape.select(mouseStart.x, mouseStart.y, mouseNow.x, mouseNow.y,
 					this.gameState.tileStates);
-			tiles 
 			mouseStart.pressed = false;
 		}
 	};
@@ -130,7 +129,11 @@ function makeGameBase(canvasId, divId) {
 				game.gameState.tileStates.forEach(function(v){
 					if(v.selected){
 						v.transitionState = Math.min(1,
-								v.transitionState + (timeStamp - previousTimestamp)*0.001);
+								v.transitionState + (timeStamp - previousTimestamp)/500);
+					}
+					else{
+						v.transitionState = Math.max(0,
+								v.transitionState - (timeStamp - previousTimestamp)/500);
 					}
 				});
 				game.gameState.lastUpdateTimestamp = timeStamp;
