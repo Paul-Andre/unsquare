@@ -50,15 +50,15 @@ function makeGameBase(canvasId, divId) {
 
 	// These should be in the base file
 	game.doMouseDown = function(x, y) {
-		mouseStart.x = x / canvasVirtualSize;
-		mouseStart.y = y / canvasVirtualSize;
+		mouseStart.x = x / canvasSize;
+		mouseStart.y = y / canvasSize;
 		mouseStart.pressed = true;
 	};
 
 
 	game.doMouseMove = function(x, y) {
-		mouseNow.x = x / canvasVirtualSize;
-		mouseNow.y = y / canvasVirtualSize;
+		mouseNow.x = x / canvasSize;
+		mouseNow.y = y / canvasSize;
 		if(mouseStart.pressed){
 			this.level.shape.select(mouseStart.x, mouseStart.y, mouseNow.x, mouseNow.y,
 					this.gameState.tileStates);
@@ -92,29 +92,31 @@ function makeGameBase(canvasId, divId) {
 
 	function createTouchListener(fn) {
 		return function(event){
-			if (event.targetTouches) {
-				var coords = getCoordinates(event.targetTouches[0]);
+			if (event.changedTouches) {
+				var coords = getCoordinates(event.changedTouches[0]);
+				console.log(coords);
 				fn(coords.x, coords.y);
 			}
 			return cancelEvent(event);
 		};
 	}
 
-	canvas.ontouchstart = createTouchListener(game.doMouseDown.bind(game));
-	canvas.ontouchmove = createTouchListener(game.doMouseMove.bind(game));
-	canvas.ontouchend = createTouchListener(game.doMouseUp.bind(game));
+	canvas.addEventListener("touchstart",createTouchListener(game.doMouseDown.bind(game)));
+	canvas.addEventListener("touchmove",createTouchListener(game.doMouseMove.bind(game)));
+	canvas.addEventListener("touchend",createTouchListener(game.doMouseUp.bind(game)));
 
 	function createMouseListener(fn) {
 		return function(event) {
 			var coords = getCoordinates(event);
+			console.log(coords);
 			fn(coords.x, coords.y);
 			return cancelEvent(event);
 		};
 	}
 
-	canvas.onmousedown = createMouseListener(game.doMouseDown.bind(game));
-	canvas.onmousemove = createMouseListener(game.doMouseMove.bind(game));
-	canvas.onmouseup = createMouseListener(game.doMouseUp.bind(game));
+	canvas.addEventListener("mousedown",createMouseListener(game.doMouseDown.bind(game)));
+	canvas.addEventListener("mousemove",createMouseListener(game.doMouseMove.bind(game)));
+	canvas.addEventListener("mouseup",createMouseListener(game.doMouseUp.bind(game)));
 
 	window.addEventListener("resize", function(){
 		game.onResize()
