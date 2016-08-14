@@ -141,11 +141,11 @@ function makeGameBase(canvasId, divId) {
 				game.gameState.tileStates.forEach(function(v){
 					if(v.selected){
 						v.transitionState = Math.min(1,
-								v.transitionState + (timeStamp - previousTimestamp)/500);
+								v.transitionState + (timeStamp - previousTimestamp)/250);
 					}
 					else{
 						v.transitionState = Math.max(0,
-								v.transitionState - (timeStamp - previousTimestamp)/500);
+								v.transitionState - (timeStamp - previousTimestamp)/250);
 					}
 				});
 				game.gameState.lastUpdateTimestamp = timeStamp;

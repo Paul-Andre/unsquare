@@ -1,9 +1,24 @@
 var game = makeGameBase("gameCanvas", "gameScreen");
 
+// 👌  😂
+// ok... 
+game.openLevel = (function(){
+	var superOpenLevel = game.openLevel.bind(game);
+	return function(level){
+		superOpenLevel(level);
+		levelStats.open(level);
+	};
+})();
+
+// this specifies what happens when you activate squares
+game.action = function(v){
+	return this.level.colorScheme.unsquare(v);
+};
+
+
 game.restart = function restart() {
 	levelStats.close(this.level);
 	game.openLevel(this.level);
-	game.draw(ctx);
 };
 
 game.finishedLevel = function() {
