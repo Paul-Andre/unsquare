@@ -42,15 +42,6 @@ section#levelMenuScreen .header {
 
 /** ---------------Containers-------------- **/
 
-/* Headers */
-
-section#gameScreen .header {
-
-}
-
-section#editorScreen .header {
-
-}
 
 section#bookMenuScreen .header,
 section#aboutScreen .header,
@@ -59,94 +50,19 @@ section#resetScreen .header {
 	width: 100%;
 }
 
-/* Content */
-
-section#editorScreen .content {
-
-}
-
-section#bookMenuScreen .content {
-
-}
-
-section#levelMenuScreen .content {
-
-}
-
-section#aboutScreen .content {
-
-}
-
-section#resetScreen .content {
-
-}
-
-/* Footers */
-
-section#editorScreen .footer {
-
-}
-
-section#bookMenuScreen .footer {
-
-}
-
-section#levelMenuScreen .footer {
-
-}
-
-section#aboutScreen .footer {
-
-}
-
-section#resetScreen .footer {
-
-}
-
 /** ------------end of containers------------- **/
 
 /** Buttons **/
+
+button, .levelIcon {
+    background: white;
+    border: solid 1px #9b9b9b;
+    margin: 2px;
+    box-shadow: 1px 1px #9b9b9b;
+    color: #181832;
+}
 
 section#gameScreen button:disabled{
 	background: #aaa;
 }
 
-section#editorScreen button {
-
-}
-
-section#bookMenuScreen button {
-
-}
-
-section#levelMenuScreen button {
-
-}
-
-section#aboutScreen button {
-
-}
-
-section#resetScreen button {
-
-}
-
-/** end of buttons **/
-
-
-
-section#bookMenuScreen .header h1 {
-	font-style: italic
-}
-
-section#levelMenuScreen .header h1 {
-
-}
-
-section#aboutScreen .header h1 {
-
-}
-
-section#resetScreen .header h1 {
-
-}
