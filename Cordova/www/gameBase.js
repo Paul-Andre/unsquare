@@ -70,10 +70,10 @@ function makeGameBase(canvasId, divId) {
 		if(mouseStart.pressed){
 			this.level.shape.select(mouseStart.x, mouseStart.y, mouseNow.x, mouseNow.y,
 					this.gameState.tileStates);
+			this.gameState.saveTiles();
 			var that = this;
 			this.gameState.tileStates.forEach(function(v,x,y){
 				if(v.selected){
-					console.log(that.gameState.tiles.get(x,y));
 					that.gameState.tiles.set(x,y,
 							that.action(that.gameState.tiles.get(x,y)));
 					v.selected = false;
@@ -83,6 +83,11 @@ function makeGameBase(canvasId, divId) {
 			mouseStart.pressed = false;
 		}
 	};
+
+	game.undo = function() {
+		this.gameState.undo();
+	}
+	
 
 
 	// Gets the coordinates of the touch/mouse relative to the canvas element.

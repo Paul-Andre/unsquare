@@ -36,12 +36,14 @@ GameState.prototype.isClear = function isClear() {
 	return clear;
 }
 
+GameState.prototype.saveTiles = function() {
+	this.undoList.push(this.tiles.clone());
+};
 
 GameState.prototype.undo = function() {
 	if (this.undoList.length > 0) {
 		var undo = this.undoList.pop();
 		this.tiles = undo;
-		this.draw(ctx);
 	}
 }
 
