@@ -1,7 +1,6 @@
-var game = makeGameBase("gameCanvas", "gameScreen");
+var game = makeGameBase("gameCanvas", "game");
 
-// 👌  😂
-// ok... 
+// 👌 😂
 game.openLevel = (function(){
 	var superOpenLevel = game.openLevel.bind(game);
 	return function(level){
@@ -12,14 +11,14 @@ game.openLevel = (function(){
 
 // this specifies what happens when you activate squares
 game.action = function(v){
-	return this.level.colorScheme.unsquare(v);
+	return game.level.colorScheme.unsquare(v);
 };
-
 
 game.restart = function restart() {
 	levelStats.close(this.level);
 	game.openLevel(this.level);
 };
+
 
 game.finishedLevel = function() {
 	this.finished = true;

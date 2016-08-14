@@ -4,25 +4,29 @@ var levelMenu = {}
 
 levelMenu.openBook = function(book){
 	this.book = book;
-	var container = $("#levelMenu .content");
-	container.html("");
+	var container = $("#levelMenu .content").get()[0];
+	container.innerHTML = "";
 
 	for (var i=0; i<book.levels.length; i++) {
-		var level = book.levels[i];
-		var icon = $(document.createElement("canvas"));
-		icon.attr("class", "levelIcon");
-		icon.css("width", "55px");
-		icon.css("height","55px");
-		icon.prop("width", 55*window.devicePixelRatio);
-		icon.prop("height", 55*window.devicePixelRatio);
-		drawIcon(level, icon.get()[0]);
-		icon.prop("level", level);
-		icon.click(function() {
-			levelMenu.startLevel(this.level);
-		});
-		container.append(icon);
+		container.appendChild(levelMenu.createLevelInfo(book.levels[i]));
 	}
 }
+
+levelMenu.createLevelInfo = function(level){
+	var icon = document.createElement("canvas");
+	icon.className = "levelIcon";
+	icon.style.width = "55px";
+	icon.style.height = "55px";
+	icon.width = 55*window.devicePixelRatio;
+	icon.height = 55*window.devicePixelRatio;
+	drawIcon(level, icon);
+	icon.level = level;
+	icon.onclick = function() {
+		levelMenu.startLevel(this.level);
+	};
+	return icon;
+}
+
 
 
 levelMenu.startLevel = function(level){

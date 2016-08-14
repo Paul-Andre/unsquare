@@ -62,6 +62,10 @@ button, .levelIcon {
     color: #181832;
 }
 
+.levelIcon {
+	vertical-align: top;
+}
+
 section#gameScreen button:disabled{
 	background: #aaa;
 }

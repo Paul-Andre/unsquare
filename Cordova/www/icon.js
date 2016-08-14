@@ -8,7 +8,6 @@ function drawIcon(level, canvas) {
 	var cellHeight = canvas.height/level.tiles.height;
 
 	level.tiles.forEach(function(v,x,y) {
-		console.log(level.colorScheme.cells[v].fill);
 		ctx.fillStyle = level.colorScheme.cells[v].fill;
 		ctx.fillRect(
 				Math.floor(cellWidth*x),

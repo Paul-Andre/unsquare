@@ -39,12 +39,12 @@ function makeGameBase(canvasId, divId) {
 
 	// This is central to both editor and game
 	game.openLevel = function(level) {
+		console.log(level);
 
 		this.gameState = new GameState(level);
 		this.level = level;
 
 		mouseStart.pressed = false;
-		levelStats.open(level); // this will only happen in the actual game
 	}
 
 
@@ -75,8 +75,7 @@ function makeGameBase(canvasId, divId) {
 				if(v.selected){
 					console.log(that.gameState.tiles.get(x,y));
 					that.gameState.tiles.set(x,y,
-							that.level.colorScheme.unsquare(
-								that.gameState.tiles.get(x,y)));
+							that.action(that.gameState.tiles.get(x,y)));
 					v.selected = false;
 					v.transitionState = 0;
 				}
@@ -152,8 +151,8 @@ function makeGameBase(canvasId, divId) {
 				game.draw();
 			});
 
-			this.level.shape.draw(ctx,this.gameState,
-					this.level.colorScheme.unsquare);
+			this.level.shape.draw(ctx,this.gameState,this.action);
+
 		}
 	};
 
