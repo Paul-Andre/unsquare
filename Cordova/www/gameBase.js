@@ -70,6 +70,17 @@ function makeGameBase(canvasId, divId) {
 		if(mouseStart.pressed){
 			this.level.shape.select(mouseStart.x, mouseStart.y, mouseNow.x, mouseNow.y,
 					this.gameState.tileStates);
+			var that = this;
+			this.gameState.tileStates.forEach(function(v,x,y){
+				if(v.selected){
+					console.log(that.gameState.tiles.get(x,y));
+					that.gameState.tiles.set(x,y,
+							that.level.colorScheme.unsquare(
+								that.gameState.tiles.get(x,y)));
+					v.selected = false;
+					v.transitionState = 0;
+				}
+			});
 			mouseStart.pressed = false;
 		}
 	};
@@ -108,7 +119,6 @@ function makeGameBase(canvasId, divId) {
 	function createMouseListener(fn) {
 		return function(event) {
 			var coords = getCoordinates(event);
-			console.log(coords);
 			fn(coords.x, coords.y);
 			return cancelEvent(event);
 		};
