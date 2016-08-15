@@ -1,0 +1,67 @@
+/*** ANIMATIONS FOR PAGES ***/
+
+@-webkit-keyframes slideLeft {
+	0% {
+		-webkit-transform: translateX(0px);
+	}
+        100% {
+		-webkit-transform: translateX(-500px);
+	}
+}
+@-moz-keyframes slideLeft {
+	0% {
+		-moz-transform: translateX(0px);
+	}
+        100% {
+		-moz-transform: translateX(-500px);
+	}
+}
+@-ms-keyframes slideLeft {
+	0% {
+		-ms-transform: translateX(0px);
+	}
+        100% {
+		-ms-transform: translateX(-500px);
+	}
+}
+@keyframes slideLeft {
+	0% {
+		transform: translateX(0px);
+	}
+	100% {
+		transform: translateX(-500px);
+	}
+}
+
+@-webkit-keyframes slideRight {
+	0% {
+		-webkit-transform: translateX(0px);
+	}
+        100% {
+		-webkit-transform: translateX(100%);
+	}
+}
+@-moz-keyframes slideRight {
+	0% {
+		-moz-transform: translateX(0px);
+	}
+        100% {
+		-moz-transform: translateX(100%);
+	}
+}
+@-ms-keyframes slideRight {
+	0% {
+		-ms-transform: translateX(0px);
+	}
+        100% {
+		-ms-transform: translateX(100%);
+	}
+}
+@keyframes slideRight {
+	0% {
+		transform: translateX(0px);
+	}
+	100% {
+		transform: translateX(100%);
+	}
+}

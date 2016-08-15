@@ -1,5 +1,5 @@
 /* CSS FILE FOR INDEX.HTML */
-@import "compass/css3";
+@import "animations.css";
 
 body {
   
@@ -11,6 +11,82 @@ section {
 	width: 100%;
 	display: none;
 
+}
+
+section.hiddenLeft {
+	-webkit-animation-name: slideLeft;
+	-moz-animation-name: slideLeft;
+	-ms-animation-name: slideLeft;
+	animation-name: slideLeft;
+	-webkit-animation-duration: 400ms;
+	-moz-animation-duration: 400ms;
+	-ms-animation-duration: 400ms;
+	animation-duration: 400ms;
+	-webkit-animation-timing-function: ease-in-out; 
+	-moz-animation-timing-function: ease-in-out;
+	-ms-animation-timing-function: ease-in-out;
+	animation-timing-function: ease-in-out;
+	-webkit-animation-fill-mode: forwards;
+	-moz-animation-fill-mode: forwards;
+	-ms-animation-fill-mode: forwards;
+	animation-fill-mode: forwards;
+}
+
+section.hiddenRight {
+	-webkit-animation: slideRight;
+	-moz-animation: slideRight;
+	-ms-animation: slideRight;
+	animation: slideRight;
+	-webkit-animation-duration: 400ms;
+	-moz-animation-duration: 400ms;
+	-ms-animation-duration: 400ms;
+	animation-duration: 400ms;
+	-webkit-animation-timing-function: ease-in-out; 
+	-moz-animation-timing-function: ease-in-out;
+	-ms-animation-timing-function: ease-in-out;
+	animation-timing-function: ease-in-out;
+	-webkit-animation-fill-mode: forwards;
+	-moz-animation-fill-mode: forwards;
+	-ms-animation-fill-mode: forwards;
+	animation-fill-mode: forwards;
+}
+
+section.showLeft {
+	-webkit-animation: slideLeft;
+	-moz-animation: slideLeft;
+	-ms-animation: slideLeft;
+	animation: slideLeft;
+	-webkit-animation-duration: 400ms;
+	-moz-animation-duration: 400ms;
+	-ms-animation-duration: 400ms;
+	animation-duration: 400ms;
+	-webkit-animation-timing-function: ease-in-out; 
+	-moz-animation-timing-function: ease-in-out;
+	-ms-animation-timing-function: ease-in-out;
+	animation-timing-function: ease-in-out;
+	-webkit-animation-fill-mode: forwards;
+	-moz-animation-fill-mode: forwards;
+	-ms-animation-fill-mode: forwards;
+	animation-fill-mode: forwards;
+}
+
+section.showRight {
+	-webkit-animation: slideRight;
+	-moz-animation: slideRight;
+	-ms-animation: slideRight;
+	animation: slideRight;
+	-webkit-animation-duration: 400ms;
+	-moz-animation-duration: 400ms;
+	-ms-animation-duration: 400ms;
+	animation-duration: 400ms;
+	-webkit-animation-timing-function: ease-in-out; 
+	-moz-animation-timing-function: ease-in-out;
+	-ms-animation-timing-function: ease-in-out;
+	animation-timing-function: ease-in-out;
+	-webkit-animation-fill-mode: forwards;
+	-moz-animation-fill-mode: forwards;
+	-ms-animation-fill-mode: forwards;
+	animation-fill-mode: forwards;
 }
 
 
