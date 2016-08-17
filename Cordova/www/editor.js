@@ -4,3 +4,5 @@ var editor = makeGameBase("editorCanvas", "editor");
 editor.action = function(v){
 	return editor.level.colorScheme.resquare(v);
 };
+
+screenManager.additionalFunctions.editor = editor;

@@ -30,8 +30,14 @@ levelMenu.createLevelInfo = function(level){
 
 
 levelMenu.startLevel = function(level){
-	game.openLevel(level);
-	screenManager.switchTo("game");
+	if (IS_EDITOR) {
+		editor.openLevel(level);
+		screenManager.switchTo("editor");
+	} else {
+		game.openLevel(level);
+		screenManager.switchTo("game");
+	}
+
 }
 
 levelMenu.newLevel = function(){
