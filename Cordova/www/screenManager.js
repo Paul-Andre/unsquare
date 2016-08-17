@@ -25,7 +25,9 @@ var screenManager = {
 		}
 	},
 	switchTo: function(screenName, keepAsIs) {
-                if (this.currentScreen) { this.currentScreen.removeClass().addClass("hiddenLeft"); }
+                if (this.currentScreen) { 
+			this.currentScreen.removeClass().addClass("hiddenLeft"); 
+		}
                 else { $("#" + this.currentScreenName).removeClass().addClass("hiddenLeft"); }
 
 		this.stack.push({name: this.currentScreenName, keepAsIs: !!keepAsIs});
@@ -36,7 +38,10 @@ var screenManager = {
 		this.currentScreenName = screenName;
 		this.currentScreen = $("#" + screenName);
 		this.currentScreen.removeClass().addClass("showLeft");
-		this.executeFunction(this.currentScreenName, "onShow");
+		setTimeout(function(){
+			this.currentScreen.removeClass().addClass("show");
+			this.executeFunction(this.currentScreenName, "onShow");
+		}, 501);
 	},
 	goBack: function() {
 		this.currentScreen.removeClass().addClass("hiddenRight");
@@ -46,9 +51,13 @@ var screenManager = {
 		this.currentScreenName = popped.name;
 		this.currentScreen = $("#" + this.currentScreenName);
 		this.currentScreen.removeClass().addClass("showRight");
-		if (!popped.keepAsIs) {
-			this.executeFunction(this.currentScreenName, "onShow");
-		}
+		setTimeout(function(){
+		this.currentScreen.removeClass().addClass("show");
+			if (!popped.keepAsIs) {
+				this.executeFunction(this.currentScreenName, "onShow");
+			}
+		}, 501);
+		this.currentScreen.removeClass().addClass("show");
 	}
 }
 

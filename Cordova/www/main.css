@@ -11,20 +11,25 @@ section {
 	width: 100%;
         left: 100%;
 	position: absolute;
-	display: block;
+	display: none;
 
 }
 
-section.hiddenLeft {
+section.show {
+	left: 0%;
+	display: block;
+}
 
-	-webkit-animation-name: slideRight;
-	-moz-animation-name: slideRight;
-	-ms-animation-name: slideRight;
-	animation-name: slideRight;
-	-webkit-animation-duration: 3400ms;
-	-moz-animation-duration: 3400ms;
-	-ms-animation-duration: 3400ms;
-	animation-duration: 3400ms;
+section.hiddenLeft {
+	display: block;
+	-webkit-animation-name: hideRight;
+	-moz-animation-name: hideRight;
+	-ms-animation-name: hideRight;
+	animation-name: hideRight;
+	-webkit-animation-duration: 400ms;
+	-moz-animation-duration: 400ms;
+	-ms-animation-duration: 400ms;
+	animation-duration: 400ms;
 	-webkit-animation-timing-function: ease-in-out; 
 	-moz-animation-timing-function: ease-in-out;
 	-ms-animation-timing-function: ease-in-out;
@@ -37,19 +42,19 @@ section.hiddenLeft {
 	-moz-animation-direction: reverse;
 	-ms-animation-direction: reverse;
 	animation-direction: reverse;
-
 }
 
 section.hiddenRight { 
 
-	-webkit-animation: slideLeft;
-	-moz-animation: slideLeft;
-	-ms-animation: slideLeft;
-	animation: slideLeft;
-	-webkit-animation-duration: 3400ms;
-	-moz-animation-duration: 3400ms;
-	-ms-animation-duration: 3400ms;
-	animation-duration: 3400ms;
+	display: block;
+	-webkit-animation: hideLeft;
+	-moz-animation: hideLeft;
+	-ms-animation: hideLeft;
+	animation: hideLeft;
+	-webkit-animation-duration: 400ms;
+	-moz-animation-duration: 400ms;
+	-ms-animation-duration: 400ms;
+	animation-duration: 400ms;
 	-webkit-animation-timing-function: ease-in-out; 
 	-moz-animation-timing-function: ease-in-out;
 	-ms-animation-timing-function: ease-in-out;
@@ -65,16 +70,16 @@ section.hiddenRight {
 }
 
 section.showLeft {
-	left: 100%;
 
-	-webkit-animation: slideLeft;
-	-moz-animation: slideLeft;
-	-ms-animation: slideLeft;
-	animation: slideLeft;
-	-webkit-animation-duration: 3400ms;
-	-moz-animation-duration: 3400ms;
-	-ms-animation-duration: 3400ms;
-	animation-duration: 3400ms;
+	display: block;
+	-webkit-animation: showLeft;
+	-moz-animation: showLeft;
+	-ms-animation: showLeft;
+	animation: showLeft;
+	-webkit-animation-duration: 400ms;
+	-moz-animation-duration: 400ms;
+	-ms-animation-duration: 400ms;
+	animation-duration: 400ms;
 	-webkit-animation-timing-function: ease-in-out; 
 	-moz-animation-timing-function: ease-in-out;
 	-ms-animation-timing-function: ease-in-out;
@@ -86,16 +91,16 @@ section.showLeft {
 }
 
 section.showRight {
-	left: -100%;
 
-	-webkit-animation: slideRight;
-	-moz-animation: slideRight;
-	-ms-animation: slideRight;
-	animation: slideRight;
-	-webkit-animation-duration: 3400ms;
-	-moz-animation-duration: 3400ms;
-	-ms-animation-duration: 3400ms;
-	animation-duration: 3400ms;
+	display: block;
+	-webkit-animation: showRight;
+	-moz-animation: showRight;
+	-ms-animation: showRight;
+	animation: showRight;
+	-webkit-animation-duration: 400ms;
+	-moz-animation-duration: 400ms;
+	-ms-animation-duration: 400ms;
+	animation-duration: 400ms;
 	-webkit-animation-timing-function: ease-in-out; 
 	-moz-animation-timing-function: ease-in-out;
 	-ms-animation-timing-function: ease-in-out;

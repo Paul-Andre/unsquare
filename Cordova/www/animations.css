@@ -1,31 +1,35 @@
 /*** ANIMATIONS FOR PAGES ***/
 
-@-webkit-keyframes slideLeft {
+@-webkit-keyframes hideLeft {
 	0% {
+		left: 0%;
 		-webkit-transform: translateX(0px);
 	}
         100% {
 		-webkit-transform: translateX(-100%);
 	}
 }
-@-moz-keyframes slideLeft {
+@-moz-keyframes hideLeft {
 	0% {
+		left: 0%;
 		-moz-transform: translateX(0px);
 	}
         100% {
 		-moz-transform: translateX(-100%);
 	}
 }
-@-ms-keyframes slideLeft {
+@-ms-keyframes hideLeft {
 	0% {
+		left: 0%;
 		-ms-transform: translateX(0px);
 	}
         100% {
 		-ms-transform: translateX(-100%);
 	}
 }
-@keyframes slideLeft {
+@keyframes hideLeft {
 	0% {
+		left: 0%;
 		transform: translateX(0px);
 	}
 	100% {
@@ -33,32 +37,111 @@
 	}
 }
 
-@-webkit-keyframes slideRight {
+@-webkit-keyframes hideRight {
 	0% {
+		left: 0%;
 		-webkit-transform: translateX(0px);
 	}
         100% {
 		-webkit-transform: translateX(100%);
 	}
 }
-@-moz-keyframes slideRight {
+@-moz-keyframes hideRight {
 	0% {
+		left: 0%;
 		-moz-transform: translateX(0px);
 	}
         100% {
 		-moz-transform: translateX(100%);
 	}
 }
-@-ms-keyframes slideRight {
+@-ms-keyframes hideRight {
 	0% {
+		left: 0%;
 		-ms-transform: translateX(0px);
 	}
         100% {
 		-ms-transform: translateX(100%);
 	}
 }
-@keyframes slideRight {
+@keyframes hideRight {
 	0% {
+		left: 0%;
+		transform: translateX(0px);
+	}
+	100% {
+		transform: translateX(100%);
+	}
+}
+
+
+@-webkit-keyframes showLeft {
+	0% {
+		left: 100%;
+		-webkit-transform: translateX(0px);
+	}
+        100% {
+		-webkit-transform: translateX(-100%);
+	}
+}
+@-moz-keyframes showLeft {
+	0% {
+		left: 100%;
+		-moz-transform: translateX(0px);
+	}
+        100% {
+		-moz-transform: translateX(-100%);
+	}
+}
+@-ms-keyframes showLeft {
+	0% {
+		left: 100%;
+		-ms-transform: translateX(0px);
+	}
+        100% {
+		-ms-transform: translateX(-100%);
+	}
+}
+@keyframes showLeft {
+	0% {
+		left: 100%;
+		transform: translateX(0px);
+	}
+	100% {
+		transform: translateX(-100%);
+	}
+}
+
+@-webkit-keyframes showRight {
+	0% {
+		left: -100%;
+		-webkit-transform: translateX(0px);
+	}
+        100% {
+		-webkit-transform: translateX(100%);
+	}
+}
+@-moz-keyframes showRight {
+	0% {
+		left: -100%;
+		-moz-transform: translateX(0px);
+	}
+        100% {
+		-moz-transform: translateX(100%);
+	}
+}
+@-ms-keyframes showRight {
+	0% {
+		left: -100%;
+		-ms-transform: translateX(0px);
+	}
+        100% {
+		-ms-transform: translateX(100%);
+	}
+}
+@keyframes showRight {
+	0% {
+		left: -100%;
 		transform: translateX(0px);
 	}
 	100% {
