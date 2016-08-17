@@ -4,12 +4,6 @@ var levelMenu = {}
 
 levelMenu.openBook = function(book){
 	this.book = book;
-	var container = $("#levelMenu .content").get()[0];
-	container.innerHTML = "";
-
-	for (var i=0; i<book.levels.length; i++) {
-		container.appendChild(levelMenu.createLevelInfo(book.levels[i]));
-	}
 }
 
 levelMenu.createLevelInfo = function(level){
@@ -44,7 +38,18 @@ levelMenu.newLevel = function(){
 	var level = makeLevel();
 	level.book = this.book;
 	this.book.levels.push(level);
-	this.openBook(this.book);
+	this.displayIcons();
 }
 
+levelMenu.displayIcons = function(){
+	var container = $("#levelMenu .content").get()[0];
+	container.innerHTML = "";
 
+	for (var i=0; i<this.book.levels.length; i++) {
+		container.appendChild(levelMenu.createLevelInfo(this.book.levels[i]));
+	}
+}
+
+levelMenu.onShow = levelMenu.displayIcons;
+
+screenManager.additionalFunctions.levelMenu = levelMenu;
