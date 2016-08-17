@@ -21,20 +21,22 @@ $.getJSON("bookList.json", {}, function(data) {
 	console.log(books);
 	for(var i=0; i<books.length; i++){
 		;(function(){
+
 			var book = books[i];
 			if(book.free){
 				$.getJSON(book.link, {}, function(data) {
 					book.levels = data.levels;
 					for (var j=0; j<book.levels.length; j++){
 						var level = book.levels[j];
+						
 						level.colorScheme = colorSchemes[level.colorScheme];
-						level.shape = shapes[level.shape];
-						console.log(level.tiles);
+						level.tileShape = tileShapes[level.tileShape];
+
 						level.tiles = Grid.from2dArray(level.tiles);
-						console.log(level.tiles);
 					}
 				});
 			}
+
 		})();
 	}
 });

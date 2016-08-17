@@ -5,7 +5,7 @@ function makeLevel() {
 	grid.setAll(1);
 	return {
 		colorScheme: colorSchemes.BW,
-		shape: shapes.square,
+		tileShape: tileShapes.square,
 		tiles: grid,
 		par: 0,
 		solution: []

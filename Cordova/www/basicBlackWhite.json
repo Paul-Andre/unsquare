@@ -2,7 +2,7 @@
 	"version": "0.0.1",
 	"levels": [
 		{
-			"shape": "square",
+			"tileShape": "square",
 			"colorScheme": "BW",
 			"tiles": [
 				[1, 1, 1, 1],
@@ -16,7 +16,7 @@
 			]
 		},
 		{
-			"shape": "square",
+			"tileShape": "square",
 			"colorScheme": "BW",
 			"tiles": [
 				[1, 2, 2, 1],

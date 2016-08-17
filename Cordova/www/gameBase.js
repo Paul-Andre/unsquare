@@ -60,7 +60,7 @@ function makeGameBase(canvasId, divId) {
 		mouseNow.x = x / canvasSize;
 		mouseNow.y = y / canvasSize;
 		if(mouseStart.pressed){
-			this.level.shape.select(mouseStart.x, mouseStart.y, mouseNow.x, mouseNow.y,
+			this.level.tileShape.select(mouseStart.x, mouseStart.y, mouseNow.x, mouseNow.y,
 					this.gameState.tileStates);
 		}
 	};
@@ -68,7 +68,7 @@ function makeGameBase(canvasId, divId) {
 
 	game.doMouseUp = function(x, y) {
 		if(mouseStart.pressed){
-			this.level.shape.select(mouseStart.x, mouseStart.y, mouseNow.x, mouseNow.y,
+			this.level.tileShape.select(mouseStart.x, mouseStart.y, mouseNow.x, mouseNow.y,
 					this.gameState.tileStates);
 			this.gameState.saveTiles();
 			var that = this;
@@ -156,7 +156,7 @@ function makeGameBase(canvasId, divId) {
 				game.draw();
 			});
 
-			this.level.shape.draw(ctx,this.gameState,this.action);
+			this.level.tileShape.draw(ctx,this.gameState,this.action);
 
 		}
 	};

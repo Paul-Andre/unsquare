@@ -1,6 +1,7 @@
 "use strict";
 
 ;(function(){
+
 	/// Given fractional positions the two corners of the dragged rectangle
 	/// relative to the grid, returns the top right corner and size of square
 	/// to be inverted.  Output is in the form of {x: int, y: int, size: int}
@@ -41,13 +42,40 @@
 			size = gridHeight-y;
 		}
 
-		// Return a square with x,y representing the top left corner.
 		return {
 			x: Math.min(x, x+size*xSign),
 			y: Math.min(y, y+size*ySign),
 			size: size,
+		};
+	}
+
+
+
+	function coordinatesFromMousePosition(x,y,tiles) {
+		return {
+			x: Math.floor(x*tiles.width),
+			y: Math.floor(y*tiles.height)
+		};
+	}
+
+
+	/// Function that creates a move based on the coordinates of start and
+	/// end of the mouse drag.
+	function moveFromMousePositions(x1, y1, x2, y2, tiles) {
+		var width = tiles.width;
+		var height = tiles.height;
+
+		var move =
+			calculateSquare(x1*width, y1*height, x2*width, y2*height, width, height);
+
+		if (move.size > 1) {
+			return move;
+		}
+		else {
+			return null;
 		}
 	}
+
 
 
 	function select(x1, y1, x2, y2, tileStates) {
@@ -72,6 +100,7 @@
 		}
 	}
 
+	// TODO: remove this from here
 	function draw(ctx, gameState, changeFunction) {
 		ctx.clearRect(0,0,ctx.canvas.width, ctx.canvas.height);
 
@@ -107,9 +136,13 @@
 		});
 	}
 
-	shapes.square = {
+	
+	tileShapes.square = {
 		name: "square",
-		draw: draw,
+		coordinatesFromMousePosition: coordinatesFromMousePosition,
+		moveFromMousePositions: moveFromMousePositions,
 		select: select,
+		draw: draw
 	};
+
 })();
