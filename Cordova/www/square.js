@@ -58,6 +58,13 @@
 		};
 	}
 
+	/// position on the canvas as if it was stretch to be from 0 to 1
+	function positionFromCoordinates(x,y,tiles) {
+		return {
+			x: (x+.5)/tiles.width,
+			y: (y+.5)/tiles.height
+		};
+	}
 
 	/// Function that creates a move based on the coordinates of start and
 	/// end of the mouse drag.
@@ -76,7 +83,18 @@
 		}
 	}
 
-
+	function forTilesInMoveSet(grid, move, action) {
+		grid.window(move.x,move.y,move.size,move.size).forEachSet(function(v,x,y){
+			return action(v,x+move.x,y+move.y);
+		});
+	}
+			
+	function forTilesInMove(grid, move, action) {
+		grid.window(move.x,move.y,move.size,move.size).forEach(function(v,x,y){
+			action(v,x+move.x,y+move.y);
+		});
+	}
+			
 
 	function select(x1, y1, x2, y2, tileStates) {
 
@@ -123,10 +141,10 @@
 
 			ctx.fillStyle = gameState.level.colorScheme.cells[changeFunction(value)].fill;
 			
-				var squareWidth = (width-padding)*tileState.transitionState;
-				var squareHeight = (height-padding)*tileState.transitionState;
-				var squareOffsetX = (width-padding)*(1-tileState.transitionState)*0.5;
-				var squareOffsetY = (height-padding)*(1-tileState.transitionState)*0.5;
+				var squareWidth = (width-padding)*tileState.transitionState*0.5;
+				var squareHeight = (height-padding)*tileState.transitionState*0.5;
+				var squareOffsetX = (width-padding)*(1-tileState.transitionState*0.5)*0.5;
+				var squareOffsetY = (height-padding)*(1-tileState.transitionState*0.5)*0.5;
 				ctx.fillRect(
 						(x * width + padding)+squareOffsetX,
 						(y * height + padding)+squareOffsetY,
@@ -142,7 +160,9 @@
 		coordinatesFromMousePosition: coordinatesFromMousePosition,
 		moveFromMousePositions: moveFromMousePositions,
 		select: select,
-		draw: draw
+		draw: draw,
+		forTilesInMove: forTilesInMove,
+		forTilesInMoveSet: forTilesInMoveSet
 	};
 
 })();

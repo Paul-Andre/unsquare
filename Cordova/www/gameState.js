@@ -36,14 +36,22 @@ GameState.prototype.isClear = function isClear() {
 	return clear;
 }
 
-GameState.prototype.saveTiles = function() {
-	this.undoList.push(this.tiles.clone());
+
+GameState.prototype.applyMove = function(move, action) {
+	if(move!=null){
+	this.undoList.push({
+		tiles: this.tiles.clone(),
+		move: move
+	});
+	this.level.tileShape.forTilesInMoveSet(this.tiles, move, action);
+	}
 };
+
 
 GameState.prototype.undo = function() {
 	if (this.undoList.length > 0) {
 		var undo = this.undoList.pop();
-		this.tiles = undo;
+		this.tiles = undo.tiles;
 	}
 }
 

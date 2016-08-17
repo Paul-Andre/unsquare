@@ -59,30 +59,44 @@ function makeGameBase(canvasId, divId) {
 	game.doMouseMove = function(x, y) {
 		mouseNow.x = x / canvasSize;
 		mouseNow.y = y / canvasSize;
+
+
+
 		if(mouseStart.pressed){
-			this.level.tileShape.select(mouseStart.x, mouseStart.y, mouseNow.x, mouseNow.y,
-					this.gameState.tileStates);
+			var potentialMove =
+				this.level.tileShape.moveFromMousePositions(mouseStart.x,
+						mouseStart.y, x / canvasSize, y / canvasSize,
+						this.gameState.tileStates);
+
+			this.gameState.tileStates.forEach(function(v){
+				v.selected = false;
+			});
+
+			this.level.tileShape.forTilesInMove(this.gameState.tileStates, potentialMove, function(v){
+				v.selected = true;
+			});
+
+
 		}
 	};
 
 
 	game.doMouseUp = function(x, y) {
 		if(mouseStart.pressed){
-			this.level.tileShape.select(mouseStart.x, mouseStart.y, mouseNow.x, mouseNow.y,
-					this.gameState.tileStates);
-			this.gameState.saveTiles();
-			var that = this;
-			this.gameState.tileStates.forEach(function(v,x,y){
-				if(v.selected){
-					that.gameState.tiles.set(x,y,
-							that.action(that.gameState.tiles.get(x,y)));
-					v.selected = false;
-					v.transitionState = 0;
-				}
-			});
+			var move =
+				this.level.tileShape.moveFromMousePositions(mouseStart.x,
+						mouseStart.y, x / canvasSize, y / canvasSize,
+						this.gameState.tileStates);
+
+			this.gameState.applyMove(move, this.action);
 			mouseStart.pressed = false;
+			this.gameState.tileStates.forEach(function(v){
+				v.selected = false;
+				v.transitionState = 0;
+			});
 		}
 	};
+
 
 	game.undo = function() {
 		this.gameState.undo();
@@ -140,21 +154,23 @@ function makeGameBase(canvasId, divId) {
 	var hidden = true;
 	game.draw = function(){
 		if(!hidden && this.gameState){
+
 			requestAnimationFrame(function(timeStamp){
 				var previousTimestamp = game.gameState.lastUpdateTimestamp;
 				game.gameState.tileStates.forEach(function(v){
 					if(v.selected){
 						v.transitionState = Math.min(1,
-								v.transitionState + (timeStamp - previousTimestamp)/250);
+								v.transitionState + (timeStamp - previousTimestamp)/100);
 					}
 					else{
 						v.transitionState = Math.max(0,
-								v.transitionState - (timeStamp - previousTimestamp)/250);
+								v.transitionState - (timeStamp - previousTimestamp)/100);
 					}
 				});
 				game.gameState.lastUpdateTimestamp = timeStamp;
 				game.draw();
 			});
+			
 
 			this.level.tileShape.draw(ctx,this.gameState,this.action);
 
