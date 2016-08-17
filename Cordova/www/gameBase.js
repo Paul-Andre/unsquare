@@ -87,12 +87,14 @@ function makeGameBase(canvasId, divId) {
 						mouseStart.y, x / canvasSize, y / canvasSize,
 						this.gameState.tileStates);
 
-			this.gameState.applyMove(move, this.action);
-			mouseStart.pressed = false;
-			this.gameState.tileStates.forEach(function(v){
-				v.selected = false;
-				v.transitionState = 0;
-			});
+			if (move!==null){
+				this.gameState.applyMove(move, this.action);
+				mouseStart.pressed = false;
+				this.gameState.tileStates.forEach(function(v){
+					v.selected = false;
+					v.transitionState = 0;
+				});
+			}
 		}
 	};
 

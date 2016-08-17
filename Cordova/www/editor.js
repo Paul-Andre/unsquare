@@ -15,8 +15,17 @@ editor.action = function(v){
 	return editor.level.colorScheme.resquare(v);
 };
 
-editor.saveLevel = function(){
+editor.updateLevelInfo = function(){
 	editor.level.tiles = this.gameState.tiles;
+	editor.level.solution = this.gameState.undoList.map(function(undo){
+		return undo.move;
+	});
+	editor.level.par = editor.level.solution.length;
+}
+
+
+editor.saveLevel = function(){
+	editor.updateLevelInfo();
 	copyLevelInto(editor.level, editor.referenceToOriginalLevel);
 }
 
@@ -27,7 +36,7 @@ editor.clear = function(){
 }
 
 editor.play = function(){
-	this.level.tiles = this.gameState.tiles;
+	this.updateLevelInfo();
 	game.openLevel(this.level);
 	screenManager.switchTo("game");
 }
