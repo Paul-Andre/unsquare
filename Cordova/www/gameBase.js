@@ -39,7 +39,6 @@ function makeGameBase(canvasId, divId) {
 
 	// This is central to both editor and game
 	game.openLevel = function(level) {
-		console.log(level);
 
 		this.gameState = new GameState(level);
 		this.level = level;

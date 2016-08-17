@@ -83,12 +83,14 @@
 		<div class="header">
 		</div>
 		<div style="clear:both; bottom:0px">
-			<button onclick="screenManager.goBack();" style="float:left">Menu</button>
-			<button onclick="editor.clear();" style="float:right;">Clear</button>
+			<button onclick="editor.saveAndReturn();" style="float:left">Done</button>
+			<button onclick="screenManager.goBack();" style="float:left">Cancel</button>
+
 			<button onclick="editor.undo();" style="float:right;">Undo</button>
+			<button onclick="editor.clear();" style="float:right;">Clear</button>
 			<button onclick="editor.saveLevel();" style="float:right;">Save</button>
+			<button onclick="editor.promptSize();" style="float:right;">Change size</button>
 			<button onclick="editor.play();" style="float:right;">Play</button>
-			<a></a>
 		</div>
 		<div class="content">
 			<canvas id="editorCanvas" class="gameCanvas"></canvas>
