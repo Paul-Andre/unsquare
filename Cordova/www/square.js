@@ -84,12 +84,14 @@
 	}
 
 	function forTilesInMoveSet(grid, move, action) {
+		if(move!==null)
 		grid.window(move.x,move.y,move.size,move.size).forEachSet(function(v,x,y){
 			return action(v,x+move.x,y+move.y);
 		});
 	}
 			
 	function forTilesInMove(grid, move, action) {
+		if(move!==null)
 		grid.window(move.x,move.y,move.size,move.size).forEach(function(v,x,y){
 			action(v,x+move.x,y+move.y);
 		});
