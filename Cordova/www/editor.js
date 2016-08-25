@@ -6,11 +6,12 @@ editor.openLevel = (function(){
 		// We don't want the editor to open the actual level.
 		// The reason I don't just put it in the base is that at some point the game might need to modify the level
 		this.referenceToOriginalLevel = level;
-		superOpenLevel(copyLevelInto(level,{}));
+		superOpenLevel(level.clone());
 	};
 })();
 
 // this specifies what happens when you activate squares
+// (as in, do you UNsquare or you go the other way)
 editor.action = function(v){
 	return editor.level.colorScheme.resquare(v);
 };
@@ -26,7 +27,7 @@ editor.updateLevelInfo = function(){
 
 editor.saveLevel = function(){
 	editor.updateLevelInfo();
-	copyLevelInto(editor.level, editor.referenceToOriginalLevel);
+	editor.referenceToOriginalLevel.copyFrom(editor.level);
 }
 
 editor.clear = function(){

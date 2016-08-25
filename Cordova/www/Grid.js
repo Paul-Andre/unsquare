@@ -29,6 +29,19 @@ BoundedGrid.prototype.forEachSet=function(f){
 	}
 };
 
+BoundedGrid.prototype.to2dArray=function(){
+	let ret = [];
+	for(var j=0; j<this.height; j++){
+		let row = [];
+		ret.push(row);
+		for(var i=0; i<this.width; i++){
+			row.push(this.get(i,j));
+		}
+	}
+	return ret;
+};
+
+
 BoundedGrid.prototype.setAll=function(v){
 	this.forEachSet(function(){return v});
 };

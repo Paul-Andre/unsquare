@@ -49,6 +49,9 @@
 		};
 	}
 
+	function gridFromJsonObject(tiles) {
+		return Grid.from2dArray(tiles);
+	}
 
 
 	function coordinatesFromMousePosition(x,y,tiles) {
@@ -164,7 +167,8 @@
 		select: select,
 		draw: draw,
 		forTilesInMove: forTilesInMove,
-		forTilesInMoveSet: forTilesInMoveSet
+		forTilesInMoveSet: forTilesInMoveSet,
+		gridFromJsonObject: gridFromJsonObject,
 	};
 
 })();

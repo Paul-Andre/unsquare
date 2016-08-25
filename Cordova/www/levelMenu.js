@@ -35,7 +35,7 @@ levelMenu.startLevel = function(level){
 }
 
 levelMenu.newLevel = function(){
-	var level = makeLevel();
+	var level = Level.empty();
 	level.book = this.book;
 	this.book.levels.push(level);
 	this.displayIcons();
