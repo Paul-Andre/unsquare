@@ -139,3 +139,8 @@ var colorSchemes={
 	},
 }
 
+// Automatically make it so that colorScheme.name is the key used to find the
+// colorScheme in the colorSchemes object.
+for (var colorSchemeName in colorSchemes) {
+	colorSchemes[colorSchemeName].name = colorSchemeName;
+}

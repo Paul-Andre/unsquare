@@ -50,6 +50,15 @@ levelMenu.displayIcons = function(){
 	}
 }
 
+levelMenu.displayBookJson = function() {
+	prompt("", JSON.stringify({
+		levels: this.book.levels.map(function(level){
+			return level.toJsonObject();
+		})
+	}));
+}
+
+
 levelMenu.onShow = levelMenu.displayIcons;
 
 screenManager.additionalFunctions.levelMenu = levelMenu;
