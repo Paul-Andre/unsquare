@@ -7,6 +7,7 @@ editor.openLevel = (function(){
 		// The reason I don't just put it in the base is that at some point the game might need to modify the level
 		this.referenceToOriginalLevel = level;
 		superOpenLevel(level.clone());
+		this.movesThatCantBeUndone = this.level.solution;
 	};
 })();
 
@@ -16,31 +17,40 @@ editor.action = function(v){
 	return editor.level.colorScheme.resquare(v);
 };
 
+
+editor.getJoinedSolution = function(){
+	return this.movesThatCantBeUndone.concat(
+			this.gameState.undoList.map(function(undo){
+				return undo.move;
+			}));
+};
+
+
 editor.updateLevelInfo = function(){
 	editor.level.tiles = this.gameState.tiles;
-	editor.level.solution = this.gameState.undoList.map(function(undo){
-		return undo.move;
-	});
+	editor.level.solution = editor.getJoinedSolution();
 	editor.level.par = editor.level.solution.length;
-}
+};
 
 
 editor.saveLevel = function(){
 	editor.updateLevelInfo();
 	editor.referenceToOriginalLevel.copyFrom(editor.level);
-}
+};
 
 editor.clear = function(){
 	editor.gameState.tiles.forEachSet(function(){
 		return 1;
 	});
-}
+	editor.gameState.undoList = [];
+	editor.movesThatCantBeUndone = [];
+};
 
 editor.play = function(){
 	this.updateLevelInfo();
 	game.openLevel(this.level);
 	screenManager.switchTo("game");
-}
+};
 
 editor.promptSize = function(){
 	var size = window.prompt();
@@ -56,17 +66,22 @@ editor.promptSize = function(){
 				this.gameState.tiles.forEach(function(v,x,y){
 					grid.set(x,y,v);
 				});
+				this.movesThatCantBeUndone = this.getJoinedSolution();
+				this.level.tiles = grid;
+				this.gameState = new GameState(this.level);
 			}
-
-			this.level.tiles = grid;
-			this.gameState = new GameState(this.level);
+			else {
+				this.level.tiles = grid;
+				this.gameState = new GameState(this.level);
+				this.clear();
+			}
 		}
 	}
-}
+};
 
 editor.saveAndReturn = function(){
 	this.saveLevel();
 	screenManager.goBack();
-}
+};
 
 screenManager.additionalFunctions.editor = editor;

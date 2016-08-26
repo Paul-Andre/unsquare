@@ -28,7 +28,6 @@ Level.fromJsonObject = function(json) {
 Level.prototype.toJsonObject = function() {
 	var json = {};
 	json.colorScheme = this.colorScheme.name;
-	console.log(this.colorScheme.name);
 	json.tileShape = this.tileShape.name;
 	json.tiles = this.tiles.to2dArray();
 	json.par = this.par;
