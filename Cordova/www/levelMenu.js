@@ -35,7 +35,7 @@ levelMenu.startLevel = function(level){
 }
 
 levelMenu.newLevel = function(){
-	var level = Level.empty();
+	var level = Level.empty(6);
 	level.book = this.book;
 	this.book.levels.push(level);
 	this.displayIcons();
@@ -48,8 +48,6 @@ levelMenu.displayIcons = function(){
 	for (var i=0; i<this.book.levels.length; i++) {
 		container.appendChild(levelMenu.createLevelInfo(this.book.levels[i]));
 	}
-
-	Sortable.create(container);
 }
 
 levelMenu.displayBookJson = function() {
@@ -58,6 +56,19 @@ levelMenu.displayBookJson = function() {
 			return level.toJsonObject();
 		})
 	}));
+}
+
+if (IS_EDITOR) {
+	var container = document.querySelector("#levelMenu .content");
+	levelMenu.sortable = Sortable.create(container, {
+		onSort: function(evt){
+			levelMenu.book.levels = Array.prototype.map.call(container.children,
+					function(child) {
+						return child.level;
+					});
+
+		}
+	})
 }
 
 

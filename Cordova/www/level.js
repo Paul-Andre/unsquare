@@ -3,8 +3,8 @@
 function Level() {
 }
 
-Level.empty = function makeLevel() {
-	var grid = Grid.empty(4,4);
+Level.empty = function makeLevel(size) {
+	var grid = Grid.empty(size, size);
 	grid.setAll(1);
 	var level = new Level();
 	level.colorScheme = colorSchemes.BW;
