@@ -66,7 +66,13 @@ button, .levelIcon {
 	vertical-align: top;
 }
 
+
+
 section#gameScreen button:disabled{
 	background: #aaa;
+}
+
+div#iconContainer.deleting .levelIcon {
+	border-color: red;
 }
 

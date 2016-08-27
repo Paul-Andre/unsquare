@@ -15,60 +15,83 @@ levelMenu.createLevelInfo = function(level){
 	icon.height = 55*window.devicePixelRatio;
 	drawIcon(level, icon);
 	icon.level = level;
-	icon.onclick = function() {
-		levelMenu.startLevel(this.level);
-	};
+	icon.onclick = levelMenu.onIconClick; 
 	return icon;
 }
 
 
 
-levelMenu.startLevel = function(level){
+
+// this function is to be called on icons using the onclick event
+// so "this" refers to the icon element, not levelMenu
+levelMenu.onIconClick = function(){
 	if (IS_EDITOR) {
-		editor.openLevel(level);
-		screenManager.switchTo("editor");
+		if (levelMenu.deleting) {
+			this.remove();
+			levelMenu.saveIconOrder();
+		} else {
+			editor.openLevel(this.level);
+			screenManager.switchTo("editor");
+		}
 	} else {
-		game.openLevel(level);
+		game.openLevel(this.level);
 		screenManager.switchTo("game");
 	}
 
 }
 
-levelMenu.newLevel = function(){
-	var level = Level.empty(6);
-	level.book = this.book;
-	this.book.levels.push(level);
-	this.displayIcons();
-}
+levelMenu.container = document.querySelector("#levelMenu .content");
 
 levelMenu.displayIcons = function(){
-	var container = $("#levelMenu .content").get()[0];
-	container.innerHTML = "";
+	this.container.innerHTML = "";
 
 	for (var i=0; i<this.book.levels.length; i++) {
-		container.appendChild(levelMenu.createLevelInfo(this.book.levels[i]));
+		this.container.appendChild(levelMenu.createLevelInfo(this.book.levels[i]));
 	}
 }
 
-levelMenu.displayBookJson = function() {
-	prompt("", JSON.stringify({
-		levels: this.book.levels.map(function(level){
-			return level.toJsonObject();
-		})
-	}));
-}
-
 if (IS_EDITOR) {
-	var container = document.querySelector("#levelMenu .content");
-	levelMenu.sortable = Sortable.create(container, {
-		onSort: function(evt){
-			levelMenu.book.levels = Array.prototype.map.call(container.children,
-					function(child) {
-						return child.level;
-					});
-
+	levelMenu.sortable = Sortable.create(levelMenu.container, {
+		onSort: function(){
+			levelMenu.saveIconOrder();
 		}
-	})
+	});
+
+
+	levelMenu.saveIconOrder = function(){
+		levelMenu.book.levels = Array.prototype.map.call(levelMenu.container.children,
+				function(child) {
+					return child.level;
+				});
+	};
+
+
+	levelMenu.newLevel = function(){
+		var level = Level.empty(6);
+		level.book = this.book;
+		this.book.levels.push(level);
+		this.displayIcons();
+	};
+
+	levelMenu.displayBookJson = function() {
+		prompt("", JSON.stringify({
+			levels: this.book.levels.map(function(level){
+				return level.toJsonObject();
+			})
+		}));
+	};
+
+	let deleteButton = document.getElementById("deleteButton");
+
+	levelMenu.deleting = false;
+
+	deleteButton.onclick = function(){
+		// toggle the deleting state
+		levelMenu.deleting = levelMenu.deleting == false;
+		levelMenu.container.classList.toggle("deleting");
+	};
+
+
 }
 
 
