@@ -20,7 +20,7 @@
   <script src="colors.js"></script>
   <script src="gameBase.js"></script>
   <script src="levelDataManager.js"></script>
-  <script src="tileShapes.js"></script>
+  <script src="shapes.js"></script>
   <script src="icon.js"></script>
   <script src="helpers.js"></script>
   <script src="levelMenu.js"></script>
@@ -65,28 +65,22 @@
     </div>
 
     <div class="options-content">
-      <h1> Sound Effects </h1>
-      <div class="radio">
+      <h1> Sound Effects: </h1>
+      <div class="checkbox">
         <form action="">
-        <input type="radio" name="rdo" id="yessfx" checked />
-        <input type="radio" name="rdo" id="nosfx"/>
+        <input type="checkbox" name="rdo" id="sfx"/>
         <div class="switch">
-          <label for="yessfx">On</label>
-          <label for="nosfx">Off</label>
-          <span></span>
+          <label for="sfx"><h1 id="sfxon">ON</h1><h1 id="sfxoff">OFF</h1></label>
         </div>
       </form>
       </div>
-      <h1 id="music"> Music </h1>
-      <div class="radio">
+      <h1 id ="musicheader"> Music: </h1>
+      <div class="checkbox">
         <form action="">
-        <input type="radio" name="rdo" id="yesmusic" checked />
-        <input type="radio" name="rdo" id="nomusic"/>
+        <input type="checkbox" name="rdo" id="music"/>
         <div class="switch">
-          <label for="yesmusic">On</label>
-          <label for="nomusic">Off</label>
-          <span></span>
-      </div>
+          <label for="music"><h1 id="musicon">ON</h1><h1 id="musicoff">OFF</h1></label>
+        </div>
       </form>
     </div>
     </div>
@@ -97,32 +91,44 @@
       <h1>
         Credits
       </h1>
-      <button class="back">
-        &#8592;
-      </button>
+      <img src="back7.svg" class="back">
     </div>
 
     <div class="content">
-      <p>
-        <table>
-          <tr>
-            <td>Original Idea</td>
-            <td>Paul-Andre Henegar</td>
-          </tr>
-          <tr>
-            <td>Styling</td>
-            <td>James Brace</td>
-          </tr>
-          <tr>
-            <td>Random Restructuring</td>
-            <td>Youri Tamitegama</td>
-          </tr>
-          <tr>
-            <td>SFX/Marketing</td>
-            <td><a href="http://facebook.com/hyroglyphik">Hyroglyphik games {{ logo or whatever }}</a></td>
-          </tr>
-        </table>
-      </p>
+      <div class="row">
+        <div class ="col-md-6 col-sm-6 col-xs-6">
+          <h2>Gameplay and Idea Wizard</h2>
+        </div>
+        <div class ="col-md-6 col-sm-6 col-xs-6">
+          <h2>Paul-Andre Henegar</h2>
+        </div>
+        <div class ="col-md-6 col-sm-6 col-xs-6">
+          <h2>GUI Styling</h2>
+        </div>
+        <div class ="col-md-6 col-sm-6 col-xs-6">
+          <h2>James Brace</h2>
+          <h2>Socrates Philosophies</h2>
+        </div>
+        <div class ="col-md-6 col-sm-6 col-xs-6">
+          <h2>JQuery and Restructuring Master</h2>
+        </div>
+        <div class ="col-md-6 col-sm-6 col-xs-6">
+          <h2>Youri Tamitegama</h2>
+        </div>
+        <div class ="col-md-6 col-sm-6 col-xs-6">
+          <h2>SFX, Game Design, and Marketing Overlords</h2>
+        </div>
+        <div class ="col-md-6 col-sm-6 col-xs-6">
+          <h2> Chris Day </h2>
+          <h2> Socrates Philosophies </h2>
+        </div>
+        <div class ="col-md-6 col-sm-6 col-xs-6">
+          <h2> Special Thanks To </h2>
+        </div>
+        <div class ="col-md-6 col-sm-6 col-xs-6">
+          <h2> Hyroglyphik games </h2>
+        </div>
+      </row> 
     </div>
 
     <div class="footer">
@@ -134,12 +140,17 @@
       <h1>
         Books
       </h1>
-      <button class="back">
-        &#8592;
-      </button>
+      <img src="back7.svg" class="back">
     </div>
 
     <div id="bookContainer" class="content">
+      <div class="btn-group-vertical">
+        <div class = "btn btn-primary"></div>
+        <div class = "btn btn-primary"></div>
+        <div class = "btn btn-primary"></div>
+        <div class = "btn btn-primary"></div>
+        <div class = "btn btn-primary"></div>
+      </div>
     </div>
 
     <div class="footer">
@@ -196,6 +207,14 @@
       </button>
     </div>
   </section>
+
+  <section id="loading">
+    <p>
+      Loading
+    </p>
+  </section>
+</body>
+</html>
 
   <section id="loading">
     <p>
