@@ -48,6 +48,8 @@ levelMenu.displayIcons = function(){
 	for (var i=0; i<this.book.levels.length; i++) {
 		container.appendChild(levelMenu.createLevelInfo(this.book.levels[i]));
 	}
+
+	Sortable.create(container);
 }
 
 levelMenu.displayBookJson = function() {
