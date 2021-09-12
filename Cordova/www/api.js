@@ -1,29 +1,26 @@
+var api = (function() {
+
+  var onReady = []
+
+  var api = {}
+
+  api.ready = function(fn) {
+    //onReady.push(fn);
+    fn();
+
+  }
+
+  function finished() {
+    for (var i = 0; i < onReady.length; i++) {
+
+      onReady[i]();
+
+    }
+
+  }
 
 
-
-var api=(function(){
-
-var onReady=[]
-
-var api={}
-
-api.ready=function(fn){
-	//onReady.push(fn);
-	fn();
-
-}
-
-function finished(){
-	for(var i=0; i<onReady.length;i++){
-	
-		onReady[i]();
-
-	}
-
-}
-
-
-return api;
+  return api;
 
 
 })();
@@ -33,28 +30,32 @@ return api;
 
 
 
-var storage=(function(){
+var storage = (function() {
 
-	var storage={
+  var storage = {
 
-	}
+  }
 
-	storage.load=function(id,callback){
+  storage.load = function(id, callback) {
 
-		callback({data:localStorage.getItem(id)});
+    callback({
+      data: localStorage.getItem(id)
+    });
 
-	}
+  }
 
-	storage.save=function(id,data,callback){
+  storage.save = function(id, data, callback) {
 
-		localStorage.setItem(id,data);
-		callback&&callback({data:data});
+    localStorage.setItem(id, data);
+    callback && callback({
+      data: data
+    });
 
-	
-	}
 
-	return storage;
-	
+  }
+
+  return storage;
+
 })();
 
 
@@ -64,54 +65,54 @@ var storage=(function(){
 
 /////////////////////////////////////////////////////////////////////////////////
 
-var adManager=(function(){
+var adManager = (function() {
 
 
 
 
 
 
-var adManager={};
+  var adManager = {};
 
 
 
-adManager.show=function(){
+  adManager.show = function() {
 
 
-}
+  }
 
-adManager.hide=function(){
-
-
-}
-
-adManager.reposition=function(){
-
-var box=document.getElementById("mobileGameAd");
-if(box!==null){
+  adManager.hide = function() {
 
 
+  }
+
+  adManager.reposition = function() {
+
+    var box = document.getElementById("mobileGameAd");
+    if (box !== null) {
 
 
 
-var adPosition= {
+
+
+      var adPosition = {
         left: 0,
-        top:0,
-        parent:box,
-    };
+        top: 0,
+        parent: box,
+      };
 
-//console.log(adPosition);
-//advertisement.setPosition( adPosition );
+      //console.log(adPosition);
+      //advertisement.setPosition( adPosition );
 
-}
+    }
 
-}
+  }
 
 
-window.onresize=function(){
+  window.onresize = function() {
 
-adManager.reposition();
-}
+    adManager.reposition();
+  }
 
-return adManager;
+  return adManager;
 })();

@@ -1,1 +1,1 @@
-function drawAnimatedTile(ctx, tile, 
+function drawAnimatedTile(ctx, tile,

@@ -3,31 +3,30 @@
 //
 // Not deleting and just keeping dummy function if we'll ever try spying on players some time in the future.
 
-var levelStats=function(){
+var levelStats = function() {
 
-	function getName(level){
-	
-		return level.book.id+": "+level.index
-		
-	}
+  function getName(level) {
 
-	return{
+    return level.book.id + ": " + level.index
 
-		open:function(level){
-		
-		},
-		
-		close:function(level){
-		
-		},
-		
-		
-		pass:function(level){
-		
-		},
-		
-		getName:getName,
-	}
+  }
+
+  return {
+
+    open: function(level) {
+
+    },
+
+    close: function(level) {
+
+    },
+
+
+    pass: function(level) {
+
+    },
+
+    getName: getName,
+  }
 
 }()
-

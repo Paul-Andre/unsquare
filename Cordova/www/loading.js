@@ -17,24 +17,25 @@
 var books = [];
 
 $.getJSON("bookList.json", {}, function(data) {
-	books = data.books;
+  books = data.books;
 
-	for(var i=0; i<books.length; i++){
-		;(function(){
-			var book = books[i];
+  for (var i = 0; i < books.length; i++) {
+    ;
+    (function() {
+      var book = books[i];
 
-			if(book.free){
-				$.getJSON(book.link, {}, function(data) {
+      if (book.free) {
+        $.getJSON(book.link, {}, function(data) {
 
-					book.levels = data.levels;
-					for (var j=0; j<book.levels.length; j++){
-						book.levels[j] = Level.fromJsonObject(book.levels[j]);
-					}
-				});
-			}
+          book.levels = data.levels;
+          for (var j = 0; j < book.levels.length; j++) {
+            book.levels[j] = Level.fromJsonObject(book.levels[j]);
+          }
+        });
+      }
 
-		})();
-	}
+    })();
+  }
 });
 
 
