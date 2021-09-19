@@ -2,7 +2,7 @@
 
 /// This is what does the basics of drawing the tiles to the screen.
 ///
-function makeGameBase(canvasId, divId /*unused*/) {
+function makeGameBase(canvasId, divId /*unused*/ ) {
 
   var canvas = document.getElementById(canvasId);
   var ctx = canvas.getContext("2d");
