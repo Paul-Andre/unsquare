@@ -130,7 +130,8 @@ Grid.empty = function(w, h) {
 };
 
 
-// I'll have to rethink what all of this is doing
+// The point is to be able to build a grid with different backing arrays
+// (normal array, or one of the "typed" arrays)
 Grid.withArrayConstructor = {
   blank: function(con, w, h) {
     return new GridFromArray(new con(w * h), w, h);

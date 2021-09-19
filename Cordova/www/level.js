@@ -28,7 +28,7 @@ Level.prototype.toJsonObject = function() {
   var json = {};
   json.colorScheme = this.colorScheme.name;
   json.tileShape = this.tileShape.name;
-  json.tiles = this.tiles.to2dArray();
+  json.tiles = this.tiles.to2dArray(); //TODO: should be tileShape.gridToJson...
   json.par = this.par;
   json.solution = this.solution;
   return json;

@@ -45,7 +45,7 @@ game.finishedLevel = function() {
 
   var that = this;
   if (typeof this.level.index == "number") {
-    game.disactivateEvents();
+    game.disactivateEvents(); // This function does not exist
     canvas.onmousedown = canvas.ontouchstart = function(evt) {
       game.openLevel(nextLevel);
       return cancelEvent(evt);

@@ -28,7 +28,6 @@ GameState.prototype.isClear = function isClear() {
   var clear = true;
 
   this.tiles.forEach(function(v) {
-    // TODO: use a function defined in colors to see if it is clear.
     if (v != 1) {
       clear = false;
     }

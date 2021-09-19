@@ -27,6 +27,7 @@ editor.getJoinedSolution = function() {
 
 
 editor.updateLevelInfo = function() {
+  // Note that this modifies the copy of level, not the reference to the original level
   editor.level.tiles = this.gameState.tiles;
   editor.level.solution = editor.getJoinedSolution();
   editor.level.par = editor.level.solution.length;
@@ -67,13 +68,11 @@ editor.promptSize = function() {
           grid.set(x, y, v);
         });
         this.movesThatCantBeUndone = this.getJoinedSolution();
-        this.level.tiles = grid;
-        this.gameState = new GameState(this.level);
       } else {
-        this.level.tiles = grid;
-        this.gameState = new GameState(this.level);
-        this.clear();
+        this.movesThatCantBeUndone = [];
       }
+      this.level.tiles = grid;
+      this.gameState = new GameState(this.level);
     }
   }
 };

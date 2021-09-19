@@ -2,7 +2,7 @@
 
 /// This is what does the basics of drawing the tiles to the screen.
 ///
-function makeGameBase(canvasId, divId) {
+function makeGameBase(canvasId, divId /*unused*/) {
 
   var canvas = document.getElementById(canvasId);
   var ctx = canvas.getContext("2d");
@@ -82,6 +82,7 @@ function makeGameBase(canvasId, divId) {
 
   game.doMouseUp = function(x, y) {
     if (mouseStart.pressed) {
+      mouseStart.pressed = false;
       var move =
         this.level.tileShape.moveFromMousePositions(mouseStart.x,
           mouseStart.y, x / canvasSize, y / canvasSize,
@@ -89,7 +90,6 @@ function makeGameBase(canvasId, divId) {
 
       if (move !== null) {
         this.gameState.applyMove(move, this.action);
-        mouseStart.pressed = false;
         this.gameState.tileStates.forEach(function(v) {
           v.selected = false;
           v.transitionState = 0;

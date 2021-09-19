@@ -86,6 +86,8 @@ dataManager.prepareBook = function(book) {
 
     var iconMultiplier = 5;
 
+    // TODO: probably this is dead code
+
     level.icon = document.createElement("canvas");
     level.icon.width = level.icon.height = iconMultiplier * 11;
 
@@ -110,7 +112,6 @@ dataManager.prepareBook = function(book) {
 
 // The books should be loaded at this point. (They come as js files, mostly wrapped json but there are some functions)
 // (functions that I should remove from there since they repeat in multiple files)
-// This function takes the books and draws the icons to be displayed.
 dataManager.prepareAllBooks = function() {
   for (var i = 0; i < books.length; i++) {
     if (!books[i].loaded) {
