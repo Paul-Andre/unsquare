@@ -81,11 +81,9 @@ if (IS_EDITOR) {
     }));
   };
 
-  let deleteButton = document.getElementById("deleteButton");
-
   levelMenu.deleting = false;
 
-  deleteButton.onclick = function() {
+  levelMenu.toggleDelete = function() {
     // toggle the deleting state
     levelMenu.deleting = levelMenu.deleting == false;
     levelMenu.container.classList.toggle("deleting");

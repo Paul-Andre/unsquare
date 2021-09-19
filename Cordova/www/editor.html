@@ -26,16 +26,18 @@
 	<script src="loading.js"></script>
 	<script src="level.js"></script>
 	<script src="gameState.js"></script>
+	<script src="levelStats.js"></script>
+	<script src="gameBase.js"></script>
 </head>
 
 <body class="no-touch">
+
 	<section id="home">
 		<div class="header">
 			<h1>
 				Unsquare
 			</h1>
 		</div>
-
 		<div class="wrapper">
 			<button class="btn-default btn pulse-button toBookMenu" onclick="screenManager.switchTo('bookMenu');" type="button">
 				Play
@@ -47,20 +49,21 @@
 				Credits
 			</button>
 		</div>
-
 		<div class="footer">
 		</div>
 	</section>
+
+
 	<section id="game" class="screen">
 		<div class="header">
 			<div class="" style="float: left; width: 75%">
 				<h2 id="LevelIndicator">Level ?</h2>
-				<h3 id="TextShower" class="textShower"> &zwnj; </h3>
+				<h3 id="TextShower" class="textShower"> &zwnj; asdfasdfa </h3>
 			</div>
 			<div style="float: right; width:25%;" class="IndicContainer">
-				<div class="Indicator" id="BestIndicator"></div>
-				<div class="Indicator" id="ParIndicator"></div>
-				<div class="Indicator" id="MovesIndicator"></div>
+				<div class="Indicator" id="BestIndicator"> best: </div>
+				<div class="Indicator" id="ParIndicator"> par: </div>
+				<div class="Indicator" id="MovesIndicator"> moves: </div>
 			</div>
 
 			<div style="clear:both; bottom:0px">
@@ -82,16 +85,16 @@
 
 	<section id="editor"  class="screen">
 		<div class="header">
-		</div>
-		<div style="clear:both; bottom:0px">
-			<button onclick="editor.saveAndReturn();" style="float:left">Done</button>
-			<button onclick="screenManager.goBack();" style="float:left">Cancel</button>
+			<div style="clear:both; bottom:0px">
+				<button onclick="editor.saveAndReturn();" style="float:left">Done</button>
+				<button onclick="screenManager.goBack();" style="float:left">Cancel</button>
 
-			<button onclick="editor.undo();" style="float:right;">Undo</button>
-			<button onclick="editor.clear();" style="float:right;">Clear</button>
-			<button onclick="editor.saveLevel();" style="float:right;">Save</button>
-			<button onclick="editor.promptSize();" style="float:right;">Change size</button>
-			<button onclick="editor.play();" style="float:right;">Play</button>
+				<button onclick="editor.undo();" style="float:right;">Undo</button>
+				<button onclick="editor.clear();" style="float:right;">Clear</button>
+				<button onclick="editor.saveLevel();" style="float:right;">Save</button>
+				<button onclick="editor.promptSize();" style="float:right;">Change size</button>
+				<button onclick="editor.play();" style="float:right;">Play</button>
+			</div>
 		</div>
 		<div class="content">
 			<canvas id="editorCanvas" class="gameCanvas"></canvas>
@@ -105,7 +108,7 @@
 			<button onclick="screenManager.goBack();">&#8592; Menu</button>
 			<button onclick="levelMenu.displayBookJson();" style="float:right;">To JSON</button>
 			<button onclick="levelMenu.newLevel();" style="float:right;">Add level</button>
-			<button id="deleteButton" style="float:right;">Delete</button>
+			<button onclick="levelMenu.toggleDelete();" style="float:right;">Delete</button>
 		</div>
 
 		<div id="iconContainer" class="content">
@@ -143,8 +146,6 @@
 	</section>
 
 
-	<script src="levelStats.js"></script>
-	<script src="gameBase.js"></script>
 	<script src="game.js"></script>
 	<script src="editor.js"></script>
 	<script src="levelMenu.js"></script>
