@@ -153,27 +153,29 @@ function makeGameBase(canvasId, divId /*unused*/ ) {
 
 
   var hidden = true;
+  var numRequested = 0;
   game.draw = function() {
     if (!hidden && this.gameState) {
 
-      requestAnimationFrame(function(timeStamp) {
-        var previousTimestamp = game.gameState.lastUpdateTimestamp;
-        game.gameState.tileStates.forEach(function(v) {
-          if (v.selected) {
-            v.transitionState = Math.min(1,
-              v.transitionState + (timeStamp - previousTimestamp) / 100);
-          } else {
-            v.transitionState = Math.max(0,
-              v.transitionState - (timeStamp - previousTimestamp) / 100);
-          }
-        });
-        game.gameState.lastUpdateTimestamp = timeStamp;
-        game.draw();
-      });
-
-
       this.level.tileShape.draw(ctx, this.gameState, this.action);
-
+      if (numRequested == 0) {
+        requestAnimationFrame(function(timeStamp) {
+          numRequested--;
+          var previousTimestamp = game.gameState.lastUpdateTimestamp;
+          game.gameState.tileStates.forEach(function(v) {
+            if (v.selected) {
+              v.transitionState = Math.min(1,
+                v.transitionState + (timeStamp - previousTimestamp) / 100);
+            } else {
+              v.transitionState = Math.max(0,
+                v.transitionState - (timeStamp - previousTimestamp) / 100);
+            }
+          });
+          game.gameState.lastUpdateTimestamp = timeStamp;
+          game.draw();
+        });
+        numRequested++;
+      }
     }
   };
 
