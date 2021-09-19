@@ -2,6 +2,15 @@
   "version": "0.0.1",
   "books": [
     {
+      "name": "Old Black and White",
+      "link": "book1Old.json",
+      "icon": {
+        "type": "level",
+        "level": 0
+      },
+      "free": true
+    },
+    {
       "name": "Basic Black & White",
       "link": "basicBlackWhite.json",
       "icon": {

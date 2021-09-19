@@ -16,11 +16,11 @@ Level.empty = function makeLevel(size) {
 
 Level.fromJsonObject = function(json) {
   var level = new Level();
-  level.colorScheme = colorSchemes[json.colorScheme];
-  level.tileShape = tileShapes[json.tileShape];
+  level.colorScheme = colorSchemes.BW; //colorSchemes[json.colorScheme];
+  level.tileShape = tileShapes.square; // tileShapes[json.tileShape];
   level.tiles = level.tileShape.gridFromJsonObject(json.tiles);
   level.par = json.par;
-  level.solution = json.solution;
+  level.solution = [];//json.solution;
   return level;
 };
 
