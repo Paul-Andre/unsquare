@@ -5,20 +5,13 @@
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 	<meta name="apple-mobile-web-app-capable" content="yes" />
+	<link rel="stylesheet" type="text/css" href="style2.css">
 	<title> Unsquare </title>
-        
-	<!-- CSS -->
-  <link href='https://fonts.googleapis.com/css?family=Passion+One:700' rel='stylesheet' type='text/css'>
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-  <link rel="stylesheet" type="text/css" href="main.css">
-
-
-  <!-- Scripts -->
 	<script src="jquery-3.1.0.min.js"></script>
 	<script src="api.js"></script>
 	<script src="Grid.js"></script>
 	<script>
-		var IS_EDITOR = false; /////////whaaaaaa
+		var IS_EDITOR = true; /////////whaaaaaa
 	</script>
 	<script src="colorSchemes.js"></script>
 	<script src="tileShapes.js"></script>
@@ -37,190 +30,126 @@
 	<script src="gameBase.js"></script>
 </head>
 
-<body>
-  <section id="home">
-    <div class="header">
-      <h1>
-        Unsquare
-      </h1>
-    </div>
+<body class="no-touch">
 
-    <div class="homeButtons">
-      <button class="btn-default btn pulse-button toBookMenu" onclick="screenManager.switchTo('bookMenu');" type="button">
-        Play
-      </button>
-      <button class="btn btn-default" onclick=" screenManager.switchTo('options');" id="adjustment" type="button">
-        Options
-      </button>
-      <button class="btn btn-default" onclick="screenManager.switchTo('about');" type="button">
-        Credits
-      </button>
-    </div>
+	<section id="home">
+		<div class="header">
+			<h1>
+				Unsquare
+			</h1>
+		</div>
+		<div class="wrapper">
+			<button class="btn-default btn pulse-button toBookMenu" onclick="screenManager.switchTo('bookMenu');" type="button">
+				Play
+			</button>
+			<button class="btn btn-default" onclick="screenManager.switchTo('options');" id="adjustment" type="button">
+				Options
+			</button>
+			<button class="btn btn-default" onclick="screenManager.switchTo('about');" type="button">
+				Credits
+			</button>
+		</div>
+		<div class="footer">
+		</div>
+	</section>
 
-    <div class="footer">
-    </div>
-  </section>
 
-  <section id="options">
-    <div class="header">
-      <h1>
-        Options
-      </h1>
-      <img src="back7.svg" class="back">
-    </div>
+	<section id="game" class="screen">
+		<div class="header">
+			<div class="" style="float: left; width: 75%">
+				<h2 id="LevelIndicator">Level ?</h2>
+				<h3 id="TextShower" class="textShower"> &zwnj; asdfasdfa </h3>
+			</div>
+			<div style="float: right; width:25%;" class="IndicContainer">
+				<div class="Indicator" id="BestIndicator"> best: </div>
+				<div class="Indicator" id="ParIndicator"> par: </div>
+				<div class="Indicator" id="MovesIndicator"> moves: </div>
+			</div>
 
-    <div class="options-content">
-      <h1> Sound Effects: </h1>
-      <div class="checkbox">
-        <form action="">
-          <input type="checkbox" name="rdo" id="sfx"/>
-          <div class="switch">
-            <label for="sfx"><h1 id="sfxon">ON</h1><h1 id="sfxoff">OFF</h1></label>
-          </div>
-        </form>
-      </div>
-      <h1 id ="musicheader"> Music: </h1>
-      <div class="checkbox">
-        <form action="">
-          <input type="checkbox" name="rdo" id="music"/>
-          <div class="switch">
-            <label for="music"><h1 id="musicon">ON</h1><h1 id="musicoff">OFF</h1></label>
-          </div>
-        </form>
-      </div>
-    </div>
-  </section>
+			<div style="clear:both; bottom:0px">
+				<button onclick="screenManager.goBack();" style="float:left">&#8592; Levels</button>
+				<!--<button onclick="share();" style="float:left" id="inGameShareButton" > &#9733; Share</button>-->
+				<button id="skipButton" onclick="game.skip();" style="float:right;">Skip</button>
+				<button onclick="game.restart();" style="float:right;">Restart</button>
+				<button onclick="game.undo();" style="float:right;">Undo</button>
+			</div>
+		</div>
+		<div class="content">
+			<canvas id="gameCanvas" class="gameCanvas"></canvas>
+		</div>
+		<div class="footer">
+			<div class="mobileBannerContainer" id="mobileGameAd"></div>
+		</div>
+	</section>
 
-  <section id="about">
-    <div class="header">
-      <h1>
-        Credits
-      </h1>
-      <img src="back7.svg" class="back">
-    </div>
 
-    <div class="content">
-      <div class="row">
-        <div class ="col-md-6 col-sm-6 col-xs-6">
-          <h2>Gameplay and Idea Wizard</h2>
-        </div>
-        <div class ="col-md-6 col-sm-6 col-xs-6">
-          <h2>Paul-Andre Henegar</h2>
-        </div>
-        <div class ="col-md-6 col-sm-6 col-xs-6">
-          <h2>GUI Styling</h2>
-        </div>
-        <div class ="col-md-6 col-sm-6 col-xs-6">
-          <h2>James Brace</h2>
-          <h2>Socrates Philosophies</h2>
-        </div>
-        <div class ="col-md-6 col-sm-6 col-xs-6">
-          <h2>JQuery and Restructuring Master</h2>
-        </div>
-        <div class ="col-md-6 col-sm-6 col-xs-6">
-          <h2>Youri Tamitegama</h2>
-        </div>
-        <div class ="col-md-6 col-sm-6 col-xs-6">
-          <h2>SFX, Game Design, and Marketing Overlords</h2>
-        </div>
-        <div class ="col-md-6 col-sm-6 col-xs-6">
-          <h2> Chris Day </h2>
-          <h2> Socrates Philosophies </h2>
-        </div>
-        <div class ="col-md-6 col-sm-6 col-xs-6">
-          <h2> Special Thanks To </h2>
-        </div>
-        <div class ="col-md-6 col-sm-6 col-xs-6">
-          <h2> Hyroglyphik games </h2>
-        </div>
-      </div> 
-    </div>
+	<section id="editor"  class="screen">
+		<div class="header">
+			<div style="clear:both; bottom:0px">
+				<button onclick="editor.saveAndReturn();" style="float:left">Done</button>
+				<button onclick="screenManager.goBack();" style="float:left">Cancel</button>
 
-    <div class="footer">
-    </div>
-  </section>
+				<button onclick="editor.undo();" style="float:right;">Undo</button>
+				<button onclick="editor.clear();" style="float:right;">Clear</button>
+				<button onclick="editor.saveLevel();" style="float:right;">Save</button>
+				<button onclick="editor.promptSize();" style="float:right;">Change size</button>
+				<button onclick="editor.play();" style="float:right;">Play</button>
+			</div>
+		</div>
+		<div class="content">
+			<canvas id="editorCanvas" class="gameCanvas"></canvas>
+		</div>
+	</section>
 
-  <section id="bookMenu">
-    <div class="header">
-      <h1>
-        Books
-      </h1>
-      <img src="back7.svg" class="back">
-    </div>
 
-    <div id="bookContainer" class="content">
-      <div class="btn-group-vertical">
-        <div class = "btn btn-primary"></div>
-        <div class = "btn btn-primary"></div>
-        <div class = "btn btn-primary"></div>
-        <div class = "btn btn-primary"></div>
-        <div class = "btn btn-primary"></div>
-      </div>
-    </div>
+	<section id="levelMenu" class="screen">
+		<div class="header">
+			<div class="IndicContainer" id="statsIndicator"></div>
+			<button onclick="screenManager.goBack();">&#8592; Menu</button>
+			<button onclick="levelMenu.displayBookJson();" style="float:right;">To JSON</button>
+			<button onclick="levelMenu.newLevel();" style="float:right;">Add level</button>
+			<button onclick="levelMenu.toggleDelete();" style="float:right;">Delete</button>
+		</div>
 
-    <div class="footer">
-    </div>
-  </section>
+		<div id="iconContainer" class="content">
+		</div>
+		<div class="footer">
+		</div>
+	</section>
 
-  <section id="levelMenu">
-    <div class="header">
-      <h1>
-        Chapters
-      </h1>
-      <button class="back">
-        &#8592;
-      </button>
-    </div>
 
-    <div class="content">
-      {{ levelList }}
-    </div>
+	<section id="bookMenu" class="screen">
+		<div class="header">
+			<h1>Puzzle Books:</h1>
+		</div>
+		<div id="bookContainer" class="content">
 
-    <div class="footer">
-    </div>
-  </section>
+		</div>
+		<div class="footer">
+			<br>
+			<button onclick="displaySaveStr();" style="float:right;">Export save</button>
+			<button onclick="importSave();" style="float:right;">Import save</button>
 
-  <section id="game">
-    <div class="header">
-      <h1>
-        {{ Name }}
-      </h1>
-      <button class="back">
-        &#8592;
-      </button>
-      <div id="stats">
+			<button onclick="bookMenu.newBook();" style="float:right;">Add book</button>
+		</div>
 
-      </div>
-    </div>
+		<!--
+		<button onclick="showReset();"  style="float:right;" > Reset</button>
+		-->
+		<!--
+		<button onclick="share();"  style="float:right;" > Please Share This </button>
+		-->
+	</section>
 
-    <div class="content">
-      <canvas id="gameCanvas"></canvas>
-    </div>
+	<section id="loading" class="screen show">
+		Loading...
+	</section>
 
-    <div class="footer">
-      <button id="prevLevel">
-        &#8592;
-      </button>
-      <button id="restartLevel">
-        Restart
-      </button>
-      <button id="hint">
-        Hint
-      </button>
-      <button id="nextLevel">
 
-        &#8594;
-      </button>
-    </div>
-  </section>
+	<script src="game.js"></script>
+	<script src="editor.js"></script>
+	<script src="levelMenu.js"></script>
 
-  <section id="loading">
-    <p>
-      Loading
-    </p>
-  </section>
-
-  <script src="game.js"></script>
-  <script src="levelMenu.js"></script>
 </body>
+
 </html>
