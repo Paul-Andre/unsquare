@@ -4,9 +4,6 @@ $(window).ready(function() {
     screenManager.goBack();
   });
 
-  $(".toOptions").click(function() {
-    screenManager.switchTo("options");
-  });
 });
 
 //** Library to switch between screens **//
