@@ -14,22 +14,27 @@
 
 
   <!-- Scripts -->
-  <script src="jquery-3.1.0.min.js"></script>
-  <script src="api.js"></script>
-  <script src="Grid.js"></script>
-  <script src="colors.js"></script>
-  <script src="gameBase.js"></script>
-  <script src="levelDataManager.js"></script>
-  <script src="shapes.js"></script>
-  <script src="icon.js"></script>
-  <script src="helpers.js"></script>
-  <script src="levelMenu.js"></script>
-  <script src="screenManager.js"></script>
-  <script src="bookMenu.js"></script>
-  <script src="drawing.js"></script>
-  <script src="exportSave.js"></script>
-  <script src="loading.js"></script>
-  <script src="level.js"></script>
+	<script src="jquery-3.1.0.min.js"></script>
+	<script src="api.js"></script>
+	<script src="Grid.js"></script>
+	<script>
+		var IS_EDITOR = false; /////////whaaaaaa
+	</script>
+	<script src="colorSchemes.js"></script>
+	<script src="tileShapes.js"></script>
+	<script src="square.js"></script>
+	<script src="icon.js"></script>
+	<script src="helpers.js"></script>
+	<script src="screenManager.js"></script>
+	<script src="Sortable.js"></script>
+	<script src="bookMenu.js"></script>
+	<script src="drawing.js"></script>
+	<script src="exportSave.js"></script>
+	<script src="loading.js"></script>
+	<script src="level.js"></script>
+	<script src="gameState.js"></script>
+	<script src="levelStats.js"></script>
+	<script src="gameBase.js"></script>
 </head>
 
 <body>
@@ -40,7 +45,7 @@
       </h1>
     </div>
 
-    <div class="wrapper">
+    <div class="homeButtons">
       <button class="btn-default btn pulse-button toBookMenu" onclick="screenManager.switchTo('bookMenu');" type="button">
         Play
       </button>
@@ -128,11 +133,11 @@
         <div class ="col-md-6 col-sm-6 col-xs-6">
           <h2> Hyroglyphik games </h2>
         </div>
-        </row> 
-      </div>
+      </div> 
+    </div>
 
-      <div class="footer">
-      </div>
+    <div class="footer">
+    </div>
   </section>
 
   <section id="bookMenu">
@@ -204,6 +209,7 @@
       </button>
       <button id="nextLevel">
 
+        &#8594;
       </button>
     </div>
   </section>
@@ -213,13 +219,8 @@
       Loading
     </p>
   </section>
-</body>
-</html>
 
-<section id="loading">
-  <p>
-    Loading
-  </p>
-</section>
+  <script src="game.js"></script>
+  <script src="levelMenu.js"></script>
 </body>
 </html>

@@ -1,47 +1,41 @@
 /* CSS FILE FOR INDEX.HTML */
 
 body {
-  
+
 }
 
 /* SECTION */
 section {
-	font-family: Passion One;
-	width: 100%;
-	display: none;
+  font-family: Passion One;
+  width: 100%;
+  display: none;
 
 }
 
-
-#Home h1 {
-	font-family: Passion One;
-	font-size: 70px;
-	text-align: center;
-}
 
 /* HOME SCREEN */
 
-.wrapper {
-	text-align: center;
-	padding-top: 5em;
+.homeButtons {
+  text-align: center;
+  padding-top: 5em;
 }
 
-.wrapper button {
-	margin-top: 1em;
-	width: 200px;
-	display: block;
-	text-align: center;
-	font-size: 25px;
-	position: relative;
-	left: 50%;
-	margin-right: -50%;
-	transform: translate(-50%, -50%);
-	font-family: Passion One;
+.homeButtons button {
+  margin-top: 1em;
+  width: 200px;
+  display: block;
+  text-align: center;
+  font-size: 25px;
+  position: relative;
+  left: 50%;
+  margin-right: -50%;
+  transform: translate(-50%, -50%);
+  font-family: Passion One;
 }
 
 
 #adjustment {
-	margin-top: 2em;
+  margin-top: 2em;
 }
 
 
@@ -86,22 +80,22 @@ section {
 @media screen and (min-device-width : 768px)
 {
   #home h1 {
-  font-size: 120px;
-  margin-top: 200px;
+    font-size: 120px;
+    margin-top: 200px;
   }
 
-  .wrapper button {
-  
-  width: 300px;
-  height: 75px;
-  font-size: 35px;
+  .homeButtons button {
+
+    width: 300px;
+    height: 75px;
+    font-size: 35px;
   }
 
   .pulse-button {
-  position: relative;
-  margin-left: -147px;
-  line-height: 50px;
-  width: 300px;
+    position: relative;
+    margin-left: -147px;
+    line-height: 50px;
+    width: 300px;
   }
 }
 
@@ -109,18 +103,18 @@ section {
 @media screen and (max-device-width : 767px)
 {
   #home h1 {
-  font-size: 80px;
-  text-align: center;
-  margin-top: 120px;
+    font-size: 80px;
+    text-align: center;
+    margin-top: 120px;
   }
 }
 
 @media screen and (max-device-width : 365px)
 {
   #home h1 {
-  font-size: 70px;
-  text-align: center;
-  margin-top: 90px;
+    font-size: 70px;
+    text-align: center;
+    margin-top: 90px;
   }
 }
 
@@ -156,7 +150,7 @@ section {
 .footer {
   text-align: center;
   margin-top: 50px;
-    
+
 }
 
 .footer .btn {
@@ -178,7 +172,7 @@ section {
 .checkbox input[type=radio]{
   display: none;
 }
-    
+
 
 .checkbox .switch label{
   cursor: pointer;
@@ -212,11 +206,11 @@ section {
 .checkbox #sfx:not(:checked) ~ .switch label[for=sfx] #sfxoff{
   color: white;
 }
-    
 
 
 
- .checkbox #music:checked ~ .switch label[for=music] #musicon{
+
+.checkbox #music:checked ~ .switch label[for=music] #musicon{
   color: white;
 }
 
@@ -290,12 +284,12 @@ section {
     width: 240px;
     height: 60px;
     left: 20px;
-}
+  }
 
   .checkbox #yessfx:checked ~ .switch label[for=sfx]{
     font-size: 50px;
   }
-      
+
 
   .checkbox #nosfx:checked ~ .switch label[for=nosfx]{
     font-size: 50px;
@@ -314,7 +308,7 @@ section {
   .checkbox #yesmusic:checked ~ .switch label[for=music]{
     font-size: 50px;
   }
-      
+
 
   .checkbox #nomusic:checked ~ .switch label[for=nomusic]{
     font-size: 50px;
@@ -383,21 +377,21 @@ section {
     height: 15px;
     font-size: 25px;
     top: -5px;
-}
+  }
 
   .checkbox label[for=nosfx]{
     position: absolute;
     right: 20px;
     top: -5px;
     font-size: 25px;
-}
+  }
 
   .checkbox #yessfx:checked ~ .switch label[for=yessfx]{
     color: white;
     font-size: 40px;
     top: -5px;
   }
-      
+
 
   .checkbox #nosfx:checked ~ .switch label[for=nosfx]{
     color: white;
@@ -406,11 +400,11 @@ section {
   }
 
   .checkbox label[for=yesmusic]{
-      position: absolute;
-      left: 5px;
-      height: 15px;
-      font-size: 25px;
-      top: -5px;
+    position: absolute;
+    left: 5px;
+    height: 15px;
+    font-size: 25px;
+    top: -5px;
   }
 
   .checkbox label[for=nomusic]{
@@ -425,7 +419,7 @@ section {
     font-size: 40px;
     top: -5px;
   }
-      
+
 
   .checkbox #nomusic:checked ~ .switch label[for=nomusic]{
     color: white;
@@ -497,21 +491,21 @@ section {
     height: 15px;
     font-size: 25px;
     top: -5px;
-}
+  }
 
   .checkbox label[for=nosfx]{
     position: absolute;
     right: 20px;
     top: -5px;
     font-size: 25px;
-}
+  }
 
   .checkbox #yessfx:checked ~ .switch label[for=yessfx]{
     color: white;
     font-size: 40px;
     top: -5px;
   }
-      
+
 
   .checkbox #nosfx:checked ~ .switch label[for=nosfx]{
     color: white;
@@ -520,18 +514,18 @@ section {
   }
 
   .checkbox label[for=yesmusic]{
-      position: absolute;
-      left: 5px;
-      height: 15px;
-      font-size: 25px;
-      top: -5px;
+    position: absolute;
+    left: 5px;
+    height: 15px;
+    font-size: 25px;
+    top: -5px;
   }
 
-    .checkbox label[for=nomusic]{
-      position: absolute;
-      right: 20px;
-      top: -5px;
-      font-size: 25px;
+  .checkbox label[for=nomusic]{
+    position: absolute;
+    right: 20px;
+    top: -5px;
+    font-size: 25px;
   }
 
   .checkbox #yesmusic:checked ~ .switch label[for=yesmusic]{
@@ -539,7 +533,7 @@ section {
     font-size: 40px;
     top: -5px;
   }
-      
+
 
   .checkbox #nomusic:checked ~ .switch label[for=nomusic]{
     color: white;
@@ -592,21 +586,21 @@ section {
     height: 15px;
     font-size: 20px;
     top: -5px;
-}
+  }
 
   .checkbox label[for=nosfx]{
     position: absolute;
     right: 20px;
     top: -5px;
     font-size: 20px;
-}
+  }
 
   .checkbox #yessfx:checked ~ .switch label[for=yessfx]{
     color: white;
     font-size: 35px;
     top: -5px;
   }
-      
+
 
   .checkbox #nosfx:checked ~ .switch label[for=nosfx]{
     color: white;
@@ -615,11 +609,11 @@ section {
   }
 
   .checkbox label[for=yesmusic]{
-      position: absolute;
-      left: 5px;
-      height: 15px;
-      font-size: 20px;
-      top: -5px;
+    position: absolute;
+    left: 5px;
+    height: 15px;
+    font-size: 20px;
+    top: -5px;
   }
 
   .checkbox label[for=nomusic]{
@@ -634,7 +628,7 @@ section {
     font-size: 35px;
     top: -5px;
   }
-      
+
 
   .checkbox #nomusic:checked ~ .switch label[for=nomusic]{
     color: white;
@@ -701,7 +695,7 @@ section {
     font-size: 35px;
     top: -5px;
   }
-      
+
 
   .checkbox #nosfx:checked ~ .switch label[for=nosfx]{
     color: white;
@@ -710,11 +704,11 @@ section {
   }
 
   .checkbox label[for=yesmusic]{
-      position: absolute;
-      left: 5px;
-      height: 15px;
-      font-size: 20px;
-      top: -5px;
+    position: absolute;
+    left: 5px;
+    height: 15px;
+    font-size: 20px;
+    top: -5px;
   }
 
   .checkbox label[for=nomusic]{
@@ -729,7 +723,7 @@ section {
     font-size: 35px;
     top: -5px;
   }
-      
+
 
   .checkbox #nomusic:checked ~ .switch label[for=nomusic]{
     color: white;
@@ -818,7 +812,7 @@ section {
   }
 
 }
-  #music {
-    margin-top: 120px;
-  }
+#music {
+  margin-top: 120px;
+}
 }
