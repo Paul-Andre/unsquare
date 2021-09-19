@@ -20,6 +20,15 @@
       "free": true
     },
     {
+      "name": "Nice Levels",
+      "link": "niceLevels.json",
+      "icon": {
+        "type": "level",
+        "level": 0
+      },
+      "free": true
+    },
+    {
       "name": "Supa Dupa Levels",
       "link": "supaDupa.json",
       "icon": {
