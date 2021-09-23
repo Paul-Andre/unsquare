@@ -1,0 +1,19 @@
+set of int: W;
+set of int: H;
+array[W,H] of 0..1: a;
+
+%array[H] of 0..1: warm;
+array[H] of var 0..1: v;
+array[W] of 0..1: target;
+
+constraint forall(i in W)(
+    sum (j in H)(a[i,j]*v[j]) mod 2 == target[i]
+    );
+    
+var int: s = sum(j in H) (v[j]);
+
+solve
+%:: warm_start( v, warm)
+minimize s;
+
+output [show(v) ++ "; " ++ show(s)]

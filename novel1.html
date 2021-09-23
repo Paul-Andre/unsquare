@@ -1,0 +1,114 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Unsquare - The tile flipping game</title>
+  </head>
+  <body>
+    <canvas width="640px" height="640px" id="loadingCanvas"></canvas>
+    <script>
+      var canvas = document.getElementById("loadingCanvas");
+      var ctx = canvas.getContext("2d", {alpha: false});
+      var context = ctx;
+
+      // get current size of the canvas
+      let rect = canvas.getBoundingClientRect();
+
+      var dpr = window.devicePixelRatio;
+
+      var scale = dpr;
+
+      // increase the actual size of our canvas
+      canvas.width = rect.width * scale;
+      canvas.height = rect.height * scale;
+
+      // scale everything down using CSS
+      canvas.style.width = rect.width + 'px';
+      canvas.style.height = rect.height + 'px';
+
+
+      /*
+      var t = 0;
+      function draw() {
+        ctx.clearRect(0,0,canvas.width, canvas.height);
+        ctx.fillStyle="#FFFFFF";
+        var s = 24
+        for (var i=2; i<4; i++) {
+          for (var j=2; j<4; j++) {
+            var ss = s*(Math.sin(t/100 - i*.5 -j)+1)/2
+            ctx.fillRect(i*s-ss/2, j*s-ss/2, ss, ss);
+
+
+          }
+        }
+      };
+      draw();
+      var start = performance.now();
+      var prev;
+      function rafCallback(ts) {
+        t = ts-start;
+        prev = ts-t;
+        draw();
+        window.requestAnimationFrame(rafCallback);
+      }
+      window.requestAnimationFrame(rafCallback);
+      */
+
+        /*
+        !((xx^yy)%9) * !!((xx^(-yy))&19)
+        */
+
+      function fill(a) {
+        return "rgb("+a+","+a+","+a+")";
+      }
+        var s = 2;
+      for (var x=0; x<1000; x++) {
+        for (var y=0; y<1000; y++) {
+          var xx = x
+          var yy = y
+          var z = (xx^yy)%9;
+          if (
+            !(((xx^yy))%(9*13))
+
+          ) {
+            ctx.fillStyle = "white";
+          }else {
+            /*
+            if (
+              (
+                !((xx^yy)%35)
+              )
+              &&
+              (
+                !((xx^-yy)%35)
+              )
+
+            ) {
+
+              ctx.fillStyle = "red";
+            }else {
+              ctx.fillStyle = "black";
+            }
+            */
+            ctx.fillStyle = "black";
+            
+            
+          }
+
+          ctx.fillRect(x*s, y*s, s, s);
+        }
+      }
+      canvas.onclick = function(e) {
+
+        // e = Mouse click event.
+      var rect = e.target.getBoundingClientRect();
+      var x = e.clientX - rect.left; //x position within the element.
+      var y = e.clientY - rect.top;  //y position within the element.
+      var xx = (x/s)|0;
+      var yy = (y/s)|0;
+      console.log("x : " + xx + " ; y : " + yy + ".  " + (xx^yy));
+      };
+    </script>
+  </body>
+</html>
+
