@@ -1,0 +1,14 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "This is like gives file pictures and square stuff, yunno?",
+  "main": "hello.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "My property",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
