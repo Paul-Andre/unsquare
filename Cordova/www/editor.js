@@ -82,4 +82,21 @@ editor.saveAndReturn = function() {
   screenManager.goBack();
 };
 
+editor.printFlat = function() {
+  var ret = "";
+  ret += this.gameState.tiles.width;
+  ret += " ";
+  ret += this.gameState.tiles.height;
+  ret += "\n";
+  var tiles = this.gameState.tiles;
+  for (var j=0; j<tiles.height; j++) {
+    for (var i=0; i<tiles.width; i++) {
+      ret+=("" + (tiles.get(i,j) -1));
+    }
+    ret+="\n";
+  }
+  console.log(ret);
+}
+
+
 screenManager.additionalFunctions.editor = editor;
