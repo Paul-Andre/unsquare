@@ -1,6 +1,7 @@
 #include <bits/stdc++.h>
 using namespace std;
 typedef long long ll;
+typedef unsigned long long ull;
 
 
 void printMat(const vector<vector<int>> &mat){
@@ -41,6 +42,7 @@ struct SatSolutionAndKernel{
 };
 
 
+// TODO: don't need both mat and inversions
 optional<SatSolutionAndKernel> solve(vector<vector<int>> mat, vector<int> target, const vector<vector<int>> &inversions){
   // partial pivoting gaussian elimination mod 2
   int m = mat.size();
@@ -161,6 +163,153 @@ optional<SatSolutionAndKernel> solve(vector<vector<int>> mat, vector<int> target
   return ret;
 }
 
+vector<vector<int>> reorderKernelGreedy(vector<vector<int>> oldKernel) {
+  vector<vector<int>> newKernel;
+  vector<int> carpet(oldKernel[0].size(), 0);
+
+  while(oldKernel.size()) {
+    int smallestHuh = 10000000;
+    int bestI = 0;
+
+    for (int i=0; i<oldKernel.size(); i++) {
+      int huh = 0;
+      for (int j=0; j<oldKernel[i].size(); j++) {
+        if (carpet[j] || oldKernel[i][j]) {
+          huh++;
+        }
+      }
+      if (huh < smallestHuh) {
+        smallestHuh = huh;
+        bestI = i;
+      }
+    }
+    cerr<<smallestHuh<<endl;
+    newKernel.push_back(oldKernel[bestI]);
+    for (int j=0; j<oldKernel[bestI].size(); j++) {
+      if (carpet[j] || oldKernel[bestI][j]) {
+        carpet[j] = true;
+      }
+    }
+    for (int i=bestI+1; i<oldKernel.size(); i++) {
+      oldKernel[i-1] = oldKernel[i];
+    }
+    oldKernel.pop_back();
+  }
+  reverse(newKernel.begin(), newKernel.end());
+
+  return newKernel;
+}
+
+
+
+
+vector<int> branchAndBound(const SatSolutionAndKernel &sol) {
+
+  auto kernel = sol.kernel;
+
+  for (auto &k: kernel) {
+    for(int a:k) {
+      cerr<<a;
+    }
+    cerr << " " << sumVec(k);
+    cerr <<endl;
+  }
+
+  sort(kernel.begin(), kernel.end(), [](const vector<int> &a, const vector<int> &b) {
+      return sumVec(a) > sumVec(b);
+  });
+
+  kernel = reorderKernelGreedy(kernel);
+  cerr << "reordered: "<<endl;
+
+  for (auto &k: kernel) {
+    for(int a:k) {
+      cerr<<a;
+    }
+    cerr << " " << sumVec(k);
+    cerr <<endl;
+  }
+  //random_shuffle(kernel.begin(), kernel.end());
+
+  vector<int> best = sol.solution;
+  int bestScore = sumVec(best);
+
+  cerr << "Initial solution " << bestScore <<endl;
+
+  int m = best.size();
+  int n = sol.kernel.size();
+
+
+  vector<int> current = best;
+  vector<int> overlapCounts(m, 0);
+  for (int i=0; i<n; i++) {
+    for (int j=0; j<m; j++) {
+      if (kernel[i][j] != 0) {
+        overlapCounts[j]++;
+      }
+    }
+  }
+
+  ull progress = 0;
+
+
+  function<void(int)> rec = [&](int i) {
+    if (i >= n) {
+      int score = sumVec(current);
+      if (score < bestScore) {
+        best = current;
+        bestScore = score;
+        cerr << "Found solution " << bestScore <<endl;
+      }
+      return;
+    }
+
+    if (i == 15) {
+      cerr << (double) progress * pow(0.5, 15) << endl;
+      progress += 1;
+    }
+
+
+
+      int minPotential = 0;
+
+      for (int j=0; j<m; j++) {
+        if (!overlapCounts[j]) {
+          minPotential += current[j];
+        }
+      }
+
+      if (minPotential >= bestScore) {
+        return;
+      }
+
+      for (int j=0; j<m; j++) {
+        if (kernel[i][j] != 0) {
+          overlapCounts[j]--;
+        }
+      }
+
+    {
+      rec(i+1);
+      current ^= kernel[i];
+      rec(i+1);
+      current ^= kernel[i];
+    }
+
+      for (int j=0; j<m; j++) {
+        if (kernel[i][j] != 0) {
+          overlapCounts[j]++;
+        }
+      }
+
+  };
+
+  rec(0);
+
+  return best;
+
+}
+
 
 int main() {
 
@@ -170,6 +319,7 @@ int main() {
   srand(time(nullptr));
 
   vector<vector<int>> inversions;
+  vector<int> areas;
   for(int i=0; i<n; i++) {
     for (int j=0; j<m; j++) {
       for (int s=2; i+s<=n && j+s<=m; s++) {
@@ -182,6 +332,7 @@ int main() {
           }
         }
         inversions.emplace_back(move(inv));
+        areas.push_back(s*s);
       }
     }
   }
@@ -211,10 +362,24 @@ int main() {
   }
 
   if(auto solution_ = solve(mat, target, inversions)){
-    vector<int> solution = solution_->solution;
+    /*
+    cout<< "Before BB: ";
+    for(int a:solution_->solution){
+      cout<<a;
+    }
+    cout <<endl;
+    vector<int> solution = branchAndBound(*solution_);
+
+    cout<< "Afer BB: ";
+    for(int a:solution){
+      cout<<a;
+    }
+    cout <<endl;
+    */
 
 
     vector<vector<int>> kernel = solution_->kernel;
+    vector<int> solution = solution_->solution;
 
     int W = solution.size();
     int H = kernel.size();
@@ -239,8 +404,8 @@ int main() {
     for (int i=0; i<solution.size(); i++) {
       cout << solution[i] << ", ";
     }
-
     cout << "];\n";
+
     cout << "at_most = " << sumVec(solution) << ";\n";
   } else {
     cout << "unsolvable\n";
