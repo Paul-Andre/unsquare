@@ -68,7 +68,7 @@ button, .levelIcon {
 
 
 
-section#gameScreen button:disabled{
+button:disabled{
 	background: #aaa;
 }
 
