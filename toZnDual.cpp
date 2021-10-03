@@ -379,6 +379,7 @@ int main() {
 
 
     vector<vector<int>> kernel = solution_->kernel;
+    //kernel = reorderKernelGreedy(kernel);
     vector<int> solution = solution_->solution;
 
     int W = solution.size();
@@ -406,7 +407,18 @@ int main() {
     }
     cout << "];\n";
 
-    cout << "at_most = " << sumVec(solution) << ";\n";
+    cout << "costs = [";
+    for (int i=0; i<areas.size(); i++) {
+      cout << areas[i] << ", ";
+    }
+    cout << "];\n";
+
+    int totCost = 0;
+    for (int i=0; i<solution.size(); i++) {
+      totCost += areas[i]*solution[i];
+    }
+
+    cout << "at_most = " << totCost << ";\n";
   } else {
     cout << "unsolvable\n";
 
