@@ -135,27 +135,6 @@ optional<SatSolutionAndKernel> solve(vector<vector<int>> mat, vector<int> target
     assert(sumVec(repr) == 0);
   }
 
-
-  if (true /*try randomly improving*/) {
-    vector<int> best = solution;
-    //int best_val = sumVec(repr);
-    for(int l=0; l<10000; l++) {
-      vector<int> repr ;
-      if(rand()%2){
-        repr = best;
-      }else{
-        repr = solution;
-      }
-      for(int k=0; k<100; k++) {
-        repr ^= kernelBasis[rand()%kernelBasis.size()];
-        if(sumVec(repr) < sumVec(best)){
-          best = repr;
-        }
-      }
-    }
-    solution = best;
-  }
-
   SatSolutionAndKernel ret;
   ret.solution = solution;
   ret.kernel = kernelBasis;
@@ -163,7 +142,33 @@ optional<SatSolutionAndKernel> solve(vector<vector<int>> mat, vector<int> target
   return ret;
 }
 
+vector<int> randomlyImprove(const vector<int> &solution, const vector<vector<int>> &kernel) {
+
+  vector<int> best = solution;
+  //int best_val = sumVec(repr);
+  for(int l=0; l<10000; l++) {
+    vector<int> repr ;
+    if(rand()%2){
+      repr = best;
+    }else{
+      repr = solution;
+    }
+    for(int k=0; k<100; k++) {
+      repr ^= kernel[rand()%kernel.size()];
+      if(sumVec(repr) < sumVec(best)){
+        best = repr;
+      }
+    }
+  }
+  return best;
+}
+
 vector<vector<int>> reorderKernelGreedy(vector<vector<int>> oldKernel) {
+
+  sort(oldKernel.begin(), oldKernel.end(), [](const vector<int> &a, const vector<int> &b) {
+      return sumVec(a) > sumVec(b);
+  });
+
   vector<vector<int>> newKernel;
   vector<int> carpet(oldKernel[0].size(), 0);
 
@@ -200,44 +205,75 @@ vector<vector<int>> reorderKernelGreedy(vector<vector<int>> oldKernel) {
   return newKernel;
 }
 
-
-
-
-vector<int> branchAndBound(const SatSolutionAndKernel &sol) {
-
-  auto kernel = sol.kernel;
-
-  for (auto &k: kernel) {
-    for(int a:k) {
-      cerr<<a;
+// Greedily make the kerel vectors shorter
+vector<vector<int>> reduceKernelGreedy(vector<vector<int>> oldKernel) {
+  int n = oldKernel.size();
+  int m = oldKernel[0].size();
+  bool changed = true;
+  while(changed) {
+    changed = false;
+    for (int i=0; i<n; i++) {
+      for (int ii=0; ii<n; ii++) {
+        if (i != ii) {
+          vector<int> a = oldKernel[i];
+          a^=oldKernel[ii];
+          if (sumVec(a) < sumVec(oldKernel[i])) {
+            oldKernel[i] = a;
+            changed = true;
+          }
+        }
+      }
     }
-    cerr << " " << sumVec(k);
-    cerr <<endl;
   }
+  return oldKernel;
+}
 
-  sort(kernel.begin(), kernel.end(), [](const vector<int> &a, const vector<int> &b) {
-      return sumVec(a) > sumVec(b);
-  });
-
-  kernel = reorderKernelGreedy(kernel);
-  cerr << "reordered: "<<endl;
-
-  for (auto &k: kernel) {
-    for(int a:k) {
-      cerr<<a;
+vector<vector<int>> reduceKernelGreedy2(vector<vector<int>> oldKernel) {
+  int n = oldKernel.size();
+  int m = oldKernel[0].size();
+  while(true) {
+    bool changed = false;
+    int bestI = 0;
+    int bestIi = 0;
+    int bestDiff = 0;
+    for (int i=0; i<n; i++) {
+      for (int ii=0; ii<n; ii++) {
+        if (i != ii) {
+          vector<int> a = oldKernel[i];
+          a^=oldKernel[ii];
+          int diff = sumVec(oldKernel[i]) - sumVec(a);
+          if (diff > bestDiff) {
+            bestDiff = diff;
+            bestI = i;
+            bestIi = ii;
+            changed = true;
+          }
+        }
+      }
     }
-    cerr << " " << sumVec(k);
-    cerr <<endl;
+    if (changed) {
+      int i = bestI;
+      int ii = bestIi;
+      vector<int> a = oldKernel[i];
+      a^=oldKernel[ii];
+      oldKernel[i] = a;
+    } else {
+      break;
+    }
   }
-  //random_shuffle(kernel.begin(), kernel.end());
+  return oldKernel;
+}
 
-  vector<int> best = sol.solution;
+
+// Please reorder kernel first.
+vector<int> branchAndBound(vector<int> best, const vector<vector<int>> &kernel) {
+
   int bestScore = sumVec(best);
 
   cerr << "Initial solution " << bestScore <<endl;
 
   int m = best.size();
-  int n = sol.kernel.size();
+  int n = kernel.size();
 
 
   vector<int> current = best;
@@ -264,8 +300,8 @@ vector<int> branchAndBound(const SatSolutionAndKernel &sol) {
       return;
     }
 
-    if (i == 15) {
-      cerr << (double) progress * pow(0.5, 15) << endl;
+    if (i == 8) {
+      cerr << (double) progress * pow(0.5, 8) << endl;
       progress += 1;
     }
 
@@ -308,6 +344,22 @@ vector<int> branchAndBound(const SatSolutionAndKernel &sol) {
 
   return best;
 
+}
+
+
+
+void printKernel(const vector<vector<int>> &kernel) {
+  int tot = 0;
+    for (auto &k: kernel) {
+      for(int a:k) {
+        cerr<<a;
+      }
+      int s= sumVec(k);
+      tot+=s;
+      cerr << " " << s;
+      cerr <<endl;
+    }
+    cerr << tot <<endl;
 }
 
 
@@ -379,8 +431,28 @@ int main() {
 
 
     vector<vector<int>> kernel = solution_->kernel;
-    //kernel = reorderKernelGreedy(kernel);
+
+    printKernel(kernel);
+
+    kernel = reduceKernelGreedy(kernel);
+    cerr <<"simplified:"<< endl;
+
+    printKernel(kernel);
+
+    kernel = reorderKernelGreedy(kernel);
+    cerr <<"reordered:"<< endl;
+    printKernel(kernel);
+
     vector<int> solution = solution_->solution;
+    cerr << "initial solution " << sumVec(solution) << endl;
+
+    solution = randomlyImprove(solution, kernel);
+    cerr << "after randomly improving " << sumVec(solution) << endl;
+
+    solution = branchAndBound(solution, kernel);
+    cerr << "after branch and bound " << sumVec(solution) << endl;
+
+    
 
     int W = solution.size();
     int H = kernel.size();
