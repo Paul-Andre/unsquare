@@ -146,7 +146,7 @@ vector<int> randomlyImprove(const vector<int> &solution, const vector<vector<int
 
   vector<int> best = solution;
   //int best_val = sumVec(repr);
-  for(int l=0; l<10000; l++) {
+  for(int l=0; l<10000*10; l++) {
     vector<int> repr ;
     if(rand()%2){
       repr = best;
@@ -308,14 +308,28 @@ vector<int> branchAndBound(vector<int> best, const vector<vector<int>> &kernel) 
 
 
       int minPotential = 0;
+      bool atLeastOneCanChange = false;
 
       for (int j=0; j<m; j++) {
         if (!overlapCounts[j]) {
           minPotential += current[j];
+        } else if (current[j]) {
+          atLeastOneCanChange = true;
         }
       }
 
-      if (minPotential >= bestScore) {
+      if (!atLeastOneCanChange) {
+        int score = sumVec(current);
+        if (score < bestScore) {
+          best = current;
+          bestScore = score;
+          cerr << "Found (via atLeastOneCanChange) solution " << bestScore <<endl;
+        }
+        return;
+      }
+
+      // The +1 is because any added kernel vector will cover at least 1 location where current is zero
+      if (minPotential + 1>= bestScore) {
         return;
       }
 
@@ -362,6 +376,20 @@ void printKernel(const vector<vector<int>> &kernel) {
     cerr << tot <<endl;
 }
 
+/*
+void printSquareSequence(int m, int n, const vector<int> &solution) {
+  vector<int> repr = ;
+  cout<<endl;
+  for(int i=0; i<solution.size(); i++) {
+    if ((solution)[i]) {
+      repr^=inversions[i];
+      printPuzzle(m,n,repr);
+      cout<<endl;
+    }
+  }
+}
+*/
+
 
 int main() {
 
@@ -372,9 +400,13 @@ int main() {
 
   vector<vector<int>> inversions;
   vector<int> areas;
-  for(int i=0; i<n; i++) {
-    for (int j=0; j<m; j++) {
-      for (int s=2; i+s<=n && j+s<=m; s++) {
+  for (int s=2; s<=m && s<=n; s++) {
+  //for (int s=min(m, n); s>=2; s--) {
+    for(int i=0; i<n; i++) {
+      for (int j=0; j<m; j++) {
+        if (i+s>n || j+s>m) {
+          continue;
+        }
         vector<int> inv(n*m, 0);
         for (int ii=0; ii<s; ii++) {
           for (int jj=0; jj<s; jj++) {
@@ -414,45 +446,30 @@ int main() {
   }
 
   if(auto solution_ = solve(mat, target, inversions)){
-    /*
-    cout<< "Before BB: ";
-    for(int a:solution_->solution){
-      cout<<a;
-    }
-    cout <<endl;
-    vector<int> solution = branchAndBound(*solution_);
-
-    cout<< "Afer BB: ";
-    for(int a:solution){
-      cout<<a;
-    }
-    cout <<endl;
-    */
-
 
     vector<vector<int>> kernel = solution_->kernel;
 
     printKernel(kernel);
 
-    kernel = reduceKernelGreedy(kernel);
+    //kernel = reduceKernelGreedy(kernel);
+    //kernel = reduceKernelGreedy2(kernel);
     cerr <<"simplified:"<< endl;
 
     printKernel(kernel);
 
-    kernel = reorderKernelGreedy(kernel);
+    //kernel = reorderKernelGreedy(kernel);
     cerr <<"reordered:"<< endl;
     printKernel(kernel);
 
     vector<int> solution = solution_->solution;
     cerr << "initial solution " << sumVec(solution) << endl;
 
-    solution = randomlyImprove(solution, kernel);
+    //solution = randomlyImprove(solution, kernel);
     cerr << "after randomly improving " << sumVec(solution) << endl;
 
-    solution = branchAndBound(solution, kernel);
+    //solution = branchAndBound(solution, kernel);
     cerr << "after branch and bound " << sumVec(solution) << endl;
 
-    
 
     int W = solution.size();
     int H = kernel.size();
@@ -487,7 +504,8 @@ int main() {
 
     int totCost = 0;
     for (int i=0; i<solution.size(); i++) {
-      totCost += areas[i]*solution[i];
+      totCost += //areas[i]*
+        solution[i];
     }
 
     cout << "at_most = " << totCost << ";\n";

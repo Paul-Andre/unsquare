@@ -14,7 +14,7 @@ constraint forall(i in W)( result[i] = (sum(j in H)(v[j]*a[i,j]) + target[i]) mo
 var int: s = sum(i in W) (result[i]);
 %var int: c = sum(i in W) (result[i]*costs[i]);
 
-%constraint s <= at_most;
+constraint s <= at_most;
 
 %array[H] of 0..1: warm = [0 | i in H];
 
