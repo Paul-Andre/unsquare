@@ -452,12 +452,12 @@ int main() {
     printKernel(kernel);
 
     //kernel = reduceKernelGreedy(kernel);
-    //kernel = reduceKernelGreedy2(kernel);
+    kernel = reduceKernelGreedy2(kernel);
     cerr <<"simplified:"<< endl;
 
     printKernel(kernel);
 
-    //kernel = reorderKernelGreedy(kernel);
+    kernel = reorderKernelGreedy(kernel);
     cerr <<"reordered:"<< endl;
     printKernel(kernel);
 
@@ -467,7 +467,7 @@ int main() {
     //solution = randomlyImprove(solution, kernel);
     cerr << "after randomly improving " << sumVec(solution) << endl;
 
-    //solution = branchAndBound(solution, kernel);
+    solution = branchAndBound(solution, kernel);
     cerr << "after branch and bound " << sumVec(solution) << endl;
 
 
