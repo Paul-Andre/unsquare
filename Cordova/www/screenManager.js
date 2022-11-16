@@ -1,11 +1,3 @@
-//** Event Listeners **//
-$(window).ready(function() {
-  $(".back").click(function() {
-    screenManager.goBack();
-  });
-
-});
-
 //** Library to switch between screens **//
 
 "use strict";
@@ -14,7 +6,7 @@ var screenManager = {
   additionalFunctions: {},
   stack: [],
   currentScreenName: "loading",
-  currentScreen: $("#loading"), // This doesn't exist when it is called at this point.
+  currentScreen: document.getElementById("loading"),
   executeFunction: function(screenName, funcName) {
     if (screenName in this.additionalFunctions &&
       funcName in this.additionalFunctions[screenName]) {
@@ -23,9 +15,11 @@ var screenManager = {
   },
   switchTo: function(screenName, keepAsIs) {
     if (this.currentScreen) {
-      this.currentScreen.hide()
+      this.currentScreen.style.display = 'none';
+      //this.currentScreen.hide()
     } else {
-      $("#" + this.currentScreenName).hide()
+      document.getElementById(this.currentScreenName).style.display = 'none';
+      //$("#" + this.currentScreenName).hide()
     }
 
     this.stack.push({
@@ -37,18 +31,23 @@ var screenManager = {
     }
 
     this.currentScreenName = screenName;
-    this.currentScreen = $("#" + screenName);
-    this.currentScreen.show();
+    this.currentScreen = document.getElementById(screenName);
+    //this.currentScreen = $("#" + screenName);
+    this.currentScreen.style.display = 'block';
+    //this.currentScreen.show();
     this.executeFunction(this.currentScreenName, "onShow");
   },
   goBack: function() {
-    this.currentScreen.hide();
+    this.currentScreen.style.display = 'none';
+    //this.currentScreen.hide();
     var popped = this.stack.pop();
     this.executeFunction(this.currentScreenName, "onHide");
 
     this.currentScreenName = popped.name;
-    this.currentScreen = $("#" + this.currentScreenName);
-    this.currentScreen.show();
+    this.currentScreen = document.getElementById(this.currentScreenName);
+    //this.currentScreen = $("#" + this.currentScreenName);
+    this.currentScreen.style.display = 'block';
+    //this.currentScreen.show();
     if (!popped.keepAsIs) {
       this.executeFunction(this.currentScreenName, "onShow");
     }
@@ -57,7 +56,7 @@ var screenManager = {
 
 screenManager.additionalFunctions.loadingScreen = {
   onHide: function() {
-    $("#loading").get().remove();
+    document.getElementById("loading").remove();
     screenManager.stack.shift(); // This is to remove the loadingScreen from the stack.
     delete screenManager.additionalFunctions.loadingScreen;
   }

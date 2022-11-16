@@ -25,19 +25,20 @@ levelMenu.createLevelInfo = function(level) {
 // this function is to be called on icons using the onclick event
 // so "this" refers to the icon element, not levelMenu
 levelMenu.onIconClick = function() {
-  if (IS_EDITOR) {
-    if (levelMenu.deleting) {
+  if (levelMenu.deleting) {
       this.remove();
       levelMenu.saveIconOrder();
-    } else {
-      editor.openLevel(this.level);
-      screenManager.switchTo("editor");
-    }
   } else {
-    game.openLevel(this.level);
-    screenManager.switchTo("game");
-  }
+    let levelObject = Level.fromJsonObject(this.level);
+    if (IS_EDITOR) {
+      editor.openLevel(levelObject);
+      screenManager.switchTo("editor");
+    } else {
+      game.openLevel(levelObject);
+      screenManager.switchTo("game");
+    }
 
+  }
 }
 
 levelMenu.container = document.querySelector("#levelMenu .content");

@@ -153,6 +153,7 @@ function makeGameBase(canvasId, divId /*unused*/ ) {
 
 
   var hidden = true;
+  // to make sure we don't requestAnimationFrame if it's already been requested
   var numRequested = 0;
   game.draw = function() {
     if (!hidden && this.gameState) {

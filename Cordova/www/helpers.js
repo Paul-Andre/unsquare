@@ -11,11 +11,10 @@ function cancelEvent(e) //used to cancel all default behavior for events. Contai
   return false;
 }
 
-var touchable = false;
-
-window.addEventListener("load", function() {
-  if ('ontouchstart' in document) {
-    document.body.classList.remove("no-touch");
-    window.touchable = true;
-  }
-}, false)
+//https://stackoverflow.com/a/35385518
+function htmlStringToElement(html) {
+    var template = document.createElement('template');
+    html = html.trim(); // Never return a text node of whitespace as the result
+    template.innerHTML = html;
+    return template.content.firstChild;
+}

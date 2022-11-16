@@ -1,3 +1,42 @@
+let books = [];
+
+let bookUrls = [
+  "book1Old.json",
+  "basicBlackWhite.json",
+  "niceLevels.json",
+  "supaDupa.json",
+];
+
+// This sorta loads anything anytime...
+{
+
+  for (let i = 0; i < bookUrls.length; i++) {
+    let bookUrl = bookUrls[i];
+
+    //https://stackoverflow.com/a/35294675
+    let request = new XMLHttpRequest();
+    request.open('GET', bookUrl, true);
+
+    books.push({name: "loading"}); //placeholder
+
+    request.onload = function() {
+      if (request.status >= 200 && request.status < 400) {
+        // Success!
+        let data = JSON.parse(request.responseText);
+        books[i] = data;
+      } else {
+
+      }
+    };
+
+    request.onerror = function() {
+
+    };
+
+    request.send(); 
+  }
+}
+
 var bookMenu = {}
 
 bookMenu.onShow = function() {
@@ -6,8 +45,9 @@ bookMenu.onShow = function() {
 
 bookMenu.showBooks = function() {
 
-  var container = $("#bookContainer");
-  container.html("");
+  var container = document.getElementById("bookContainer");
+
+  container.innerHTML = ("");
 
   for (var i = 0; i < books.length; i++) {
     container.append(bookMenu.prepareBook(books[i]));
@@ -33,50 +73,28 @@ bookMenu.loadBooks = function() {
 
 };
 
-//Creates a DOM element from the book info
-/*
-  Book Dom structure:
-<div class="book">
-  <div class="bookIconContainer">
-  </div>
-  <div class="bookInfoContainer">
-    <div class="bookName">
-    </div>
-    <div class="lockIcon">
-    </div>
-    <div class="price">
-    </div>
-  </div>
-</div>
+let bookTemplate = 
+"<div class='book'> \
+  <div class='bookIconContainer'> \
+  <img src='asdf.png'>\
+  </div>\
+  <div class='bookInfoContainer'>\
+    <div class='bookName'>\
+    </div>\
+  </div>\
+</div>"
+;
 
-*/
 bookMenu.prepareBook = function(book) {
-  var node = $(document.createElement("div")).attr("class", "book");
-  var icon = $(document.createElement("div")).attr("class", "bookIconContainer")
-    .html("<img src='" + book.icon + "'>");
-  var info = $(document.createElement("div")).attr("class", "bookInfoContainer");
-  var name = $(document.createElement("div")).attr("class", "bookName")
-    .html(book.name);
-  if (book.locked) {
-    var lock = $(document.createElement("div")).attr("class", "lockIcon")
-      .html("<img src='lockIcon.gif'>");
-    var price = $(document.createElement("div")).attr("class", "price");
-    if ($.isNumeric(book.price)) {
-      price.html("$ " + book.price);
-    } else {
-      price.html(book.price);
-    }
 
-    info.append(lock, price);
-  }
-  info.append(name);
-  node.append(icon, info);
-
-  //onclick event
-  node.prop("book", book);
-  node.click(function() {
+  let node = htmlStringToElement(bookTemplate);
+  let bn = node.getElementsByClassName("bookName")[0]
+  bn.innerHTML = "asdf";
+  
+  node.book = book;
+  node.onclick = function() {
     bookMenu.openBook(book);
-  });
+  };
 
   return node;
 };
