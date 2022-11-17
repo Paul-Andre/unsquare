@@ -1,0 +1,78 @@
+/**
+
+**/
+
+body {
+	width: 440px;
+	position: relative;
+	margin: auto;
+	background: silver;
+}
+
+section {
+	position: absolute;
+        display: none;
+	-webkit-transition: 0.5s ease-in-out;
+	-moz-transition: 0.5s ease-in-out;
+	transition: 0.5s ease-in-out;
+	
+	/*-webkit-transition-property: opacity, transform;
+	-moz-transition-property: opacity, transform;
+	transition-property: opacity, transform;*/
+	
+	-webkit-transform: translateX(15px);
+	-moz-transform: translateX(15px);
+	transform: translateX(15px);
+}
+
+section.show {
+	opacity: 1;
+	z-index: 5;
+	-webkit-transform: translateX(0px);
+	-moz-transform: translateX(0px);
+	transform: translateX(0px);
+}
+
+section#levelMenuScreen .header {
+	float: left;
+	width: 100%;
+	height:75px;
+	top:0 ;
+}
+
+/** ---------------Containers-------------- **/
+
+
+section#bookMenuScreen .header,
+section#aboutScreen .header,
+section#resetScreen .header {
+	float: left;
+	width: 100%;
+}
+
+/** ------------end of containers------------- **/
+
+/** Buttons **/
+
+button, .levelIcon {
+    background: white;
+    border: solid 1px #9b9b9b;
+    margin: 2px;
+    box-shadow: 1px 1px #9b9b9b;
+    color: #181832;
+}
+
+.levelIcon {
+	vertical-align: top;
+}
+
+
+
+button:disabled{
+	background: #aaa;
+}
+
+div#iconContainer.deleting .levelIcon {
+	border-color: red;
+}
+
