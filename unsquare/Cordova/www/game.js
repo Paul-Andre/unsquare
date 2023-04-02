@@ -1,16 +1,16 @@
 var game = makeGameBase("gameCanvas", "game");
 
 // 👌 😂
-game.openLevel = (function() {
+game.openLevel = (function () {
   var superOpenLevel = game.openLevel.bind(game);
-  return function(level) {
+  return function (level) {
     superOpenLevel(level);
     levelStats.open(level);
   };
 })();
 
 // this specifies what happens when you activate squares
-game.action = function(v) {
+game.action = function (v) {
   return game.level.colorScheme.unsquare(v);
 };
 
@@ -19,17 +19,14 @@ game.restart = function restart() {
   game.openLevel(this.level);
 };
 
-
-game.finishedLevel = function() {
+game.finishedLevel = function () {
   this.finished = true;
 
   var clicked = false;
 
   if (this.level.best == 0 || this.moves < this.level.best) {
-
     this.level.best = this.moves;
     dataManager.saveBookBests(this.level.book);
-
   }
 
   var par = false;
@@ -46,12 +43,12 @@ game.finishedLevel = function() {
   var that = this;
   if (typeof this.level.index == "number") {
     game.disactivateEvents(); // This function does not exist
-    canvas.onmousedown = canvas.ontouchstart = function(evt) {
+    canvas.onmousedown = canvas.ontouchstart = function (evt) {
       game.openLevel(nextLevel);
       return cancelEvent(evt);
-    }
+    };
   }
   levelStats.pass(this.level);
-}
+};
 
 screenManager.additionalFunctions.game = game;

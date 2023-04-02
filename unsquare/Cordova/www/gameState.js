@@ -1,9 +1,8 @@
 "use strict";
 
 function GameState(level) {
-
   var tileStates = level.tiles.clone();
-  tileStates.forEachSet(function() {
+  tileStates.forEachSet(function () {
     return {
       selected: false,
       transitionState: 0,
@@ -23,34 +22,31 @@ function GameState(level) {
   this.lastUpdateTimestamp = performance.now();
 }
 
-
 GameState.prototype.isClear = function isClear() {
   var clear = true;
 
-  this.tiles.forEach(function(v) {
+  this.tiles.forEach(function (v) {
     if (v != 1) {
       clear = false;
     }
   });
 
   return clear;
-}
+};
 
-
-GameState.prototype.applyMove = function(move, action) {
+GameState.prototype.applyMove = function (move, action) {
   if (move != null) {
     this.undoList.push({
       tiles: this.tiles.clone(),
-      move: move
+      move: move,
     });
     this.level.tileShape.forTilesInMoveSet(this.tiles, move, action);
   }
 };
 
-
-GameState.prototype.undo = function() {
+GameState.prototype.undo = function () {
   if (this.undoList.length > 0) {
     var undo = this.undoList.pop();
     this.tiles = undo.tiles;
   }
-}
+};
