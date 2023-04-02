@@ -15,7 +15,7 @@ function drawIcon(level, canvas) {
 
   var ctx = canvas.getContext("2d");
 
-  tiles.forEach(function(v, x, y) {
+  tiles.forEach(function (v, x, y) {
     let f = colorScheme.cells[v].fill;
     //console.log(f,x,y);
     ctx.fillStyle = f;

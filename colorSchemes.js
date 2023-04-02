@@ -1,7 +1,6 @@
 "use strict";
 
 var colorSchemes = {
-
   BW: {
     cells: {
       1: {
@@ -12,12 +11,12 @@ var colorSchemes = {
       },
     },
 
-    unsquare: function(e) {
-      return (e == 1) ? 2 : (e == 2) ? 1 : 0;
+    unsquare: function (e) {
+      return e == 1 ? 2 : e == 2 ? 1 : 0;
     },
 
-    resquare: function(e) {
-      return (e == 1) ? 2 : (e == 2) ? 1 : 0;
+    resquare: function (e) {
+      return e == 1 ? 2 : e == 2 ? 1 : 0;
     },
   },
 
@@ -34,18 +33,17 @@ var colorSchemes = {
       },
     },
 
-    unsquare: function(e) {
-      return (e == 1) ? 3 : (e == 3) ? 2 : (e == 2) ? 1 : 0;
+    unsquare: function (e) {
+      return e == 1 ? 3 : e == 3 ? 2 : e == 2 ? 1 : 0;
     },
 
-    resquare: function(e) {
-      return (e == 3) ? 1 : (e == 2) ? 3 : (e == 1) ? 2 : 0;
+    resquare: function (e) {
+      return e == 3 ? 1 : e == 2 ? 3 : e == 1 ? 2 : 0;
     },
   },
 
-  "rainbow": {
+  rainbow: {
     cells: {
-
       1: {
         fill: "#BE81F7",
       },
@@ -75,26 +73,25 @@ var colorSchemes = {
       },
     },
 
-    unsquare: function(e) {
+    unsquare: function (e) {
       e++;
       if (e == 8) {
-        e = 1
-      };
+        e = 1;
+      }
       return e;
     },
 
-    resquare: function(e) {
+    resquare: function (e) {
       e--;
       if (e == 0) {
-        e = 7
-      };
+        e = 7;
+      }
       return e;
     },
   },
 
-  "rainbow2": {
+  rainbow2: {
     cells: {
-
       1: {
         fill: "white",
       },
@@ -126,26 +123,25 @@ var colorSchemes = {
       8: {
         fill: "#FA5858",
       },
-
     },
 
-    unsquare: function(e) {
+    unsquare: function (e) {
       e++;
       if (e == 9) {
-        e = 1
-      };
+        e = 1;
+      }
       return e;
     },
 
-    resquare: function(e) {
+    resquare: function (e) {
       e--;
       if (e == 0) {
-        e = 8
-      };
+        e = 8;
+      }
       return e;
     },
   },
-}
+};
 
 // Automatically make it so that colorScheme.name is the key used to find the
 // colorScheme in the colorSchemes object.

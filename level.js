@@ -14,17 +14,17 @@ Level.empty = function makeLevel(size) {
   return level;
 };
 
-Level.fromJsonObject = function(json) {
+Level.fromJsonObject = function (json) {
   var level = new Level();
   level.colorScheme = colorSchemes.BW; //colorSchemes[json.colorScheme];
   level.tileShape = tileShapes.square; // tileShapes[json.tileShape];
   level.tiles = level.tileShape.gridFromJsonObject(json.tiles);
   level.par = json.par;
-  level.solution = [];//json.solution;
+  level.solution = []; //json.solution;
   return level;
 };
 
-Level.prototype.toJsonObject = function() {
+Level.prototype.toJsonObject = function () {
   var json = {};
   json.colorScheme = this.colorScheme.name;
   json.tileShape = this.tileShape.name;
@@ -34,16 +34,16 @@ Level.prototype.toJsonObject = function() {
   return json;
 };
 
-Level.prototype.clone = function() {
+Level.prototype.clone = function () {
   var level = new Level();
   level.copyFrom(this);
   return level;
 };
 
-Level.prototype.copyFrom = function(otherLevel) {
+Level.prototype.copyFrom = function (otherLevel) {
   this.colorScheme = otherLevel.colorScheme;
   this.tileShape = otherLevel.tileShape;
   this.tiles = otherLevel.tiles.clone();
   this.par = otherLevel.par;
   this.solution = otherLevel.solution.slice();
-}
+};

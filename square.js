@@ -1,8 +1,6 @@
 "use strict";
 
-;
-(function() {
-
+(function () {
   /// Given fractional positions the two corners of the dragged rectangle
   /// relative to the grid, returns the top right corner and size of square
   /// to be inverted.  Output is in the form of {x: int, y: int, size: int}
@@ -10,7 +8,6 @@
   /// The numbers are between 0 and gridWidth or gridHeight, not between 0
   /// and 1.
   function calculateSquare(x1, y1, x2, y2, gridWidth, gridHeight) {
-
     // Specify the direction in which the square goes. 1 is the default value.
     var xSign = Math.sign(x2 - x1) || 1;
     var ySign = Math.sign(y2 - y1) || 1;
@@ -20,7 +17,8 @@
     var y = Math.floor(y1);
 
     // The size of the square
-    var size = Math.max(Math.abs(Math.floor(x2) - x), Math.abs(Math.floor(y2) - y)) + 1;
+    var size =
+      Math.max(Math.abs(Math.floor(x2) - x), Math.abs(Math.floor(y2) - y)) + 1;
 
     // Adjustments if the square goes in negative directions
     if (xSign == -1) {
@@ -54,20 +52,19 @@
     return Grid.from2dArray(tiles);
   }
 
-
   /// From [0, 1] to [0, "grid dimention"]
   function coordinatesFromMousePosition(x, y, tiles) {
     return {
       x: Math.floor(x * tiles.width),
-      y: Math.floor(y * tiles.height)
+      y: Math.floor(y * tiles.height),
     };
   }
 
   /// position on the canvas as if it was stretch to be from 0 to 1
   function positionFromCoordinates(x, y, tiles) {
     return {
-      x: (x + .5) / tiles.width,
-      y: (y + .5) / tiles.height
+      x: (x + 0.5) / tiles.width,
+      y: (y + 0.5) / tiles.height,
     };
   }
 
@@ -77,8 +74,14 @@
     var width = tiles.width;
     var height = tiles.height;
 
-    var move =
-      calculateSquare(x1 * width, y1 * height, x2 * width, y2 * height, width, height);
+    var move = calculateSquare(
+      x1 * width,
+      y1 * height,
+      x2 * width,
+      y2 * height,
+      width,
+      height
+    );
 
     if (move.size > 1) {
       return move;
@@ -89,36 +92,44 @@
 
   function forTilesInMoveSet(grid, move, action) {
     if (move !== null)
-      grid.window(move.x, move.y, move.size, move.size).forEachSet(function(v, x, y) {
-        return action(v, x + move.x, y + move.y);
-      });
+      grid
+        .window(move.x, move.y, move.size, move.size)
+        .forEachSet(function (v, x, y) {
+          return action(v, x + move.x, y + move.y);
+        });
   }
 
   function forTilesInMove(grid, move, action) {
     if (move !== null)
-      grid.window(move.x, move.y, move.size, move.size).forEach(function(v, x, y) {
-        action(v, x + move.x, y + move.y);
-      });
+      grid
+        .window(move.x, move.y, move.size, move.size)
+        .forEach(function (v, x, y) {
+          action(v, x + move.x, y + move.y);
+        });
   }
 
-
   function select(x1, y1, x2, y2, tileStates) {
-
     var width = tileStates.width;
     var height = tileStates.height;
 
-    var invertingSquare =
-      calculateSquare(x1 * width, y1 * height, x2 * width, y2 * height, width, height);
+    var invertingSquare = calculateSquare(
+      x1 * width,
+      y1 * height,
+      x2 * width,
+      y2 * height,
+      width,
+      height
+    );
     var x = invertingSquare.x;
     var y = invertingSquare.y;
     var size = invertingSquare.size;
 
-    tileStates.forEach(function(v) {
+    tileStates.forEach(function (v) {
       v.selected = false;
     });
 
     if (invertingSquare.size > 1) {
-      tileStates.window(x, y, size, size).forEach(function(v) {
+      tileStates.window(x, y, size, size).forEach(function (v) {
         v.selected = true;
       });
     }
@@ -133,33 +144,34 @@
 
     var padding = width * 0.1;
 
-    gameState.tiles.forEach(function(value, x, y) {
-
+    gameState.tiles.forEach(function (value, x, y) {
       var tileState = gameState.tileStates.get(x, y);
 
       ctx.fillStyle = gameState.level.colorScheme.cells[value].fill;
       ctx.fillRect(
-        (x * width + padding),
-        (y * height + padding),
-        (width - padding),
-        (height - padding)
+        x * width + padding,
+        y * height + padding,
+        width - padding,
+        height - padding
       );
 
-      ctx.fillStyle = gameState.level.colorScheme.cells[changeFunction(value)].fill;
+      ctx.fillStyle =
+        gameState.level.colorScheme.cells[changeFunction(value)].fill;
 
       var squareWidth = (width - padding) * tileState.transitionState * 0.5;
       var squareHeight = (height - padding) * tileState.transitionState * 0.5;
-      var squareOffsetX = (width - padding) * (1 - tileState.transitionState * 0.5) * 0.5;
-      var squareOffsetY = (height - padding) * (1 - tileState.transitionState * 0.5) * 0.5;
+      var squareOffsetX =
+        (width - padding) * (1 - tileState.transitionState * 0.5) * 0.5;
+      var squareOffsetY =
+        (height - padding) * (1 - tileState.transitionState * 0.5) * 0.5;
       ctx.fillRect(
-        (x * width + padding) + squareOffsetX,
-        (y * height + padding) + squareOffsetY,
+        x * width + padding + squareOffsetX,
+        y * height + padding + squareOffsetY,
         squareWidth,
         squareHeight
       );
     });
   }
-
 
   tileShapes.square = {
     name: "square",
@@ -171,5 +183,4 @@
     forTilesInMoveSet: forTilesInMoveSet,
     gridFromJsonObject: gridFromJsonObject,
   };
-
 })();

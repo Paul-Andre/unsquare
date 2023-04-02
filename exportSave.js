@@ -46,7 +46,11 @@ function importSave() {
 
   saveStr = decodeSaveStr(saveStr);
 
-  if (confirm("Are you sure you want to load from string? All progress will be overwritten.")) {
+  if (
+    confirm(
+      "Are you sure you want to load from string? All progress will be overwritten."
+    )
+  ) {
     var pairStrings = saveStr.split(";");
     localStorage.clear();
     for (var i = 0; i < pairStrings.length; i++) {

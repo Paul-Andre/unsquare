@@ -9,72 +9,63 @@ let bookUrls = [
 
 // This sorta loads anything anytime...
 {
-
   for (let i = 0; i < bookUrls.length; i++) {
     let bookUrl = bookUrls[i];
 
     //https://stackoverflow.com/a/35294675
     let request = new XMLHttpRequest();
-    request.open('GET', bookUrl, true);
+    request.open("GET", bookUrl, true);
 
-    books.push({name: "loading"}); //placeholder
+    books.push({ name: "loading" }); //placeholder
 
-    request.onload = function() {
+    request.onload = function () {
       if (request.status >= 200 && request.status < 400) {
         // Success!
         let data = JSON.parse(request.responseText);
         books[i] = data;
       } else {
-
       }
     };
 
-    request.onerror = function() {
+    request.onerror = function () {};
 
-    };
-
-    request.send(); 
+    request.send();
   }
 }
 
-var bookMenu = {}
+var bookMenu = {};
 
-bookMenu.onShow = function() {
+bookMenu.onShow = function () {
   this.showBooks();
-}
+};
 
-bookMenu.showBooks = function() {
-
+bookMenu.showBooks = function () {
   var container = document.getElementById("bookContainer");
 
-  container.innerHTML = ("");
+  container.innerHTML = "";
 
   for (var i = 0; i < books.length; i++) {
     container.append(bookMenu.prepareBook(books[i]));
   }
-}
+};
 
-
-bookMenu.openBook = function(book) {
+bookMenu.openBook = function (book) {
   levelMenu.openBook(book);
   screenManager.switchTo("levelMenu");
 };
 
-
-bookMenu.newBook = function() {
+bookMenu.newBook = function () {
   var book = {
-    levels: []
+    levels: [],
   };
   books.push(book);
   this.showBooks();
 };
 
-bookMenu.loadBooks = function() {
+bookMenu.loadBooks = function () {};
 
-};
-
-let bookTemplate = 
-"<div class='book'> \
+let bookTemplate =
+  "<div class='book'> \
   <div class='bookIconContainer'> \
   <img src='asdf.png'>\
   </div>\
@@ -82,17 +73,14 @@ let bookTemplate =
     <div class='bookName'>\
     </div>\
   </div>\
-</div>"
-;
-
-bookMenu.prepareBook = function(book) {
-
+</div>";
+bookMenu.prepareBook = function (book) {
   let node = htmlStringToElement(bookTemplate);
-  let bn = node.getElementsByClassName("bookName")[0]
+  let bn = node.getElementsByClassName("bookName")[0];
   bn.innerHTML = "asdf";
-  
+
   node.book = book;
-  node.onclick = function() {
+  node.onclick = function () {
     bookMenu.openBook(book);
   };
 
