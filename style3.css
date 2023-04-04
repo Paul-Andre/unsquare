@@ -123,6 +123,8 @@ div#iconContainer.deleting .levelIcon {
 
 .gameCanvas {
   /* background-color: red; */
+
+  touch-action: none;
 }
 
 .finishedLevel {
@@ -140,4 +142,5 @@ div#iconContainer.deleting .levelIcon {
   font-size: 300%;
   display: block;
 }
+
 

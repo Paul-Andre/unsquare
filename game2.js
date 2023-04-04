@@ -53,37 +53,15 @@ function makeGameBase2(canvasId, divId) {
 
   // TODO: remove glitch
   //
-  /*
-   *
-   *
-function beginSliding(e) {
-  slider.onpointermove = slide;
-  slider.setPointerCapture(e.pointerId);
-}
-
-function stopSliding(e) {
-  slider.onpointermove = null;
-  slider.releasePointerCapture(e.pointerId);
-}
-
-function slide(e) {
-  slider.style.transform = `translate(${e.clientX - 70}px)`;
-}
-
-const slider = document.getElementById("slider");
-
-slider.onpointerdown = beginSliding;
-slider.onpointerup = stopSliding;
-
-*/
 
   game.doMouseDown = function (x, y) {
     mouseStart.x = x / canvasSize;
     mouseStart.y = y / canvasSize;
     mouseStart.pressed = true;
 
+
     var a = globalDiv.getElementsByClassName("finishedLevel")[0];
-    console.log(a)
+    // console.log(a)
     a.style.display = "none";
 
   };
@@ -92,6 +70,9 @@ slider.onpointerup = stopSliding;
   game.doMouseMove = function (x, y) {
     mouseNow.x = x / canvasSize;
     mouseNow.y = y / canvasSize;
+    var text = "move " + mouseNow.x + " " + mouseNow.y;
+    //document.getElementById("Debugger").innerText = text;
+
 
     if (mouseStart.pressed) {
       var potentialMove = this.level.tileShape.moveFromMousePositions(
@@ -103,6 +84,7 @@ slider.onpointerup = stopSliding;
       );
 
       this.gameState.tileStates.forEach(function (v) {
+        v.oldSelected = v.selected;
         v.selected = false;
       });
 
@@ -113,6 +95,19 @@ slider.onpointerup = stopSliding;
           v.selected = true;
         }
       );
+
+      var different = false;
+      this.gameState.tileStates.forEach(function (v) {
+          if (v.selected != v.oldSelected) {
+            different = true;
+          }
+      })
+
+      if (different) {
+        if (navigator.vibrate) {
+          navigator.vibrate(2);
+        }
+      }
       game.drawCanvas()
     }
   };
@@ -129,9 +124,6 @@ slider.onpointerup = stopSliding;
       );
 
       if (move !== null) {
-        console.log("asdf")
-        console.log(this.action)
-        console.log(this)
         this.gameState.applyMove(move, this.action);
         this.gameState.tileStates.forEach(function (v) {
           v.selected = false;
@@ -174,14 +166,14 @@ slider.onpointerup = stopSliding;
     };
   }
 
+  if (false) {
   function createTouchListener(fn) {
     return function (event) {
       if (event.changedTouches) {
         var coords = getCoordinates(event.changedTouches[0]);
-        console.log(coords);
         fn(coords.x, coords.y);
       }
-      return cancelEvent(event);
+      //return cancelEvent(event);
     };
   }
 
@@ -219,6 +211,72 @@ slider.onpointerup = stopSliding;
     createMouseListener(game.doMouseUp.bind(game))
   );
 
+
+  /*
+https://developer.mozilla.org/en-US/docs/Web/API/Element/setPointerCapture#javascript
+*/
+  // TODO: eh? Does this actually work on enough modern browsers?
+  //
+  
+}else{
+
+  function beginSliding(e) {
+    console.log("begin", e)
+    var coords = getCoordinates(e);
+    game.doMouseDown(coords.x, coords.y);
+    
+    //canvas.onpointermove = slide;
+    //canvas.setPointerCapture(e.pointerId);
+
+
+      return cancelEvent(event);
+  }
+
+  function slide(e) {
+    console.log("slide", e)
+    var coords = getCoordinates(e);
+    game.doMouseMove(coords.x, coords.y);
+
+    //canvas.setPointerCapture(e.pointerId);
+
+      return cancelEvent(event);
+  }
+
+  function stopSliding(e) {
+    console.log("asdfasd")
+    var coords = getCoordinates(e);
+    game.doMouseUp(coords.x, coords.y);
+
+
+    //canvas.releasePointerCapture(e.pointerId);
+      return cancelEvent(event);
+
+  }
+
+  // canvas.onpointerdown = beginSliding;
+  // canvas.onpointermove = slide;
+  // canvas.onpointerup = stopSliding;
+
+  canvas.addEventListener(
+    "pointerdown",
+    beginSliding,
+  );
+
+  canvas.addEventListener(
+    "pointermove",
+    slide,
+   
+  );
+  canvas.addEventListener(
+    "pointerup",
+    stopSliding,
+  );
+
+
+}
+
+
+
   window.addEventListener(
     "resize",
     function () {
@@ -236,19 +294,24 @@ slider.onpointerup = stopSliding;
   var numRequested = 0;
 
   game.draw = function() {
+    if (game.isFinished()) {
+      game.finishedLevel()
+    }
 
     if (this.gameState){
-      console.log(globalDiv)
 
       var a = globalDiv.getElementsByClassName("movesContent")[0]
-      console.log(a)
       a.innerText = this.gameState.numMoves;
     }
 
-    if (game.isFinished()) {
-      console.log("Yay");
-      game.finishedLevel()
+      var a = globalDiv.getElementsByClassName("bestContent")[0]
+      var b = bests[currentLevelId];
+    if (b===null || b===undefined) {
+        a.innerText = "-";
+    }else {
+        a.innerText = b;
     }
+
     game.drawCanvas();
   }
 
@@ -335,12 +398,14 @@ slider.onpointerup = stopSliding;
   }
 
   game.finishedLevel = function () {
-    console.log("adfadsfdsaddddddddddddddddddddddddddddddddd")
 
     var a = globalDiv.getElementsByClassName("finishedLevel")[0];
-    console.log(a)
     a.style.display = "block";
 
+    if (bests[currentLevelId] === null || bests[currentLevelId] === undefined || bests[currentLevelId] > this.gameState.numMoves) {
+      bests[currentLevelId] = this.gameState.numMoves;
+      saveBests();
+    } 
 
     /*
     var clicked = false;
@@ -387,12 +452,35 @@ let request = new XMLHttpRequest();
 request.open("GET", bookUrl, true);
 
 var levels;
+var bests = [null];
+
+function saveBests() {
+    localStorage.setItem("bests", JSON.stringify(bests));
+}
 
 request.onload = function () {
   if (request.status >= 200 && request.status < 400) {
     // Success!
+    
+
     let data = JSON.parse(request.responseText);
+
     levels = data.levels;
+
+    // Ok... kinda weird and stupid, but... eh...
+    var hash = cyrb53( request.responseText)
+    console.log(hash)
+    if (localStorage.getItem("levels_hash") == hash) {
+      console.log("saving asdfa");
+      bests = JSON.parse(localStorage.getItem("bests"));
+    } else {
+      localStorage.setItem("levels_hash", hash);
+      bests = Array(levels.length).fill(null);
+      saveBests();
+
+    }
+    game.draw();
+
   } 
 };
 
