@@ -20,7 +20,9 @@ function GameState(level) {
   this.level = level;
   this.undoList = [];
   this.lastUpdateTimestamp = performance.now();
+  this.numMoves = 0;
 }
+
 
 GameState.prototype.isClear = function isClear() {
   var clear = true;
@@ -42,11 +44,15 @@ GameState.prototype.applyMove = function (move, action) {
     });
     this.level.tileShape.forTilesInMoveSet(this.tiles, move, action);
   }
+  this.numMoves+=1;
 };
+
+// TODO: make undo be at a different level
 
 GameState.prototype.undo = function () {
   if (this.undoList.length > 0) {
     var undo = this.undoList.pop();
     this.tiles = undo.tiles;
+    this.numMoves-=1;
   }
 };

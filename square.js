@@ -91,6 +91,8 @@
   }
 
   function forTilesInMoveSet(grid, move, action) {
+          console.log(action)
+          console.log(typeof(action))
     if (move !== null)
       grid
         .window(move.x, move.y, move.size, move.size)

@@ -5,7 +5,6 @@ game.openLevel = (function () {
   var superOpenLevel = game.openLevel.bind(game);
   return function (level) {
     superOpenLevel(level);
-    levelStats.open(level);
   };
 })();
 
@@ -15,7 +14,6 @@ game.action = function (v) {
 };
 
 game.restart = function restart() {
-  levelStats.close(this.level);
   game.openLevel(this.level);
 };
 
@@ -42,13 +40,11 @@ game.finishedLevel = function () {
 
   var that = this;
   if (typeof this.level.index == "number") {
-    game.disactivateEvents(); // This function does not exist
     canvas.onmousedown = canvas.ontouchstart = function (evt) {
       game.openLevel(nextLevel);
       return cancelEvent(evt);
     };
   }
-  levelStats.pass(this.level);
 };
 
 screenManager.additionalFunctions.game = game;
