@@ -5,6 +5,7 @@ function GameState(level) {
   tileStates.forEachSet(function () {
     return {
       selected: false,
+      oldSelected: false,
       transitionState: 0,
     };
   });
