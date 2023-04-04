@@ -18,10 +18,8 @@ var screenManager = {
   switchTo: function (screenName, keepAsIs) {
     if (this.currentScreen) {
       this.currentScreen.style.display = "none";
-      //this.currentScreen.hide()
     } else {
       document.getElementById(this.currentScreenName).style.display = "none";
-      //$("#" + this.currentScreenName).hide()
     }
 
     this.stack.push({
@@ -34,22 +32,17 @@ var screenManager = {
 
     this.currentScreenName = screenName;
     this.currentScreen = document.getElementById(screenName);
-    //this.currentScreen = $("#" + screenName);
     this.currentScreen.style.display = "block";
-    //this.currentScreen.show();
     this.executeFunction(this.currentScreenName, "onShow");
   },
   goBack: function () {
     this.currentScreen.style.display = "none";
-    //this.currentScreen.hide();
     var popped = this.stack.pop();
     this.executeFunction(this.currentScreenName, "onHide");
 
     this.currentScreenName = popped.name;
     this.currentScreen = document.getElementById(this.currentScreenName);
-    //this.currentScreen = $("#" + this.currentScreenName);
     this.currentScreen.style.display = "block";
-    //this.currentScreen.show();
     if (!popped.keepAsIs) {
       this.executeFunction(this.currentScreenName, "onShow");
     }

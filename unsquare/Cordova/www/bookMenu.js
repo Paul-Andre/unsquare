@@ -4,7 +4,6 @@ let bookUrls = [
   "book1Old.json",
   "basicBlackWhite.json",
   "niceLevels.json",
-  "supaDupa.json",
 ];
 
 // This sorta loads anything anytime...

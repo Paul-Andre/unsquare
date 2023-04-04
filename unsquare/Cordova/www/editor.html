@@ -5,7 +5,7 @@
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 	<meta name="apple-mobile-web-app-capable" content="yes" />
-	<link rel="stylesheet" type="text/css" href="style3.css">
+	<link rel="stylesheet" type="text/css" href="style2.css">
 	<title> Unflip </title>
 	<script src="api.js"></script>
 	<script src="Grid.js"></script>
@@ -22,18 +22,17 @@
 	<script src="bookMenu.js"></script>
 	<script src="drawing.js"></script>
 	<script src="exportSave.js"></script>
+	<script src="loading.js"></script>
 	<script src="level.js"></script>
 	<script src="gameState.js"></script>
+	<script src="levelStats.js"></script>
 	<script src="gameBase.js"></script>
-
-      <script type="text/javascript" src="https://livejs.com/live.js"></script>
-
 
 </head>
 
-<body>
+<body class="no-touch">
 
-	<section id="home" >
+	<section id="home">
 		<div class="header">
 			<h1>
 				Unflip
@@ -55,43 +54,31 @@
 	</section>
 
 
-	<section id="game" class="screen" style="display:block;">
-
-    <header>
+	<section id="game" class="screen">
+		<div class="header">
 			<div class="" style="float: left; width: 75%">
-        <h2> Unflip  <span id=""></span> </h2>
-        <h3 id="TextShower" class="textShower"> &zwnj; <span id = "LevelIndicator">Level 1 </span> </h3>
+				<h2 id="LevelIndicator">Level ?</h2>
+				<h3 id="TextShower" class="textShower"> &zwnj; asdfasdfa </h3>
 			</div>
 			<div style="float: right; width:25%;" class="IndicContainer">
-				<div class="indicator" id="BestIndicator"> best: </div>
-				<div class="indicator" id="ParIndicator"> par: </div>
-        <div class="indicator" id="MovesIndicator"> moves: <span class="movesContent"> </span> </div>
+				<div class="Indicator" id="BestIndicator"> best: </div>
+				<div class="Indicator" id="ParIndicator"> par: </div>
+				<div class="Indicator" id="MovesIndicator"> moves: </div>
 			</div>
 
 			<div style="clear:both; bottom:0px">
-
 				<button onclick="screenManager.goBack();" style="float:left">&#8592; Levels</button>
 				<!--<button onclick="share();" style="float:left" id="inGameShareButton" > &#9733; Share</button>-->
+				<button id="skipButton" onclick="game.skip();" style="float:right;">Skip</button>
 				<button onclick="game.restart();" style="float:right;">⟳ Restart</button>
 				<button onclick="game.undo();" style="float:right;">⤺ Undo</button>
-
 			</div>
-		</header>
-
-		<div class="content" >
-      <div class="finishedLevel"  style="display: none;" >
-
-				<!-- <button onclick="game.restart();" >⟳ Restart</button> -->
-
-        <button id="skipButton" onclick="nextLevel();" >Next &#62;</button>
-
-      </div>
-			<canvas id="gameCanvas" class="gameCanvas"  width="30px" height="30px"></canvas>
 		</div>
-
+		<div class="content">
+			<canvas id="gameCanvas" class="gameCanvas"></canvas>
+		</div>
 		<div class="footer">
-        <button id="skipButton" onclick="prevLevel();">&#60; Prev</button>
-        <button id="skipButton" onclick="nextLevel();" style="float:right;">Next &#62;</button>
+			<div class="mobileBannerContainer" id="mobileGameAd"></div>
 		</div>
 	</section>
 
@@ -155,8 +142,12 @@
 		-->
 	</section>
 
+	<section id="loading" class="screen show">
+		Loading...
+	</section>
 
-	<script src="game2.js"></script>
+
+	<script src="game.js"></script>
 	<script src="editor.js"></script>
 	<script src="levelMenu.js"></script>
 
