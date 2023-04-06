@@ -5,7 +5,7 @@
 var screenManager = {
   additionalFunctions: {},
   stack: [],
-  currentScreenName: "loading",
+  currentScreenName: "game",
   currentScreen: document.getElementById("loading"),
   executeFunction: function (screenName, funcName) {
     if (

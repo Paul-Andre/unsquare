@@ -49,6 +49,9 @@ function makeGameBase2(canvasId, divId) {
     console.log(a)
     a.style.display = "none";
 
+    document.getElementById("TextShower").innerText = level.text;
+    globalDiv.getElementsByClassName("parContent")[0].innerText = level.par?level.par:"?";
+
   };
 
   // TODO: remove glitch
@@ -112,6 +115,7 @@ function makeGameBase2(canvasId, divId) {
     }
   };
 
+
   game.doMouseUp = function (x, y) {
     if (mouseStart.pressed) {
       mouseStart.pressed = false;
@@ -129,6 +133,9 @@ function makeGameBase2(canvasId, divId) {
           v.selected = false;
           v.transitionState = 0;
         });
+        if (navigator.vibrate) {
+          navigator.vibrate(3);
+        }
       }
       game.draw()
     }
@@ -338,13 +345,15 @@ https://developer.mozilla.org/en-US/docs/Web/API/Element/setPointerCapture#javas
             if (v.selected) {
               v.transitionState = Math.min(
                 1,
-                v.transitionState + (timeStamp - previousTimestamp) / 100
+                v.transitionState + (timeStamp - previousTimestamp) / 10
               );
+              v.transitionState = 1;
             } else {
               v.transitionState = Math.max(
                 0,
-                v.transitionState - (timeStamp - previousTimestamp) / 100
+                v.transitionState - (timeStamp - previousTimestamp) / 10
               );
+              v.transitionState = 0;
             }
 
             if (v.transitionState != prevTS){
@@ -463,7 +472,7 @@ function asdf(a,b) {
 }
 
 // Some really weird bug made me place this here instead of a different file
-
+// TODO: ????
 // https://stackoverflow.com/a/52171480
 // function cyrb53(str, seed = 0){
 function cyrb53(str, seed){
@@ -489,11 +498,24 @@ request.onload = function () {
 
     let data = JSON.parse(request.responseText);
 
+
+    // let patch_pars = [1,2,2,2,3,4,3,4,3,3,4,3,2,3,4,4,6,5,5,3,3,4,5,5,6,5,13,13,8,6,5,12,9];
+    // console.log(patch_pars);
+    // for (let i=0; i<patch_pars.length; i++) {
+    //   data.levels[i].par = Math.min(data.levels[i].par, patch_pars[i]);
+    // }
+
+    // console.log(data)
+    // console.log(JSON.stringify(data))
+
+
     levels = data.levels;
 
     // Ok... kinda weird and stupid, but... eh...
     var hash = cyrb53( request.responseText, 0);
 
+
+      bests = JSON.parse(localStorage.getItem("bests"));
 
     if (localStorage.getItem("levels_hash") == hash) {
       bests = JSON.parse(localStorage.getItem("bests"));
@@ -501,8 +523,8 @@ request.onload = function () {
       localStorage.setItem("levels_hash", hash);
       bests = Array(levels.length).fill(null);
       saveBests();
-
     }
+
     game.draw();
 
   } 
@@ -533,6 +555,7 @@ game.openLevel(Level.fromJsonObject(
                             [1, 1, 1, 1, 1, 1]
                         ],
               "par": 1,
+              "text": "Pull from one corner of the black square to the other.",
               "solution": [{
                             "x": 1,
                             "y": 1,
@@ -561,8 +584,10 @@ function prevLevel() {
     game.openLevel(Level.fromJsonObject(nextLevel), function(){});
 game.onShow();
     document.getElementById("LevelIndicator").innerText = "Level " + (1+ currentLevelId);
+  }else {
+
+	// prompt("Here are your bests", JSON.stringify(bests));
   }
 }
 
-console.log("asfdasd");
 

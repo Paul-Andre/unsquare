@@ -11,6 +11,7 @@ Level.empty = function makeLevel(size) {
   level.tiles = grid;
   level.par = 0;
   level.solution = [];
+  level.text = "";
   return level;
 };
 
@@ -21,6 +22,7 @@ Level.fromJsonObject = function (json) {
   level.tiles = level.tileShape.gridFromJsonObject(json.tiles);
   level.par = json.par;
   level.solution = []; //json.solution;
+  level.text = json.text || "";
   return level;
 };
 
@@ -31,6 +33,9 @@ Level.prototype.toJsonObject = function () {
   json.tiles = this.tiles.to2dArray(); //TODO: should be tileShape.gridToJson...
   json.par = this.par;
   json.solution = this.solution;
+  if (this.text) {
+    json.text = this.text;
+  }
   return json;
 };
 
@@ -46,4 +51,5 @@ Level.prototype.copyFrom = function (otherLevel) {
   this.tiles = otherLevel.tiles.clone();
   this.par = otherLevel.par;
   this.solution = otherLevel.solution.slice();
+  this.text = otherLevel.text;
 };

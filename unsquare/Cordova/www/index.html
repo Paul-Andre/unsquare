@@ -5,7 +5,7 @@
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 	<meta name="apple-mobile-web-app-capable" content="yes" />
-	<link rel="stylesheet" type="text/css" href="style3.css">
+	<link rel="stylesheet" type="text/css" href="style3.css#12">
 	<title> Unflip </title>
 	<script src="api.js"></script>
 	<script src="Grid.js"></script>
@@ -33,11 +33,12 @@
 
 <body>
 
-	<section id="home" >
+	<section id="home" class="screen">
 		<div class="header">
 			<h1>
 				Unflip
 			</h1>
+
 		</div>
 		<div class="wrapper">
 			<button class="toBookMenu" onclick="screenManager.switchTo('bookMenu');" type="button">
@@ -59,13 +60,17 @@
 
     <header>
 			<div class="" style="float: left; width: 75%">
-        <h2> Unflip  <span id=""></span> </h2>
-        <h3 id="TextShower" class="textShower"> &zwnj; <span id = "LevelIndicator">Level 1 </span> </h3>
+        <span> <span class="title"> Unflip &zwnj;</span>  <span id="LevelIndicator">Level 1</span> </span>
+
+        <p id="TextShower" class="textShower">  Pull from one corner of the square to the other. </p>
         <p id="Debugger"> </p>
 			</div>
+
+     <button onclick="screenManager.switchTo('instructions');" style="float:right;">?</button>
+
 			<div style="float: right; width:25%;" class="IndicContainer">
 				<div class="indicator" id="BestIndicator"> best: <span class="bestContent"> </span></div>
-				<!-- <div class="indicator" id="ParIndicator"> par: </div> -->
+				<div class="indicator" id="ParIndicator"> par: <span class="parContent"> </span></div>
         <div class="indicator" id="MovesIndicator"> moves: <span class="movesContent"> </span> </div>
 			</div>
 
@@ -156,6 +161,14 @@
 		-->
 	</section>
 
+  <section id="instructions" >
+    <h1>Instructions</h1>
+    <p>The goal of the game is to clear all cells.</p>
+
+    <p>Select a square area of 2x2 cells or more to flip the color of the cells.  </p>
+    <!-- Need to change font; need new image; need images for invalid moves -->
+    <button onclick="screenManager.goBack();" style="float:left;">&#8592; Back</button>
+  </section>
 
 	<script src="game2.js"></script>
 	<script src="editor.js"></script>
