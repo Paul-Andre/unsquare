@@ -10,6 +10,7 @@ html, body {
 }
 body {
   line-height: 1.5;
+  font-size: 24px;
 }
 input, button, textarea, select {
   font: inherit;
@@ -137,7 +138,10 @@ div#iconContainer.deleting .levelIcon {
 }
 .content {
   position: relative;
+  clear: both;
+  /* background: red */
 }
+
 .finishedLevel button {
   font-size: 300%;
   display: block;
