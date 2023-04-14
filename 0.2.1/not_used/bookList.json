@@ -1,0 +1,41 @@
+{
+    "version": "0.0.1",
+    "books": [{
+            "name": "Old Black and White",
+            "link": "book1Old.json",
+            "icon": {
+                "type": "level",
+                "level": 0
+            },
+            "free": true
+        },
+        {
+            "name": "Basic Black & White",
+            "link": "basicBlackWhite.json",
+            "icon": {
+                "type": "level",
+                "level": 0
+            },
+            "free": true
+        },
+        {
+            "name": "Nice Levels",
+            "link": "niceLevels.json",
+            "icon": {
+                "type": "level",
+                "level": 0
+            },
+            "free": true
+        },
+        {
+            "name": "Supa Dupa Levels",
+            "link": "supaDupa.json",
+            "icon": {
+                "type": "image",
+                "image": "supaDupaIcon.gif"
+            },
+            "free": false,
+            "productId": "whatever"
+        }
+    ]
+}
