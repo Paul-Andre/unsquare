@@ -146,7 +146,7 @@ vector<int> randomlyImprove(const vector<int> &solution, const vector<vector<int
 
   vector<int> best = solution;
   //int best_val = sumVec(repr);
-  for(int l=0; l<10000*10; l++) {
+  for(int l=0; l<10000; l++) {
     vector<int> repr ;
     if(rand()%2){
       repr = best;
@@ -464,7 +464,7 @@ int main() {
     vector<int> solution = solution_->solution;
     cerr << "initial solution " << sumVec(solution) << endl;
 
-    //solution = randomlyImprove(solution, kernel);
+    solution = randomlyImprove(solution, kernel);
     cerr << "after randomly improving " << sumVec(solution) << endl;
 
     solution = branchAndBound(solution, kernel);

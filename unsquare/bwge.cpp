@@ -71,7 +71,8 @@ struct SatSolutionAndKernel{
 };
 
 
-optional<SatSolutionAndKernel> solve(vector<vector<int>> mat, vector<int> target, const vector<vector<int>> &inversions){
+optional<SatSolutionAndKernel>
+solve(vector<vector<int>> mat, vector<int> target, const vector<vector<int>> &inversions){
   // partial pivoting gaussian elimination mod 2
   int m = mat.size();
   int n = mat[0].size();
