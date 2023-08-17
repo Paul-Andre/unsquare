@@ -6,7 +6,7 @@
   margin: 0;
 }
 html, body {
-  /* height: 100%; */
+  height: 100%;
 }
 body {
   /* line-height: 1.5; */
@@ -44,9 +44,9 @@ body {
 
 }
 
-section {
+.screen_container {
+  /* background: red; */
 	position: absolute;
-        display: none;
 
   position: relative;
 
@@ -57,6 +57,23 @@ section {
   left: 50%;
   /* transform: translate(-50%, -50%); */
   transform: translate(-50%, 0);
+  height: 100%;
+
+}
+
+section {
+  /* background: red; */
+	/* position: absolute; */
+
+  /* position: relative; */
+
+        /* width: 500px; */
+  /* max-width: 100%; */
+
+  /* /1* top: 50%; *1/ */
+  /* left: 50%; */
+  /* /1* transform: translate(-50%, -50%); *1/ */
+  /* transform: translate(-50%, 0); */
 }
 
 /* section.show { */
@@ -176,5 +193,26 @@ section header {
   line-height: 1.1;
   font-size: 0.9em;
 }
-  
+
+
+
+.variant_container {
+  position: relative;
+  height: 100%;
+  width: 100%;
+}
+
+.variant {
+  /* background: red; */
+  display: none;
+  position: absolute;
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.variant.shown {
+  display: block;
+}
 
