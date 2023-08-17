@@ -33,6 +33,7 @@ function makeGameBase2(canvasId, divId) {
     canvasSize = canvasVirtualSize * (window.devicePixelRatio || 1);
     canvas.width = canvas.height = canvasSize;
     canvas.style.width = canvas.style.height = canvasVirtualSize + "px";
+    console.log(canvas.width, canvas.height, canvas.style.width, canvas.style.height)
     this.draw();
   };
 
@@ -571,8 +572,7 @@ let new_level_format = {
   id: "level_1234123412341234",
 
   geometry: {
-    tile_shape: "square",
-    operation_shape: "square",
+    type: "square",
     width: 4,
     height: 4,
   },
@@ -585,7 +585,7 @@ let new_level_format = {
   solution: null,  // an array of numbers, indicating the operations performed
   solution_optimal: false, // ideally after running the offline solver
 
-  display_comment: null, // null, a string, or a localization object
+  text: null, // null, a string, or a localization object
 
   metadata: {
     creator_comment: "I like this level",
@@ -638,10 +638,6 @@ function pop_undo_stack() {
 
 
 }
-
-function 
-
-
 
 
 game.onShow();

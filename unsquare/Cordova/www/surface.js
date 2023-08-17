@@ -1,9 +1,12 @@
+// So the interface of this thing is that when an operation is applied, it calls a callback providing the operation.
+// Setting this.sub
 class Surface {
   constructor (canvas, geometry, arithmetic, tiles) {
     if (typeof canvas === "string") {
       canvas = document.getElementById(canvas);
     }
     this.canvas = canvas;
+
     this.geometry = geometry;
     this.arithmetic = arithmetic;
 
@@ -17,6 +20,10 @@ class Surface {
 
     this.pressed = false;
     this.mouse_start = null;
+
+    this.sub = false;
+
+    this.
   }
 
   draw() {

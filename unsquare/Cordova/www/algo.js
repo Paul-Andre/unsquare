@@ -1,8 +1,6 @@
 function compute_operations(geometry) {
   let operations = [];
-  if (geometry.tile_shape == "square" && geometry.operation_shape == "square") {
-
-    // Typical "unsquare" scenario
+  if (geometry.type == "square") {
     let w = geometry.width;
     let h = geometry.height;
     for (let i=0; i<w; i++) {
@@ -21,9 +19,9 @@ function compute_operations(geometry) {
       }
     }
     return operations;
-  } else {
-    throw new Error(`geometry ${JSON.stringify(geometry)} not supported`);
   }
+  throw new Error(`geometry ${JSON.stringify(geometry)} not supported`);
+
 }
 
 function vector_self_add(self, other) {
@@ -55,8 +53,8 @@ function vector_simplify_arithmetic(vector, arithmetic) {
 }
 
 function get_geometry_compact(geometry) {
-  if (geometry.tile_shape == "square" && geometry.operation_shape == "square") {
-    return `s_s_${geometry.width}_${geometry.height}`
+  if (geometry.type == "square") {
+    return `s_${geometry.width}_${geometry.height}`
   }
   throw new Error(`geometry ${JSON.stringify(geometry)} not supported`);
 }
