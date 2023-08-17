@@ -36,7 +36,7 @@
     <div class="screen_container"> <div class="variant_container">
       <!-- add variant_container? -->
 
-      <section id="home" class="screen variant">
+      <section id="home" class="screen variant_shown">
         <div class="header">
           <h1>
             Unflip
@@ -44,22 +44,30 @@
 
         </div>
         <div class="wrapper">
-          <button class="toBookMenu" onclick="screenManager.switchTo('bookMenu');" type="button">
+          <button onclick="screenManager.switchTo('game');" type="button">
             Play
+          </button>
+          <button onclick="screenManager.switchTo('editorBookMenu');" type="button">
+            Editor
           </button>
           <button class="" onclick="screenManager.switchTo('options');" id="adjustment" type="button">
             Options
           </button>
-          <button class="" onclick="screenManager.switchTo('about');" type="button">
-            Credits
-          </button>
+
+          <!-- <button class="" onclick="screenManager.switchTo('about');" type="button"> -->
+          <!--   Credits -->
+          <!-- </button> -->
         </div>
         <div class="footer">
         </div>
       </section>
 
+      <section id="options"> 
+            <button onclick="screenManager.goBack();" style="float:left">Back</button>
+      </section>
 
-      <section id="game" class="screen variant shown">
+
+      <section id="game" class="screen">
         <header>
           <div class="" style="float: left; width: 75%">
             <span> <span class="title"> Unflip &zwnj;</span>  <span id="LevelIndicator">Level 1</span> </span>
@@ -84,7 +92,6 @@
 
           </div>
         </header>
-
         <div class="content" >
           <div class="finishedLevel"  style="display: none;" >
             <!-- <button onclick="game.restart();" >⟳ Restart</button> -->
@@ -93,7 +100,6 @@
           </div>
           <canvas id="gameCanvas" class="gameCanvas"  width="30px" height="30px"></canvas>
         </div>
-
         <div class="footer">
           <button id="skipButton" onclick="prevLevel();">&#60; Prev</button>
           <button id="skipButton" onclick="nextLevel();" style="float:right;">Next &#62;</button>
@@ -101,7 +107,7 @@
       </section>
 
 
-      <section id="editor"  class="screen variant">
+      <section id="editor"  class="screen">
         <div class="header">
           <div style="clear:both; bottom:0px">
             <button onclick="editor.saveAndReturn();" style="float:left">Done</button>
@@ -121,7 +127,7 @@
       </section>
 
 
-      <section id="levelMenu" class="screen variant">
+      <section id="levelMenu" class="screen">
         <div class="header">
           <div class="IndicContainer" id="statsIndicator"></div>
           <button onclick="screenManager.goBack();">&#8592; Menu</button>
@@ -137,7 +143,7 @@
       </section>
 
 
-      <section id="bookMenu" class="screen variant">
+      <section id="bookMenu" class="screen">
         <div class="header">
           <h1>Puzzle Books:</h1>
         </div>
@@ -160,7 +166,7 @@
       </section>
 
 
-      <section id="instructions" class="variant">
+      <section id="instructions" class="">
         <h1>
           Instructions
         </h1>

@@ -202,7 +202,7 @@ section header {
   width: 100%;
 }
 
-.variant {
+.variant_container > * {
   /* background: red; */
   display: none;
   position: absolute;
@@ -212,7 +212,7 @@ section header {
   height: 100%;
 }
 
-.variant.shown {
+.variant_shown {
   display: block;
 }
 

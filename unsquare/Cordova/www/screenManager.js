@@ -5,7 +5,7 @@
 var screenManager = {
   additionalFunctions: {},
   stack: [],
-  currentScreenName: "game",
+  currentScreenName: "home",
   currentScreen: document.getElementById("loading"),
   executeFunction: function (screenName, funcName) {
     if (
@@ -17,9 +17,9 @@ var screenManager = {
   },
   switchTo: function (screenName, keepAsIs) {
     if (this.currentScreen) {
-      this.currentScreen.classList.remove("shown");
+      this.currentScreen.classList.remove("variant_shown");
     } else {
-      document.getElementById(this.currentScreenName).classList.remove("shown");
+      document.getElementById(this.currentScreenName).classList.remove("variant_shown");
     }
 
     this.stack.push({
@@ -32,17 +32,17 @@ var screenManager = {
 
     this.currentScreenName = screenName;
     this.currentScreen = document.getElementById(screenName);
-    this.currentScreen.classList.add("shown");
+    this.currentScreen.classList.add("variant_shown");
     this.executeFunction(this.currentScreenName, "onShow");
   },
   goBack: function () {
-    this.currentScreen.classList.remove("shown");
+    this.currentScreen.classList.remove("variant_shown");
     var popped = this.stack.pop();
     this.executeFunction(this.currentScreenName, "onHide");
 
     this.currentScreenName = popped.name;
     this.currentScreen = document.getElementById(this.currentScreenName);
-    this.currentScreen.classList.add("shown");
+    this.currentScreen.classList.add("variant_shown");
     if (!popped.keepAsIs) {
       this.executeFunction(this.currentScreenName, "onShow");
     }
