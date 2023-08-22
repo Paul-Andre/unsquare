@@ -12,12 +12,17 @@
     <script>
       var IS_EDITOR = true; /////////whaaaaaa
     </script>
+    <!-- Nothing in head should have code that does significant stuff outside of functions. --> 
     <script src="colorSchemes.js"></script>
     <script src="tileShapes.js"></script>
     <script src="square.js"></script>
     <script src="icon.js"></script>
     <script src="helpers.js"></script>
     <script src="screenManager.js"></script>
+
+    <script src="algo.js"></script>
+    <script src="tote.js"> </script>
+
     <script src="Sortable.js"></script>
     <script src="bookMenu.js"></script>
     <script src="drawing.js"></script>
@@ -44,13 +49,13 @@
 
         </div>
         <div class="wrapper">
-          <button onclick="screenManager.switchTo('game');" type="button">
+          <button onclick="IS_EDITOR=false; screenManager.switchTo('game');" type="button">
             Play
           </button>
-          <button onclick="screenManager.switchTo('editorBookMenu');" type="button">
+          <button onclick="IS_EDITOR=true; screenManager.switchTo('bookMenu');" type="button">
             Editor
           </button>
-          <button class="" onclick="screenManager.switchTo('options');" id="adjustment" type="button">
+          <button class="" onclick="screenManager.switchTo('options');" type="button">
             Options
           </button>
 
@@ -157,12 +162,6 @@
 
           <button onclick="bookMenu.newBook();" style="float:right;">Add book</button>
         </div>
-        <!--
-          <button onclick="showReset();"  style="float:right;" > Reset</button>
-        -->
-        <!--
-          <button onclick="share();"  style="float:right;" > Please Share This </button>
-        -->
       </section>
 
 

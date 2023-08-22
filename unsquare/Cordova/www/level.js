@@ -36,6 +36,7 @@ Level.prototype.toJsonObject = function () {
   if (this.text) {
     json.text = this.text;
   }
+  json.__type__ = "level"
   return json;
 };
 

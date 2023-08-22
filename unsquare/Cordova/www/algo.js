@@ -26,18 +26,18 @@ function compute_operations(geometry) {
 
 function vector_self_add(self, other) {
   assert(self.length == other.length);
-  for (let i=0; i<self.length, i++) {
+  for (let i=0; i<self.length; i++) {
     self[i] += other[i];
   }
 }
 function vector_self_sub(self, other) {
   assert(self.length == other.length);
-  for (let i=0; i<self.length, i++) {
+  for (let i=0; i<self.length; i++) {
     self[i] -= other[i];
   }
 } 
 function vector_apply_modulus(vector, modulus) {
-  for (let i=0; i<self.length, i++) {
+  for (let i=0; i<self.length; i++) {
     self[i] %= modulus;
     self[i] += modulus;
     self[i] %= modulus;

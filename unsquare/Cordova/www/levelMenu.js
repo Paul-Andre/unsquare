@@ -17,7 +17,11 @@ levelMenu.createLevelInfo = function (level) {
   icon.level = level;
   icon.onclick = levelMenu.onIconClick;
   return icon;
+  // TODO: add classes based on 
 };
+
+
+let current_level = null;
 
 // this function is to be called on icons using the onclick event
 // so "this" refers to the icon element, not levelMenu
@@ -26,16 +30,28 @@ levelMenu.onIconClick = function () {
     this.remove();
     levelMenu.saveIconOrder();
   } else {
-    let levelObject = Level.fromJsonObject(this.level);
+    //let levelObject = Level.fromJsonObject(this.level);
+
+    current_level = 
     if (IS_EDITOR) {
-      editor.openLevel(levelObject);
+      //editor.setBook(this.book);
+      editor.openLevel(this.level);
       screenManager.switchTo("editor");
     } else {
+      //game.setBook(this.book);
       game.openLevel(levelObject);
       screenManager.switchTo("game");
     }
   }
 };
+
+levelMenu.reindexLevels = function() {
+  for (let i=0; i<this.book.levels.length; i++) {
+    let level = this.book.levels[i];
+    level.index = i;
+  }
+}
+
 
 levelMenu.container = document.querySelector("#levelMenu .content");
 
@@ -61,6 +77,7 @@ if (IS_EDITOR) {
         return child.level;
       }
     );
+    levelMenu.reindexLevels();
   };
 
   levelMenu.newLevel = function () {
@@ -68,6 +85,7 @@ if (IS_EDITOR) {
     level.book = this.book;
     this.book.levels.push(level);
     this.displayIcons();
+    this.reindexLevels();
   };
 
   levelMenu.displayBookJson = function () {

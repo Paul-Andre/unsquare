@@ -1,40 +1,77 @@
-let books = [];
+"use strict";
 
-let bookUrls = [
-  "book1Old.json",
-  "basicBlackWhite.json",
-  "niceLevels.json",
-];
+let current_book = null;
 
-// This sorta loads anything anytime...
-{
-  for (let i = 0; i < bookUrls.length; i++) {
-    let bookUrl = bookUrls[i];
+function load_static_books() {
+  let books = [];
 
-    //https://stackoverflow.com/a/35294675
-    let request = new XMLHttpRequest();
-    request.open("GET", bookUrl, true);
+  let bookUrls = [
+    "book1Old.json",
+    "basicBlackWhite.json",
+    "niceLevels.json",
+  ];
 
-    books.push({ name: "loading" }); //placeholder
+  {
+    for (let i = 0; i < bookUrls.length; i++) {
 
-    request.onload = function () {
-      if (request.status >= 200 && request.status < 400) {
-        // Success!
-        let data = JSON.parse(request.responseText);
-        books[i] = data;
-      } else {
-      }
-    };
+      let bookUrl = bookUrls[i];
 
-    request.onerror = function () {};
+      //https://stackoverflow.com/a/35294675
+      let request = new XMLHttpRequest();
+      request.open("GET", bookUrl, true);
 
-    request.send();
+      books.push({ name: "loading" }); //placeholder
+
+      request.onload = function () {
+        if (request.status >= 200 && request.status < 400) {
+          // Success!
+          let data = JSON.parse(request.responseText);
+          books[i] = data;
+          console.log(data);
+        } else {
+        }
+      };
+
+      request.onerror = function () {};
+
+      request.send();
+    }
   }
+  return books;
+}
+
+
+let static_books = load_static_books();
+
+
+let editor_books = [];
+
+
+function load_editor_books() {
+  for (let i=0; i<localStorage.length; i++) {
+    let key = localStorage.key(i);
+    if (key.startsWith("editor_book")) {
+      let value = localStorage.getItem(key);
+      console.log(value);
+      editor_books.push(JSON.parse(value));
+    }
+  }
+};
+
+function save_editor_book(book) {
+  let key = "editor_" + book.id;
+  localStorage.setItem(key, JSON.stringify(book));
 }
 
 var bookMenu = {};
 
 bookMenu.onShow = function () {
+  if (IS_EDITOR) {
+    load_editor_books();
+    this.books = editor_books;
+  } else {
+    this.books = static_books;
+  }
   this.showBooks();
 };
 
@@ -42,9 +79,10 @@ bookMenu.showBooks = function () {
   var container = document.getElementById("bookContainer");
 
   container.innerHTML = "";
+  
 
-  for (var i = 0; i < books.length; i++) {
-    container.append(bookMenu.prepareBook(books[i]));
+  for (var i = 0; i < this.books.length; i++) {
+    container.append(bookMenu.prepareBook(this.books[i]));
   }
 };
 
@@ -54,10 +92,12 @@ bookMenu.openBook = function (book) {
 };
 
 bookMenu.newBook = function () {
-  var book = {
-    levels: [],
-  };
-  books.push(book);
+  console.assert(IS_EDITOR);
+  var book = new_book();
+  save_editor_book(book);
+
+  this.books.push(book);
+
   this.showBooks();
 };
 

@@ -148,3 +148,17 @@ var colorSchemes = {
 for (var colorSchemeName in colorSchemes) {
   colorSchemes[colorSchemeName].name = colorSchemeName;
 }
+
+
+let modular_arithmetic_colors_cells = {
+  [2]: colorSchemes.BW.cells,
+  [3]: colorSchemes.tri.cells
+}
+
+function get_arithmetic_color(n, arithmetic) {
+  if (arithmetic.type == "modular") {
+    return modular_arithmetic_colors_cells[arithmetic.modulus][n-1].fill;
+  }
+  throw Error(`Not supporting arithmetic ${JSON.stringify(arithmetic)} `);
+}
+
