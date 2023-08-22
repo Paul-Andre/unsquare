@@ -4,7 +4,12 @@
 
 /// This is what does the basics of drawing the tiles to the screen.
 ///
-function makeGameBase(canvasId, divId /*unused*/) {
+function makeGameBase(canvasId, divId /*unused*/)  {
+
+  // produceGameState = produceGameState || function(level) {
+  //   return new GameState(level);
+  // }
+
   var canvas = document.getElementById(canvasId);
   var ctx = canvas.getContext("2d");
 
@@ -20,8 +25,11 @@ function makeGameBase(canvasId, divId /*unused*/) {
   };
 
   var game = {
-    gameState: null,
+
+
   };
+
+
 
   var canvasVirtualSize;
   var canvasSize;
@@ -37,8 +45,26 @@ function makeGameBase(canvasId, divId /*unused*/) {
 
   // This is central to both editor and game
   game.openLevel = function (level) {
-    this.gameState = new GameState(level);
+
+
+    var tileStates = level.tiles.clone();
+    tileStates.forEachSet(function () {
+      return {
+        selected: false,
+        oldSelected: false,
+        transitionState: 0,
+      };
+    });
+
+    this.tiles = level.tiles.clone();
+    this.tileStates = tileStates;
+
+    this.undoList = [];
+
     this.level = level;
+
+    this.lastUpdateTimestamp = performance.now();
+    this.numMoves = 0;
 
     mouseStart.pressed = false;
   };
@@ -60,20 +86,40 @@ function makeGameBase(canvasId, divId /*unused*/) {
         mouseStart.y,
         x / canvasSize,
         y / canvasSize,
-        this.gameState.tileStates
+        this.tileStates
       );
 
-      this.gameState.tileStates.forEach(function (v) {
+      this.tileStates.forEach(function (v) {
         v.selected = false;
       });
 
       this.level.tileShape.forTilesInMove(
-        this.gameState.tileStates,
+        this.tileStates,
         potentialMove,
         function (v) {
           v.selected = true;
         }
       );
+    }
+  };
+
+
+  game.applyMove = function (move, action) {
+    if (move != null) {
+      this.undoList.push({
+        tiles: this.tiles.clone(),
+        move: move,
+      });
+      this.level.tileShape.forTilesInMoveSet(this.tiles, move, action);
+    }
+    this.numMoves+=1;
+  };
+
+  game.undo = function () {
+    if (this.undoList.length > 0) {
+      var undo = this.undoList.pop();
+      this.tiles = undo.tiles;
+      this.numMoves-=1;
     }
   };
 
@@ -85,12 +131,12 @@ function makeGameBase(canvasId, divId /*unused*/) {
         mouseStart.y,
         x / canvasSize,
         y / canvasSize,
-        this.gameState.tileStates
+        this.tileStates
       );
 
       if (move !== null) {
-        this.gameState.applyMove(move, this.action);
-        this.gameState.tileStates.forEach(function (v) {
+        this.applyMove(move, this.action);
+        this.tileStates.forEach(function (v) {
           v.selected = false;
           v.transitionState = 0;
         });
@@ -98,9 +144,6 @@ function makeGameBase(canvasId, divId /*unused*/) {
     }
   };
 
-  game.undo = function () {
-    this.gameState.undo();
-  };
 
   // Gets the coordinates of the touch/mouse relative to the canvas element.
   //http://www.jacklmoore.com/notes/mouse-position/
@@ -187,13 +230,13 @@ function makeGameBase(canvasId, divId /*unused*/) {
   // to make sure we don't requestAnimationFrame if it's already been requested
   var numRequested = 0;
   game.draw = function () {
-    if (!hidden && this.gameState) {
-      this.level.tileShape.draw(ctx, this.gameState, this.action);
+    if (!hidden && this.tiles) {
+      this.level.tileShape.draw_expanded(ctx, this.tiles, this.tileStates, this.level.colorScheme, this.action);
       if (numRequested == 0) {
         requestAnimationFrame(function (timeStamp) {
           numRequested--;
-          var previousTimestamp = game.gameState.lastUpdateTimestamp;
-          game.gameState.tileStates.forEach(function (v) {
+          var previousTimestamp = game.lastUpdateTimestamp;
+          game.tileStates.forEach(function (v) {
             if (v.selected) {
               v.transitionState = Math.min(
                 1,
@@ -206,7 +249,7 @@ function makeGameBase(canvasId, divId /*unused*/) {
               );
             }
           });
-          game.gameState.lastUpdateTimestamp = timeStamp;
+          game.lastUpdateTimestamp = timeStamp;
           game.draw();
         });
         numRequested++;

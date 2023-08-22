@@ -21,8 +21,35 @@ function compute_operations(geometry) {
     return operations;
   }
   throw new Error(`geometry ${JSON.stringify(geometry)} not supported`);
-
 }
+
+function get_geometry_m(geometry) {
+  return compute_operations(geometry).length;
+}
+
+function compute_operations_for_level(level) {
+  if (level.geometry) {
+    return compute_operations(level.geometry);
+  } else if (level.tileShape.name == "square")  {
+    return compute_operations({
+      type: "square",
+      width: level.tiles.width,
+      height: level.tiles.height,
+    })
+  }
+  console.log(level)
+  throw new Error("Did not understand how to compute operations for level");
+}
+
+// function get_geometry_from_old_level(level) {
+//   if (level.tileShape == "square") {
+//     return {
+//       type: "square",
+//       width: level.tiles.width,
+//       height: level.tiles.height,
+//     }
+//   }
+// }
 
 function vector_self_add(self, other) {
   assert(self.length == other.length);

@@ -19,7 +19,7 @@ editor.action = function (v) {
 
 editor.getJoinedSolution = function () {
   return this.movesThatCantBeUndone.concat(
-    this.gameState.undoList.map(function (undo) {
+    this.undoList.map(function (undo) {
       return undo.move;
     })
   );
@@ -27,7 +27,7 @@ editor.getJoinedSolution = function () {
 
 editor.updateLevelInfo = function () {
   // Note that this modifies the copy of level, not the reference to the original level
-  editor.level.tiles = this.gameState.tiles;
+  editor.level.tiles = this.tiles;
   editor.level.solution = editor.getJoinedSolution();
   editor.level.par = editor.level.solution.length;
 };
@@ -40,10 +40,10 @@ editor.saveLevel = function () {
 };
 
 editor.clear = function () {
-  editor.gameState.tiles.forEachSet(function () {
+  editor.tiles.forEachSet(function () {
     return 1;
   });
-  editor.gameState.undoList = [];
+  editor.undoList = [];
   editor.movesThatCantBeUndone = [];
 };
 
@@ -62,8 +62,8 @@ editor.promptSize = function () {
       var grid = Grid.empty(size, size);
       grid.setAll(1);
 
-      if (size >= this.gameState.tiles.width) {
-        this.gameState.tiles.forEach(function (v, x, y) {
+      if (size >= this.tiles.width) {
+        this.tiles.forEach(function (v, x, y) {
           grid.set(x, y, v);
         });
         this.movesThatCantBeUndone = this.getJoinedSolution();
@@ -71,7 +71,6 @@ editor.promptSize = function () {
         this.movesThatCantBeUndone = [];
       }
       this.level.tiles = grid;
-      this.gameState = new GameState(this.level);
     }
   }
 };
@@ -83,11 +82,11 @@ editor.saveAndReturn = function () {
 
 editor.printFlat = function () {
   var ret = "";
-  ret += this.gameState.tiles.width;
+  ret += this.tiles.width;
   ret += " ";
-  ret += this.gameState.tiles.height;
+  ret += this.tiles.height;
   ret += "\n";
-  var tiles = this.gameState.tiles;
+  var tiles = this.tiles;
   for (var j = 0; j < tiles.height; j++) {
     for (var i = 0; i < tiles.width; i++) {
       ret += "" + (tiles.get(i, j) - 1);

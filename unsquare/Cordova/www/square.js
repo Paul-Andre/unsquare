@@ -101,6 +101,15 @@
         });
   }
 
+  // Turns a "move" object to a 0-1 vector representing it
+  // Unfortunate that "move" can be interpreted as a verb
+  function moveToVector(grid, move) {
+    let move_grid = Grid.empty(grid.width, grid.height);
+    move_grid.setAll(0);
+    forTilesInMoveSet(move_grid, move, () => 1);
+    return move_grid.array;
+  }
+
   function forTilesInMove(grid, move, action) {
     if (move !== null)
       grid
@@ -175,6 +184,43 @@
     });
   }
 
+  function draw_expanded(ctx, tiles, tileStates, colorScheme, changeFunction) {
+    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+
+    var width = ctx.canvas.width / (tiles.width + 0.1);
+    var height = ctx.canvas.height / (tiles.height + 0.1);
+
+    var padding = width * 0.1;
+
+    tiles.forEach(function (value, x, y) {
+      var tileState = tileStates.get(x, y);
+
+      ctx.fillStyle = colorScheme.cells[value].fill;
+      ctx.fillRect(
+        x * width + padding,
+        y * height + padding,
+        width - padding,
+        height - padding
+      );
+
+      ctx.fillStyle =
+        colorScheme.cells[changeFunction(value)].fill;
+
+      var squareWidth = (width - padding) * tileState.transitionState * 0.5;
+      var squareHeight = (height - padding) * tileState.transitionState * 0.5;
+      var squareOffsetX =
+        (width - padding) * (1 - tileState.transitionState * 0.5) * 0.5;
+      var squareOffsetY =
+        (height - padding) * (1 - tileState.transitionState * 0.5) * 0.5;
+      ctx.fillRect(
+        x * width + padding + squareOffsetX,
+        y * height + padding + squareOffsetY,
+        squareWidth,
+        squareHeight
+      );
+    });
+  }
+
   tileShapes.square = {
     name: "square",
     coordinatesFromMousePosition: coordinatesFromMousePosition,
@@ -184,5 +230,7 @@
     forTilesInMove: forTilesInMove,
     forTilesInMoveSet: forTilesInMoveSet,
     gridFromJsonObject: gridFromJsonObject,
+    moveToVector: moveToVector,
+    draw_expanded: draw_expanded,
   };
 })();

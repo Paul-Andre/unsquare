@@ -2,6 +2,7 @@
 
 function Level() {}
 
+
 Level.empty = function makeLevel(size) {
   var grid = Grid.empty(size, size);
   grid.setAll(1);
@@ -15,6 +16,12 @@ Level.empty = function makeLevel(size) {
   level.index = -1;
   level.isIcon = false;
   level.id = generate_id("level");
+
+  let operations = compute_operations_for_level(level);
+  let m = operations.length;
+  
+  level.solutionVector = new Array(m).fill(0);
+
   return level;
 };
 
@@ -32,6 +39,11 @@ Level.fromJsonObject = function (json) {
     level.id = json.id;
   } else {
     level.id = generate_id("level")
+  }
+  if (json.solutionVector) {
+    level.solutionVector = json.solutionVector
+  } else {
+    level.solutionVector = null;
   }
   return level;
 };
@@ -52,6 +64,10 @@ Level.prototype.toJsonObject = function () {
   json.index = this.index;
   json.id = this.id;
 
+  if (this.solutionVector) {
+    json.solutionVector = this.solutionVector
+  }
+
   json.__type__ = "Level"
   return json;
 };
@@ -71,4 +87,5 @@ Level.prototype.copyFrom = function (otherLevel) {
   this.text = otherLevel.text;
   this.index = otherLevel.index;
   this.isIcon = otherLevel.isIcon;
+  this.solutionVector = otherLevel.solutionVector;
 };

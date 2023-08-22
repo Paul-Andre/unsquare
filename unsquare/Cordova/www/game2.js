@@ -74,7 +74,7 @@ function makeGameBase2(canvasId, divId) {
   game.doMouseMove = function (x, y) {
     mouseNow.x = x / canvasSize;
     mouseNow.y = y / canvasSize;
-    var text = "move " + mouseNow.x + " " + mouseNow.y;
+    // var text = "move " + mouseNow.x + " " + mouseNow.y;
     //document.getElementById("Debugger").innerText = text;
 
 
