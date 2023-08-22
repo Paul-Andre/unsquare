@@ -20,18 +20,6 @@ function GameState(level) {
 }
 
 
-GameState.prototype.isClear = function isClear() {
-  var clear = true;
-
-  this.tiles.forEach(function (v) {
-    if (v != 1) {
-      clear = false;
-    }
-  });
-
-  return clear;
-};
-
 GameState.prototype.applyMove = function (move, action) {
   if (move != null) {
     this.undoList.push({
