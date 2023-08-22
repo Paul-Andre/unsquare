@@ -79,6 +79,7 @@
 
             <p id="TextShower" class="textShower">  Pull from one corner of the square to the other. </p>
             <p id="Debugger"> </p>
+            <button onclick="screenManager.goBack();">&#8592; Menu</button>
           </div>
 
           <button onclick="screenManager.switchTo('instructions');" style="float:right;">?</button>
@@ -138,7 +139,8 @@
           <button onclick="screenManager.goBack();">&#8592; Menu</button>
           <button onclick="levelMenu.displayBookJson();" style="float:right;">To JSON</button>
           <button onclick="levelMenu.newLevel();" style="float:right;">Add level</button>
-          <button onclick="levelMenu.toggleDelete();" style="float:right;">Delete</button>
+          <button onclick="levelMenu.toggleDelete();" style="float:right;" class="deleteButton">Delete</button>
+          <button onclick="levelMenu.toggleSelectIcon();" style="float:right;">Select Book Icon</button>
         </div>
 
         <div id="iconContainer" class="content">
@@ -151,6 +153,7 @@
       <section id="bookMenu" class="screen">
         <div class="header">
           <h1>Puzzle Books:</h1>
+          <button onclick="screenManager.goBack();">&#8592; Menu</button>
         </div>
         <div id="bookContainer" class="content">
 
@@ -159,6 +162,8 @@
           <br>
           <button onclick="displaySaveStr();" style="float:right;">Export save</button>
           <button onclick="importSave();" style="float:right;">Import save</button>
+
+          <button onclick="bookMenu.addFromJson();" style="float:right;">Add from json</button>
 
           <button onclick="bookMenu.newBook();" style="float:right;">Add book</button>
         </div>

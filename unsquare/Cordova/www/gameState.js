@@ -12,12 +12,7 @@ function GameState(level) {
 
   this.tiles = level.tiles.clone();
   this.tileStates = tileStates;
-  this.touchedTile = {
-    touched: false,
-    x: 0,
-    y: 0,
-    transitionState: 0,
-  };
+
   this.level = level;
   this.undoList = [];
   this.lastUpdateTimestamp = performance.now();

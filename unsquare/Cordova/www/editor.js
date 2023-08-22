@@ -35,6 +35,8 @@ editor.updateLevelInfo = function () {
 editor.saveLevel = function () {
   editor.updateLevelInfo();
   editor.referenceToOriginalLevel.copyFrom(editor.level);
+  save_editor_book(current_book);
+
 };
 
 editor.clear = function () {

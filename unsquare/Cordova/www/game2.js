@@ -102,9 +102,9 @@ function makeGameBase2(canvasId, divId) {
 
       var different = false;
       this.gameState.tileStates.forEach(function (v) {
-          if (v.selected != v.oldSelected) {
-            different = true;
-          }
+        if (v.selected != v.oldSelected) {
+          different = true;
+        }
       })
 
       if (different) {
@@ -160,7 +160,7 @@ function makeGameBase2(canvasId, divId) {
         Math.min(
           canvas.width - 2,
           (event.clientX - rect.left - borderLeftWidth) *
-            (window.devicePixelRatio || 1)
+          (window.devicePixelRatio || 1)
         )
       ),
       y: Math.max(
@@ -168,120 +168,120 @@ function makeGameBase2(canvasId, divId) {
         Math.min(
           canvas.height - 2,
           (event.clientY - rect.top - borderTopWidth) *
-            (window.devicePixelRatio || 1)
+          (window.devicePixelRatio || 1)
         )
       ),
     };
   }
 
   if (false) {
-  function createTouchListener(fn) {
-    return function (event) {
-      if (event.changedTouches) {
-        var coords = getCoordinates(event.changedTouches[0]);
+    function createTouchListener(fn) {
+      return function (event) {
+        if (event.changedTouches) {
+          var coords = getCoordinates(event.changedTouches[0]);
+          fn(coords.x, coords.y);
+        }
+        //return cancelEvent(event);
+      };
+    }
+
+    canvas.addEventListener(
+      "touchstart",
+      createTouchListener(game.doMouseDown.bind(game))
+    );
+    canvas.addEventListener(
+      "touchmove",
+      createTouchListener(game.doMouseMove.bind(game))
+    );
+    canvas.addEventListener(
+      "touchend",
+      createTouchListener(game.doMouseUp.bind(game))
+    );
+
+    function createMouseListener(fn) {
+      return function (event) {
+        var coords = getCoordinates(event);
         fn(coords.x, coords.y);
-      }
-      //return cancelEvent(event);
-    };
-  }
+        return cancelEvent(event);
+      };
+    }
 
-  canvas.addEventListener(
-    "touchstart",
-    createTouchListener(game.doMouseDown.bind(game))
-  );
-  canvas.addEventListener(
-    "touchmove",
-    createTouchListener(game.doMouseMove.bind(game))
-  );
-  canvas.addEventListener(
-    "touchend",
-    createTouchListener(game.doMouseUp.bind(game))
-  );
-
-  function createMouseListener(fn) {
-    return function (event) {
-      var coords = getCoordinates(event);
-      fn(coords.x, coords.y);
-      return cancelEvent(event);
-    };
-  }
-
-  canvas.addEventListener(
-    "mousedown",
-    createMouseListener(game.doMouseDown.bind(game))
-  );
-  canvas.addEventListener(
-    "mousemove",
-    createMouseListener(game.doMouseMove.bind(game))
-  );
-  canvas.addEventListener(
-    "mouseup",
-    createMouseListener(game.doMouseUp.bind(game))
-  );
+    canvas.addEventListener(
+      "mousedown",
+      createMouseListener(game.doMouseDown.bind(game))
+    );
+    canvas.addEventListener(
+      "mousemove",
+      createMouseListener(game.doMouseMove.bind(game))
+    );
+    canvas.addEventListener(
+      "mouseup",
+      createMouseListener(game.doMouseUp.bind(game))
+    );
 
 
-  /*
+    /*
 https://developer.mozilla.org/en-US/docs/Web/API/Element/setPointerCapture#javascript
 */
-  // TODO: eh? Does this actually work on enough modern browsers?
-  //
-  
-}else{
+    // TODO: eh? Does this actually work on enough modern browsers?
+    //
 
-  function beginSliding(e) {
-    console.log("begin", e)
-    var coords = getCoordinates(e);
-    game.doMouseDown(coords.x, coords.y);
-    
-    //canvas.onpointermove = slide;
-    //canvas.setPointerCapture(e.pointerId);
+  }else{
+
+    function beginSliding(e) {
+      console.log("begin", e)
+      var coords = getCoordinates(e);
+      game.doMouseDown(coords.x, coords.y);
+
+      //canvas.onpointermove = slide;
+      //canvas.setPointerCapture(e.pointerId);
 
 
       return cancelEvent(event);
-  }
+    }
 
-  function slide(e) {
-    console.log("slide", e)
-    var coords = getCoordinates(e);
-    game.doMouseMove(coords.x, coords.y);
+    function slide(e) {
+      console.log("slide", e)
+      var coords = getCoordinates(e);
+      game.doMouseMove(coords.x, coords.y);
 
-    //canvas.setPointerCapture(e.pointerId);
+      //canvas.setPointerCapture(e.pointerId);
 
       return cancelEvent(event);
-  }
+    }
 
-  function stopSliding(e) {
-    console.log("asdfasd")
-    var coords = getCoordinates(e);
-    game.doMouseUp(coords.x, coords.y);
+    function stopSliding(e) {
+      console.log("asdfasd")
+      var coords = getCoordinates(e);
+      game.doMouseUp(coords.x, coords.y);
 
 
-    //canvas.releasePointerCapture(e.pointerId);
+      //canvas.releasePointerCapture(e.pointerId);
       return cancelEvent(event);
 
+    }
+
+    // canvas.onpointerdown = beginSliding;
+    // canvas.onpointermove = slide;
+    // canvas.onpointerup = stopSliding;
+
+    canvas.addEventListener(
+      "pointerdown",
+      beginSliding,
+    );
+
+    canvas.addEventListener(
+      "pointermove",
+      slide,
+
+    );
+    canvas.addEventListener(
+      "pointerup",
+      stopSliding,
+    );
+
+
   }
-
-  // canvas.onpointerdown = beginSliding;
-  // canvas.onpointermove = slide;
-  // canvas.onpointerup = stopSliding;
-
-  canvas.addEventListener(
-    "pointerdown",
-    beginSliding,
-  );
-
-  canvas.addEventListener(
-    "pointermove",
-    slide,
-   
-  );
-  canvas.addEventListener(
-    "pointerup",
-    stopSliding,
-  );
-
-
-}
 
 
 
@@ -302,6 +302,7 @@ https://developer.mozilla.org/en-US/docs/Web/API/Element/setPointerCapture#javas
   var numRequested = 0;
 
   game.draw = function() {
+
     if (game.isFinished()) {
       game.finishedLevel()
     }
@@ -312,12 +313,13 @@ https://developer.mozilla.org/en-US/docs/Web/API/Element/setPointerCapture#javas
       a.innerText = this.gameState.numMoves;
     }
 
-      var a = globalDiv.getElementsByClassName("bestContent")[0]
-      var b = bests[currentLevelId];
+    var a = globalDiv.getElementsByClassName("bestContent")[0]
+    var b = game.getCurrentBest();
+
     if (b===null || b===undefined) {
-        a.innerText = "-";
+      a.innerText = "-";
     }else {
-        a.innerText = b;
+      a.innerText = b;
     }
 
     game.drawCanvas();
@@ -338,7 +340,7 @@ https://developer.mozilla.org/en-US/docs/Web/API/Element/setPointerCapture#javas
           var previousTimestamp = game.gameState.lastUpdateTimestamp;
 
           var changed = false;
-          
+
           game.gameState.tileStates.forEach(function (v) {
 
             var prevTS = v.transitionState;
@@ -412,12 +414,21 @@ https://developer.mozilla.org/en-US/docs/Web/API/Element/setPointerCapture#javas
     var a = globalDiv.getElementsByClassName("finishedLevel")[0];
     a.style.display = "block";
 
+    let currentLevelId = this.level.index;
+
     if (bests[currentLevelId] === null || bests[currentLevelId] === undefined || bests[currentLevelId] > this.gameState.numMoves) {
       bests[currentLevelId] = this.gameState.numMoves;
       saveBests();
     } 
 
   };
+
+  game.getCurrentBest = function() {
+    if (this.level) {
+      return bests[this.level.index];
+    }
+    return null;
+  }
 
   game.onResize();
   console.log(game);
@@ -437,7 +448,7 @@ var levels;
 var bests = [null];
 
 function saveBests() {
-    localStorage.setItem("bests", JSON.stringify(bests));
+  localStorage.setItem("bests", JSON.stringify(bests));
 }
 
 function asdf(a,b) {
@@ -456,10 +467,10 @@ function cyrb53(str, seed){
     h1 = Math.imul(h1 ^ ch, 2654435761);
     h2 = Math.imul(h2 ^ ch, 1597334677);
   }
-  
+
   h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909);
   h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909);
-  
+
   return 4294967296 * (2097151 & h2) + (h1 >>> 0);
 };
 
@@ -467,7 +478,7 @@ function cyrb53(str, seed){
 request.onload = function () {
   if (request.status >= 200 && request.status < 400) {
     // Success!
-    
+
 
     let data = JSON.parse(request.responseText);
 
@@ -488,7 +499,7 @@ request.onload = function () {
     var hash = cyrb53( request.responseText, 0);
 
 
-      bests = JSON.parse(localStorage.getItem("bests"));
+    bests = JSON.parse(localStorage.getItem("bests"));
 
     if (localStorage.getItem("levels_hash") == hash) {
       bests = JSON.parse(localStorage.getItem("bests"));
@@ -511,30 +522,32 @@ request.send();
 
 
 var game = makeGameBase2("gameCanvas", "game");
+
 screenManager.additionalFunctions.game = game;
 
-var currentLevelId = 0;
 
 game.openLevel(Level.fromJsonObject(
   {
-            "colorScheme": "BW",
-              "tileShape": "square",
-              "tiles": [
-                            [1, 1, 1, 1, 1, 1],
-                            [1, 2, 2, 2, 2, 1],
-                            [1, 2, 2, 2, 2, 1],
-                            [1, 2, 2, 2, 2, 1],
-                            [1, 2, 2, 2, 2, 1],
-                            [1, 1, 1, 1, 1, 1]
-                        ],
-              "par": 1,
-              "text": "Pull from one corner of the black square to the other.",
-              "solution": [{
-                            "x": 1,
-                            "y": 1,
-                            "size": 4
-                        }]
-        }
+    "colorScheme": "BW",
+    "tileShape": "square",
+    "tiles": [
+      [1, 1, 1, 1, 1, 1],
+      [1, 2, 2, 2, 2, 1],
+      [1, 2, 2, 2, 2, 1],
+      [1, 2, 2, 2, 2, 1],
+      [1, 2, 2, 2, 2, 1],
+      [1, 1, 1, 1, 1, 1]
+    ],
+    "par": 1,
+    "index": 0,
+    "text": "Pull from one corner of the black square to the other.",
+    "solution": [{
+      "x": 1,
+      "y": 1,
+      "size": 4
+    }]
+
+  }
 ), function(){},
 
 );
@@ -550,27 +563,47 @@ game.openLevel(Level.fromJsonObject(
 
 
 //game.onShow();
+//
+
 
 function nextLevel() {
-  if (currentLevelId+1 < levels.length) {
-    currentLevelId+=1
-    var nextLevel = levels[currentLevelId];
-    game.openLevel(Level.fromJsonObject(nextLevel), function(){});
-game.onShow();
-    document.getElementById("LevelIndicator").innerText = "Level " + (1+ currentLevelId);
+  let level = game.level;
+  let index = level.index;
+  let levels = current_book.levels;
+  console.log(level, index, levels);
+
+  if (index+1 <levels.length) {
+    index+=1
+    var nextLevel = levels[index];
+
+     // = nextLevel;
+    game.openLevel(nextLevel, function(){});
+
+    game.onShow();
+
+    document.getElementById("LevelIndicator").innerText = "Level " + (1+ index);
+
   }
 }
 
-function prevLevel() {
-  if (currentLevelId-1 >= 0) {
-    currentLevelId-=1;
-    var nextLevel = levels[currentLevelId];
-    game.openLevel(Level.fromJsonObject(nextLevel), function(){});
-game.onShow();
-    document.getElementById("LevelIndicator").innerText = "Level " + (1+ currentLevelId);
-  }else {
 
-	// prompt("Here are your bests", JSON.stringify(bests));
+function prevLevel() {
+  let level = game.level;
+  let index = level.index;
+  let levels = current_book.levels;
+  console.log(level, index, levels);
+
+  if (index-1 >=0) {
+    index-=1
+    var nextLevel = levels[index];
+
+    current_level = nextLevel;
+    game.openLevel(nextLevel, function(){});
+
+    game.onShow();
+
+    document.getElementById("LevelIndicator").innerText = "Level " + (1+ index);
+
   }
 }
 

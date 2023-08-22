@@ -135,7 +135,15 @@ button:disabled{
 }
 
 div#iconContainer.deleting .levelIcon {
-	border-color: red;
+	border: solid 2px red;
+}
+
+div#iconContainer.selectingIcon .levelIcon {
+	border: dashed 2px lime;
+}
+
+.levelIcon.bookIconRepresentative {
+	border: solid lime;
 }
 
 .gameCanvas {
@@ -216,3 +224,28 @@ section header {
   display: block;
 }
 
+.bookSummary {
+  background: darkgray;
+  margin-top: 2px;
+  margin-bottom: 2px;
+  /* clear: both; */
+    border: solid 1px darkgray;
+}
+.bookSummary:hover {
+    border: solid 1px #555555;
+
+
+}
+
+.bookSummary canvas {
+  /* float: left; */
+}
+.bookIconContainer {
+  display: inline-block;
+}
+.bookInfoContainer {
+  display: inline-block;
+}
+.bookInfoContainer .bookId {
+  opacity: 50%;
+}
