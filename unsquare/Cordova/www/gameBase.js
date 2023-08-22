@@ -104,12 +104,23 @@ function makeGameBase(canvasId, divId /*unused*/)  {
   };
 
 
-  game.applyMove = function (move, action) {
-    if (move != null) {
-      this.undoList.push({
+  // This is meant to be overwritten
+  game.createUndoState = function(move, action) {
+      return {
         tiles: this.tiles.clone(),
         move: move,
-      });
+      }
+  }
+
+  // This is also meant to be overwritten
+  game.restoreUndoState = function(undo) {
+      this.tiles = undo.tiles;
+      this.numMoves-=1;
+  }
+
+  game.applyMove = function (move, action) {
+    if (move != null) {
+      this.undoList.push(game.createUndoState(move, action) );
       this.level.tileShape.forTilesInMoveSet(this.tiles, move, action);
     }
     this.numMoves+=1;
@@ -118,8 +129,7 @@ function makeGameBase(canvasId, divId /*unused*/)  {
   game.undo = function () {
     if (this.undoList.length > 0) {
       var undo = this.undoList.pop();
-      this.tiles = undo.tiles;
-      this.numMoves-=1;
+      this.restoreUndoState(undo);
     }
   };
 
