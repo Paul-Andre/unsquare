@@ -29,6 +29,8 @@ function makeGameBase(canvasId, divId /*unused*/)  {
 
   };
 
+  game.div = document.getElementById(divId);
+
 
 
   var canvasVirtualSize;
@@ -43,11 +45,14 @@ function makeGameBase(canvasId, divId /*unused*/)  {
     this.draw();
   };
 
-  // This is central to both editor and game
-  game.openLevel = function (level) {
+  // This should probably be renamed to openLevel, and the other openLevel be
+  // renamed to resetComponent or something
+  game.initializeTiles = function(level ) {
+    let tiles = level.tiles;
 
+    this.tiles = tiles.clone();
 
-    var tileStates = level.tiles.clone();
+    var tileStates = tiles.clone();
     tileStates.forEachSet(function () {
       return {
         selected: false,
@@ -56,12 +61,29 @@ function makeGameBase(canvasId, divId /*unused*/)  {
       };
     });
 
-    this.tiles = level.tiles.clone();
     this.tileStates = tileStates;
+
+    this.operations = compute_operations_for_level(this.level);
+    this.inverseOperations = new Map();
+    for (let i=0; i<this.operations.length; i++) {
+      this.inverseOperations.set(this.operations[i].join(""), i);
+    }
+    assert(level.solutionVector);
+
+    this.runningSolution = level.solutionVector.slice();
+
+    this.arithmetic = level.colorScheme.arithmetic;
+
+    this.updateGui();
+  }
+
+  
+  game.openLevel = function (level) {
 
     this.undoList = [];
 
     this.level = level;
+    this.initializeTiles(level);
 
     this.lastUpdateTimestamp = performance.now();
     this.numMoves = 0;
@@ -105,25 +127,48 @@ function makeGameBase(canvasId, divId /*unused*/)  {
 
 
   // This is meant to be overwritten
-  game.createUndoState = function(move, action) {
+  game.createUndoState = function(move) {
       return {
         tiles: this.tiles.clone(),
+        runningSolution: this.runningSolution.slice(),
+        solutionType: this.solutionType,
         move: move,
       }
   }
 
   // This is also meant to be overwritten
   game.restoreUndoState = function(undo) {
-      this.tiles = undo.tiles;
-      this.numMoves-=1;
+    this.initializeTiles(undo.tiles, undo.runningSolution, undo.solutionType);
+    this.runningSolution = undo.runningSolution
+    this.numMoves-=1;
+  }
+
+  game.saveStateForUndo = function(move=null) {
+      this.undoList.push(game.createUndoState(move));
+  }
+
+  game.updateGui = function () {
+  }
+  game.postApplyMove = function() {
   }
 
   game.applyMove = function (move, action) {
     if (move != null) {
-      this.undoList.push(game.createUndoState(move, action) );
+      this.saveStateForUndo(move);
       this.level.tileShape.forTilesInMoveSet(this.tiles, move, action);
+      let vector = this.level.tileShape.moveToVector(this.tiles, move)
+      let opIndex = this.inverseOperations.get(vector.join(""));
+      // console.log(vector);
+      // console.log(opIndex);
+      if (this.runningSolution) {
+        this.runningSolution[opIndex] += 1;
+        vector_simplify_arithmetic(this.runningSolution, this.arithmetic);
+      }
+      game.postApplyMove(move, action);
+
     }
     this.numMoves+=1;
+    this.updateGui();
   };
 
   game.undo = function () {

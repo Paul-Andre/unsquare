@@ -7,7 +7,6 @@ editor.openLevel = (function () {
     // The reason I don't just put it in the base is that at some point the game might need to modify the level
     this.referenceToOriginalLevel = level;
     superOpenLevel(level.clone());
-    this.movesThatCantBeUndone = this.level.solution;
   };
 })();
 
@@ -17,19 +16,12 @@ editor.action = function (v) {
   return editor.level.colorScheme.resquare(v);
 };
 
-editor.getJoinedSolution = function () {
-  return this.movesThatCantBeUndone.concat(
-    this.undoList.map(function (undo) {
-      return undo.move;
-    })
-  );
-};
 
 editor.updateLevelInfo = function () {
   // Note that this modifies the copy of level, not the reference to the original level
   editor.level.tiles = this.tiles;
-  editor.level.solution = editor.getJoinedSolution();
-  editor.level.par = editor.level.solution.length;
+  editor.level.solution = this.runningSolution;
+  editor.level.par = null;
 };
 
 editor.saveLevel = function () {
@@ -39,12 +31,36 @@ editor.saveLevel = function () {
 
 };
 
+editor.restoreUndoState = function(undo) {
+  this.initializeTiles(undo.level);
+  this.numMoves-=1;
+}
+
+editor.createUndoState = function(move) {
+
+    return {
+      level: this.level.clone(),
+      move: move,
+    }
+}
+
+editor.postApplyMove = function() {
+  editor.updateLevelInfo();
+  if (this.level.solutionType == "reverse" || this.level.solutionType == "confirmed") {
+    this.level.solutionType = "reverse";
+  } else {
+    this.level.solutionType = "mixed";
+  }
+}
+
 editor.clear = function () {
+  editor.saveStateForUndo();
   editor.tiles.forEachSet(function () {
     return 1;
   });
-  editor.undoList = [];
-  editor.movesThatCantBeUndone = [];
+  let m = this.operations.length;
+  this.runningSolution = new Array(m).fill(0);
+  this.updateGui();
 };
 
 editor.play = function () {
@@ -59,18 +75,26 @@ editor.promptSize = function () {
     // TODO make sure it doesn't break the Grid abstraction here.
     var size = new Number(size);
     if (!isNaN(size)) {
+
+      editor.saveStateForUndo();
+
       var grid = Grid.empty(size, size);
+
       grid.setAll(1);
 
+      console.log(grid);
+
       if (size >= this.tiles.width) {
+
         this.tiles.forEach(function (v, x, y) {
           grid.set(x, y, v);
         });
-        this.movesThatCantBeUndone = this.getJoinedSolution();
+
       } else {
-        this.movesThatCantBeUndone = [];
+
       }
-      this.level.tiles = grid;
+      this.initializeTiles(grid);
+      //this.tiles = grid;
     }
   }
 };
@@ -95,5 +119,18 @@ editor.printFlat = function () {
   }
   console.log(ret);
 };
+
+editor.updateGui = function () {
+  this.updateLevelInfo();
+
+  if (this.runningSolution) {
+    let sum = vector_sum(this.level.solution);
+    let type = this.level.solutionType;
+    this.div.getElementsByClassName("editorBest")[0].innerText = sum + " "+type;
+  } else {
+    this.div.getElementsByClassName("editorBest")[0].innerText = "? " + type;
+  }
+
+}
 
 screenManager.additionalFunctions.editor = editor;

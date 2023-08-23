@@ -21,6 +21,7 @@ Level.empty = function makeLevel(size) {
   let m = operations.length;
   
   level.solutionVector = new Array(m).fill(0);
+  level.solutionType = "reverse";
 
   return level;
 };
@@ -31,7 +32,7 @@ Level.fromJsonObject = function (json) {
   level.tileShape = tileShapes.square; // tileShapes[json.tileShape];
   level.tiles = level.tileShape.gridFromJsonObject(json.tiles);
   level.par = json.par;
-  level.solution = []; //json.solution;
+  level.solution = null;
   level.text = json.text || "";
   level.index = json.index;
   level.isIcon = !!(json.isIcon);
@@ -42,8 +43,22 @@ Level.fromJsonObject = function (json) {
   }
   if (json.solutionVector) {
     level.solutionVector = json.solutionVector
-  } else {
-    level.solutionVector = null;
+    level.solutionType = json.solutionType;
+
+  }  else {
+    let sol = get_gaussian_solution_for_level(level);
+    if (sol) {
+      level.solutionVector = sol;
+      level.solutionType = "gaussian";
+    } else {
+      level.solutionVector = null;
+      level.solutionType = "impossible";
+    }
+  }
+  // Sanity check, that solution makes sense
+  assert(level_check_solution(level));
+  if (vector_sum(level.solutionVector) <= 3) {
+    level.solutionType = "confirmed";
   }
   return level;
 };
@@ -64,9 +79,8 @@ Level.prototype.toJsonObject = function () {
   json.index = this.index;
   json.id = this.id;
 
-  if (this.solutionVector) {
-    json.solutionVector = this.solutionVector
-  }
+  json.solutionVector = this.solutionVector;
+  json.solutionType = this.solutionType;
 
   json.__type__ = "Level"
   return json;
@@ -83,9 +97,18 @@ Level.prototype.copyFrom = function (otherLevel) {
   this.tileShape = otherLevel.tileShape;
   this.tiles = otherLevel.tiles.clone();
   this.par = otherLevel.par;
-  this.solution = otherLevel.solution.slice();
+  if (this.solution && this.solution !== null) {
+    this.solution = otherLevel.solution.slice();
+  } else {
+    this.solution = null;
+  }
   this.text = otherLevel.text;
   this.index = otherLevel.index;
   this.isIcon = otherLevel.isIcon;
-  this.solutionVector = otherLevel.solutionVector;
+  if (otherLevel.solutionVector) {
+    this.solutionVector = otherLevel.solutionVector.slice();
+  } else {
+    this.solutionVector = null;
+  }
+  this.solutionType = otherLevel.solutionType;
 };

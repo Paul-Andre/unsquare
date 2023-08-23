@@ -99,10 +99,15 @@ optional<SatSolutionAndKernel> solve(vector<vector<int>> mat, vector<int> target
       c2r[cc] = i;
       r2c[i] = cc;
     }
-    if (cc==-1 && target[i]!=0){
-      return nullopt;
+    // TODO: make sure this is correct, what was previously here would fail on
+    // things with no kernel(?)
+    if (cc==-1) { 
+      if (target[i]!=0) {
+        return nullopt;
+      }
+    } else {
+      solution[cc] = target[i];
     }
-    solution[cc] = target[i];
   }
 
   vector<vector<int>> kernelBasis;
@@ -164,6 +169,9 @@ vector<int> randomlyImprove(const vector<int> &solution, const vector<vector<int
 }
 
 vector<vector<int>> reorderKernelGreedy(vector<vector<int>> oldKernel) {
+  if (oldKernel.size() == 0) {
+    return oldKernel;
+  }
 
   sort(oldKernel.begin(), oldKernel.end(), [](const vector<int> &a, const vector<int> &b) {
       return sumVec(a) > sumVec(b);
@@ -207,6 +215,9 @@ vector<vector<int>> reorderKernelGreedy(vector<vector<int>> oldKernel) {
 
 // Greedily make the kerel vectors shorter
 vector<vector<int>> reduceKernelGreedy(vector<vector<int>> oldKernel) {
+  if (oldKernel.size() == 0) {
+    return oldKernel;
+  }
   int n = oldKernel.size();
   int m = oldKernel[0].size();
   bool changed = true;
@@ -229,6 +240,9 @@ vector<vector<int>> reduceKernelGreedy(vector<vector<int>> oldKernel) {
 }
 
 vector<vector<int>> reduceKernelGreedy2(vector<vector<int>> oldKernel) {
+  if (oldKernel.size() == 0) {
+    return oldKernel;
+  }
   int n = oldKernel.size();
   int m = oldKernel[0].size();
   while(true) {
@@ -464,11 +478,14 @@ int main() {
     vector<int> solution = solution_->solution;
     cerr << "initial solution " << sumVec(solution) << endl;
 
-    solution = randomlyImprove(solution, kernel);
-    cerr << "after randomly improving " << sumVec(solution) << endl;
+    if (kernel.size()) {
+      solution = randomlyImprove(solution, kernel);
+      cerr << "after randomly improving " << sumVec(solution) << endl;
 
-    solution = branchAndBound(solution, kernel);
-    cerr << "after branch and bound " << sumVec(solution) << endl;
+    /* solution = branchAndBound(solution, kernel); */
+    /* cerr << "after branch and bound " << sumVec(solution) << endl; */
+
+    }
 
 
     int W = solution.size();

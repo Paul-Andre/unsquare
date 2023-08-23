@@ -241,7 +241,7 @@ https://developer.mozilla.org/en-US/docs/Web/API/Element/setPointerCapture#javas
     }
 
     function slide(e) {
-      console.log("slide", e)
+      // console.log("slide", e)
       var coords = getCoordinates(e);
       game.doMouseMove(coords.x, coords.y);
 

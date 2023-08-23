@@ -18,6 +18,11 @@ var colorSchemes = {
     resquare: function (e) {
       return e == 1 ? 2 : e == 2 ? 1 : 0;
     },
+    // this is to transition to the new level format.
+    arithmetic: {
+      type: "modular",
+      modulus: 2,
+    },
   },
 
   tri: {
@@ -39,6 +44,11 @@ var colorSchemes = {
 
     resquare: function (e) {
       return e == 3 ? 1 : e == 2 ? 3 : e == 1 ? 2 : 0;
+    },
+
+    arithmetic: {
+      type: "modular",
+      modulus: 3,
     },
   },
 
@@ -87,6 +97,11 @@ var colorSchemes = {
         e = 7;
       }
       return e;
+    },
+
+    arithmetic: {
+      type: "",
+      modulus: 7,
     },
   },
 
@@ -139,6 +154,10 @@ var colorSchemes = {
         e = 8;
       }
       return e;
+    },
+    arithmetic: {
+      type: "modular",
+      modulus: 8,
     },
   },
 };

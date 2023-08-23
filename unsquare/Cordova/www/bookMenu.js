@@ -134,6 +134,12 @@ bookMenu.newBook = function () {
   this.showBooks();
 };
 
+bookMenu.saveAll = function() {
+    for (let i=0; i<this.books.length; i++) {
+      save_editor_book(this.books[i]);
+    }
+}
+
 bookMenu.addFromJson = function() {
   var saveStr = prompt("Paste JSON");
   if (saveStr) {
