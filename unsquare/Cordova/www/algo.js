@@ -222,7 +222,7 @@ function random_matrix(m, n, mod) {
   return ret;
 }
 
-{
+if (false) {
   for (let i=0; i<100; i++) {
     let n = Math.floor(Math.random() *10) + 1;
     let m = Math.floor(Math.random() *10) + 1;
@@ -374,7 +374,7 @@ function level_check_solution(level) {
 
     let reach = vector_multiply_matrix(level.solutionVector, operations)
   vector_simplify_arithmetic(reach, level_get_arithmetic(level));
-  console.log(reach, target);
+  //console.log(reach, target);
 
   return vector_equal(target, reach);
 

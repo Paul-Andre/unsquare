@@ -11,7 +11,6 @@ Level.empty = function makeLevel(size) {
   level.tileShape = tileShapes.square;
   level.tiles = grid;
   level.par = 0;
-  level.solution = [];
   level.text = "";
   level.index = -1;
   level.isIcon = false;
@@ -21,10 +20,24 @@ Level.empty = function makeLevel(size) {
   let m = operations.length;
   
   level.solutionVector = new Array(m).fill(0);
-  level.solutionType = "reverse";
+  level.solutionType = "confirmed";
 
   return level;
 };
+
+function compute_gaussian_solution(level) {
+  let sol = get_gaussian_solution_for_level(level);
+  if (sol) {
+    level.solutionVector = sol;
+    level.solutionType = "gaussian";
+  } else {
+    level.solutionVector = null;
+    level.solutionType = "impossible";
+  }
+  if (vector_sum(level.solutionVector) <= 3) {
+    level.solutionType = "confirmed";
+  }
+}
 
 Level.fromJsonObject = function (json) {
   var level = new Level();
@@ -32,7 +45,6 @@ Level.fromJsonObject = function (json) {
   level.tileShape = tileShapes.square; // tileShapes[json.tileShape];
   level.tiles = level.tileShape.gridFromJsonObject(json.tiles);
   level.par = json.par;
-  level.solution = null;
   level.text = json.text || "";
   level.index = json.index;
   level.isIcon = !!(json.isIcon);
@@ -41,25 +53,22 @@ Level.fromJsonObject = function (json) {
   } else {
     level.id = generate_id("level")
   }
+  let hasValidSolution = false;
   if (json.solutionVector) {
     level.solutionVector = json.solutionVector
     level.solutionType = json.solutionType;
 
-  }  else {
-    let sol = get_gaussian_solution_for_level(level);
-    if (sol) {
-      level.solutionVector = sol;
-      level.solutionType = "gaussian";
-    } else {
-      level.solutionVector = null;
-      level.solutionType = "impossible";
-    }
+    hasValidSolution = level_check_solution(level);
+
+
+  }
+  if (!hasValidSolution) {
+    compute_gaussian_solution(level);
+
   }
   // Sanity check, that solution makes sense
   assert(level_check_solution(level));
-  if (vector_sum(level.solutionVector) <= 3) {
-    level.solutionType = "confirmed";
-  }
+
   return level;
 };
 
@@ -69,7 +78,6 @@ Level.prototype.toJsonObject = function () {
   json.tileShape = this.tileShape.name;
   json.tiles = this.tiles.to2dArray(); //TODO: should be tileShape.gridToJson...
   json.par = this.par;
-  json.solution = this.solution;
   if (this.text) {
     json.text = this.text;
   }
@@ -97,11 +105,6 @@ Level.prototype.copyFrom = function (otherLevel) {
   this.tileShape = otherLevel.tileShape;
   this.tiles = otherLevel.tiles.clone();
   this.par = otherLevel.par;
-  if (this.solution && this.solution !== null) {
-    this.solution = otherLevel.solution.slice();
-  } else {
-    this.solution = null;
-  }
   this.text = otherLevel.text;
   this.index = otherLevel.index;
   this.isIcon = otherLevel.isIcon;

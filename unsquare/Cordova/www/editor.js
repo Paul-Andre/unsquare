@@ -20,7 +20,7 @@ editor.action = function (v) {
 editor.updateLevelInfo = function () {
   // Note that this modifies the copy of level, not the reference to the original level
   editor.level.tiles = this.tiles;
-  editor.level.solution = this.runningSolution;
+  editor.level.solutionVector = this.runningSolution;
   editor.level.par = null;
 };
 
@@ -50,6 +50,9 @@ editor.postApplyMove = function() {
     this.level.solutionType = "reverse";
   } else {
     this.level.solutionType = "mixed";
+  }
+  if (vector_sum(this.level.solutionVector) <= 3) {
+    this.level.solutionType = "confirmed";
   }
 }
 
@@ -86,14 +89,15 @@ editor.promptSize = function () {
 
       if (size >= this.tiles.width) {
 
-        this.tiles.forEach(function (v, x, y) {
-          grid.set(x, y, v);
-        });
+        // this.tiles.forEach(function (v, x, y) {
+        //   grid.set(x, y, v);
+        // });
 
       } else {
 
       }
-      this.initializeTiles(grid);
+      this.level.tiles = grid;
+      this.initializeTiles(this.level);
       //this.tiles = grid;
     }
   }
@@ -124,7 +128,7 @@ editor.updateGui = function () {
   this.updateLevelInfo();
 
   if (this.runningSolution) {
-    let sum = vector_sum(this.level.solution);
+    let sum = vector_sum(this.level.solutionVector);
     let type = this.level.solutionType;
     this.div.getElementsByClassName("editorBest")[0].innerText = sum + " "+type;
   } else {

@@ -31,8 +31,6 @@ function makeGameBase(canvasId, divId /*unused*/)  {
 
   game.div = document.getElementById(divId);
 
-
-
   var canvasVirtualSize;
   var canvasSize;
 
@@ -49,6 +47,8 @@ function makeGameBase(canvasId, divId /*unused*/)  {
   // renamed to resetComponent or something
   game.initializeTiles = function(level ) {
     let tiles = level.tiles;
+
+    this.level = level;
 
     this.tiles = tiles.clone();
 
@@ -82,7 +82,6 @@ function makeGameBase(canvasId, divId /*unused*/)  {
 
     this.undoList = [];
 
-    this.level = level;
     this.initializeTiles(level);
 
     this.lastUpdateTimestamp = performance.now();
@@ -147,10 +146,8 @@ function makeGameBase(canvasId, divId /*unused*/)  {
       this.undoList.push(game.createUndoState(move));
   }
 
-  game.updateGui = function () {
-  }
-  game.postApplyMove = function() {
-  }
+  game.updateGui = function () { }
+  game.postApplyMove = function() { }
 
   game.applyMove = function (move, action) {
     if (move != null) {
@@ -284,6 +281,9 @@ function makeGameBase(canvasId, divId /*unused*/)  {
   var hidden = true;
   // to make sure we don't requestAnimationFrame if it's already been requested
   var numRequested = 0;
+
+  game.drawCanvas = function() {
+  
   game.draw = function () {
     if (!hidden && this.tiles) {
       this.level.tileShape.draw_expanded(ctx, this.tiles, this.tileStates, this.level.colorScheme, this.action);

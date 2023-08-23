@@ -5,7 +5,6 @@
 /// This is what does the basics of drawing the tiles to the screen.
 ///
 function makeGameBase2(canvasId, divId) {
-  var globalDiv = document.getElementById(divId);
   var canvas = document.getElementById(canvasId);
   var ctx = canvas.getContext("2d");
 
@@ -24,6 +23,8 @@ function makeGameBase2(canvasId, divId) {
     gameState: null,
   };
 
+  game.div = document.getElementById(divId);
+
   var canvasVirtualSize;
   var canvasSize;
 
@@ -33,25 +34,28 @@ function makeGameBase2(canvasId, divId) {
     canvasSize = canvasVirtualSize * (window.devicePixelRatio || 1);
     canvas.width = canvas.height = canvasSize;
     canvas.style.width = canvas.style.height = canvasVirtualSize + "px";
-    console.log(canvas.width, canvas.height, canvas.style.width, canvas.style.height)
     this.draw();
   };
 
   // This is central to both editor and game
-  game.openLevel = function (level, saveCallback) {
+  game.openLevel = function (level) {
 
     this.gameState = new GameState(level);
     this.level = level;
 
     mouseStart.pressed = false;
-    this.saveCallback = saveCallback;
 
-    var a = globalDiv.getElementsByClassName("finishedLevel")[0];
+    var a = this.div.getElementsByClassName("finishedLevel")[0];
     console.log(a)
     a.style.display = "none";
 
     document.getElementById("TextShower").innerText = level.text;
-    globalDiv.getElementsByClassName("parContent")[0].innerText = level.par?level.par:"?";
+
+
+    let par = vector_sum(level.solutionVector);
+    //if (level.solutionType == "gaussian" || level.solutionType == "mixed")
+    
+    this.div.getElementsByClassName("parContent")[0].innerText = par + " "+level.solutionType;
 
   };
 
@@ -64,7 +68,7 @@ function makeGameBase2(canvasId, divId) {
     mouseStart.pressed = true;
 
 
-    var a = globalDiv.getElementsByClassName("finishedLevel")[0];
+    var a = game.div.getElementsByClassName("finishedLevel")[0];
     // console.log(a)
     a.style.display = "none";
 
@@ -301,7 +305,7 @@ https://developer.mozilla.org/en-US/docs/Web/API/Element/setPointerCapture#javas
 
   var numRequested = 0;
 
-  game.draw = function() {
+  game.updateGui = function () {
 
     if (game.isFinished()) {
       game.finishedLevel()
@@ -309,11 +313,11 @@ https://developer.mozilla.org/en-US/docs/Web/API/Element/setPointerCapture#javas
 
     if (this.gameState){
 
-      var a = globalDiv.getElementsByClassName("movesContent")[0]
+      var a = this.div.getElementsByClassName("movesContent")[0]
       a.innerText = this.gameState.numMoves;
     }
 
-    var a = globalDiv.getElementsByClassName("bestContent")[0]
+    var a = this.div.getElementsByClassName("bestContent")[0]
     var b = game.getCurrentBest();
 
     if (b===null || b===undefined) {
@@ -321,7 +325,10 @@ https://developer.mozilla.org/en-US/docs/Web/API/Element/setPointerCapture#javas
     }else {
       a.innerText = b;
     }
+  }
 
+  game.draw = function() {
+    game.updateGui();
     game.drawCanvas();
   }
 
@@ -365,6 +372,7 @@ https://developer.mozilla.org/en-US/docs/Web/API/Element/setPointerCapture#javas
 
           });
           game.gameState.lastUpdateTimestamp = timeStamp;
+
           if (changed) {
             game.drawCanvas();
           }
@@ -384,58 +392,60 @@ https://developer.mozilla.org/en-US/docs/Web/API/Element/setPointerCapture#javas
     hidden = true;
   };
 
-
-
-  // this specifies what happens when you activate squares
-  game.action = function (v) {
-    return game.level.colorScheme.unsquare(v);
-  };
-
-  game.restart = function restart() {
-    game.openLevel(this.level);
-    game.draw();
-  };
-
-  game.isFinished = function() {
-    if (this.gameState) {
-      var finished = true;
-      this.gameState.tiles.forEach(function (v) {
-        if (v != 1) {
-          finished = false;
-        }
-      });
-      return finished;
-    }
-    return false;
-  }
-
-  game.finishedLevel = function () {
-
-    var a = globalDiv.getElementsByClassName("finishedLevel")[0];
-    a.style.display = "block";
-
-    let currentLevelId = this.level.index;
-
-    if (bests[currentLevelId] === null || bests[currentLevelId] === undefined || bests[currentLevelId] > this.gameState.numMoves) {
-      bests[currentLevelId] = this.gameState.numMoves;
-      saveBests();
-    } 
-
-  };
-
-  game.getCurrentBest = function() {
-    if (this.level) {
-      return bests[this.level.index];
-    }
-    return null;
-  }
-
-  game.onResize();
-  console.log(game);
   return game;
 
 }
 
+var game = makeGameBase2("gameCanvas", "game");
+
+screenManager.additionalFunctions.game = game;
+
+// this specifies what happens when you activate squares
+game.action = function (v) {
+  return game.level.colorScheme.unsquare(v);
+};
+
+game.restart = function restart() {
+  game.openLevel(this.level);
+  game.draw();
+};
+
+game.isFinished = function() {
+  if (this.gameState) {
+    var finished = true;
+    this.gameState.tiles.forEach(function (v) {
+      if (v != 1) {
+        finished = false;
+      }
+    });
+    return finished;
+  }
+  return false;
+}
+
+game.finishedLevel = function () {
+
+  var a = this.div.getElementsByClassName("finishedLevel")[0];
+  a.style.display = "block";
+
+  let currentLevelId = this.level.index;
+
+  if (bests[currentLevelId] === null || bests[currentLevelId] === undefined || bests[currentLevelId] > this.gameState.numMoves) {
+    bests[currentLevelId] = this.gameState.numMoves;
+    saveBests();
+  } 
+
+};
+
+game.getCurrentBest = function() {
+  if (this.level) {
+    return bests[this.level.index];
+  }
+  return null;
+}
+
+game.onResize();
+console.log(game);
 
 
 let bookUrl = "niceLevels.json";
@@ -521,9 +531,6 @@ request.onerror = function (e) {
 request.send();
 
 
-var game = makeGameBase2("gameCanvas", "game");
-
-screenManager.additionalFunctions.game = game;
 
 
 game.openLevel(Level.fromJsonObject(
