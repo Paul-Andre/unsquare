@@ -30,12 +30,19 @@ function makeGameBase2(canvasId, divId) {
 
   game.onResize = function () {
     //console.log(document.body.offsetWidth, document.body.offsetHeight);
-    canvasVirtualSize = Math.min(window.innerWidth, window.innerHeight, 500);
+    //canvasVirtualSize = Math.min(window.innerWidth, window.innerHeight, 500);
+    canvasVirtualSize = Math.min(this.div.offsetWidth, this.div.offsetHeight, 500);
+
+     // var text = "w.iw " + window.innerWidth + " s.w " + screen.width +" d.iw "+this.div.offsetWidth;
+    // document.getElementById("Debugger").innerText = text;
+    
     canvasSize = canvasVirtualSize * (window.devicePixelRatio || 1);
     canvas.width = canvas.height = canvasSize;
     canvas.style.width = canvas.style.height = canvasVirtualSize + "px";
     this.draw();
   };
+
+  game.displayLevelGui = function(){};
 
   // This is central to both editor and game
   game.openLevel = function (level) {
@@ -45,17 +52,7 @@ function makeGameBase2(canvasId, divId) {
 
     mouseStart.pressed = false;
 
-    var a = this.div.getElementsByClassName("finishedLevel")[0];
-    console.log(a)
-    a.style.display = "none";
-
-    document.getElementById("TextShower").innerText = level.text;
-
-
-    let par = vector_sum(level.solutionVector);
-    //if (level.solutionType == "gaussian" || level.solutionType == "mixed")
-    
-    this.div.getElementsByClassName("parContent")[0].innerText = par + " "+level.solutionType;
+    this.displayLevelGui(level);
 
   };
 
@@ -68,6 +65,7 @@ function makeGameBase2(canvasId, divId) {
     mouseStart.pressed = true;
 
 
+    // One of the rare things that it might make sense to overwrite?
     var a = game.div.getElementsByClassName("finishedLevel")[0];
     // console.log(a)
     a.style.display = "none";
@@ -143,12 +141,11 @@ function makeGameBase2(canvasId, divId) {
         }
       }
       game.draw()
+      if (game.isFinished()) {
+        game.finishedLevel()
+      }
     }
-  };
 
-  game.undo = function () {
-    this.gameState.undo();
-    this.draw();
   };
 
   // Gets the coordinates of the touch/mouse relative to the canvas element.
@@ -308,7 +305,8 @@ https://developer.mozilla.org/en-US/docs/Web/API/Element/setPointerCapture#javas
   game.updateGui = function () {
 
     if (game.isFinished()) {
-      game.finishedLevel()
+      var a = this.div.getElementsByClassName("finishedLevel")[0];
+      a.style.display = "block";
     }
 
     if (this.gameState){
@@ -385,7 +383,9 @@ https://developer.mozilla.org/en-US/docs/Web/API/Element/setPointerCapture#javas
 
   game.onShow = function () {
     hidden = false;
-    game.draw();
+    document.body.style.zoom = '100%';
+    this.draw();
+    this.onResize();
   };
 
   game.onHide = function () {
@@ -425,15 +425,34 @@ game.isFinished = function() {
 
 game.finishedLevel = function () {
 
-  var a = this.div.getElementsByClassName("finishedLevel")[0];
-  a.style.display = "block";
 
   let currentLevelId = this.level.index;
+
+
+  let oldSum = vector_sum(this.level.solutionVector);
+
+  console.log(this.gameState.runningSolution);
+
+  //TODO (not sure if it's an add or a subtract) (but it's the same thing mod 2)
+  let newSolution = vector_add(this.level.solutionVector, this.gameState.runningSolution);
+  vector_simplify_arithmetic(newSolution, level_get_arithmetic(this.level));
+  let newSum = vector_sum(newSolution)
+
+  if (newSum < oldSum) {
+    this.level.solutionVector = newSolution;
+    this.level.solutionType = "manual";
+    save_editor_book(current_book);
+    
+  }
+
 
   if (bests[currentLevelId] === null || bests[currentLevelId] === undefined || bests[currentLevelId] > this.gameState.numMoves) {
     bests[currentLevelId] = this.gameState.numMoves;
     saveBests();
   } 
+
+  this.displayLevelGui(this.level);
+  this.updateGui();
 
 };
 
@@ -444,11 +463,41 @@ game.getCurrentBest = function() {
   return null;
 }
 
+game.displayLevelGui = function(level) {
+
+  var a = this.div.getElementsByClassName("finishedLevel")[0];
+  console.log(a)
+  a.style.display = "none";
+
+  document.getElementById("TextShower").innerText = level.text;
+  let par = vector_sum(level.solutionVector);
+  //if (level.solutionType == "gaussian" || level.solutionType == "mixed")
+
+  this.div.getElementsByClassName("parContent")[0].innerText = par
+
+    // + " "+level.solutionType;
+  ;
+
+};
+
+game.undo = function () {
+  this.gameState.undo();
+  this.draw();
+};
+
+
 game.onResize();
 console.log(game);
 
 
-let bookUrl = "niceLevels.json";
+
+
+
+
+
+
+
+let bookUrl = "2023_sept_5.json";
 
 //https://stackoverflow.com/a/35294675
 let request = new XMLHttpRequest();
@@ -457,8 +506,10 @@ request.open("GET", bookUrl, true);
 var levels;
 var bests = [null];
 
+var bests_lsk = bookUrl + "_bests";
+
 function saveBests() {
-  localStorage.setItem("bests", JSON.stringify(bests));
+  localStorage.setItem(bests_lsk, JSON.stringify(bests));
 }
 
 function asdf(a,b) {
@@ -490,7 +541,7 @@ request.onload = function () {
     // Success!
 
 
-    let data = JSON.parse(request.responseText);
+    let data = JSON.parse(request.responseText, book_reviver);
 
 
     // let patch_pars = [1,2,2,2,3,4,3,4,3,3,4,3,2,3,4,4,6,5,5,3,3,4,5,5,6,5,13,13,8,6,5,12,9];
@@ -503,19 +554,18 @@ request.onload = function () {
     // console.log(JSON.stringify(data))
 
 
-    levels = data.levels;
+    // alert(data)
+    current_book = data;
 
     // Ok... kinda weird and stupid, but... eh...
     var hash = cyrb53( request.responseText, 0);
 
 
-    bests = JSON.parse(localStorage.getItem("bests"));
-
-    if (localStorage.getItem("levels_hash") == hash) {
-      bests = JSON.parse(localStorage.getItem("bests"));
+    if (localStorage.getItem(bookUrl+"_levels_hash") == hash && localStorage.getItem(bests_lsk)) {
+      bests = JSON.parse(localStorage.getItem(bests_lsk));
     } else {
-      localStorage.setItem("levels_hash", hash);
-      bests = Array(levels.length).fill(null);
+      localStorage.setItem(bookUrl+"_levels_hash", hash);
+      bests = Array(data.levels.length).fill(null);
       saveBests();
     }
 
@@ -537,22 +587,24 @@ game.openLevel(Level.fromJsonObject(
   {
     "colorScheme": "BW",
     "tileShape": "square",
+    // "tiles": [
+    //   [1, 1, 1, 1, 1, 1],
+    //   [1, 2, 2, 2, 2, 1],
+    //   [1, 2, 2, 2, 2, 1],
+    //   [1, 2, 2, 2, 2, 1],
+    //   [1, 2, 2, 2, 2, 1],
+    //   [1, 1, 1, 1, 1, 1]
+    // ],
     "tiles": [
-      [1, 1, 1, 1, 1, 1],
-      [1, 2, 2, 2, 2, 1],
-      [1, 2, 2, 2, 2, 1],
-      [1, 2, 2, 2, 2, 1],
-      [1, 2, 2, 2, 2, 1],
-      [1, 1, 1, 1, 1, 1]
+      [1, 1, 1, 1 ],
+      [1, 2, 2, 1 ],
+      [1, 2, 2, 1 ],
+      [1, 1, 1, 1 ],
+      
     ],
     "par": 1,
     "index": 0,
-    "text": "Pull from one corner of the black square to the other.",
-    "solution": [{
-      "x": 1,
-      "y": 1,
-      "size": 4
-    }]
+    // "text": "Pull from one corner of the black square to the other.",
 
   }
 ), function(){},

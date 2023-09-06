@@ -310,6 +310,12 @@ vector<int> branchAndBound(vector<int> best, const vector<vector<int>> &kernel) 
         best = current;
         bestScore = score;
         cerr << "Found solution " << bestScore <<endl;
+
+        for(int a:best) {
+          cerr<<a;
+        }
+        cerr<<endl;
+
       }
       return;
     }
@@ -321,37 +327,43 @@ vector<int> branchAndBound(vector<int> best, const vector<vector<int>> &kernel) 
 
 
 
-      int minPotential = 0;
-      bool atLeastOneCanChange = false;
+    int minPotential = 0;
+    bool atLeastOneCanChange = false;
 
-      for (int j=0; j<m; j++) {
-        if (!overlapCounts[j]) {
-          minPotential += current[j];
-        } else if (current[j]) {
-          atLeastOneCanChange = true;
+    for (int j=0; j<m; j++) {
+      if (!overlapCounts[j]) {
+        minPotential += current[j];
+      } else if (current[j]) {
+        atLeastOneCanChange = true;
+      }
+    }
+
+    if (!atLeastOneCanChange) {
+      int score = sumVec(current);
+      if (score < bestScore) {
+        best = current;
+        bestScore = score;
+        cerr << "Found (via atLeastOneCanChange) solution " << bestScore <<endl;
+
+        for(int a:best) {
+          cerr<<a;
         }
-      }
+        cerr<<endl;
 
-      if (!atLeastOneCanChange) {
-        int score = sumVec(current);
-        if (score < bestScore) {
-          best = current;
-          bestScore = score;
-          cerr << "Found (via atLeastOneCanChange) solution " << bestScore <<endl;
-        }
-        return;
       }
+      return;
+    }
 
-      // The +1 is because any added kernel vector will cover at least 1 location where current is zero
-      if (minPotential + 1>= bestScore) {
-        return;
-      }
+    // The +1 is because any added kernel vector will cover at least 1 location where current is zero
+    if (minPotential + 1>= bestScore) {
+      return;
+    }
 
-      for (int j=0; j<m; j++) {
-        if (kernel[i][j] != 0) {
-          overlapCounts[j]--;
-        }
+    for (int j=0; j<m; j++) {
+      if (kernel[i][j] != 0) {
+        overlapCounts[j]--;
       }
+    }
 
     {
       rec(i+1);
@@ -360,11 +372,11 @@ vector<int> branchAndBound(vector<int> best, const vector<vector<int>> &kernel) 
       current ^= kernel[i];
     }
 
-      for (int j=0; j<m; j++) {
-        if (kernel[i][j] != 0) {
-          overlapCounts[j]++;
-        }
+    for (int j=0; j<m; j++) {
+      if (kernel[i][j] != 0) {
+        overlapCounts[j]++;
       }
+    }
 
   };
 
@@ -414,6 +426,8 @@ int main() {
 
   vector<vector<int>> inversions;
   vector<int> areas;
+
+  /*
   for (int s=2; s<=m && s<=n; s++) {
   //for (int s=min(m, n); s>=2; s--) {
     for(int i=0; i<n; i++) {
@@ -433,6 +447,29 @@ int main() {
         areas.push_back(s*s);
       }
     }
+  }
+  */
+  {
+    auto &operations = inversions;
+
+    int w = m;
+    int h = n;
+    for (int i=0; i<w; i++) {
+      for (int j=0; j<h; j++) {
+        for (int s=2; i+s<=w && j+s<=h; s++) {
+          //let arr = new Array(w*h).fill(0);
+          vector<int> arr(w*h, 0);
+          for (int ii=0; ii<s; ii++) {
+            for (int jj=0; jj<s; jj++) {
+              int x = i+ii;
+              int y = j+jj;
+              arr[x + y*w] = 1;
+            }
+          }
+          operations.push_back(arr);
+        }
+      }
+  }
   }
 
   vector<vector<int>> mat(n*m, vector<int>(inversions.size()));
@@ -465,8 +502,11 @@ int main() {
 
     printKernel(kernel);
 
+    cerr <<endl;
+    cerr << "asdfasdfa" << kernel.size() <<endl;
     //kernel = reduceKernelGreedy(kernel);
-    kernel = reduceKernelGreedy2(kernel);
+    //
+    kernel = reduceKernelGreedy(kernel);
     cerr <<"simplified:"<< endl;
 
     printKernel(kernel);
@@ -482,8 +522,14 @@ int main() {
       solution = randomlyImprove(solution, kernel);
       cerr << "after randomly improving " << sumVec(solution) << endl;
 
-    /* solution = branchAndBound(solution, kernel); */
-    /* cerr << "after branch and bound " << sumVec(solution) << endl; */
+    solution = branchAndBound(solution, kernel);
+    cerr << "after branch and bound " << sumVec(solution) << endl;
+
+
+    for(int a:solution) {
+      cerr<<a;
+    }
+    cerr<<endl;
 
     }
 

@@ -76,6 +76,10 @@ section {
   /* transform: translate(-50%, 0); */
 }
 
+section#instructions p {
+  line-height: 1.2;
+  margin-bottom: 0.5em;
+}
 /* section.show { */
 /* 	opacity: 1; */
 /* 	z-index: 5; */
@@ -248,4 +252,25 @@ section header {
 }
 .bookInfoContainer .bookId {
   opacity: 50%;
+}
+
+.level_icon {
+    display: inline-block;
+    position: relative;
+}
+
+.level_icon_image {
+  vertical-align: top;
+}
+
+.level_icon_par {
+    position: absolute;
+    bottom: 0px;
+    right: 0px;
+    line-height: 1;
+    /* font-size: 12pt; */
+    margin-bottom: 2px;
+    margin-right: 4px;
+    font-weight: 700;
+    color: #c918c9;
 }

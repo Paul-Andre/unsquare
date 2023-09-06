@@ -83,18 +83,30 @@ function compute_operations_for_level(level) {
 //     }
 //   }
 // }
+//
+
+function vector_add(a, b) {
+  assert(a.length == b.length);
+  let c = new Array(a.length).fill(0);
+  for (let i=0; i<a.length; i++) {
+    c[i] = a[i]+b[i];
+  }
+  return c;
+}
 
 function vector_self_add(self, other) {
   assert(self.length == other.length);
   for (let i=0; i<self.length; i++) {
     self[i] += other[i];
   }
+  return self;
 }
 function vector_self_sub(self, other) {
   assert(self.length == other.length);
   for (let i=0; i<self.length; i++) {
     self[i] -= other[i];
   }
+  return self;
 } 
 function vector_apply_modulus(self, modulus) {
   for (let i=0; i<self.length; i++) {
@@ -368,15 +380,26 @@ function level_get_arithmetic(level) {
   return level.colorScheme.arithmetic;
 }
 
-function level_check_solution(level) {
-  let target = get_level_tiles_vector(level);
-  let operations = compute_operations_for_level(level);
+function level_check_solution(level, solution=null) {
+  try {
+    if (solution===null) {
+      solution = level.solutionVector;
+    }
+    let target = get_level_tiles_vector(level);
+    let operations = compute_operations_for_level(level);
 
-    let reach = vector_multiply_matrix(level.solutionVector, operations)
-  vector_simplify_arithmetic(reach, level_get_arithmetic(level));
-  //console.log(reach, target);
+    let reach = vector_multiply_matrix(solution, operations)
+    vector_simplify_arithmetic(reach, level_get_arithmetic(level));
+    //console.log(reach, target);
 
-  return vector_equal(target, reach);
+    return vector_equal(target, reach);
+  }
+
+  catch {
+    // XXX: here I check if they do assertion error
+    return false;
+
+  }
 
 }
 

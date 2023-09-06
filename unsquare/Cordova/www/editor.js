@@ -44,6 +44,26 @@ editor.createUndoState = function(move) {
     }
 }
 
+editor.submitSolution = function() {
+
+  let sol_string = window.prompt("Solution in 01010101010 format");
+  let sol = Array.from(sol_string).map( (x) => Number(x));
+  console.log(sol);
+
+  this.updateLevelInfo();
+  let check = level_check_solution(this.level, sol);
+  if (check) {
+    editor.saveStateForUndo();
+    this.level.solutionVector = sol;
+    this.level.solutionType = "submitted";
+
+    this.initializeTiles(this.level);
+  } else {
+    alert("Solution not satisfactory");
+  }
+
+}
+
 editor.postApplyMove = function() {
   editor.updateLevelInfo();
   if (this.level.solutionType == "reverse" || this.level.solutionType == "confirmed") {
@@ -97,6 +117,13 @@ editor.promptSize = function () {
 
       }
       this.level.tiles = grid;
+
+      let operations = compute_operations_for_level(this.level);
+      let m = operations.length;
+      
+      this.level.solutionVector = new Array(m).fill(0);
+      this.level.solutionType = "confirmed";
+
       this.initializeTiles(this.level);
       //this.tiles = grid;
     }

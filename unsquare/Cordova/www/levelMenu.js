@@ -7,6 +7,10 @@ levelMenu.openBook = function (book) {
 };
 
 function createLevelIcon(level) {
+  return createLevelIconCanvas(level);
+}
+
+function createLevelIconCanvas(level) {
   var icon = document.createElement("canvas");
   icon.style.width = "55px";
   icon.style.height = "55px";
@@ -16,14 +20,35 @@ function createLevelIcon(level) {
   return icon;
 }
 
+
+
+  
+
 levelMenu.createLevelInfo = function (level) {
-  let icon = createLevelIcon(level);
+
+  let element = htmlStringToElement( `<div class="level_icon">
+  <canvas class="level_icon_image levelIcon"> </canvas>
+  <div class="level_icon_par"> </div>
+  </div>
+  `);
+
+  let icon = element.querySelector(".level_icon_image");
+  icon.style.width = "55px";
+  icon.style.height = "55px";
+  icon.width = 55 * window.devicePixelRatio;
+  icon.height = 55 * window.devicePixelRatio;
+  drawIcon(level, icon);
+
+
   icon.className = "levelIcon";
 
-  icon.level = level;
+  element.level = level;
 
-  icon.onclick = levelMenu.onIconClick;
+  element.onclick = levelMenu.onIconClick;
 
+  let par_display = element.querySelector(".level_icon_par");
+
+  par_display.innerText = vector_sum(level.solutionVector);
 
   if (IS_EDITOR) {
     if (level.isIcon) {
@@ -32,7 +57,7 @@ levelMenu.createLevelInfo = function (level) {
   }
 
 
-  return icon;
+  return element;
   // TODO: add classes based on 
 };
 
@@ -124,10 +149,13 @@ if (IS_EDITOR) {
     this.saveBook();
   };
 
-  levelMenu.displayBookJson = function () {
-    prompt(
-      "",
-      JSON.stringify(this.book, book_replacer)
+  levelMenu.displayBookJson = async function () {
+    let s = 
+      JSON.stringify(this.book, book_replacer);
+
+      await navigator.clipboard.writeText(s);
+    alert(
+      "Saved to clipboard",
     );
   };
 
@@ -146,6 +174,19 @@ if (IS_EDITOR) {
     levelMenu.selectingIcon = levelMenu.selectingIcon == false;
     levelMenu.container.classList.toggle("selectingIcon");
   };
+
+}
+
+levelMenu.changeBookTitle = function () {
+  let new_title = prompt(
+    "Set book title",
+    this.book.title,
+  );
+
+  if (new_title) {
+    this.book.title = new_title;
+  }
+  save_editor_book(this.book);
 
 }
 

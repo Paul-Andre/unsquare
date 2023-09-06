@@ -36,7 +36,9 @@ function makeGameBase(canvasId, divId /*unused*/)  {
 
   game.onResize = function () {
     //console.log(document.body.offsetWidth, document.body.offsetHeight);
-    canvasVirtualSize = Math.min(window.innerWidth, window.innerHeight, 500);
+    //canvasVirtualSize = Math.min(window.innerWidth, window.innerHeight, 500);
+    canvasVirtualSize = Math.min(this.div.offsetWidth, this.div.offsetHeight, 500);
+
     canvasSize = canvasVirtualSize * (window.devicePixelRatio || 1);
     canvas.width = canvas.height = canvasSize;
     canvas.style.width = canvas.style.height = canvasVirtualSize + "px";
@@ -77,7 +79,9 @@ function makeGameBase(canvasId, divId /*unused*/)  {
     this.updateGui();
   }
 
+  game.displayLevelGui = function(){};
   
+
   game.openLevel = function (level) {
 
     this.undoList = [];
@@ -88,6 +92,8 @@ function makeGameBase(canvasId, divId /*unused*/)  {
     this.numMoves = 0;
 
     mouseStart.pressed = false;
+
+    this.displayLevelGui(level);
   };
 
   // These should be in the base file
@@ -111,9 +117,11 @@ function makeGameBase(canvasId, divId /*unused*/)  {
       );
 
       this.tileStates.forEach(function (v) {
+        v.oldSelected = v.selected;
         v.selected = false;
       });
 
+      
       this.level.tileShape.forTilesInMove(
         this.tileStates,
         potentialMove,
@@ -121,6 +129,24 @@ function makeGameBase(canvasId, divId /*unused*/)  {
           v.selected = true;
         }
       );
+
+
+      var different = false;
+      this.tileStates.forEach(function (v) {
+        if (v.selected != v.oldSelected) {
+          different = true;
+        }
+      })
+
+      if (different) {
+        if (navigator.vibrate) {
+          navigator.vibrate(2);
+        }
+      }
+      //game.drawCanvas()
+      game.draw()
+
+
     }
   };
 
@@ -152,6 +178,7 @@ function makeGameBase(canvasId, divId /*unused*/)  {
   game.applyMove = function (move, action) {
     if (move != null) {
       this.saveStateForUndo(move);
+
       this.level.tileShape.forTilesInMoveSet(this.tiles, move, action);
       let vector = this.level.tileShape.moveToVector(this.tiles, move)
       let opIndex = this.inverseOperations.get(vector.join(""));
@@ -193,6 +220,10 @@ function makeGameBase(canvasId, divId /*unused*/)  {
           v.transitionState = 0;
         });
       }
+      if (navigator.vibrate) {
+        navigator.vibrate(3);
+      }
+      game.draw();
     }
   };
 
@@ -224,6 +255,7 @@ function makeGameBase(canvasId, divId /*unused*/)  {
     };
   }
 
+  if (false) {
   function createTouchListener(fn) {
     return function (event) {
       if (event.changedTouches) {
@@ -268,6 +300,63 @@ function makeGameBase(canvasId, divId /*unused*/)  {
     "mouseup",
     createMouseListener(game.doMouseUp.bind(game))
   );
+  }else{
+    function beginSliding(e) {
+      console.log("begin", e)
+      var coords = getCoordinates(e);
+      game.doMouseDown(coords.x, coords.y);
+
+      //canvas.onpointermove = slide;
+      //canvas.setPointerCapture(e.pointerId);
+
+
+      return cancelEvent(event);
+    }
+
+    function slide(e) {
+      // console.log("slide", e)
+      var coords = getCoordinates(e);
+      game.doMouseMove(coords.x, coords.y);
+
+      //canvas.setPointerCapture(e.pointerId);
+
+      return cancelEvent(event);
+    }
+
+    function stopSliding(e) {
+      console.log("asdfasd")
+      var coords = getCoordinates(e);
+      game.doMouseUp(coords.x, coords.y);
+
+
+      //canvas.releasePointerCapture(e.pointerId);
+      return cancelEvent(event);
+
+    }
+
+    // canvas.onpointerdown = beginSliding;
+    // canvas.onpointermove = slide;
+    // canvas.onpointerup = stopSliding;
+
+    canvas.addEventListener(
+      "pointerdown",
+      beginSliding,
+    );
+
+    canvas.addEventListener(
+      "pointermove",
+      slide,
+
+    );
+    canvas.addEventListener(
+      "pointerup",
+      stopSliding,
+    );
+
+
+
+
+  }
 
   window.addEventListener(
     "resize",
@@ -282,14 +371,20 @@ function makeGameBase(canvasId, divId /*unused*/)  {
   // to make sure we don't requestAnimationFrame if it's already been requested
   var numRequested = 0;
 
-  game.drawCanvas = function() {
+  // The idea is that a 
+
+  game.drawCanvasContinuous = function () {
+
+  }
   
   game.draw = function () {
     if (!hidden && this.tiles) {
       this.level.tileShape.draw_expanded(ctx, this.tiles, this.tileStates, this.level.colorScheme, this.action);
+
       if (numRequested == 0) {
         requestAnimationFrame(function (timeStamp) {
           numRequested--;
+
           var previousTimestamp = game.lastUpdateTimestamp;
           game.tileStates.forEach(function (v) {
             if (v.selected) {
@@ -303,6 +398,7 @@ function makeGameBase(canvasId, divId /*unused*/)  {
                 v.transitionState - (timeStamp - previousTimestamp) / 100
               );
             }
+
           });
           game.lastUpdateTimestamp = timeStamp;
           game.draw();
@@ -314,7 +410,9 @@ function makeGameBase(canvasId, divId /*unused*/)  {
 
   game.onShow = function () {
     hidden = false;
+    document.body.style.zoom = '100%';
     this.draw();
+    this.onResize();
   };
 
   game.onHide = function () {

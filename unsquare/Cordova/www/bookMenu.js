@@ -52,7 +52,7 @@ function load_editor_books() {
     let key = localStorage.key(i);
     if (key.startsWith("editor_book")) {
       let value = localStorage.getItem(key);
-      console.log(value);
+      // console.log(value);
       editor_books.push(JSON.parse(value, book_reviver));
     }
   }
@@ -76,6 +76,14 @@ function book_reviver(key, value) {
     }
     if (value.tileShape == "square") {
       return Level.fromJsonObject(value);
+    }
+    if (value.tiles) {
+      return Level.fromJsonObject(value);
+    }
+    if (value.levels) {
+      for (var i=0; i<value.levels.length; i++) {
+        value.levels[i].index = i;
+      }
     }
   }
   return value;
