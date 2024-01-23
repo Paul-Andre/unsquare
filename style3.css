@@ -11,7 +11,7 @@ html, body {
 body {
   line-height: 1.5;
 }
-input, button, textarea, select {
+input, button, textarea, select, a {
   font: inherit;
 }
 p, h1, h2, h3, h4, h5, h6 {
@@ -105,6 +105,27 @@ button, .levelIcon {
 }
 
 
+.action {
+  background: white;
+
+  margin: 10px 0;
+  padding: 0px 10px;
+  display: inline-block;
+  text-decoration: none;
+  border: solid 2px #9b9b9b;
+  border-radius: 2px;
+  font-size: 150%;
+  /*min-width: 80px;*/
+
+  
+
+
+}
+.action:hover {
+    border: solid 2px #555555;
+}
+
+
 button:hover, .levelIcon:hover {
     background: white;
     border: solid 1px #555555;
@@ -139,7 +160,7 @@ div#iconContainer.deleting .levelIcon {
   position: relative;
 }
 .finishedLevel button {
-  font-size: 300%;
+  font-size: 300%
   display: block;
 }
 
