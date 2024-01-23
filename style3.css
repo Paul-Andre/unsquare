@@ -109,11 +109,11 @@ button, .levelIcon {
   background: white;
 
   margin: 10px 0;
-  padding: 0px 10px;
+  padding: 0.5em 1em;
   display: inline-block;
   text-decoration: none;
   border: solid 2px #9b9b9b;
-  border-radius: 2px;
+  /* border-radius: 10px; */
   font-size: 150%;
   /*min-width: 80px;*/
 
