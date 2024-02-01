@@ -58,7 +58,7 @@
 
         </div>
         <div class="wrapper">
-          <button onclick="IS_EDITOR=false; screenManager.switchTo('game');" type="button">
+          <button onclick="IS_EDITOR=false; screenManager.switchTo('gameLevelMenu');" type="button">
             Play
           </button>
           <button onclick="IS_EDITOR=true; screenManager.switchTo('bookMenu');" type="button">
@@ -164,6 +164,23 @@
         </div>
       </section>
 
+      <section id="gameLevelMenu" class="screen">
+        <div class="header">
+          <div class="IndicContainer" id="statsIndicator"></div>
+          <button onclick="screenManager.goBack();">&#8592; Menu</button>
+          <button onclick="gameLevelMenu.displayBookJson();" style="float:right;">To JSON</button>
+          <button onclick="gameLevelMenu.newLevel();" style="float:right;">Add level</button>
+          <button onclick="gameLevelMenu.toggleDelete();" style="float:right;" class="deleteButton">Delete</button>
+          <button onclick="gameLevelMenu.toggleSelectIcon();" style="float:right;">Select Book Icon</button>
+          <button onclick="gameLevelMenu.changeBookTitle();" style="float:right;">Change Book Title</button>
+        </div>
+
+        <div id="iconContainer" class="content">
+        </div>
+        <div class="footer">
+        </div>
+      </section>
+
       <section id="bookMenu" class="screen">
         <div class="header">
           <h1>Puzzle Books:</h1>
@@ -220,6 +237,7 @@
     <script src="editor.js"></script>
     <script src="activateLevelMenu.js"></script>
     <script src="editorLevelMenu.js"></script>
+    <script src="gameLevelMenu.js"></script>
 
   </body>
 
