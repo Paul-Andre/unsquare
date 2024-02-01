@@ -20,6 +20,12 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: 500;
 }
 
+:root { 
+  --white: #ffffff;
+  --black: #333333;
+  --bg_gray: #d3cfc8;
+}
+
 /* TODO: make proper web font */
 @font-face {
    font-family: 'Source Sans 3';
@@ -35,7 +41,8 @@ h1, h2, h3, h4, h5, h6 {
 body {
 	position: relative;
 	margin: auto;
-	background: silver;
+	background: var(--bg_gray);
+  color: var(--black);
 
   font-family: 'Source Sans 3', sans-serif;
   font-weight: 400;
