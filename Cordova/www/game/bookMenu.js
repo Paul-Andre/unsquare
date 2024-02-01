@@ -118,9 +118,9 @@ bookMenu.showBooks = function () {
 };
 
 bookMenu.openBook = function (book) {
-  levelMenu.openBook(book);
+  editorLevelMenu.openBook(book);
   current_book = book;
-  screenManager.switchTo("levelMenu");
+  screenManager.switchTo("editorLevelMenu");
 };
 
 function create_empty_book() {
