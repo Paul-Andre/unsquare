@@ -52,9 +52,14 @@ function activateLevelMenu(elementId, isEditor) {
 
     element.onclick = levelMenu.onIconClick;
 
-    let par_display = element.querySelector(".level_icon_par");
+    if (isEditor) {
+      let par_display = element.querySelector(".level_icon_par");
+      par_display.innerText = vector_sum(level.solutionVector);
+    } else {
+      // TODO: make it display the status based on best status
 
-    par_display.innerText = vector_sum(level.solutionVector);
+
+    }
 
     if (isEditor) {
       if (level.isIcon) {
