@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+	<meta name="apple-mobile-web-app-capable" content="yes" />
+	<link rel="stylesheet" type="text/css" href="style3.css">
+	<title> Unflip 0.1 </title>
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-GTG52YV9R0"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-GTG52YV9R0');
+  </script>
+
+	<script src="api.js"></script>
+	<script src="Grid.js"></script>
+	<script>
+		var IS_EDITOR = true; /////////whaaaaaa
+	</script>
+	<script src="colorSchemes.js"></script>
+	<script src="tileShapes.js"></script>
+	<script src="square.js"></script>
+	<script src="icon.js"></script>
+	<script src="helpers.js"></script>
+	<script src="screenManager.js"></script>
+	<script src="Sortable.js"></script>
+	<script src="bookMenu.js"></script>
+	<script src="drawing.js"></script>
+	<script src="exportSave.js"></script>
+	<script src="level.js"></script>
+	<script src="gameState.js"></script>
+	<script src="gameBase.js"></script>
+
+      <!-- <script type="text/javascript" src="https://livejs.com/live.js"></script> -->
+
+
+</head>
+
+<body>
+
+	<section id="home" >
+		<div class="header">
+			<h1>
+				Unflip
+			</h1>
+		</div>
+		<div class="wrapper">
+			<button class="toBookMenu" onclick="screenManager.switchTo('bookMenu');" type="button">
+				Play
+			</button>
+			<button class="" onclick="screenManager.switchTo('options');" id="adjustment" type="button">
+				Options
+			</button>
+			<button class="" onclick="screenManager.switchTo('about');" type="button">
+				Credits
+			</button>
+		</div>
+		<div class="footer">
+		</div>
+	</section>
+
+
+	<section id="game" class="screen" style="display:block;">
+
+    <header>
+			<div class="" style="float: left; width: 75%">
+        <h2> Unflip  <span id=""></span> </h2>
+        <h3 id="TextShower" class="textShower"> &zwnj; <span id = "LevelIndicator">Level 1 </span> </h3>
+        <p id="Debugger"> </p>
+			</div>
+			<div style="float: right; width:25%;" class="IndicContainer">
+				<div class="indicator" id="BestIndicator"> best: <span class="bestContent"> </span></div>
+				<!-- <div class="indicator" id="ParIndicator"> par: </div> -->
+        <div class="indicator" id="MovesIndicator"> moves: <span class="movesContent"> </span> </div>
+			</div>
+
+			<div style="clear:both; bottom:0px">
+
+				<!-- <button onclick="screenManager.goBack();" style="float:left">&#8592; Levels</button> -->
+				<!--<button onclick="share();" style="float:left" id="inGameShareButton" > &#9733; Share</button>-->
+				<button onclick="game.restart();" style="float:right;">⟳ Restart</button>
+				<button onclick="game.undo();" style="float:right;">⤺ Undo</button>
+
+			</div>
+		</header>
+
+		<div class="content" >
+      <div class="finishedLevel"  style="display: none;" >
+
+				<!-- <button onclick="game.restart();" >⟳ Restart</button> -->
+
+        <button id="skipButton" onclick="nextLevel();" >Next &#62;</button>
+
+      </div>
+			<canvas id="gameCanvas" class="gameCanvas"  width="30px" height="30px"></canvas>
+		</div>
+
+		<div class="footer">
+        <button id="skipButton" onclick="prevLevel();">&#60; Prev</button>
+        <button id="skipButton" onclick="nextLevel();" style="float:right;">Next &#62;</button>
+		</div>
+	</section>
+
+
+	<section id="editor"  class="screen">
+		<div class="header">
+			<div style="clear:both; bottom:0px">
+				<button onclick="editor.saveAndReturn();" style="float:left">Done</button>
+				<button onclick="screenManager.goBack();" style="float:left">Cancel</button>
+
+				<button onclick="editor.undo();" style="float:right;">Undo</button>
+				<button onclick="editor.clear();" style="float:right;">Clear</button>
+				<button onclick="editor.saveLevel();" style="float:right;">Save</button>
+				<button onclick="editor.promptSize();" style="float:right;">Change size</button>
+				<button onclick="editor.play();" style="float:right;">Play</button>
+				<button onclick="editor.printFlat();" style="float:right;">Print Flat</button>
+			</div>
+		</div>
+		<div class="content">
+			<canvas id="editorCanvas" class="gameCanvas"></canvas>
+		</div>
+	</section>
+
+
+	<section id="levelMenu" class="screen">
+		<div class="header">
+			<div class="IndicContainer" id="statsIndicator"></div>
+			<button onclick="screenManager.goBack();">&#8592; Menu</button>
+			<button onclick="levelMenu.displayBookJson();" style="float:right;">To JSON</button>
+			<button onclick="levelMenu.newLevel();" style="float:right;">Add level</button>
+			<button onclick="levelMenu.toggleDelete();" style="float:right;">Delete</button>
+		</div>
+
+		<div id="iconContainer" class="content">
+		</div>
+		<div class="footer">
+		</div>
+	</section>
+
+
+	<section id="bookMenu" class="screen">
+		<div class="header">
+			<h1>Puzzle Books:</h1>
+		</div>
+		<div id="bookContainer" class="content">
+
+		</div>
+		<div class="footer">
+			<br>
+			<button onclick="displaySaveStr();" style="float:right;">Export save</button>
+			<button onclick="importSave();" style="float:right;">Import save</button>
+
+			<button onclick="bookMenu.newBook();" style="float:right;">Add book</button>
+		</div>
+
+		<!--
+		<button onclick="showReset();"  style="float:right;" > Reset</button>
+		-->
+		<!--
+		<button onclick="share();"  style="float:right;" > Please Share This </button>
+		-->
+	</section>
+
+
+	<script src="game2.js"></script>
+	<script src="editor.js"></script>
+	<script src="levelMenu.js"></script>
+
+</body>
+
+</html>
