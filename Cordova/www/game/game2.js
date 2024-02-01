@@ -475,6 +475,10 @@ game.displayLevelGui = function(level) {
 
   this.div.getElementsByClassName("parContent")[0].innerText = par
 
+  let index = level.index;
+
+  // TODO: properly do this, with this.div or whatever
+  document.getElementById("LevelIndicator").innerText = "Level " + (1+ index);
     // + " "+level.solutionType;
   ;
 
@@ -553,9 +557,6 @@ function nextLevel() {
     game.openLevel(nextLevel, function(){});
 
     game.onShow();
-
-    document.getElementById("LevelIndicator").innerText = "Level " + (1+ index);
-
   }
 }
 
@@ -570,13 +571,9 @@ function prevLevel() {
     index-=1
     var nextLevel = levels[index];
 
-    current_level = nextLevel;
     game.openLevel(nextLevel, function(){});
 
     game.onShow();
-
-    document.getElementById("LevelIndicator").innerText = "Level " + (1+ index);
-
   }
 }
 

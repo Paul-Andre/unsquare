@@ -73,9 +73,6 @@ function activateLevelMenu(elementId, isEditor) {
   };
 
 
-  let current_level = null;
-
-
   // this function is to be called on icons using the onclick event
   // so "this" refers to the icon element, not levelMenu
   levelMenu.onIconClick = function () {
@@ -95,9 +92,10 @@ function activateLevelMenu(elementId, isEditor) {
     } else {
       //let levelObject = Level.fromJsonObject(this.level);
 
-      current_level = this.level;
       if (isEditor) {
         //editor.setBook(this.book);
+
+        // TODO: some kind of callback in order to nicely set level data?
         editor.openLevel(this.level);
         screenManager.switchTo("editor");
       } else {
