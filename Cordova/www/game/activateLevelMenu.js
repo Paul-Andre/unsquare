@@ -20,7 +20,7 @@ function createLevelIconCanvas(level) {
 // The term activate in this sense means to take something that is an html element in the static dom, and to turn and put data in it and or attach listeners, etc
 // And return an object that represents the "conceptual" object of that.
 // TODO: I really need to start using the proper OOP
-function activateLevelMenu(elementId) {
+function activateLevelMenu(elementId, isEditor) {
 
   var levelMenu = {};
 
@@ -56,7 +56,7 @@ function activateLevelMenu(elementId) {
 
     par_display.innerText = vector_sum(level.solutionVector);
 
-    if (IS_EDITOR) {
+    if (isEditor) {
       if (level.isIcon) {
         icon.classList.add("bookIconRepresentative");
       }
@@ -91,7 +91,7 @@ function activateLevelMenu(elementId) {
       //let levelObject = Level.fromJsonObject(this.level);
 
       current_level = this.level;
-      if (IS_EDITOR) {
+      if (isEditor) {
         //editor.setBook(this.book);
         editor.openLevel(this.level);
         screenManager.switchTo("editor");
@@ -123,7 +123,7 @@ function activateLevelMenu(elementId) {
 
   };
 
-  if (IS_EDITOR) {
+  if (isEditor) {
 
     levelMenu.saveBook  = function() {
       save_editor_book(this.book);
