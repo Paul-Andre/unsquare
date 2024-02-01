@@ -125,7 +125,7 @@ button, .levelIcon {
     border: solid 1px #9b9b9b;
     margin: 2px;
     box-shadow: 1px 1px #9b9b9b;
-    color: #181832;
+    color: var(--black);
 }
 
 .levelIcon {
@@ -138,7 +138,7 @@ button:hover, .levelIcon:hover {
     border: solid 1px #555555;
     margin: 2px;
     box-shadow: 1px 1px #555555;
-    color: #181832;
+    color: var(--black);
 }
 
 button:disabled{
@@ -279,5 +279,5 @@ section header {
     margin-bottom: 2px;
     margin-right: 4px;
     font-weight: 700;
-    color: #c918c9;
+    color: var(--black);
 }
