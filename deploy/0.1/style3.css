@@ -1,0 +1,276 @@
+/* reset from https://www.joshwcomeau.com/css/custom-css-reset/ */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+* {
+  margin: 0;
+}
+html, body {
+  height: 100%;
+}
+body {
+  /* line-height: 1.5; */
+  font-size: 20px;
+}
+input, button, textarea, select {
+  font: inherit;
+}
+h1, h2, h3, h4, h5, h6 {
+  overflow-wrap: break-word;
+  font-weight: 500;
+}
+
+/* TODO: make proper web font */
+@font-face {
+   font-family: 'Source Sans 3';
+      src: url('ss3/SourceSans3-Italic-VariableFont_wght.ttf') format('truetype');
+   font-style: italic;
+}
+@font-face {
+   font-family: 'Source Sans 3';
+      src: url('ss3/SourceSans3-VariableFont_wght.ttf') format('truetype');
+   font-style: normal;
+}
+
+body {
+	position: relative;
+	margin: auto;
+	background: silver;
+
+  font-family: 'Source Sans 3', sans-serif;
+  font-weight: 400;
+  font-feature-settings: 
+  'cv01' on, 'cv04' on, 'cv03' on;
+
+}
+
+.screen_container {
+  /* background: red; */
+	position: absolute;
+
+  position: relative;
+
+        width: 500px;
+  max-width: 100%;
+
+  /* top: 50%; */
+  left: 50%;
+  /* transform: translate(-50%, -50%); */
+  transform: translate(-50%, 0);
+  height: 100%;
+
+}
+
+section {
+  /* background: red; */
+	/* position: absolute; */
+
+  /* position: relative; */
+
+        /* width: 500px; */
+  /* max-width: 100%; */
+
+  /* /1* top: 50%; *1/ */
+  /* left: 50%; */
+  /* /1* transform: translate(-50%, -50%); *1/ */
+  /* transform: translate(-50%, 0); */
+}
+
+section#instructions p {
+  line-height: 1.2;
+  margin-bottom: 0.5em;
+}
+/* section.show { */
+/* 	opacity: 1; */
+/* 	z-index: 5; */
+/* 	-webkit-transform: translateX(0px); */
+/* 	-moz-transform: translateX(0px); */
+/* 	transform: translateX(0px); */
+/* } */
+
+section#game header {
+  min-height: 100px;
+}
+
+section#levelMenuScreen .header {
+	float: left;
+	width: 100%;
+	height:75px;
+	top:0 ;
+}
+
+/** ---------------Containers-------------- **/
+
+
+section#bookMenuScreen .header,
+section#aboutScreen .header,
+section#resetScreen .header {
+	float: left;
+	width: 100%;
+}
+
+/** ------------end of containers------------- **/
+
+/** Buttons **/
+
+button, .levelIcon {
+    background: white;
+    border: solid 1px #9b9b9b;
+    margin: 2px;
+    box-shadow: 1px 1px #9b9b9b;
+    color: #181832;
+}
+
+.levelIcon {
+	vertical-align: top;
+}
+
+
+button:hover, .levelIcon:hover {
+    background: white;
+    border: solid 1px #555555;
+    margin: 2px;
+    box-shadow: 1px 1px #555555;
+    color: #181832;
+}
+
+button:disabled{
+	background: #aaa;
+}
+
+div#iconContainer.deleting .levelIcon {
+	border: solid 2px red;
+}
+
+div#iconContainer.selectingIcon .levelIcon {
+	border: dashed 2px lime;
+}
+
+.levelIcon.bookIconRepresentative {
+	border: solid lime;
+}
+
+.gameCanvas {
+  /* background-color: red; */
+
+  touch-action: none;
+}
+
+.finishedLevel {
+  position:absolute;
+
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+}
+.content {
+  position: relative;
+  clear: both;
+  /* background: red */
+}
+
+.finishedLevel button {
+  font-size: 300%;
+  display: block;
+}
+
+.title {
+  font-size: 1.2em;
+  font-weight: 500;
+}
+
+#LevelIndicator {
+  font-size: 1.2em;
+  margin-left: 0.1em;
+
+}
+
+.IndicContainer {
+  line-height: 1.2;
+  /* padding: 8px; */
+  
+}
+
+section header {
+  margin-left: 4px;
+  margin-right: 4px;
+  margin-top: 4px;
+}
+
+.textShower {
+  font-style: italic;
+  margin-top: 0.2em;
+  margin-right: 0.2em;
+  line-height: 1.1;
+  font-size: 0.9em;
+}
+
+
+
+.variant_container {
+  position: relative;
+  height: 100%;
+  width: 100%;
+}
+
+.variant_container > * {
+  /* background: red; */
+  display: none;
+  position: absolute;
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.variant_shown {
+  display: block;
+}
+
+.bookSummary {
+  background: darkgray;
+  margin-top: 2px;
+  margin-bottom: 2px;
+  /* clear: both; */
+    border: solid 1px darkgray;
+}
+.bookSummary:hover {
+    border: solid 1px #555555;
+
+
+}
+
+.bookSummary canvas {
+  /* float: left; */
+}
+.bookIconContainer {
+  display: inline-block;
+}
+.bookInfoContainer {
+  display: inline-block;
+}
+.bookInfoContainer .bookId {
+  opacity: 50%;
+}
+
+.level_icon {
+    display: inline-block;
+    position: relative;
+}
+
+.level_icon_image {
+  vertical-align: top;
+}
+
+.level_icon_par {
+    position: absolute;
+    bottom: 0px;
+    right: 0px;
+    line-height: 1;
+    /* font-size: 12pt; */
+    margin-bottom: 2px;
+    margin-right: 4px;
+    font-weight: 700;
+    color: #c918c9;
+}

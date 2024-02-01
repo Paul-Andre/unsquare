@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+	<meta name="apple-mobile-web-app-capable" content="yes" />
+	<link rel="stylesheet" type="text/css" href="style.css">
+	<title> Unsquare </title>
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-GTG52YV9R0"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-GTG52YV9R0');
+  </script>
+
+	<script src="api.js"></script>
+	<script src="binaryData.js"></script>
+	<script src="Book1.js"></script>
+	<script src="Book2.js"></script>
+	<script src="colors.js"></script>
+	<script src="helpers.js"></script>
+	<script src="drawing.js"></script>
+	<script src="tutorial.js"></script>
+	<script src="exportSave.js"></script>
+	<script src="bookMenu.js"></script>
+</head>
+
+
+<body style="background-color:silver;" class="no-touch">
+
+	<div id="allContainer">
+
+		<div id="gameDiv" style="display:none;">
+			<div class="gameHeader">
+				<div style="float: left; width: 75%">
+					<h2 id="LevelIndicator">Level ? </h2>
+					<h3 id="TextShower" class="textShower"> &zwnj; </h3>
+				</div>
+				<button onclick="game.displayTutorial();" style="float:right;">?</button>
+				<div style="float: right; width:25%;" class="IndicContainer">
+					<div class="Indicator" id="BestIndicator"></div>
+					<div class="Indicator" id="ParIndicator"></div>
+					<div class="Indicator" id="MovesIndicator"></div>
+				</div>
+
+				<div style="clear:both; bottom:0px">
+					<button onclick="toMenu();" style="float:left">&#8592; Levels</button>
+					<!--<button onclick="share();" style="float:left" id="inGameShareButton" > &#9733; Share</button>-->
+					<button id="skipButton" onclick="game.skip();" style="float:right;">Skip</button>
+					<button onclick="game.restart();" style="float:right;">Restart</button>
+					<button onclick="game.undo();" style="float:right;">Undo</button>
+				</div>
+			</div>
+			<canvas id="gameCanvas" class="gameCanvas"></canvas>
+			<div class="mobileBannerContainer" id="mobileGameAd"></div>
+		</div>
+
+
+		<div id="editorDiv" style="display:none;">
+			<div style="float: left; width: 75%">
+				<h1 id="LevelIndicator">Level ? </h1>
+				<h3 class="textShower"> &zwnj; </h3>
+			</div>
+			<div style="float: right; width:25%;">
+				<br/>
+				<p id="EditorMovesIndicator"></p>
+				<p id="ParIndicator"></p>
+			</div>
+			<div style="clear:both; bottom:0px">
+				<button onclick="toMenu();" style="float:left">Menu</button>
+				<button onclick="editor.restart();" style="float:right;">Restart</button>
+				<button onclick="editor.undo();" style="float:right;">undo</button>
+				<button onclick="editor.clearMoves();" style="float:right;">Moves to 0</button>
+				<button onclick="editor.saveLevel();" style="float:right;">Save</button>
+				<form>
+					Reverse:
+					<input type="checkbox" id="reverseCheckbox" onClick="editor.toggleReverse();">
+				</form>
+				<a></a>
+			</div>
+			<canvas width="440" height="440" id="editorCanvas" class="gameCanvas"></canvas>
+		</div>
+
+
+		<div id="levelMenuDiv" style="display:none;">
+			<div class="levelMenuHeader">
+				<h1 id="bookName">Levels:</h1>
+
+				<div class="IndicContainer" id="statsIndicator">
+					<div class="Indicator" id="ExtraMovesIndicator"></div>
+					<div class="Indicator" id="PercentCompletion"></div>
+					<div class="Indicator" id="PercentPar"></div>
+				</div>
+
+				<button onclick="toBookMenu();">&#8592; Menu</button>
+				<!--
+				<button onclick="share();" style="float:right;" >
+					&#9733; Share This
+				</button>
+				-->
+			</div>
+
+			<div id="iconContainer">
+			</div>
+		</div>
+
+
+		<div id="bookMenuDiv" style="display:none;" class="smallDiv">
+			<div style="float: left; width: 100%">
+				<h1>Puzzle Books:</h1>
+			</div>
+			<div id="bookIconContainer">
+			</div>
+			<button onclick="showAbout();">About</button>
+			<button onclick="bookMenu.displayTutorial();" style="float:right;">Instructions</button>
+			<br>
+			<button onclick="displaySaveStr();" style="float:right;">Export save</button>
+			<button onclick="importSave();" style="float:right;">Import save</button>
+			<h3> This game is currently under development. </h3>
+
+			<!--
+			<button onclick="showReset();"  style="float:right;" > Reset</button>
+			-->
+			<!--
+			<button onclick="share();"  style="float:right;" > Please Share This </button>
+			-->
+		</div>
+
+		<div id="aboutDiv" style="display:none;" class="smallDiv">
+			<div style="float: left; width: 100%">
+				<h1>About Unsquare:</h1>
+			</div>
+			<h3>
+				This game was first developed by Paul-Andre Henegar
+				(paul-andre.henegar@mail.mcgill.ca)
+				during the Summer of 2013.
+				<br/>
+				It is now being considerably reworked by Paul-Andre Henegar and Youri Tamitegama
+				(youri.tamitegama@mail.mcgill.ca)
+			</h3>
+			<button onclick="toBookMenu();">&#8592; Menu</button>
+		</div>
+
+
+		<div id="resetDiv" style="display:none;" class="smallDiv">
+			<div style="float: left; width: 100%">
+				<h1>Reset game?</h1>
+			</div>
+			<h3>
+				Are you sure you want to reset this game for whatever reason?<br/>
+			</h3>
+			<button onclick="toBookMenu();">&#8592; Cancel</button>
+			<button onclick="resetGame();" style="float:right;">Yes, reset game</button>
+		</div>
+
+
+		<div id="loadingScreenDiv" class="smallDiv">
+			<div style="float: left; width: 100%">
+				<h1 id="bookName" style="font-family: Times New Roman, Serif; font-style:italic; font-weight:normal;">Loading...</h1>
+			</div>
+		</div>
+
+		<div id="tutorialDiv" style="display:none;" class="smallDiv">
+			<h1>Instructions</h1>
+			<h3>The goal of the game is to clear all cells.
+				<br/>
+				Select a square area of 2x2 cells or more to flip the color of the cells.
+				<br/>
+				<img src="tuto.png" style="margin:18px;width:80%;height:80%;">
+				<br/>
+			</h3>
+			<!-- Need to change font; need new image; need images for invalid moves -->
+			<button onclick="tutorial.return();" style="float:left;">&#8592; Back</button>
+		</div>
+
+	</div>
+	<!-- End of allContainer -->
+
+
+	<script src="sizes.js"></script>
+	<script src="levelDataManager.js"></script>
+	<script src="levelStats.js"></script>
+	<script src="game.js"></script>
+	<script src="levelMenu.js"></script>
+	<script src="miscInterface.js"></script>
+	<script>
+		dataManager.prepareAllBooks();
+	</script>
+
+</body>
+
+</html>
