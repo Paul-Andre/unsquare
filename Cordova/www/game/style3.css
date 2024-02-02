@@ -23,6 +23,7 @@ h1, h2, h3, h4, h5, h6 {
 :root { 
   --white: #ffffff;
   --black: #333333;
+  --border_gray: #c1bbaf;
   --bg_gray: #d3cfc8;
 }
 
@@ -115,7 +116,7 @@ section#resetScreen .header {
 
 button, .levelIcon {
     background: white;
-    border: solid 2px #bbb;
+    border: solid 2px var(--border_gray);
     margin: 2px;
     /*box-shadow: 1px 1px #9b9b9b;*/
     color: var(--black);
@@ -128,7 +129,7 @@ button, .levelIcon {
 
 button:hover, .levelIcon:hover {
     background: white;
-    border: solid 2px #555;
+    border: solid 2px #6b6762;
     margin: 2px;
     /*box-shadow: 1px 1px #555555;*/
     color: var(--black);
