@@ -13,17 +13,8 @@ let request = new XMLHttpRequest();
 request.open("GET", bookUrl, true);
 
 var levels;
-var bests = [null];
 
-var bests_lsk = bookUrl + "_bests";
 
-function saveBests() {
-  localStorage.setItem(bests_lsk, JSON.stringify(bests));
-}
-
-function asdf(a,b) {
-  return a;
-}
 
 // Some really weird bug made me place this here instead of a different file
 // TODO: ????
@@ -45,6 +36,20 @@ function cyrb53(str, seed){
 };
 
 
+// TODO: put these all inside a scope or object or something
+// Reminder: "best" in this case means the user's best
+function getLskForBestNumMoves(level) {
+  return level.getFullIdentifier() + " bestNumMoves";
+}
+function getBestNumMoves(level) {
+  let sol = localStorage.getItem(getLskForBestNumMoves(level));
+  if (sol === null) return null;
+  return Number(sol);
+}
+function setBestNumMoves(level, num) {
+  localStorage.setItem(getLskForBestNumMoves(level), num);
+}
+
 request.onload = function () {
   if (request.status >= 200 && request.status < 400) {
     // Success!
@@ -65,18 +70,6 @@ request.onload = function () {
 
     // alert(data)
     current_book = data;
-
-    // Ok... kinda weird and stupid, but... eh...
-    var hash = cyrb53( request.responseText, 0);
-
-
-    if (localStorage.getItem(bookUrl+"_levels_hash") == hash && localStorage.getItem(bests_lsk)) {
-      bests = JSON.parse(localStorage.getItem(bests_lsk));
-    } else {
-      localStorage.setItem(bookUrl+"_levels_hash", hash);
-      bests = Array(data.levels.length).fill(null);
-      saveBests();
-    }
 
     gameLevelMenu.openBook(current_book);
 

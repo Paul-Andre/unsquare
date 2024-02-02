@@ -424,11 +424,6 @@ game.isFinished = function() {
 }
 
 game.finishedLevel = function () {
-
-
-  let currentLevelId = this.level.index;
-
-
   let oldSum = vector_sum(this.level.solutionVector);
 
   console.log(this.gameState.runningSolution);
@@ -438,17 +433,19 @@ game.finishedLevel = function () {
   vector_simplify_arithmetic(newSolution, level_get_arithmetic(this.level));
   let newSum = vector_sum(newSolution)
 
+  // TODO: this is some somewhat fragile code that tries to integrate with the editor...
   if (newSum < oldSum) {
     this.level.solutionVector = newSolution;
     this.level.solutionType = "manual";
     save_editor_book(current_book);
-    
   }
 
+  let prevBest = getBestNumMoves(this.level);
 
-  if (bests[currentLevelId] === null || bests[currentLevelId] === undefined || bests[currentLevelId] > this.gameState.numMoves) {
-    bests[currentLevelId] = this.gameState.numMoves;
-    saveBests();
+  let numMoves = this.gameState.numMoves
+
+  if (prevBest === null || numMoves < prevBest){
+    setBestNumMoves(this.level, numMoves);
   } 
 
   this.displayLevelGui(this.level);
@@ -458,7 +455,7 @@ game.finishedLevel = function () {
 
 game.getCurrentBest = function() {
   if (this.level) {
-    return bests[this.level.index];
+    return getBestNumMoves(this.level);
   }
   return null;
 }

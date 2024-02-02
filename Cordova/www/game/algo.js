@@ -74,16 +74,26 @@ function compute_operations_for_level(level) {
   throw new Error("Did not understand how to compute operations for level");
 }
 
-// function get_geometry_from_old_level(level) {
-//   if (level.tileShape == "square") {
-//     return {
-//       type: "square",
-//       width: level.tiles.width,
-//       height: level.tiles.height,
-//     }
-//   }
-// }
-//
+
+// TODO: whaaaaat the heeeeeeell ohhhh myyyyy goooood no waaayayayayay
+// what is this coding style bruv
+// fix it
+
+function level_get_geometry(level) {
+  if (level.geometry) {
+    return level.geometry;
+  }
+  if (level.tileShape.name == "square") {
+    return {
+      type: "square",
+      width: level.tiles.width,
+      height: level.tiles.height,
+    }
+  }
+  console.log(level)
+  return "what is this?"
+}
+
 
 function vector_add(a, b) {
   assert(a.length == b.length);
@@ -139,6 +149,8 @@ function get_arithmetic_compact(arithmetic) {
   }
   throw new Error(`arithmetic ${JSON.stringify(geometry)} not supported`);
 }
+
+
 function get_level_compact_tiles(level) {
 
   // todo: make a lowercase "t" for cases where the digits fit.
@@ -146,13 +158,14 @@ function get_level_compact_tiles(level) {
   //   assert(level.tiles[i]>= 1 level.tiles[i] <= 9);
   // }
 
-  return get_geometry_compact(level.geometry)+"$"+
-    get_arithmetic_compact(level.arithmetic)+"$"+
-    "T_"+level.tiles.join("_");
+  return get_geometry_compact(level_get_geometry(level))+"$"+
+    get_arithmetic_compact(level_get_arithmetic(level))+"$"+
+    "T_"+level.tiles.array.join("_");
+  // If do to2dArray() instead of array, then magically works... maybe want that?
 }
 
 function get_level_full_identifier(level) {
-  level.id +"$"+get_level_compact_tiles(level)
+  return level.id +"$"+get_level_compact_tiles(level)
 }
 
 

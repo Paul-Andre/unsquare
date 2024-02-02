@@ -39,6 +39,7 @@ function compute_gaussian_solution(level) {
   }
 }
 
+// TODO: do some kind of schema versioning thing, to include future complicated geometry
 Level.fromJsonObject = function (json) {
   var level = new Level();
   level.colorScheme = colorSchemes.BW; //colorSchemes[json.colorScheme];
@@ -59,8 +60,6 @@ Level.fromJsonObject = function (json) {
     level.solutionType = json.solutionType;
 
     hasValidSolution = level_check_solution(level);
-
-
   }
   if (!hasValidSolution) {
     compute_gaussian_solution(level);
@@ -115,3 +114,8 @@ Level.prototype.copyFrom = function (otherLevel) {
   }
   this.solutionType = otherLevel.solutionType;
 };
+
+Level.prototype.getFullIdentifier = function() {
+  // Contains the id of the level, as well as information that can be used to recreate the level.
+  return get_level_full_identifier(this);
+}
