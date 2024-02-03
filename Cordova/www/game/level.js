@@ -119,3 +119,8 @@ Level.prototype.getFullIdentifier = function() {
   // Contains the id of the level, as well as information that can be used to recreate the level.
   return get_level_full_identifier(this);
 }
+
+Level.prototype.getBestNumMoves = function() {
+  return getBestNumMoves(this);
+}
+

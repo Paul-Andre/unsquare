@@ -135,6 +135,44 @@ button:hover, .levelIcon:hover {
     color: var(--black);
 }
 
+.icon_hidden, .icon_hidden:hover {
+    border: solid 2px black;
+}
+.icon_locked, .icon_locked:hover {
+    border: solid 2px gray;
+    box-shadow: inset 0px 0px 40px 20px #aaaaaa;
+    -webkit-box-shadow: inset 0px 0px 40px 20px #aaaaaa;
+    -moz-box-shadow: inset 0px 0px 40px 20px #aaaaaa;
+    -o-box-shadow: inset 0px 0px 40px 20px #aaaaaa;
+}
+
+.icon_locked:before, .icon_locked:hover:before {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  border: solid 2px gray;
+    box-shadow: inset 0px 0px 40px 20px #aaaaaa;
+    -webkit-box-shadow: inset 0px 0px 40px 20px #aaaaaa;
+    -moz-box-shadow: inset 0px 0px 40px 20px #aaaaaa;
+    -o-box-shadow: inset 0px 0px 40px 20px #aaaaaa;
+
+}
+
+.icon_unsolved {
+    border: solid 2px blue;
+
+}
+.icon_suboptimal {
+    border: solid 2px green;
+
+}
+.icon_optimal {
+    border: solid 2px gold;
+
+}
+
 button:disabled{
 	background: #aaa;
 }

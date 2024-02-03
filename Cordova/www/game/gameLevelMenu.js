@@ -30,9 +30,6 @@ function setBestNumMoves(level, num) {
 
 request.onload = function () {
   if (request.status >= 200 && request.status < 400) {
-    // Success!
-
-
     let data = JSON.parse(request.responseText, book_reviver);
 
     current_book = data;

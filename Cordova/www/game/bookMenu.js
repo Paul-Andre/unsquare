@@ -2,6 +2,8 @@
 
 let current_book = null;
 
+
+
 function load_static_books() {
   let books = [];
 

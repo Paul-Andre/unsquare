@@ -16,6 +16,47 @@ function createLevelIconCanvas(level) {
   return icon;
 }
 
+/*
+ * 0 - hidden
+ * 1 - locked
+ * 2 - unsolved
+ * 3 - suboptimal
+ * 4 - optimal
+  */
+function calculateStatesWithParams (book, allowedOpen, allowedLocked) {
+  let states = [];
+  for (let i = 0; i<book.levels.length; i++) {
+    let level = book.levels[i];
+    let par = level.par;
+    let best = level.getBestNumMoves();
+    if (best===null) {
+      if (allowedOpen) {
+        states[i] = 2;
+        allowedOpen-=1;
+      } else if (allowedLocked) {
+        states[i] = 1;
+        allowedLocked-=1;
+      } else {
+        states[i] = 0;
+      }
+    } else if (best>par) {
+      states[i] = 3;
+    } else {
+      states[i] = 4;
+    }
+  }
+  return states;
+}
+
+function calculateStates (book) {
+  // There's two modes: the first one just shows the first level, forcing
+  if (book.levels[0].getBestNumMoves() === null) {
+    return calculateStatesWithParams(book, 1, 15);
+  } else {
+    return calculateStatesWithParams(book, 5, 15);
+  }
+};
+
 
 // The term activate in this sense means to take something that is an html element in the static dom, and to turn and put data in it and or attach listeners, etc
 // And return an object that represents the "conceptual" object of that.
@@ -28,7 +69,11 @@ function activateLevelMenu(elementId, isEditor) {
     this.book = book;
   };
 
-  levelMenu.createLevelInfo = function (level) {
+  levelMenu.createLevelInfo = function (level, state) {
+
+    // TODO: this situation of level_icon and levelIcon, where one is the
+    // external div and the other is the internal canvas, is absurd.
+    // FIX IT
 
     let element = htmlStringToElement( `<div class="level_icon">
     <canvas class="level_icon_image levelIcon"> </canvas>
@@ -53,15 +98,20 @@ function activateLevelMenu(elementId, isEditor) {
     if (isEditor) {
       let par_display = element.querySelector(".level_icon_par");
       par_display.innerText = vector_sum(level.solutionVector);
-    } else {
-      // TODO: make it display the status based on best status
 
-    }
-
-    if (isEditor) {
       if (level.isIcon) {
         icon.classList.add("bookIconRepresentative");
       }
+    } else {
+      let stateClass =  {
+        "0":"icon_hidden",
+        "1":"icon_locked",
+        "2":"icon_unsolved",
+        "3":"icon_suboptimal",
+        "4":"icon_optimal",
+      }[state];
+
+      element.classList.add(stateClass);
     }
 
     return element;
@@ -116,11 +166,15 @@ function activateLevelMenu(elementId, isEditor) {
   levelMenu.displayIcons = function () {
     this.container.innerHTML = "";
 
+    let states;
+    if (!isEditor) {
+      states = calculateStates(this.book);
+    }
 
     for (var i = 0; i < this.book.levels.length; i++) {
       let level = this.book.levels[i];
       // check par, and based on it figure out the restriction level.
-      this.container.appendChild(levelMenu.createLevelInfo(level));
+      this.container.appendChild(levelMenu.createLevelInfo(level, isEditor?2:states[i] ));
     }
 
   };
