@@ -27,10 +27,12 @@ h1, h2, h3, h4, h5, h6 {
   --bg_gray: #d3cfc8;
 
   --gold: gold;
+  /*--bronze: #cf6c26;*/
+  --bronze: #db9e0f;
 
-  --inactive_border: gray;
-  --inactive_background: gray;
-  --inactive_text: black;
+  --inactive_border: #a9a49b;
+  --inactive_background: #c5c1b9;
+  --inactive_text: #8b877f;
 }
 
 /* TODO: make proper web font */
@@ -141,16 +143,6 @@ button:hover, .level_icon:hover {
     color: var(--black);
 }
 
-.icon_hidden, .icon_hidden:hover {
-    border: solid 2px black;
-}
-.icon_locked, .icon_locked:hover {
-    border: solid 2px gray;
-    box-shadow: inset 0px 0px 40px 20px #aaaaaa;
-    -webkit-box-shadow: inset 0px 0px 40px 20px #aaaaaa;
-    -moz-box-shadow: inset 0px 0px 40px 20px #aaaaaa;
-    -o-box-shadow: inset 0px 0px 40px 20px #aaaaaa;
-}
 
 .level_icon:before {
   content: "";
@@ -159,33 +151,50 @@ button:hover, .level_icon:hover {
   height: 100%;
 }
 
+
+
+.icon_hidden, .icon_hidden:hover {
+  border: solid 2px var(--inactive_border);
+}
+.icon_hidden:before, .icon_hidden:hover:before {
+  border: solid 2px var(--inactive_border);
+  background: var(--inactive_background);
+
+}
+
+.icon_locked, .icon_locked:hover {
+    border: solid 2px var(--inactive_border);
+}
+
 .icon_locked:before, .icon_locked:hover:before {
   box-sizing: border-box;
-  border: solid 2px gray;
-    box-shadow: inset 0px 0px 40px 20px #aaaaaa;
-    -webkit-box-shadow: inset 0px 0px 40px 20px #aaaaaa;
-    -moz-box-shadow: inset 0px 0px 40px 20px #aaaaaa;
-    -o-box-shadow: inset 0px 0px 40px 20px #aaaaaa;
+  border: solid 2px var(--inactive_border);
+  /*background: #cbc7bfba;*/
+  background: #bdb8afa8;
+  
+
+    /*box-shadow: inset 0px 0px 40px 10px var(--inactive_background);*/
+    /*box-shadow: inset 0px 0px 40px 10px #b7b3ac; */
 }
 
-.icon_optimal:before{
-    box-sizing: border-box;
-    /* border: solid 2px gold; */
-    box-shadow: inset 0px 0px 13px 3px #ffd700;
-
-}
 
 .icon_unsolved {
-    border: solid 2px blue;
-
 }
+
 .icon_suboptimal {
-    border: solid 2px green;
-
+    border: solid 2px var(--bronze);
 }
-.icon_optimal {
-    border: solid 2px gold;
+.icon_suboptimal:before{
+    border: dashed 3px var(--bronze);
+    /*box-shadow: inset 0px 0px 13px 3px #ffd700;*/
+}
 
+.icon_optimal {
+    border: solid 2px var(--gold);
+}
+.icon_optimal:before{
+    border: solid 2px var(--gold);
+    box-shadow: inset 0px 0px 17px 0px var(--gold);
 }
 
 button:disabled{
