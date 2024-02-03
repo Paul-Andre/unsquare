@@ -52,9 +52,9 @@ function calculateStatesWithParams (book, allowedOpen, allowedLocked) {
 function calculateStates (book) {
   // There's two modes: the first one just shows the first level, forcing
   if (book.levels[0].getBestNumMoves() === null) {
-    return calculateStatesWithParams(book, 1, 15);
+    return calculateStatesWithParams(book, 1, 50);
   } else {
-    return calculateStatesWithParams(book, 5, 15);
+    return calculateStatesWithParams(book, 5, 50);
   }
 };
 

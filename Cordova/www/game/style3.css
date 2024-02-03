@@ -32,6 +32,7 @@ h1, h2, h3, h4, h5, h6 {
 
   --inactive_border: #a9a49b;
   --inactive_background: #c5c1b9;
+  --inactive_overlay: #d9d6cfa8;
   --inactive_text: #8b877f;
 }
 
@@ -170,7 +171,7 @@ button:hover, .level_icon:hover {
   box-sizing: border-box;
   border: solid 2px var(--inactive_border);
   /*background: #cbc7bfba;*/
-  background: #bdb8afa8;
+  background: var(--inactive_overlay);
   
 
     /*box-shadow: inset 0px 0px 40px 10px var(--inactive_background);*/
