@@ -166,16 +166,12 @@ button:hover, .level_icon:hover {
     -webkit-box-shadow: inset 0px 0px 40px 20px #aaaaaa;
     -moz-box-shadow: inset 0px 0px 40px 20px #aaaaaa;
     -o-box-shadow: inset 0px 0px 40px 20px #aaaaaa;
-
 }
 
 .icon_optimal:before{
-  box-sizing: border-box;
-  border: solid 2px gold;
-    box-shadow: inset 0px 0px 40px 20px #aaaaaa;
-    -webkit-box-shadow: inset 0px 0px 40px 20px #aaaaaa;
-    -moz-box-shadow: inset 0px 0px 40px 20px #aaaaaa;
-    -o-box-shadow: inset 0px 0px 40px 20px #aaaaaa;
+    box-sizing: border-box;
+    /* border: solid 2px gold; */
+    box-shadow: inset 0px 0px 13px 3px #ffd700;
 
 }
 
