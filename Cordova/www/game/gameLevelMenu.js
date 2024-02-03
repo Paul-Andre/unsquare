@@ -12,7 +12,6 @@ let bookUrl = "2023_sept_5.json";
 let request = new XMLHttpRequest();
 request.open("GET", bookUrl, true);
 
-var levels;
 
 
 // TODO: put these all inside a scope or object or something
@@ -36,18 +35,6 @@ request.onload = function () {
 
     let data = JSON.parse(request.responseText, book_reviver);
 
-
-    // let patch_pars = [1,2,2,2,3,4,3,4,3,3,4,3,2,3,4,4,6,5,5,3,3,4,5,5,6,5,13,13,8,6,5,12,9];
-    // console.log(patch_pars);
-    // for (let i=0; i<patch_pars.length; i++) {
-    //   data.levels[i].par = Math.min(data.levels[i].par, patch_pars[i]);
-    // }
-
-    // console.log(data)
-    // console.log(JSON.stringify(data))
-
-
-    // alert(data)
     current_book = data;
 
     gameLevelMenu.openBook(current_book);
@@ -55,9 +42,7 @@ request.onload = function () {
   } 
 };
 
-request.onerror = function (e) {
-
-};
+request.onerror = function (e) {};
 
 request.send();
 
