@@ -28,8 +28,6 @@ function activateLevelMenu(elementId, isEditor) {
     this.book = book;
   };
 
-    
-
   levelMenu.createLevelInfo = function (level) {
 
     let element = htmlStringToElement( `<div class="level_icon">
@@ -58,7 +56,6 @@ function activateLevelMenu(elementId, isEditor) {
     } else {
       // TODO: make it display the status based on best status
 
-
     }
 
     if (isEditor) {
@@ -66,7 +63,6 @@ function activateLevelMenu(elementId, isEditor) {
         icon.classList.add("bookIconRepresentative");
       }
     }
-
 
     return element;
     // TODO: add classes based on 
@@ -120,8 +116,11 @@ function activateLevelMenu(elementId, isEditor) {
   levelMenu.displayIcons = function () {
     this.container.innerHTML = "";
 
+
     for (var i = 0; i < this.book.levels.length; i++) {
-      this.container.appendChild(levelMenu.createLevelInfo(this.book.levels[i]));
+      let level = this.book.levels[i];
+      // check par, and based on it figure out the restriction level.
+      this.container.appendChild(levelMenu.createLevelInfo(level));
     }
 
   };
