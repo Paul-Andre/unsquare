@@ -248,7 +248,13 @@ function activateLevelMenu(elementId, isEditor) {
       this.book.title = new_title;
     }
     save_editor_book(this.book);
+  }
 
+  levelMenu.clearAllBests = function() {
+    for (let i=0; i<levelMenu.book.levels.length; i++) {
+      clearBestNumMoves(levelMenu.book.levels[i]);
+    }
+    levelMenu.displayIcons();
   }
 
   levelMenu.onShow = levelMenu.displayIcons;

@@ -27,6 +27,9 @@ function getBestNumMoves(level) {
 function setBestNumMoves(level, num) {
   localStorage.setItem(getLskForBestNumMoves(level), num);
 }
+function clearBestNumMoves(level, num) {
+  localStorage.removeItem(getLskForBestNumMoves(level));
+}
 
 request.onload = function () {
   if (request.status >= 200 && request.status < 400) {

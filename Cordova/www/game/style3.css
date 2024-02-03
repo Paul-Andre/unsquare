@@ -195,7 +195,7 @@ button:hover, .level_icon:hover {
 }
 .icon_optimal:before{
     border: solid 2px var(--gold);
-    box-shadow: inset 0px 0px 17px 0px var(--gold);
+    box-shadow: inset 0px 0px 20px 0px var(--gold);
 }
 
 button:disabled{
