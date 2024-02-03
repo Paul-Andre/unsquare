@@ -29,6 +29,7 @@ function calculateStatesWithParams (book, allowedOpen, allowedLocked) {
     let level = book.levels[i];
     let par = level.par;
     let best = level.getBestNumMoves();
+    console.log(par, best);
     if (best===null) {
       if (allowedOpen) {
         states[i] = 2;
@@ -76,7 +77,7 @@ function activateLevelMenu(elementId, isEditor) {
     // FIX IT
 
     let element = htmlStringToElement( `<div class="level_icon">
-    <canvas class="level_icon_image levelIcon"> </canvas>
+    <canvas class="level_icon_image"> </canvas>
     <div class="level_icon_par"> </div>
     </div>
     `);
@@ -89,8 +90,6 @@ function activateLevelMenu(elementId, isEditor) {
     drawIcon(level, icon);
 
 
-    icon.className = "levelIcon";
-
     element.level = level;
 
     element.onclick = levelMenu.onIconClick;
@@ -100,7 +99,7 @@ function activateLevelMenu(elementId, isEditor) {
       par_display.innerText = vector_sum(level.solutionVector);
 
       if (level.isIcon) {
-        icon.classList.add("bookIconRepresentative");
+        element.classList.add("bookIconRepresentative");
       }
     } else {
       let stateClass =  {

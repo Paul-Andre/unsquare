@@ -67,6 +67,8 @@ Level.fromJsonObject = function (json) {
   }
   // Sanity check, that solution makes sense
   assert(level_check_solution(level));
+  let par = vector_sum(level.solutionVector);
+  level.par = par;
 
   return level;
 };

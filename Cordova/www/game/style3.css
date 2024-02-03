@@ -25,6 +25,12 @@ h1, h2, h3, h4, h5, h6 {
   --black: #333333;
   --border_gray: #c1bbaf;
   --bg_gray: #d3cfc8;
+
+  --gold: gold;
+
+  --inactive_border: gray;
+  --inactive_background: gray;
+  --inactive_text: black;
 }
 
 /* TODO: make proper web font */
@@ -114,7 +120,7 @@ section#resetScreen .header {
 
 /** Buttons **/
 
-button, .levelIcon {
+button, .level_icon {
     background: white;
     border: solid 2px var(--border_gray);
     margin: 2px;
@@ -122,12 +128,12 @@ button, .levelIcon {
     color: var(--black);
 }
 
-.levelIcon {
+.level_icon {
 	vertical-align: top;
 }
 
 
-button:hover, .levelIcon:hover {
+button:hover, .level_icon:hover {
     background: white;
     border: solid 2px #6b6762;
     margin: 2px;
@@ -146,13 +152,26 @@ button:hover, .levelIcon:hover {
     -o-box-shadow: inset 0px 0px 40px 20px #aaaaaa;
 }
 
-.icon_locked:before, .icon_locked:hover:before {
+.level_icon:before {
   content: "";
   position: absolute;
   width: 100%;
   height: 100%;
+}
+
+.icon_locked:before, .icon_locked:hover:before {
   box-sizing: border-box;
   border: solid 2px gray;
+    box-shadow: inset 0px 0px 40px 20px #aaaaaa;
+    -webkit-box-shadow: inset 0px 0px 40px 20px #aaaaaa;
+    -moz-box-shadow: inset 0px 0px 40px 20px #aaaaaa;
+    -o-box-shadow: inset 0px 0px 40px 20px #aaaaaa;
+
+}
+
+.icon_optimal:before{
+  box-sizing: border-box;
+  border: solid 2px gold;
     box-shadow: inset 0px 0px 40px 20px #aaaaaa;
     -webkit-box-shadow: inset 0px 0px 40px 20px #aaaaaa;
     -moz-box-shadow: inset 0px 0px 40px 20px #aaaaaa;
@@ -177,15 +196,15 @@ button:disabled{
 	background: #aaa;
 }
 
-div#iconContainer.deleting .levelIcon {
+div#iconContainer.deleting .level_icon:before {
 	border: solid 2px red;
 }
 
-div#iconContainer.selectingIcon .levelIcon {
+div#iconContainer.selectingIcon .level_icon:before {
 	border: dashed 2px lime;
 }
 
-.levelIcon.bookIconRepresentative {
+.level_icon.bookIconRepresentative:before {
 	border: solid lime;
 }
 
