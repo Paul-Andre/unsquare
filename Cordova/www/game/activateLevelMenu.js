@@ -92,7 +92,9 @@ function activateLevelMenu(elementId, isEditor) {
 
     element.level = level;
 
-    element.onclick = levelMenu.onIconClick;
+    if (isEditor || state >= 2) {
+      element.onclick = levelMenu.onIconClick;
+    }
 
     if (isEditor) {
       let par_display = element.querySelector(".level_icon_par");
