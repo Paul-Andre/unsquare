@@ -7,7 +7,7 @@ var colorSchemes = {
         fill: "white",
       },
       2: {
-        fill: "black",
+        fill: "#333333",
       },
     },
 

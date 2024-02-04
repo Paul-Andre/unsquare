@@ -1,7 +1,9 @@
+// This isn't currently used, moreover, this probably isn't the style I would
+// want.
 var drawCheck = function (ctx, scaleValue, fillStyle) {
   scaleValue = scaleValue || 1;
 
-  fillStyle = fillStyle || "#000000";
+  fillStyle = fillStyle || "#333333";
   //alert(scaleValue)
   ctx.save();
   ctx.scale(scaleValue, scaleValue);

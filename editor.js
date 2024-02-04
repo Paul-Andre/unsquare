@@ -21,6 +21,7 @@ editor.updateLevelInfo = function () {
   // Note that this modifies the copy of level, not the reference to the original level
   editor.level.tiles = this.tiles;
   editor.level.solutionVector = this.runningSolution;
+  // TODO: ???
   editor.level.par = null;
 };
 

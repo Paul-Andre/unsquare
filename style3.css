@@ -9,14 +9,44 @@ html, body {
   height: 100%;
 }
 body {
-  line-height: 1.5;
+  line-height: 1.2;
+  font-size: 20px;
 }
-input, button, textarea, select, a {
+input, button, textarea, select {
   font: inherit;
 }
-p, h1, h2, h3, h4, h5, h6 {
+h1, h2, h3, h4, h5, h6 {
   overflow-wrap: break-word;
   font-weight: 500;
+}
+
+h1 {
+  font-size: 2em;
+}
+
+h1,h2,h3{line-height:1.2; margin-top: 0.5em}
+p{margin-top: 0.5em; margin-bottom: 0.5em;}
+
+img{
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+:root { 
+  --white: #ffffff;
+  --black: #333333;
+  --border_gray: #c1bbaf;
+  --bg_gray: #d3cfc8;
+
+  --gold: gold;
+  /*--bronze: #cf6c26;*/
+  --bronze: #db9e0f;
+
+  --inactive_border: #a9a49b;
+  --inactive_background: #c5c1b9;
+  --inactive_overlay: #d9d6cfa8;
+  --inactive_text: #8b877f;
 }
 
 /* TODO: make proper web font */
@@ -24,41 +54,68 @@ p, h1, h2, h3, h4, h5, h6 {
    font-family: 'Source Sans 3';
       src: url('ss3/SourceSans3-Italic-VariableFont_wght.ttf') format('truetype');
    font-style: italic;
+   font-display: swap;
 }
 @font-face {
    font-family: 'Source Sans 3';
       src: url('ss3/SourceSans3-VariableFont_wght.ttf') format('truetype');
    font-style: normal;
+   font-display: swap;
 }
 
 body {
 	position: relative;
 	margin: auto;
-	background: silver;
+	background: var(--bg_gray);
+  color: var(--black);
 
   font-family: 'Source Sans 3', sans-serif;
   font-weight: 400;
   font-feature-settings: 
   'cv01' on, 'cv04' on, 'cv03' on;
 
-
 }
 
-section {
+.screen_container {
+  /* background: red; */
 	position: absolute;
-        display: none;
 
   position: relative;
 
-        width: 500px;
+        width: 504px;
   max-width: 100%;
 
   /* top: 50%; */
-  left: 50%;
+  /*left: 50%; */
   /* transform: translate(-50%, -50%); */
-  transform: translate(-50%, 0);
+  /*transform: translate(-50%, 0);*/
+  height: 100%;
+  margin: 0 auto;
+
+}
+.copyright {
+  font-size: 75%;
 }
 
+section {
+  /* background: red; */
+	/* position: absolute; */
+
+  /* position: relative; */
+
+        /* width: 500px; */
+  /* max-width: 100%; */
+
+  /* /1* top: 50%; *1/ */
+  /* left: 50%; */
+  /* /1* transform: translate(-50%, -50%); *1/ */
+  /* transform: translate(-50%, 0); */
+}
+
+section#instructions p {
+  line-height: 1.2;
+  margin-bottom: 0.5em;
+}
 /* section.show { */
 /* 	opacity: 1; */
 /* 	z-index: 5; */
@@ -69,13 +126,6 @@ section {
 
 section#game header {
   min-height: 100px;
-}
-
-section#levelMenuScreen .header {
-	float: left;
-	width: 100%;
-	height:75px;
-	top:0 ;
 }
 
 /** ---------------Containers-------------- **/
@@ -92,60 +142,119 @@ section#resetScreen .header {
 
 /** Buttons **/
 
-button, .levelIcon {
+button, .level_icon {
     background: white;
-    border: solid 1px #9b9b9b;
+    border: solid 2px var(--border_gray);
     margin: 2px;
-    box-shadow: 1px 1px #9b9b9b;
-    color: #181832;
+    /*box-shadow: 1px 1px #9b9b9b;*/
+    color: var(--black);
 }
 
-.levelIcon {
+.level_icon {
 	vertical-align: top;
 }
 
 
-.action {
-  background: white;
+button:hover, .level_icon:hover {
+    background: white;
+    border: solid 2px #6b6762;
+    margin: 2px;
+    /*box-shadow: 1px 1px #555555;*/
+    color: var(--black);
+}
 
-  margin: 10px 0;
-  padding: 0.5em 1em;
-  display: inline-block;
-  text-decoration: none;
-  border: solid 2px #9b9b9b;
-  /* border-radius: 10px; */
-  font-size: 150%;
-  /*min-width: 80px;*/
 
+.level_icon:before {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+
+
+.icon_hidden, .icon_hidden:hover {
+  border: solid 2px var(--inactive_border);
+}
+.icon_hidden:before, .icon_hidden:hover:before {
+  border: solid 2px var(--inactive_border);
+  background: var(--inactive_background);
+
+}
+
+.icon_locked, .icon_locked:hover {
+    border: solid 2px var(--inactive_border);
+}
+
+.icon_locked:before, .icon_locked:hover:before {
+  box-sizing: border-box;
+  border: solid 2px var(--inactive_border);
+  /*background: #cbc7bfba;*/
+  background: var(--inactive_overlay);
   
 
-
-}
-.action:hover {
-    border: solid 2px #555555;
+    /*box-shadow: inset 0px 0px 40px 10px var(--inactive_background);*/
+    /*box-shadow: inset 0px 0px 40px 10px #b7b3ac; */
 }
 
 
-button:hover, .levelIcon:hover {
-    background: white;
-    border: solid 1px #555555;
-    margin: 2px;
-    box-shadow: 1px 1px #555555;
-    color: #181832;
+.icon_unsolved {
 }
 
-button:disabled{
-	background: #aaa;
+.icon_suboptimal {
+    border: solid 2px var(--bronze);
+}
+.icon_suboptimal:before{
+    border: dashed 3px var(--bronze);
+    /*box-shadow: inset 0px 0px 13px 3px #ffd700;*/
 }
 
-div#iconContainer.deleting .levelIcon {
-	border-color: red;
+.icon_optimal {
+    border: solid 2px var(--gold);
+}
+.icon_optimal:before{
+    border: solid 2px var(--gold);
+    box-shadow: inset 0px 0px 20px 0px var(--gold);
+}
+
+button:disabled,
+button[disabled] {
+	background: var(--inactive_background);
+	border-color: var(--inactive_border);
+	color: var(--inactive_text);
+}
+
+#iconContainer {
+  /*text-align: center;*/
+
+    display: grid;
+    grid-template-columns: repeat(auto-fill, 63px);
+    justify-content: center;
+
+}
+
+div#iconContainer.deleting .level_icon:before {
+	border: solid 2px red;
+}
+
+div#iconContainer.selectingIcon .level_icon:before {
+	border: dashed 2px lime;
+}
+
+.level_icon.bookIconRepresentative:before {
+	border: solid lime;
 }
 
 .gameCanvas {
   /* background-color: red; */
 
   touch-action: none;
+}
+
+button.action {
+  font-size: 125%;
+  padding: 0.5em 1em;
+  margin: 10px 0px;
 }
 
 .finishedLevel {
@@ -158,10 +267,111 @@ div#iconContainer.deleting .levelIcon {
 }
 .content {
   position: relative;
+  clear: both;
+  /* background: red */
 }
+
 .finishedLevel button {
-  font-size: 300%
+  font-size: 300%;
   display: block;
 }
 
+.title {
+  font-size: 1.2em;
+  font-weight: 500;
+}
 
+#LevelIndicator {
+  font-size: 1.2em;
+  margin-left: 0.1em;
+
+}
+
+.IndicContainer {
+  line-height: 1.2;
+  /* padding: 8px; */
+  
+}
+
+section header {
+  margin-left: 4px;
+  margin-right: 4px;
+  margin-top: 4px;
+}
+
+.textShower {
+  font-style: italic;
+  margin-top: 0.2em;
+  margin-right: 0.2em;
+  line-height: 1.1;
+  font-size: 0.9em;
+}
+
+
+
+.variant_container {
+  position: relative;
+  height: 100%;
+  width: 100%;
+}
+
+.variant_container > * {
+  /* background: red; */
+  display: none;
+  position: absolute;
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.variant_shown {
+  display: block;
+}
+
+.bookSummary {
+  background: darkgray;
+  margin-top: 2px;
+  margin-bottom: 2px;
+  /* clear: both; */
+    border: solid 1px darkgray;
+}
+.bookSummary:hover {
+    border: solid 1px #555555;
+
+
+}
+
+.bookSummary canvas {
+  /* float: left; */
+}
+.bookIconContainer {
+  display: inline-block;
+}
+.bookInfoContainer {
+  display: inline-block;
+}
+.bookInfoContainer .bookId {
+  opacity: 50%;
+}
+
+.level_icon {
+    display: inline-block;
+    position: relative;
+}
+
+.level_icon_image {
+  vertical-align: top;
+}
+
+.level_icon_par {
+    position: absolute;
+    bottom: 0px;
+    right: 0px;
+    line-height: 1;
+    /* font-size: 12pt; */
+    margin-bottom: 2px;
+    margin-right: 4px;
+    font-weight: 700;
+    color: #c918c9;
+}

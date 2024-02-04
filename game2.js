@@ -30,8 +30,8 @@ function makeGameBase2(canvasId, divId) {
 
   game.onResize = function () {
     //console.log(document.body.offsetWidth, document.body.offsetHeight);
-    //canvasVirtualSize = Math.min(window.innerWidth, window.innerHeight, 500);
-    canvasVirtualSize = Math.min(this.div.offsetWidth, this.div.offsetHeight, 500);
+    //canvasVirtualSize = Math.min(window.innerWidth, window.innerHeight, MAX_WIDTH);
+    canvasVirtualSize = Math.min(this.div.offsetWidth, this.div.offsetHeight, MAX_WIDTH);
 
      // var text = "w.iw " + window.innerWidth + " s.w " + screen.width +" d.iw "+this.div.offsetWidth;
     // document.getElementById("Debugger").innerText = text;
@@ -307,6 +307,10 @@ https://developer.mozilla.org/en-US/docs/Web/API/Element/setPointerCapture#javas
     if (game.isFinished()) {
       var a = this.div.getElementsByClassName("finishedLevel")[0];
       a.style.display = "block";
+      if (game.level.index >= current_book.levels.length-1) {
+        // TODO: won game.
+
+      }
     }
 
     if (this.gameState){
@@ -424,11 +428,6 @@ game.isFinished = function() {
 }
 
 game.finishedLevel = function () {
-
-
-  let currentLevelId = this.level.index;
-
-
   let oldSum = vector_sum(this.level.solutionVector);
 
   console.log(this.gameState.runningSolution);
@@ -438,17 +437,19 @@ game.finishedLevel = function () {
   vector_simplify_arithmetic(newSolution, level_get_arithmetic(this.level));
   let newSum = vector_sum(newSolution)
 
+  // TODO: this is some somewhat fragile code that tries to integrate with the editor...
   if (newSum < oldSum) {
     this.level.solutionVector = newSolution;
     this.level.solutionType = "manual";
     save_editor_book(current_book);
-    
   }
 
+  let prevBest = getBestNumMoves(this.level);
 
-  if (bests[currentLevelId] === null || bests[currentLevelId] === undefined || bests[currentLevelId] > this.gameState.numMoves) {
-    bests[currentLevelId] = this.gameState.numMoves;
-    saveBests();
+  let numMoves = this.gameState.numMoves
+
+  if (prevBest === null || numMoves < prevBest){
+    setBestNumMoves(this.level, numMoves);
   } 
 
   this.displayLevelGui(this.level);
@@ -458,7 +459,7 @@ game.finishedLevel = function () {
 
 game.getCurrentBest = function() {
   if (this.level) {
-    return bests[this.level.index];
+    return getBestNumMoves(this.level);
   }
   return null;
 }
@@ -466,7 +467,6 @@ game.getCurrentBest = function() {
 game.displayLevelGui = function(level) {
 
   var a = this.div.getElementsByClassName("finishedLevel")[0];
-  console.log(a)
   a.style.display = "none";
 
   document.getElementById("TextShower").innerText = level.text;
@@ -475,8 +475,36 @@ game.displayLevelGui = function(level) {
 
   this.div.getElementsByClassName("parContent")[0].innerText = par
 
+  let index = level.index;
+
+  // TODO: properly do this, with this.div or whatever
+  document.getElementById("LevelIndicator").innerText = "Level " + (1+ index);
     // + " "+level.solutionType;
   ;
+  
+  let states = calculateStates(current_book);
+
+  {
+    let prevButton = this.div.querySelector("#prevButton");
+    let prevIndex = index-1;
+    if (prevIndex < 0 || states[prevIndex]<2) {
+      prevButton.setAttribute("disabled", "disabled");
+    } else {
+      prevButton.removeAttribute("disabled");
+    }
+  }
+
+  {
+    let nextButton = this.div.querySelector("#nextButton");
+    let nextIndex = index+1;
+    if (nextIndex < 0 || states[nextIndex]<2) {
+      nextButton.setAttribute("disabled", "disabled");
+    } else {
+      nextButton.removeAttribute("disabled");
+    }
+  }
+
+  
 
 };
 
@@ -486,150 +514,10 @@ game.undo = function () {
 };
 
 
-game.onResize();
-console.log(game);
-
-
-
-
-
-
-
-
-
-let bookUrl = "2023_sept_5.json";
-
-//https://stackoverflow.com/a/35294675
-let request = new XMLHttpRequest();
-request.open("GET", bookUrl, true);
-
-var levels;
-var bests = [null];
-
-var bests_lsk = bookUrl + "_bests";
-
-function saveBests() {
-  localStorage.setItem(bests_lsk, JSON.stringify(bests));
-}
-
-function asdf(a,b) {
-  return a;
-}
-
-// Some really weird bug made me place this here instead of a different file
-// TODO: ????
-// https://stackoverflow.com/a/52171480
-// function cyrb53(str, seed = 0){
-function cyrb53(str, seed){
-  let h1 = 0xdeadbeef ^ seed,
-    h2 = 0x41c6ce57 ^ seed;
-  for (let i = 0, ch; i < str.length; i++) {
-    ch = str.charCodeAt(i);
-    h1 = Math.imul(h1 ^ ch, 2654435761);
-    h2 = Math.imul(h2 ^ ch, 1597334677);
-  }
-
-  h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909);
-  h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909);
-
-  return 4294967296 * (2097151 & h2) + (h1 >>> 0);
-};
-
-
-request.onload = function () {
-  if (request.status >= 200 && request.status < 400) {
-    // Success!
-
-
-    let data = JSON.parse(request.responseText, book_reviver);
-
-
-    // let patch_pars = [1,2,2,2,3,4,3,4,3,3,4,3,2,3,4,4,6,5,5,3,3,4,5,5,6,5,13,13,8,6,5,12,9];
-    // console.log(patch_pars);
-    // for (let i=0; i<patch_pars.length; i++) {
-    //   data.levels[i].par = Math.min(data.levels[i].par, patch_pars[i]);
-    // }
-
-    // console.log(data)
-    // console.log(JSON.stringify(data))
-
-
-    // alert(data)
-    current_book = data;
-
-    // Ok... kinda weird and stupid, but... eh...
-    var hash = cyrb53( request.responseText, 0);
-
-
-    if (localStorage.getItem(bookUrl+"_levels_hash") == hash && localStorage.getItem(bests_lsk)) {
-      bests = JSON.parse(localStorage.getItem(bests_lsk));
-    } else {
-      localStorage.setItem(bookUrl+"_levels_hash", hash);
-      bests = Array(data.levels.length).fill(null);
-      saveBests();
-    }
-
-    game.draw();
-
-  } 
-};
-
-request.onerror = function (e) {
-
-};
-
-request.send();
-
-
-
-
-game.openLevel(Level.fromJsonObject(
-  {
-    "colorScheme": "BW",
-    "tileShape": "square",
-    // "tiles": [
-    //   [1, 1, 1, 1, 1, 1],
-    //   [1, 2, 2, 2, 2, 1],
-    //   [1, 2, 2, 2, 2, 1],
-    //   [1, 2, 2, 2, 2, 1],
-    //   [1, 2, 2, 2, 2, 1],
-    //   [1, 1, 1, 1, 1, 1]
-    // ],
-    "tiles": [
-      [1, 1, 1, 1 ],
-      [1, 2, 2, 1 ],
-      [1, 2, 2, 1 ],
-      [1, 1, 1, 1 ],
-      
-    ],
-    "par": 1,
-    "index": 0,
-    // "text": "Pull from one corner of the black square to the other.",
-
-  }
-), function(){},
-
-);
-
-
-
-// let undo_stack = [];
-
-// function pop_undo_stack() {
-
-
-// }
-
-
-//game.onShow();
-//
-
-
 function nextLevel() {
   let level = game.level;
   let index = level.index;
   let levels = current_book.levels;
-  console.log(level, index, levels);
 
   if (index+1 <levels.length) {
     index+=1
@@ -639,9 +527,6 @@ function nextLevel() {
     game.openLevel(nextLevel, function(){});
 
     game.onShow();
-
-    document.getElementById("LevelIndicator").innerText = "Level " + (1+ index);
-
   }
 }
 
@@ -650,19 +535,14 @@ function prevLevel() {
   let level = game.level;
   let index = level.index;
   let levels = current_book.levels;
-  console.log(level, index, levels);
 
   if (index-1 >=0) {
     index-=1
     var nextLevel = levels[index];
 
-    current_level = nextLevel;
     game.openLevel(nextLevel, function(){});
 
     game.onShow();
-
-    document.getElementById("LevelIndicator").innerText = "Level " + (1+ index);
-
   }
 }
 

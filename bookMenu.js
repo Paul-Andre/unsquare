@@ -2,6 +2,8 @@
 
 let current_book = null;
 
+
+
 function load_static_books() {
   let books = [];
 
@@ -118,9 +120,8 @@ bookMenu.showBooks = function () {
 };
 
 bookMenu.openBook = function (book) {
-  levelMenu.openBook(book);
-  current_book = book;
-  screenManager.switchTo("levelMenu");
+  editorLevelMenu.openBook(book);
+  screenManager.switchTo("editorLevelMenu");
 };
 
 function create_empty_book() {

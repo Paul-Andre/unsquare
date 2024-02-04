@@ -19,13 +19,10 @@ function drawIcon(level, canvas) {
     var cellWidth = canvas.width / tiles.width;
     var cellHeight = canvas.height / tiles.height;
 
-    console.log(cellWidth);
-
     var ctx = canvas.getContext("2d");
 
     tiles.forEach(function (v, x, y) {
       let f = colorScheme.cells[v].fill;
-      //console.log(f,x,y);
       ctx.fillStyle = f;
       ctx.fillRect(
         Math.floor(cellWidth * x),

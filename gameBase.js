@@ -36,8 +36,8 @@ function makeGameBase(canvasId, divId /*unused*/)  {
 
   game.onResize = function () {
     //console.log(document.body.offsetWidth, document.body.offsetHeight);
-    //canvasVirtualSize = Math.min(window.innerWidth, window.innerHeight, 500);
-    canvasVirtualSize = Math.min(this.div.offsetWidth, this.div.offsetHeight, 500);
+    //canvasVirtualSize = Math.min(window.innerWidth, window.innerHeight, MAX_WIDTH);
+    canvasVirtualSize = Math.min(this.div.offsetWidth, this.div.offsetHeight, MAX_WIDTH);
 
     canvasSize = canvasVirtualSize * (window.devicePixelRatio || 1);
     canvas.width = canvas.height = canvasSize;
