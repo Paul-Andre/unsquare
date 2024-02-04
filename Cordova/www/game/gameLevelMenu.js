@@ -35,9 +35,8 @@ request.onload = function () {
   if (request.status >= 200 && request.status < 400) {
     let data = JSON.parse(request.responseText, book_reviver);
 
-    current_book = data;
 
-    gameLevelMenu.openBook(current_book);
+    gameLevelMenu.openBook(data);
 
   } 
 };

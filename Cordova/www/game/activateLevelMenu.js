@@ -65,7 +65,9 @@ function activateLevelMenu(elementId, isEditor) {
 
   var levelMenu = {};
 
+  // TODO: remove the current_book global;
   levelMenu.openBook = function (book) {
+    current_book = book;
     this.book = book;
   };
 

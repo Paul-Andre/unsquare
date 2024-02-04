@@ -121,7 +121,6 @@ bookMenu.showBooks = function () {
 
 bookMenu.openBook = function (book) {
   editorLevelMenu.openBook(book);
-  current_book = book;
   screenManager.switchTo("editorLevelMenu");
 };
 
