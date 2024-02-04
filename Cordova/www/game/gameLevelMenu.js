@@ -38,10 +38,16 @@ request.onload = function () {
 
     gameLevelMenu.openBook(data);
 
+    let button = document.getElementById("homePlayButton");
+    button.removeAttribute("disabled");
+    button.innerText="Play now!";
+
   } 
 };
 
-request.onerror = function (e) {};
+request.onerror = function (e) {
+  alert("Error loading levels");
+};
 
 request.send();
 
