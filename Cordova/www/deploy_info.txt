@@ -1,0 +1,5 @@
+I deploy in a different branch.
+
+To deploy, copy:
+game -> /
+previous_versions -> /previous_versions
