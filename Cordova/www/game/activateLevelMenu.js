@@ -16,6 +16,7 @@ function createLevelIconCanvas(level) {
   return icon;
 }
 
+//TODO: "state" creates a pun. Call this something else.
 /*
  * 0 - hidden
  * 1 - locked

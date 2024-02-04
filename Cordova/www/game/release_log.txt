@@ -1,0 +1,12 @@
+0.4
+This is the first release on a public forum.
+
+On HN specifically, because I believe they will "get" this game much easier than the average person.
+They are smart, curious, good at logical reasonig and pattern matching, they like small cute demos.
+They know what XOR is.
+I have confidence that they will notice the restart and undo buttons.
+
+0.4.0-prerelease 1
+04 February 2024
+This release has the funnel and I'm uploading it in order to be able to access it from my phone.
+
