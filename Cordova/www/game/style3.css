@@ -93,6 +93,9 @@ body {
   margin: 0 auto;
 
 }
+.copyright {
+  font-size: 75%;
+}
 
 section {
   /* background: red; */
