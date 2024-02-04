@@ -23,16 +23,16 @@ function createLevelIconCanvas(level) {
  * 3 - suboptimal
  * 4 - optimal
   */
-function calculateStatesWithParams (book, allowedOpen, allowedLocked) {
+function calculateStatesWithParams (book, allowedUnsolved, allowedLocked) {
   let states = [];
   for (let i = 0; i<book.levels.length; i++) {
     let level = book.levels[i];
     let par = level.par;
     let best = level.getBestNumMoves();
     if (best===null) {
-      if (allowedOpen) {
+      if (allowedUnsolved) {
         states[i] = 2;
-        allowedOpen-=1;
+        allowedUnsolved-=1;
       } else if (allowedLocked) {
         states[i] = 1;
         allowedLocked-=1;
@@ -48,12 +48,45 @@ function calculateStatesWithParams (book, allowedOpen, allowedLocked) {
   return states;
 }
 
+function calculateStatesProportional (book) {
+  let allowedUnsolved = 3;
+  const suboptimalIncrease = 0.2
+  const optimalIncrease = 0.5
+
+  let allowedLocked = 50;
+
+  let states = [];
+  for (let i = 0; i<book.levels.length; i++) {
+    let level = book.levels[i];
+    let par = level.par;
+    let best = level.getBestNumMoves();
+    if (best===null) {
+      if (allowedUnsolved>0) {
+        states[i] = 2;
+        allowedUnsolved-=1;
+      } else if (allowedLocked) {
+        states[i] = 1;
+        allowedLocked-=1;
+      } else {
+        states[i] = 0;
+      }
+    } else if (best>par) {
+      states[i] = 3;
+      allowedUnsolved+=suboptimalIncrease;
+    } else {
+      states[i] = 4;
+      allowedUnsolved+=optimalIncrease;
+    }
+  }
+  return states;
+}
+
 function calculateStates (book) {
   // There's two modes: the first one just shows the first level, forcing
   if (book.levels[0].getBestNumMoves() === null) {
     return calculateStatesWithParams(book, 1, 50);
   } else {
-    return calculateStatesWithParams(book, 5, 50);
+    return calculateStatesProportional(book);
   }
 };
 
