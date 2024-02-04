@@ -199,8 +199,11 @@ button:hover, .level_icon:hover {
     box-shadow: inset 0px 0px 20px 0px var(--gold);
 }
 
-button:disabled{
-	background: #aaa;
+button:disabled,
+button[disabled] {
+	background: var(--inactive_background);
+	border-color: var(--inactive_border);
+	color: var(--inactive_text);
 }
 
 #iconContainer {

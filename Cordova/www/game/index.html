@@ -112,14 +112,14 @@
             <!-- <button onclick="game.restart();" >⟳ Restart</button> -->
 
             <!-- TODO: Check if this workds properly on different devices -->
-            <button id="skipButton" onclick="nextLevel();"  ontouchend="nextLevel();" style="touch-action: none;">Next &#62;</button>
+            <button id="finishedLevelNextButton" onclick="nextLevel();"  ontouchend="nextLevel();" style="touch-action: none;">Next &#62;</button>
 
           </div>
           <canvas id="gameCanvas" class="gameCanvas"  width="30px" height="30px"></canvas>
         </div>
         <div class="footer">
-          <button id="skipButton" onclick="prevLevel();">&#60; Prev</button>
-          <button id="skipButton" onclick="nextLevel();" style="float:right;">Next &#62;</button>
+          <button id="prevButton" onclick="prevLevel();">&#60; Prev</button>
+          <button id="nextButton" onclick="nextLevel();" style="float:right;">Next &#62;</button>
         </div>
       </section>
 

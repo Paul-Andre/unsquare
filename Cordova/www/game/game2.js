@@ -307,6 +307,10 @@ https://developer.mozilla.org/en-US/docs/Web/API/Element/setPointerCapture#javas
     if (game.isFinished()) {
       var a = this.div.getElementsByClassName("finishedLevel")[0];
       a.style.display = "block";
+      if (game.level.index >= current_book.levels.length-1) {
+        // TODO: won game.
+
+      }
     }
 
     if (this.gameState){
@@ -478,6 +482,30 @@ game.displayLevelGui = function(level) {
   document.getElementById("LevelIndicator").innerText = "Level " + (1+ index);
     // + " "+level.solutionType;
   ;
+  
+  let states = calculateStates(current_book);
+
+  {
+    let prevButton = this.div.querySelector("#prevButton");
+    let prevIndex = index-1;
+    if (prevIndex < 0 || states[prevIndex]<2) {
+      prevButton.setAttribute("disabled", "disabled");
+    } else {
+      prevButton.removeAttribute("disabled");
+    }
+  }
+
+  {
+    let nextButton = this.div.querySelector("#nextButton");
+    let nextIndex = index+1;
+    if (nextIndex < 0 || states[nextIndex]<2) {
+      nextButton.setAttribute("disabled", "disabled");
+    } else {
+      nextButton.removeAttribute("disabled");
+    }
+  }
+
+  
 
 };
 
