@@ -9,7 +9,7 @@ html, body {
   height: 100%;
 }
 body {
-  /* line-height: 1.5; */
+  line-height: 1.2;
   font-size: 20px;
 }
 input, button, textarea, select {
@@ -18,6 +18,19 @@ input, button, textarea, select {
 h1, h2, h3, h4, h5, h6 {
   overflow-wrap: break-word;
   font-weight: 500;
+}
+
+h1 {
+  font-size: 2em;
+}
+
+h1,h2,h3{line-height:1.2; margin-top: 0.5em}
+p{margin-top: 0.5em; margin-bottom: 0.5em;}
+
+img{
+  max-width: 100%;
+  height: auto;
+  display: block;
 }
 
 :root { 
@@ -233,6 +246,12 @@ div#iconContainer.selectingIcon .level_icon:before {
   /* background-color: red; */
 
   touch-action: none;
+}
+
+button.action {
+  font-size: 125%;
+  padding: 0.5em 1em;
+  margin: 10px 0px;
 }
 
 .finishedLevel {

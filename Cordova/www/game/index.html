@@ -54,29 +54,46 @@
       <!-- add variant_container? -->
 
       <section id="home" class="screen variant_shown">
-        <div class="header">
-          <h1>
-            Unflip
-          </h1>
 
-        </div>
+        <h1>
+          Unflip
+        </h1>
         <div class="wrapper">
-          <button onclick="IS_EDITOR=false; screenManager.switchTo('gameLevelMenu');" type="button">
-            Play
+          <button onclick="IS_EDITOR=false; screenManager.switchTo('gameLevelMenu');" class="action" type="button">
+            Play now!
           </button>
-          <button onclick="IS_EDITOR=true; screenManager.switchTo('bookMenu');" type="button">
-            Editor
-          </button>
-          <button class="" onclick="screenManager.switchTo('options');" type="button">
-            Options
-          </button>
+          &ensp;
+
+          <!-- <button onclick="IS_EDITOR=true; screenManager.switchTo('bookMenu');" type="button"> -->
+          <!--   Editor -->
+          <!-- </button> -->
+          <!-- <button class="" onclick="screenManager.switchTo('options');" type="button"> -->
+          <!--   Options -->
+          <!-- </button> -->
 
           <!-- <button class="" onclick="screenManager.switchTo('about');" type="button"> -->
           <!--   Credits -->
           <!-- </button> -->
         </div>
-        <div class="footer">
-        </div>
+
+
+        <h2>
+          Instructions:
+        </h2>
+        <p>
+        Select square areas of size 2x2 or more to invert the colors of the tiles.
+        </p>
+        <p>
+        Make all tiles white to win!
+        </p>
+
+        <img src="demo_2_3.gif" alt="Demo gif" width="484" height="484"/>
+
+
+        <br>
+        <a href="previous_versions">
+          previous versions
+        </a>
       </section>
 
       <section id="options"> 
@@ -237,6 +254,11 @@
     <script src="activateLevelMenu.js"></script>
     <script src="editorLevelMenu.js"></script>
     <script src="gameLevelMenu.js"></script>
+    <script>
+      function openEditor() {
+          IS_EDITOR=true; screenManager.switchTo('bookMenu');
+      }
+    </script>
 
   </body>
 
