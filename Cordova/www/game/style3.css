@@ -71,10 +71,11 @@ body {
   max-width: 100%;
 
   /* top: 50%; */
-  left: 50%;
+  /*left: 50%; */
   /* transform: translate(-50%, -50%); */
-  transform: translate(-50%, 0);
+  /*transform: translate(-50%, 0);*/
   height: 100%;
+  margin: 0 auto;
 
 }
 
@@ -200,6 +201,15 @@ button:hover, .level_icon:hover {
 
 button:disabled{
 	background: #aaa;
+}
+
+#iconContainer {
+  /*text-align: center;*/
+
+    display: grid;
+    grid-template-columns: repeat(auto-fill, 63px);
+    justify-content: center;
+
 }
 
 div#iconContainer.deleting .level_icon:before {
