@@ -20,6 +20,9 @@
     <script src="Grid.js"></script>
     <script>
       var IS_EDITOR = true; /////////whaaaaaa
+
+      const MAX_WIDTH = 504;
+
     </script>
     <!-- Nothing in head should have code that does significant stuff outside of functions. --> 
     <script src="colorSchemes.js"></script>
@@ -187,8 +190,8 @@
       <section id="gameLevelMenu" class="screen">
         <div class="header">
           <div class="IndicContainer" id="statsIndicator"></div>
+          <h2>Levels:</h2>
           <button onclick="screenManager.goBack();">&#8592; Menu</button>
-          Levels:
         </div>
 
         <div id="iconContainer" class="content">

@@ -30,8 +30,8 @@ function makeGameBase2(canvasId, divId) {
 
   game.onResize = function () {
     //console.log(document.body.offsetWidth, document.body.offsetHeight);
-    //canvasVirtualSize = Math.min(window.innerWidth, window.innerHeight, 500);
-    canvasVirtualSize = Math.min(this.div.offsetWidth, this.div.offsetHeight, 500);
+    //canvasVirtualSize = Math.min(window.innerWidth, window.innerHeight, MAX_WIDTH);
+    canvasVirtualSize = Math.min(this.div.offsetWidth, this.div.offsetHeight, MAX_WIDTH);
 
      // var text = "w.iw " + window.innerWidth + " s.w " + screen.width +" d.iw "+this.div.offsetWidth;
     // document.getElementById("Debugger").innerText = text;
