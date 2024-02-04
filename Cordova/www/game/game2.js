@@ -467,7 +467,6 @@ game.getCurrentBest = function() {
 game.displayLevelGui = function(level) {
 
   var a = this.div.getElementsByClassName("finishedLevel")[0];
-  console.log(a)
   a.style.display = "none";
 
   document.getElementById("TextShower").innerText = level.text;
@@ -515,64 +514,10 @@ game.undo = function () {
 };
 
 
-game.onResize();
-console.log(game);
-
-
-
-
-
-
-
-
-
-game.openLevel(Level.fromJsonObject(
-  {
-    "colorScheme": "BW",
-    "tileShape": "square",
-    // "tiles": [
-    //   [1, 1, 1, 1, 1, 1],
-    //   [1, 2, 2, 2, 2, 1],
-    //   [1, 2, 2, 2, 2, 1],
-    //   [1, 2, 2, 2, 2, 1],
-    //   [1, 2, 2, 2, 2, 1],
-    //   [1, 1, 1, 1, 1, 1]
-    // ],
-    "tiles": [
-      [1, 1, 1, 1 ],
-      [1, 2, 2, 1 ],
-      [1, 2, 2, 1 ],
-      [1, 1, 1, 1 ],
-      
-    ],
-    "par": 1,
-    "index": 0,
-    // "text": "Pull from one corner of the black square to the other.",
-
-  }
-), function(){},
-
-);
-
-
-
-// let undo_stack = [];
-
-// function pop_undo_stack() {
-
-
-// }
-
-
-//game.onShow();
-//
-
-
 function nextLevel() {
   let level = game.level;
   let index = level.index;
   let levels = current_book.levels;
-  console.log(level, index, levels);
 
   if (index+1 <levels.length) {
     index+=1
@@ -590,7 +535,6 @@ function prevLevel() {
   let level = game.level;
   let index = level.index;
   let levels = current_book.levels;
-  console.log(level, index, levels);
 
   if (index-1 >=0) {
     index-=1

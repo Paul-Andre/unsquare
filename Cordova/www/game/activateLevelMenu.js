@@ -29,7 +29,6 @@ function calculateStatesWithParams (book, allowedOpen, allowedLocked) {
     let level = book.levels[i];
     let par = level.par;
     let best = level.getBestNumMoves();
-    console.log(par, best);
     if (best===null) {
       if (allowedOpen) {
         states[i] = 2;
