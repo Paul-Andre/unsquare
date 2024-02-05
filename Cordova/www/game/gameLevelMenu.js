@@ -6,7 +6,7 @@ screenManager.additionalFunctions.gameLevelMenu = gameLevelMenu;
 
 
 
-let bookUrl = "2023_sept_5.json";
+let bookUrl = "2024_feb_05_01.json";
 
 //https://stackoverflow.com/a/35294675
 let request = new XMLHttpRequest();
