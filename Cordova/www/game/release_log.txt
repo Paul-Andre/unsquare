@@ -10,3 +10,6 @@ I have confidence that they will notice the restart and undo buttons.
 04 February 2024
 This release has the funnel and I'm uploading it in order to be able to access it from my phone.
 
+0.4.0-prerelease 2
+05 February 2025
+Adding the first version of the updated level progression
