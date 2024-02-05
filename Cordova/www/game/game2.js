@@ -1,6 +1,30 @@
 "use strict";
 
 
+function getGtagLevelName(level, book) {
+  let a = "Level_" + (level.index+1) + " " + book.source + " " + level.getFullIdentifier() + " tag_v1";
+  console.log(a)
+  return a;
+}
+
+function trackLevelStart(level, book) {
+  if (gtag) {
+    let name = getGtagLevelName(level, book);
+
+    gtag("event", "level_start", {
+      level_name: name,
+    });
+  }
+}
+function trackLevelEnd(level, book) {
+  if (gtag) {
+    let name = getGtagLevelName(level, book);
+    gtag("event", "level_end", {
+      level_name: name,
+      success: true
+    });
+  }
+}
 
 /// This is what does the basics of drawing the tiles to the screen.
 ///
@@ -44,12 +68,19 @@ function makeGameBase2(canvasId, divId) {
 
   game.displayLevelGui = function(){};
 
-  // This is central to both editor and game
+
+
+  // TODO: gtag is specific for game, not editor
   game.openLevel = function (level, book) {
 
     this.gameState = new GameState(level);
     this.level = level;
     this.book = book;
+
+    trackLevelStart(level, book);
+    
+
+
 
     mouseStart.pressed = false;
 
@@ -452,6 +483,9 @@ game.finishedLevel = function () {
   if (prevBest === null || numMoves < prevBest){
     setBestNumMoves(this.level, numMoves);
   } 
+
+  // TODO: make sure this isn't sent excessively for some reason.
+  trackLevelEnd(this.level, this.book);
 
   this.displayLevelGui(this.level);
   this.updateGui();
