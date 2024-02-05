@@ -47,10 +47,11 @@ function makeGameBase(canvasId, divId /*unused*/)  {
 
   // This should probably be renamed to openLevel, and the other openLevel be
   // renamed to resetComponent or something
-  game.initializeTiles = function(level ) {
+  game.initializeTiles = function(level, book) {
     let tiles = level.tiles;
 
     this.level = level;
+    this.book = book;
 
     this.tiles = tiles.clone();
 

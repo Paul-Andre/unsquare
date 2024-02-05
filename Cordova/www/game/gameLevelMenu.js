@@ -34,7 +34,7 @@ function clearBestNumMoves(level, num) {
 request.onload = function () {
   if (request.status >= 200 && request.status < 400) {
     let data = JSON.parse(request.responseText, book_reviver);
-
+    data.source = bookUrl;
 
     gameLevelMenu.openBook(data);
 

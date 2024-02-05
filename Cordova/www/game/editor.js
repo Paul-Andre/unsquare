@@ -2,11 +2,11 @@ var editor = makeGameBase("editorCanvas", "editor");
 
 editor.openLevel = (function () {
   var superOpenLevel = editor.openLevel.bind(editor);
-  return function (level) {
+  return function (level, book) {
     // We don't want the editor to open the actual level.
     // The reason I don't just put it in the base is that at some point the game might need to modify the level
     this.referenceToOriginalLevel = level;
-    superOpenLevel(level.clone());
+    superOpenLevel(level.clone(), book);
   };
 })();
 
@@ -28,7 +28,7 @@ editor.updateLevelInfo = function () {
 editor.saveLevel = function () {
   editor.updateLevelInfo();
   editor.referenceToOriginalLevel.copyFrom(editor.level);
-  save_editor_book(current_book);
+  save_editor_book(this.book);
 
 };
 
@@ -89,7 +89,7 @@ editor.clear = function () {
 
 editor.play = function () {
   this.updateLevelInfo();
-  game.openLevel(this.level);
+  game.openLevel(this.level, this.book);
   screenManager.switchTo("game");
 };
 

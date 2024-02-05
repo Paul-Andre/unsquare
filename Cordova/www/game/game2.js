@@ -45,10 +45,11 @@ function makeGameBase2(canvasId, divId) {
   game.displayLevelGui = function(){};
 
   // This is central to both editor and game
-  game.openLevel = function (level) {
+  game.openLevel = function (level, book) {
 
     this.gameState = new GameState(level);
     this.level = level;
+    this.book = book;
 
     mouseStart.pressed = false;
 
@@ -307,7 +308,7 @@ https://developer.mozilla.org/en-US/docs/Web/API/Element/setPointerCapture#javas
     if (game.isFinished()) {
       var a = this.div.getElementsByClassName("finishedLevel")[0];
       a.style.display = "block";
-      if (game.level.index >= current_book.levels.length-1) {
+      if (game.level.index >= game.book.levels.length-1) {
         // TODO: won game.
 
       }
@@ -410,7 +411,7 @@ game.action = function (v) {
 };
 
 game.restart = function restart() {
-  game.openLevel(this.level);
+  game.openLevel(this.level, this.book);
   game.draw();
 };
 
@@ -441,7 +442,7 @@ game.finishedLevel = function () {
   if (newSum < oldSum) {
     this.level.solutionVector = newSolution;
     this.level.solutionType = "manual";
-    save_editor_book(current_book);
+    save_editor_book(this.book);
   }
 
   let prevBest = getBestNumMoves(this.level);
@@ -482,7 +483,7 @@ game.displayLevelGui = function(level) {
     // + " "+level.solutionType;
   ;
   
-  let states = calculateStates(current_book);
+  let states = calculateStates(this.book);
 
   {
     let prevButton = this.div.querySelector("#prevButton");
@@ -514,33 +515,33 @@ game.undo = function () {
 };
 
 
+//TODO: "encapsulate" these two functions in the game "class"
+//
 function nextLevel() {
   let level = game.level;
   let index = level.index;
-  let levels = current_book.levels;
+  let levels = game.book.levels;
 
   if (index+1 <levels.length) {
     index+=1
     var nextLevel = levels[index];
 
      // = nextLevel;
-    game.openLevel(nextLevel, function(){});
+    game.openLevel(nextLevel, game.book);
 
     game.onShow();
   }
 }
-
-
 function prevLevel() {
   let level = game.level;
   let index = level.index;
-  let levels = current_book.levels;
+  let levels = game.book.levels;
 
   if (index-1 >=0) {
     index-=1
     var nextLevel = levels[index];
 
-    game.openLevel(nextLevel, function(){});
+    game.openLevel(nextLevel, game.book);
 
     game.onShow();
   }
