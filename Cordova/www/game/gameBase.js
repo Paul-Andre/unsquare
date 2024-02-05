@@ -83,11 +83,11 @@ function makeGameBase(canvasId, divId /*unused*/)  {
   game.displayLevelGui = function(){};
   
 
-  game.openLevel = function (level) {
+  game.openLevel = function (level, book) {
 
     this.undoList = [];
 
-    this.initializeTiles(level);
+    this.initializeTiles(level, book);
 
     this.lastUpdateTimestamp = performance.now();
     this.numMoves = 0;

@@ -108,6 +108,7 @@ Level.prototype.copyFrom = function (otherLevel) {
   this.par = otherLevel.par;
   this.text = otherLevel.text;
   this.index = otherLevel.index;
+  this.id = otherLevel.id;
   this.isIcon = otherLevel.isIcon;
   if (otherLevel.solutionVector) {
     this.solutionVector = otherLevel.solutionVector.slice();

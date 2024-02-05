@@ -52,7 +52,9 @@ function load_editor_books() {
     if (key.startsWith("editor_book")) {
       let value = localStorage.getItem(key);
       // console.log(value);
-      editor_books.push(JSON.parse(value, book_reviver));
+      let book = JSON.parse(value, book_reviver);
+      book.source = key;
+      editor_books.push(book);
     }
   }
 };
