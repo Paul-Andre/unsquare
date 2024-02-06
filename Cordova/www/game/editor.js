@@ -66,6 +66,20 @@ editor.submitSolution = function() {
 
 }
 
+editor.submitCompact = function() {
+  let string = window.prompt("String representing the level (as found in the link's custom param");
+  let level = Level.fromCompact(string);
+  if (level) {
+    editor.saveStateForUndo();
+    this.level = level
+    this.initializeTiles(this.level, this.book);
+
+  } else {
+    alert("Could not parse strig");
+
+  }
+}
+
 editor.postApplyMove = function() {
   editor.updateLevelInfo();
   if (this.level.solutionType == "reverse" || this.level.solutionType == "confirmed") {

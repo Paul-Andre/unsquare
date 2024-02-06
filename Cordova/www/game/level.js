@@ -120,7 +120,7 @@ Level.fromCompact = function(s) {
     level.tiles = Grid.usingFlatArray(reach, w, h);
 
     level.solutionVector = solution;
-    level.solutionType = "unknown";
+    level.solutionType = "submitted";
     
   } else  {
     return null;
