@@ -175,7 +175,7 @@ function get_level_full_identifier(level) {
 function get_level_compact_solution(level) {
   return get_geometry_compact(level_get_geometry(level))+"$"+
     get_arithmetic_compact(level_get_arithmetic(level))+"$"+
-    "v$_"+level.solutionVector.join("_");
+    "v$"+level.solutionVector.join("");
 }
 
 function vector_multiply_matrix(applications, operations, arithmetic) {

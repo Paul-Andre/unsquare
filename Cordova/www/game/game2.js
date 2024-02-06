@@ -514,7 +514,7 @@ game.displayLevelGui = function(level) {
   //if (level.solutionType == "gaussian" || level.solutionType == "mixed")
 
   if (level.custom) {
-    this.div.getElementsByClassName("parContentInclusive")[0].innerText = "creator's par: "+par;
+    this.div.getElementsByClassName("parContentInclusive")[0].innerText = "creator par: "+par;
   } else {
     this.div.getElementsByClassName("parContentInclusive")[0].innerText = "par: "+par;
   }
