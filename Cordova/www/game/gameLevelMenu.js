@@ -4,7 +4,7 @@ var gameLevelMenu = activateLevelMenu("gameLevelMenu", false);
 screenManager.additionalFunctions.gameLevelMenu = gameLevelMenu;
 
 
-let bookUrl = "2024_feb_05_01.json";
+let bookUrl = "2024_feb_06_01.json";
 
 //https://stackoverflow.com/a/35294675
 let request = new XMLHttpRequest();
