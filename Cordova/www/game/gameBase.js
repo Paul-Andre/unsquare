@@ -409,11 +409,14 @@ function makeGameBase(canvasId, divId /*unused*/)  {
     }
   };
 
+  game.specificOnShow = function() {};
+
   game.onShow = function () {
     hidden = false;
     document.body.style.zoom = '100%';
     this.draw();
     this.onResize();
+    this.specificOnShow();
   };
 
   game.onHide = function () {

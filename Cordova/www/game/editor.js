@@ -94,6 +94,12 @@ editor.play = function () {
   screenManager.switchTo("game");
 };
 
+editor.specificOnShow = function () {
+  if(!vector_equal(this.level.solutionVector, this.runningSolution)) {
+    this.initializeTiles(this.level, this.book);
+  }
+}
+
 editor.promptSize = function () {
   var size = window.prompt();
   if (size !== null) {
