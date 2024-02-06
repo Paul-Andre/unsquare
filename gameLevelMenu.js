@@ -4,9 +4,7 @@ var gameLevelMenu = activateLevelMenu("gameLevelMenu", false);
 screenManager.additionalFunctions.gameLevelMenu = gameLevelMenu;
 
 
-
-
-let bookUrl = "2024_feb_05_01.json";
+let bookUrl = "2024_feb_06_01.json";
 
 //https://stackoverflow.com/a/35294675
 let request = new XMLHttpRequest();
@@ -34,7 +32,7 @@ function clearBestNumMoves(level, num) {
 request.onload = function () {
   if (request.status >= 200 && request.status < 400) {
     let data = JSON.parse(request.responseText, book_reviver);
-
+    data.source = bookUrl;
 
     gameLevelMenu.openBook(data);
 

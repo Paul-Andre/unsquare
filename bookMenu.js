@@ -1,8 +1,5 @@
 "use strict";
 
-let current_book = null;
-
-
 
 function load_static_books() {
   let books = [];
@@ -42,7 +39,7 @@ function load_static_books() {
 }
 
 
-let static_books = load_static_books();
+//let static_books = load_static_books();
 
 
 let editor_books = [];
@@ -55,7 +52,9 @@ function load_editor_books() {
     if (key.startsWith("editor_book")) {
       let value = localStorage.getItem(key);
       // console.log(value);
-      editor_books.push(JSON.parse(value, book_reviver));
+      let book = JSON.parse(value, book_reviver);
+      book.source = key;
+      editor_books.push(book);
     }
   }
 };
@@ -99,12 +98,10 @@ function save_editor_book(book) {
 var bookMenu = {};
 
 bookMenu.onShow = function () {
-  if (IS_EDITOR) {
-    load_editor_books();
-    this.books = editor_books;
-  } else {
-    this.books = static_books;
-  }
+  load_editor_books();
+  this.books = editor_books;
+
+  // this.books = static_books;
   this.showBooks();
 };
 

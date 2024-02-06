@@ -47,10 +47,11 @@ function makeGameBase(canvasId, divId /*unused*/)  {
 
   // This should probably be renamed to openLevel, and the other openLevel be
   // renamed to resetComponent or something
-  game.initializeTiles = function(level ) {
+  game.initializeTiles = function(level, book) {
     let tiles = level.tiles;
 
     this.level = level;
+    this.book = book;
 
     this.tiles = tiles.clone();
 
@@ -82,11 +83,11 @@ function makeGameBase(canvasId, divId /*unused*/)  {
   game.displayLevelGui = function(){};
   
 
-  game.openLevel = function (level) {
+  game.openLevel = function (level, book) {
 
     this.undoList = [];
 
-    this.initializeTiles(level);
+    this.initializeTiles(level, book);
 
     this.lastUpdateTimestamp = performance.now();
     this.numMoves = 0;
@@ -408,11 +409,14 @@ function makeGameBase(canvasId, divId /*unused*/)  {
     }
   };
 
+  game.specificOnShow = function() {};
+
   game.onShow = function () {
     hidden = false;
     document.body.style.zoom = '100%';
     this.draw();
     this.onResize();
+    this.specificOnShow();
   };
 
   game.onHide = function () {

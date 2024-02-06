@@ -83,6 +83,9 @@ function calculateStatesProportional (book) {
 }
 
 function calculateStates (book) {
+  if (book.levels.length == 0) {
+    return [];
+  }
   // There's two modes: the first one just shows the first level, forcing
   if (book.levels[0].getBestNumMoves() === null) {
     return calculateStatesWithParams(book, 1, 50);
@@ -99,9 +102,7 @@ function activateLevelMenu(elementId, isEditor) {
 
   var levelMenu = {};
 
-  // TODO: remove the current_book global;
   levelMenu.openBook = function (book) {
-    current_book = book;
     this.book = book;
   };
 
@@ -178,12 +179,12 @@ function activateLevelMenu(elementId, isEditor) {
         //editor.setBook(this.book);
 
         // TODO: some kind of callback in order to nicely set level data?
-        editor.openLevel(this.level);
+        editor.openLevel(this.level, levelMenu.book);
         screenManager.switchTo("editor");
       } else {
 
 
-        game.openLevel(this.level);
+        game.openLevel(this.level, levelMenu.book);
         screenManager.switchTo("game");
       }
     }

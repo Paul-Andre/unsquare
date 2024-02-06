@@ -168,6 +168,11 @@ for (var colorSchemeName in colorSchemes) {
   colorSchemes[colorSchemeName].name = colorSchemeName;
 }
 
+let colorSchemeByMod = {
+  [2]: colorSchemes.BW,
+  [3]: colorSchemes.tri,
+}
+
 
 let modular_arithmetic_colors_cells = {
   [2]: colorSchemes.BW.cells,

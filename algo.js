@@ -160,7 +160,7 @@ function get_level_compact_tiles(level) {
 
   return get_geometry_compact(level_get_geometry(level))+"$"+
     get_arithmetic_compact(level_get_arithmetic(level))+"$"+
-    "T_"+level.tiles.array.join("_");
+    "t$"+level.tiles.array.join("_");
   // If do to2dArray() instead of array, then magically works... maybe want that?
 }
 
@@ -168,6 +168,15 @@ function get_level_full_identifier(level) {
   return level.id +"$"+get_level_compact_tiles(level)
 }
 
+// TODO: Stupid function name. This function returns the "compact" string
+// representing the level by transmitting its solution
+// And it's not even the most compact representation...
+// small "s" is the compact version, big "S" is the version with underscores.
+function get_level_compact_solution(level) {
+  return get_geometry_compact(level_get_geometry(level))+"$"+
+    get_arithmetic_compact(level_get_arithmetic(level))+"$"+
+    "v$"+level.solutionVector.join("");
+}
 
 function vector_multiply_matrix(applications, operations, arithmetic) {
   let m = applications.length;
@@ -389,12 +398,14 @@ function get_level_tiles_vector(level) {
 
 }
 
+
 function level_get_arithmetic(level) {
   return level.colorScheme.arithmetic;
 }
 
+
+// TODO: do some kind of check more specific than try catch
 function level_check_solution(level, solution=null) {
-  try {
     if (solution===null) {
       solution = level.solutionVector;
     }
@@ -406,13 +417,6 @@ function level_check_solution(level, solution=null) {
     //console.log(reach, target);
 
     return vector_equal(target, reach);
-  }
-
-  catch {
-    // XXX: here I check if they do assertion error
-    return false;
-
-  }
 
 }
 

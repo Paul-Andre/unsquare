@@ -2,11 +2,11 @@ var editor = makeGameBase("editorCanvas", "editor");
 
 editor.openLevel = (function () {
   var superOpenLevel = editor.openLevel.bind(editor);
-  return function (level) {
+  return function (level, book) {
     // We don't want the editor to open the actual level.
     // The reason I don't just put it in the base is that at some point the game might need to modify the level
     this.referenceToOriginalLevel = level;
-    superOpenLevel(level.clone());
+    superOpenLevel(level.clone(), book);
   };
 })();
 
@@ -28,12 +28,12 @@ editor.updateLevelInfo = function () {
 editor.saveLevel = function () {
   editor.updateLevelInfo();
   editor.referenceToOriginalLevel.copyFrom(editor.level);
-  save_editor_book(current_book);
+  save_editor_book(this.book);
 
 };
 
 editor.restoreUndoState = function(undo) {
-  this.initializeTiles(undo.level);
+  this.initializeTiles(undo.level, this.book);
   this.numMoves-=1;
 }
 
@@ -58,11 +58,26 @@ editor.submitSolution = function() {
     this.level.solutionVector = sol;
     this.level.solutionType = "submitted";
 
-    this.initializeTiles(this.level);
+    this.initializeTiles(this.level, this.book);
   } else {
+
     alert("Solution not satisfactory");
   }
 
+}
+
+editor.submitCompact = function() {
+  let string = window.prompt("String representing the level (as found in the link's custom param");
+  let level = Level.fromCompact(string);
+  if (level) {
+    editor.saveStateForUndo();
+    this.level = level
+    this.initializeTiles(this.level, this.book);
+
+  } else {
+    alert("Could not parse strig");
+
+  }
 }
 
 editor.postApplyMove = function() {
@@ -89,9 +104,15 @@ editor.clear = function () {
 
 editor.play = function () {
   this.updateLevelInfo();
-  game.openLevel(this.level);
+  game.openLevel(this.level, this.book);
   screenManager.switchTo("game");
 };
+
+editor.specificOnShow = function () {
+  if(!vector_equal(this.level.solutionVector, this.runningSolution)) {
+    this.initializeTiles(this.level, this.book);
+  }
+}
 
 editor.promptSize = function () {
   var size = window.prompt();
@@ -125,7 +146,7 @@ editor.promptSize = function () {
       this.level.solutionVector = new Array(m).fill(0);
       this.level.solutionType = "confirmed";
 
-      this.initializeTiles(this.level);
+      this.initializeTiles(this.level, this.book);
       //this.tiles = grid;
     }
   }
@@ -162,7 +183,20 @@ editor.updateGui = function () {
   } else {
     this.div.getElementsByClassName("editorBest")[0].innerText = "? " + type;
   }
+}
 
+// TODO: hardcode the url?
+
+
+editor.getCustomUrl = function () {
+  let base = location.origin + location.pathname;
+  let encoding = get_level_compact_solution(editor.level);
+  return base + "?custom=" + encoding;
+}
+
+
+editor.displayShare = function () {
+  let sol_string = window.prompt("URL for sharing", this.getCustomUrl());
 }
 
 screenManager.additionalFunctions.editor = editor;

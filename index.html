@@ -71,6 +71,9 @@
             loading...
           </button>
           &ensp;
+          <button onclick="openPlayerEditor()">
+            Level Editor
+          </button>
 
           <!-- <button onclick="IS_EDITOR=true; screenManager.switchTo('bookMenu');" type="button"> -->
           <!--   Editor -->
@@ -128,7 +131,7 @@
 
           <div style="float: right; width:25%;" class="IndicContainer">
             <div class="indicator" id="BestIndicator" > best: <span class="bestContent"> </span></div>
-            <div class="indicator" id="ParIndicator"> par: <span class="parContent"> </span></div>
+            <div class="indicator parContentInclusive" id="ParIndicator" > par: </div>
             <div class="indicator" id="MovesIndicator"> moves: <span class="movesContent"> </span> </div>
           </div>
 
@@ -165,11 +168,15 @@
 
             <button onclick="editor.undo();" style="float:right;">Undo</button>
             <button onclick="editor.clear();" style="float:right;">Clear</button>
-            <button onclick="editor.saveLevel();" style="float:right;">Save</button>
+            <!-- <button onclick="editor.saveLevel();" style="float:right;">Save</button> -->
             <button onclick="editor.promptSize();" style="float:right;">Change size</button>
+
+            <!-- <button onclick="editor.printFlat();" style="float:right;">Print Flat</button> -->
+
+            <!-- <button onclick="editor.submitSolution();" style="float:right;">Input Solution</button> -->
+            <button onclick="editor.submitCompact();" style="float:right;">Input String</button>
+            <button onclick="editor.displayShare();" style="float:right;">Share Link</button>
             <button onclick="editor.play();" style="float:right;">Play</button>
-            <button onclick="editor.printFlat();" style="float:right;">Print Flat</button>
-            <button onclick="editor.submitSolution();" style="float:right;">Submit Solution</button>
 
             best: <span class="editorBest"> </span>
           </div>
@@ -267,9 +274,21 @@
     <script src="activateLevelMenu.js"></script>
     <script src="editorLevelMenu.js"></script>
     <script src="gameLevelMenu.js"></script>
+    <script src="customParse.js"></script>
     <script>
       function openEditor() {
           IS_EDITOR=true; screenManager.switchTo('bookMenu');
+      }
+
+      function openPlayerEditor() {
+        IS_EDITOR=true; 
+        let level = Level.empty(6);
+        level.index = 0
+        editor.openLevel(level, {
+          levels: [level],
+          source: "playerEditor",
+        });
+        screenManager.switchTo('editor');
       }
     </script>
 

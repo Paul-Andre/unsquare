@@ -25,6 +25,7 @@ Level.empty = function makeLevel(size) {
   return level;
 };
 
+
 function compute_gaussian_solution(level) {
   let sol = get_gaussian_solution_for_level(level);
   if (sol) {
@@ -73,6 +74,64 @@ Level.fromJsonObject = function (json) {
   return level;
 };
 
+Level.fromCompact = function(s) {
+  let [geo,arith,tOrV,data] = s.split("$");
+  if (!geo.startsWith("s_")) {
+    return null;
+  }
+  let [_1, w, h] = geo.split("_");
+  w = Number(w);
+  h = Number(h);
+
+  if (!arith.startsWith("m_")) {
+    return null;
+  }
+  let [_2, mod] = arith.split("_");
+  mod = Number(mod);
+
+  if (data.startsWith("_")) {
+    data = data.slice(1).split("_").map(Number);
+  } else {
+    data = Array.from(data).map(Number);
+  }
+
+  let level = new Level();
+  level.colorScheme = colorSchemeByMod[mod];
+  level.tileShape = tileShapes.square;
+  level.text = "";
+  level.index = -1;
+  level.isIcon = false;
+  // TODO: does it make sense to not add any numbers or anything?
+  level.id = "custom";
+
+  if (tOrV == "v") {
+    let operations = compute_operations( {
+      type: "square",
+      width: w,
+      height: h,
+    });
+
+    let solution = data;
+
+    let reach = vector_multiply_matrix(solution, operations)
+    vector_simplify_arithmetic(reach, level_get_arithmetic(level));
+
+    reach = reach.map((a)=>a+1)
+    level.tiles = Grid.usingFlatArray(reach, w, h);
+
+    level.solutionVector = solution;
+    level.solutionType = "submitted";
+    
+  } else  {
+    return null;
+  }
+
+  assert(level_check_solution(level));
+  level.par = vector_sum(level.solutionVector);
+
+  return level;
+}
+
 Level.prototype.toJsonObject = function () {
   var json = {};
   json.colorScheme = this.colorScheme.name;
@@ -108,6 +167,7 @@ Level.prototype.copyFrom = function (otherLevel) {
   this.par = otherLevel.par;
   this.text = otherLevel.text;
   this.index = otherLevel.index;
+  this.id = otherLevel.id;
   this.isIcon = otherLevel.isIcon;
   if (otherLevel.solutionVector) {
     this.solutionVector = otherLevel.solutionVector.slice();
