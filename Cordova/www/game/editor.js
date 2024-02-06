@@ -33,7 +33,7 @@ editor.saveLevel = function () {
 };
 
 editor.restoreUndoState = function(undo) {
-  this.initializeTiles(undo.level);
+  this.initializeTiles(undo.level, this.book);
   this.numMoves-=1;
 }
 
@@ -58,7 +58,7 @@ editor.submitSolution = function() {
     this.level.solutionVector = sol;
     this.level.solutionType = "submitted";
 
-    this.initializeTiles(this.level);
+    this.initializeTiles(this.level, this.book);
   } else {
 
     alert("Solution not satisfactory");
@@ -126,7 +126,7 @@ editor.promptSize = function () {
       this.level.solutionVector = new Array(m).fill(0);
       this.level.solutionType = "confirmed";
 
-      this.initializeTiles(this.level);
+      this.initializeTiles(this.level, this.book);
       //this.tiles = grid;
     }
   }
