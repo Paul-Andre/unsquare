@@ -513,14 +513,19 @@ game.displayLevelGui = function(level) {
   let par = vector_sum(level.solutionVector);
   //if (level.solutionType == "gaussian" || level.solutionType == "mixed")
 
-  this.div.getElementsByClassName("parContent")[0].innerText = par
+  if (level.custom) {
+    this.div.getElementsByClassName("parContentInclusive")[0].innerText = "creator's par: "+par;
+  } else {
+    this.div.getElementsByClassName("parContentInclusive")[0].innerText = "par: "+par;
+  }
 
   let index = level.index;
 
-  // TODO: properly do this, with this.div or whatever
-  document.getElementById("LevelIndicator").innerText = "Level " + (1+ index);
-    // + " "+level.solutionType;
-  ;
+  if (level.custom) {
+    document.getElementById("LevelIndicator").innerText = "Custom Level";
+  } else {
+    document.getElementById("LevelIndicator").innerText = "Level " + (1+ index);
+  }
   
   let states = calculateStates(this.book);
 
@@ -537,7 +542,7 @@ game.displayLevelGui = function(level) {
   {
     let nextButton = this.div.querySelector("#nextButton");
     let nextIndex = index+1;
-    if (nextIndex < 0 || states[nextIndex]<2) {
+    if (nextIndex >= states.length || states[nextIndex]<2) {
       nextButton.setAttribute("disabled", "disabled");
     } else {
       nextButton.removeAttribute("disabled");

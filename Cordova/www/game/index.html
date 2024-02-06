@@ -128,7 +128,7 @@
 
           <div style="float: right; width:25%;" class="IndicContainer">
             <div class="indicator" id="BestIndicator" > best: <span class="bestContent"> </span></div>
-            <div class="indicator" id="ParIndicator"> par: <span class="parContent"> </span></div>
+            <div class="indicator parContentInclusive" id="ParIndicator" > par: </div>
             <div class="indicator" id="MovesIndicator"> moves: <span class="movesContent"> </span> </div>
           </div>
 
@@ -267,6 +267,7 @@
     <script src="activateLevelMenu.js"></script>
     <script src="editorLevelMenu.js"></script>
     <script src="gameLevelMenu.js"></script>
+    <script src="customParse.js"></script>
     <script>
       function openEditor() {
           IS_EDITOR=true; screenManager.switchTo('bookMenu');

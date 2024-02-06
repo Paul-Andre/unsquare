@@ -162,7 +162,20 @@ editor.updateGui = function () {
   } else {
     this.div.getElementsByClassName("editorBest")[0].innerText = "? " + type;
   }
+}
 
+// TODO: hardcode the url?
+
+
+editor.getCustomUrl = function () {
+  let base = location.origin + location.pathname;
+  let encoding = get_level_compact_solution(editor.level);
+  return base + "?custom=" + encoding;
+}
+
+
+editor.displayShare = function () {
+  let sol_string = window.prompt("URL for sharing", this.getCustomUrl());
 }
 
 screenManager.additionalFunctions.editor = editor;

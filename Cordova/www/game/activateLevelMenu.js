@@ -83,6 +83,9 @@ function calculateStatesProportional (book) {
 }
 
 function calculateStates (book) {
+  if (book.levels.length == 0) {
+    return [];
+  }
   // There's two modes: the first one just shows the first level, forcing
   if (book.levels[0].getBestNumMoves() === null) {
     return calculateStatesWithParams(book, 1, 50);
