@@ -404,6 +404,7 @@ function level_get_arithmetic(level) {
 }
 
 
+// TODO: do some kind of check more specific than try catch
 function level_check_solution(level, solution=null) {
     if (solution===null) {
       solution = level.solutionVector;

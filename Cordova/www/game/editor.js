@@ -60,6 +60,7 @@ editor.submitSolution = function() {
 
     this.initializeTiles(this.level);
   } else {
+
     alert("Solution not satisfactory");
   }
 

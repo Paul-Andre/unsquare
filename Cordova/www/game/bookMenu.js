@@ -39,7 +39,7 @@ function load_static_books() {
 }
 
 
-let static_books = load_static_books();
+//let static_books = load_static_books();
 
 
 let editor_books = [];
@@ -98,12 +98,10 @@ function save_editor_book(book) {
 var bookMenu = {};
 
 bookMenu.onShow = function () {
-  if (IS_EDITOR) {
-    load_editor_books();
-    this.books = editor_books;
-  } else {
-    this.books = static_books;
-  }
+  load_editor_books();
+  this.books = editor_books;
+
+  // this.books = static_books;
   this.showBooks();
 };
 
