@@ -8,22 +8,27 @@ function getGtagLevelName(level, book) {
 }
 
 function trackLevelStart(level, book) {
-  if (gtag) {
-    let name = getGtagLevelName(level, book);
-
-    gtag("event", "level_start", {
-      level_name: name,
-    });
-  }
+  // Wrapping in setTimeout to minimize issues if an error happens.
+  setTimeout(function () {
+    if (gtag) {
+      let name = getGtagLevelName(level, book);
+      gtag("event", "level_start", {
+        level_name: name,
+      });
+    }
+  }, 0);
 }
 function trackLevelEnd(level, book) {
-  if (gtag) {
-    let name = getGtagLevelName(level, book);
-    gtag("event", "level_end", {
-      level_name: name,
-      success: true
-    });
-  }
+  // Wrapping in setTimeout to minimize issues if an error happens.
+  setTimeout(function () {
+    if (gtag) {
+      let name = getGtagLevelName(level, book);
+      gtag("event", "level_end", {
+        level_name: name,
+        success: true
+      });
+    }
+  }, 0);
 }
 
 /// This is what does the basics of drawing the tiles to the screen.
