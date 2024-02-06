@@ -16,3 +16,6 @@ Adding the first version of the updated level progression
 
 0.4.0-release
 Added a custom levels!
+
+0.4.1
+Reordered stuff on home page and added pulsating animation to Play now

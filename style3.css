@@ -251,10 +251,32 @@ div#iconContainer.selectingIcon .level_icon:before {
   touch-action: none;
 }
 
+
 button.action {
   font-size: 125%;
   padding: 0.5em 1em;
   margin: 10px 0px;
+  /* border-width: 4px; */
+}
+
+button.action:enabled {
+  border-color: #4fb6ff;
+  animation: pulse-animation 2s infinite;
+}
+
+button.action:enabled:hover {
+  border: solid 2px #6b6762;
+}
+
+
+@keyframes pulse-animation {
+0% {
+    box-shadow: 0 0 5px 0px rgb(115 191 241 / 50%);
+}
+
+100% {
+    box-shadow: 0 0 10px 20px rgb(115 191 241 / 0%);
+}
 }
 
 .finishedLevel {
@@ -374,4 +396,9 @@ section header {
     margin-right: 4px;
     font-weight: 700;
     color: #c918c9;
+}
+
+footer a {
+  font: 75%;
+  color: var(--black);
 }
