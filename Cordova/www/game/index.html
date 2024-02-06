@@ -67,13 +67,6 @@
           Unflip
         </h1>
         <div class="wrapper">
-          <button onclick="IS_EDITOR=false; screenManager.switchTo('gameLevelMenu');" id="homePlayButton" class="action" type="button" disabled> 
-            loading...
-          </button>
-          &ensp;
-          <button onclick="openPlayerEditor()">
-            Level Editor
-          </button>
 
           <!-- <button onclick="IS_EDITOR=true; screenManager.switchTo('bookMenu');" type="button"> -->
           <!--   Editor -->
@@ -97,15 +90,22 @@
         <p>
         Make all tiles white to win!
         </p>
+          <button onclick="IS_EDITOR=false; screenManager.switchTo('gameLevelMenu');" id="homePlayButton" class="action" type="button" disabled> 
+            loading...
+          </button>
+          &ensp;
+          <button onclick="openPlayerEditor()">
+            Level Editor
+          </button>
 
         <img src="demo_2_3.gif" alt="Demo gif" width="484" height="484"/>
 
 
         <br>
         <footer> 
-        <a href="previous_versions">
-          previous versions
-        </a>
+        <!-- <a href="previous_versions"> -->
+        <!--   previous versions -->
+        <!-- </a> -->
         <p class="copyright">
         &copy; 2024 Paul-Andre Henegar. All rights reserved.
         </p>

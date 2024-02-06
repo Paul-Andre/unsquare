@@ -13,3 +13,9 @@ This release has the funnel and I'm uploading it in order to be able to access i
 0.4.0-prerelease 2
 05 February 2025
 Adding the first version of the updated level progression
+
+0.4.0-release
+Added a custom levels!
+
+0.4.1
+Reordered stuff on home page and added pulsating animation to Play now
