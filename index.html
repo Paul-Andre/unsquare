@@ -151,6 +151,28 @@
             <button id="finishedLevelNextButton" onclick="nextLevel();"  ontouchend="nextLevel();" style="touch-action: none;">Next &#62;</button>
 
           </div>
+
+          <div class="finishedGame"  style="display: none;" >
+            <!-- <button onclick="game.restart();" >⟳ Restart</button> -->
+            <p>
+            Congratulations! You finished the game!
+            </p>
+            <ul>
+              <li>Create and share your own levels: </li>
+              <li>Leave an email to hear further updates (daily levels coming soon) </li>
+              <li>Leave comments or suggestions.</li>
+            </ul>
+
+            <!-- TODO: Check if this workds properly on different devices -->
+            <button id="finishedLevelNextButton" onclick="nextLevel();"  ontouchend="nextLevel();" style="touch-action: none;">Next &#62;</button>
+          </div>
+
+          <div class="interstitialMessage"  style="display: none;" >
+            <p>
+            Did you know you can create your own levels?
+            </p>
+          </div>
+
           <canvas id="gameCanvas" class="gameCanvas"  width="30px" height="30px"></canvas>
         </div>
         <div class="footer">
