@@ -5,6 +5,7 @@ screenManager.additionalFunctions.gameLevelMenu = gameLevelMenu;
 
 
 let bookUrl = "2024_feb_09_quicker.json";
+//let bookUrl = "tiny_for_testing.json";
 
 //https://stackoverflow.com/a/35294675
 let request = new XMLHttpRequest();
@@ -38,7 +39,7 @@ request.onload = function () {
 
     let button = document.getElementById("homePlayButton");
     button.removeAttribute("disabled");
-    button.innerText="Play now!";
+    button.innerText="Start Game!";
 
   } 
 };
