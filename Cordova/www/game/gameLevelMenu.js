@@ -39,7 +39,7 @@ request.onload = function () {
 
     let button = document.getElementById("homePlayButton");
     button.removeAttribute("disabled");
-    button.innerText="Play now!";
+    button.innerText="Start Game!";
 
   } 
 };
