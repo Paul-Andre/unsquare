@@ -22,3 +22,6 @@ Reordered stuff on home page and added pulsating animation to Play now
 
 0.4.2
 New progression, hopefully less boring for HN
+
+0.4.3
+Added a (not good) final level screen.
