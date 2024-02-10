@@ -342,11 +342,13 @@ https://developer.mozilla.org/en-US/docs/Web/API/Element/setPointerCapture#javas
   game.updateGui = function () {
 
     if (game.isFinished()) {
-      var a = this.div.getElementsByClassName("finishedLevel")[0];
-      a.style.display = "block";
       if (game.level.index >= game.book.levels.length-1) {
         // TODO: won game.
-
+        var a = this.div.getElementsByClassName("finishedGame")[0];
+        a.style.display = "block";
+      } else {
+        var a = this.div.getElementsByClassName("finishedLevel")[0];
+        a.style.display = "block";
       }
     }
 
@@ -506,8 +508,15 @@ game.getCurrentBest = function() {
 
 game.displayLevelGui = function(level) {
 
+  // TODO: really ugly hack
+  {
   var a = this.div.getElementsByClassName("finishedLevel")[0];
   a.style.display = "none";
+  }
+  {
+  var a = this.div.getElementsByClassName("finishedGame")[0];
+  a.style.display = "none";
+  }
 
   document.getElementById("TextShower").innerText = level.text;
   let par = vector_sum(level.solutionVector);

@@ -19,3 +19,6 @@ Added a custom levels!
 
 0.4.1
 Reordered stuff on home page and added pulsating animation to Play now
+
+0.4.2
+New progression, hopefully less boring for HN
