@@ -201,6 +201,13 @@ button:hover, .level_icon:hover {
 .icon_unsolved {
 }
 
+.icon_glow {
+  border-color: #4fb6ff;
+  animation: pulse-animation 2s infinite;
+}
+.icon_glow:before{
+}
+
 .icon_suboptimal {
     border: solid 2px var(--bronze);
 }
