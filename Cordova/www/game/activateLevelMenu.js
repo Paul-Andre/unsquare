@@ -106,11 +106,8 @@ function activateLevelMenu(elementId, isEditor) {
     this.book = book;
   };
 
+  // TODO: rename; this creates an html node
   levelMenu.createLevelInfo = function (level, state) {
-
-    // TODO: this situation of level_icon and levelIcon, where one is the
-    // external div and the other is the internal canvas, is absurd.
-    // FIX IT
 
     let element = htmlStringToElement( `<div class="level_icon">
     <canvas class="level_icon_image"> </canvas>

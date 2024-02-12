@@ -46,7 +46,6 @@ function makeGameBase2(canvasId, divId) {
 
 
 
-  // TODO: gtag is specific for game, not editor
   game.openLevel = function (level, book) {
 
     this.gameState = new GameState(level);
