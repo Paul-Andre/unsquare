@@ -81,7 +81,7 @@ function makeGameBase(canvasId, divId /*unused*/)  {
   }
 
   game.displayLevelGui = function(){};
-  
+
 
   game.openLevel = function (level, book) {
 
@@ -122,7 +122,7 @@ function makeGameBase(canvasId, divId /*unused*/)  {
         v.selected = false;
       });
 
-      
+
       this.level.tileShape.forTilesInMove(
         this.tileStates,
         potentialMove,
@@ -154,12 +154,12 @@ function makeGameBase(canvasId, divId /*unused*/)  {
 
   // This is meant to be overwritten
   game.createUndoState = function(move) {
-      return {
-        tiles: this.tiles.clone(),
-        runningSolution: this.runningSolution.slice(),
-        solutionType: this.solutionType,
-        move: move,
-      }
+    return {
+      tiles: this.tiles.clone(),
+      runningSolution: this.runningSolution.slice(),
+      solutionType: this.solutionType,
+      move: move,
+    }
   }
 
   // This is also meant to be overwritten
@@ -170,7 +170,7 @@ function makeGameBase(canvasId, divId /*unused*/)  {
   }
 
   game.saveStateForUndo = function(move=null) {
-      this.undoList.push(game.createUndoState(move));
+    this.undoList.push(game.createUndoState(move));
   }
 
   game.updateGui = function () { }
@@ -242,7 +242,7 @@ function makeGameBase(canvasId, divId /*unused*/)  {
         Math.min(
           canvas.width - 2,
           (event.clientX - rect.left - borderLeftWidth) *
-            (window.devicePixelRatio || 1)
+          (window.devicePixelRatio || 1)
         )
       ),
       y: Math.max(
@@ -250,57 +250,57 @@ function makeGameBase(canvasId, divId /*unused*/)  {
         Math.min(
           canvas.height - 2,
           (event.clientY - rect.top - borderTopWidth) *
-            (window.devicePixelRatio || 1)
+          (window.devicePixelRatio || 1)
         )
       ),
     };
   }
 
   if (false) {
-  function createTouchListener(fn) {
-    return function (event) {
-      if (event.changedTouches) {
-        var coords = getCoordinates(event.changedTouches[0]);
-        console.log(coords);
+    function createTouchListener(fn) {
+      return function (event) {
+        if (event.changedTouches) {
+          var coords = getCoordinates(event.changedTouches[0]);
+          console.log(coords);
+          fn(coords.x, coords.y);
+        }
+        return cancelEvent(event);
+      };
+    }
+
+    canvas.addEventListener(
+      "touchstart",
+      createTouchListener(game.doMouseDown.bind(game))
+    );
+    canvas.addEventListener(
+      "touchmove",
+      createTouchListener(game.doMouseMove.bind(game))
+    );
+    canvas.addEventListener(
+      "touchend",
+      createTouchListener(game.doMouseUp.bind(game))
+    );
+
+    function createMouseListener(fn) {
+      return function (event) {
+        var coords = getCoordinates(event);
         fn(coords.x, coords.y);
-      }
-      return cancelEvent(event);
-    };
-  }
+        return cancelEvent(event);
+      };
+    }
 
-  canvas.addEventListener(
-    "touchstart",
-    createTouchListener(game.doMouseDown.bind(game))
-  );
-  canvas.addEventListener(
-    "touchmove",
-    createTouchListener(game.doMouseMove.bind(game))
-  );
-  canvas.addEventListener(
-    "touchend",
-    createTouchListener(game.doMouseUp.bind(game))
-  );
-
-  function createMouseListener(fn) {
-    return function (event) {
-      var coords = getCoordinates(event);
-      fn(coords.x, coords.y);
-      return cancelEvent(event);
-    };
-  }
-
-  canvas.addEventListener(
-    "mousedown",
-    createMouseListener(game.doMouseDown.bind(game))
-  );
-  canvas.addEventListener(
-    "mousemove",
-    createMouseListener(game.doMouseMove.bind(game))
-  );
-  canvas.addEventListener(
-    "mouseup",
-    createMouseListener(game.doMouseUp.bind(game))
-  );
+    canvas.addEventListener(
+      "mousedown",
+      createMouseListener(game.doMouseDown.bind(game))
+    );
+    canvas.addEventListener(
+      "mousemove",
+      createMouseListener(game.doMouseMove.bind(game))
+    );
+    canvas.addEventListener(
+      "mouseup",
+      createMouseListener(game.doMouseUp.bind(game))
+    );
   }else{
     function beginSliding(e) {
       console.log("begin", e)
@@ -377,7 +377,7 @@ function makeGameBase(canvasId, divId /*unused*/)  {
   game.drawCanvasContinuous = function () {
 
   }
-  
+
   game.draw = function () {
     if (!hidden && this.tiles) {
       this.level.tileShape.draw_expanded(ctx, this.tiles, this.tileStates, this.level.colorScheme, this.action);
