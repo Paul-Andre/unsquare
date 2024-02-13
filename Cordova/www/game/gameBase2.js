@@ -21,7 +21,11 @@ function makeGameBase2(canvasId, divId) {
 
   var game = {
     gameState: null,
+    // TODO: encapsulate these in an object
+    demoDrag: null,
+    demoDragTime: 0,
   };
+
 
   game.div = document.getElementById(divId);
 
@@ -33,9 +37,9 @@ function makeGameBase2(canvasId, divId) {
     //canvasVirtualSize = Math.min(window.innerWidth, window.innerHeight, MAX_WIDTH);
     canvasVirtualSize = Math.min(this.div.offsetWidth, this.div.offsetHeight, MAX_WIDTH);
 
-     // var text = "w.iw " + window.innerWidth + " s.w " + screen.width +" d.iw "+this.div.offsetWidth;
+    // var text = "w.iw " + window.innerWidth + " s.w " + screen.width +" d.iw "+this.div.offsetWidth;
     // document.getElementById("Debugger").innerText = text;
-    
+
     canvasSize = canvasVirtualSize * (window.devicePixelRatio || 1);
     canvas.width = canvas.height = canvasSize;
     canvas.style.width = canvas.style.height = canvasVirtualSize + "px";
@@ -45,6 +49,16 @@ function makeGameBase2(canvasId, divId) {
   game.displayLevelGui = function(){};
 
 
+  var firstDemoDrag = {
+    start: {
+      x: 0.3,
+      y: 0.3,
+    },
+    end: {
+      x: 0.7,
+      y: 0.7,
+    }
+  }
 
   game.openLevel = function (level, book) {
 
@@ -53,8 +67,6 @@ function makeGameBase2(canvasId, divId) {
     this.book = book;
 
     trackLevelStart(level, book);
-    
-
 
 
     mouseStart.pressed = false;
@@ -311,6 +323,14 @@ https://developer.mozilla.org/en-US/docs/Web/API/Element/setPointerCapture#javas
 
   game.updateGui = function () {
 
+    if (game.level.id == "level_1693531796434" && this.gameState.numMoves == 0) {
+      game.demoDrag = firstDemoDrag;
+    } else {
+      game.demoDrag = null;
+    }
+
+
+
     if (game.isFinished()) {
       if (game.level.index >= game.book.levels.length-1) {
         // TODO: won game.
@@ -350,6 +370,10 @@ https://developer.mozilla.org/en-US/docs/Web/API/Element/setPointerCapture#javas
 
       this.level.tileShape.draw(ctx, this.gameState, this.action);
 
+      if (this.demoDrag) {
+        this.overlayDemoDrag();
+      }
+
       if (numRequested == 0) {
 
         requestAnimationFrame(function (timeStamp) {
@@ -358,7 +382,13 @@ https://developer.mozilla.org/en-US/docs/Web/API/Element/setPointerCapture#javas
           var previousTimestamp = game.gameState.lastUpdateTimestamp;
 
           var changed = false;
-
+          if (game.demoDrag) {
+            //TODO: make it so this doesn't use so much CPU
+            changed = true;
+            game.demoDragTime += (timeStamp - previousTimestamp)/1000;
+            game.demoDragTime %= 1;
+          }
+          
           game.gameState.tileStates.forEach(function (v) {
 
             var prevTS = v.transitionState;
@@ -392,7 +422,51 @@ https://developer.mozilla.org/en-US/docs/Web/API/Element/setPointerCapture#javas
         numRequested++;
       }
     }
+
+
   };
+
+  // TODO put these in a better file
+  function interpolate(a,b,t) {
+    return a + (b-a)*t;
+  }
+
+  // [0,1] -> [0,1]
+  // https://stackoverflow.com/a/25730573/2356347
+  function bezierBlend(t){
+      return t * t * (3.0 - 2.0 * t);
+  }
+
+  // TODO: overlay this on a separate canvas for efficiency?  eh...
+  game.overlayDemoDrag = function () {
+    if (!game.demoDrag) {
+      return;
+    }
+    let width = canvas.width;
+    let height = canvas.height;
+    ctx.strokeStyle = "#4fb6ff55";
+
+    // TODO: base this on the size of canvas
+    // Possibly by scaling the context
+    ctx.lineWidth = 45;
+    ctx.lineCap = "round";
+    ctx.beginPath()
+    ctx.moveTo(game.demoDrag.start.x * width, game.demoDrag.start.y * height);
+    ctx.lineTo(game.demoDrag.end.x *width, game.demoDrag.end.y *height);
+    ctx.stroke();
+
+    let animTime = game.demoDragTime;
+    let easedTime = bezierBlend(animTime);
+    let bubbleX = interpolate(game.demoDrag.start.x, game.demoDrag.end.x, easedTime) * width;
+    let bubbleY = interpolate(game.demoDrag.start.y, game.demoDrag.end.y, easedTime) * height;
+
+    let bubbleSize = 60;
+    ctx.fillStyle = "#4fb6ff55";
+    ctx.beginPath();
+    ctx.arc(bubbleX, bubbleY, bubbleSize, 0, 2 * Math.PI);
+    ctx.fill();
+
+  }
 
   game.onShow = function () {
     hidden = false;
