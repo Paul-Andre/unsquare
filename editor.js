@@ -1,3 +1,5 @@
+"use strict";
+
 var editor = makeGameBase("editorCanvas", "editor");
 
 editor.openLevel = (function () {

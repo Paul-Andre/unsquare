@@ -186,3 +186,7 @@ Level.prototype.getBestNumMoves = function() {
   return getBestNumMoves(this);
 }
 
+Level.prototype.showsDemo = function() {
+  return this.index === 0;
+}
+

@@ -106,11 +106,8 @@ function activateLevelMenu(elementId, isEditor) {
     this.book = book;
   };
 
-  levelMenu.createLevelInfo = function (level, state) {
-
-    // TODO: this situation of level_icon and levelIcon, where one is the
-    // external div and the other is the internal canvas, is absurd.
-    // FIX IT
+  // TODO: rename; this creates an html node
+  levelMenu.createLevelInfo = function (level, state, glow) {
 
     let element = htmlStringToElement( `<div class="level_icon">
     <canvas class="level_icon_image"> </canvas>
@@ -149,6 +146,10 @@ function activateLevelMenu(elementId, isEditor) {
       }[state];
 
       element.classList.add(stateClass);
+      if (glow) {
+        element.classList.add("icon_glow");
+      }
+
     }
 
     return element;
@@ -210,8 +211,9 @@ function activateLevelMenu(elementId, isEditor) {
 
     for (var i = 0; i < this.book.levels.length; i++) {
       let level = this.book.levels[i];
+      let glow = (!isEditor && i==0 && states[i] == 2);
       // check par, and based on it figure out the restriction level.
-      this.container.appendChild(levelMenu.createLevelInfo(level, isEditor?2:states[i] ));
+      this.container.appendChild(levelMenu.createLevelInfo(level, isEditor?2:states[i], glow));
     }
 
   };

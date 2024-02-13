@@ -22,3 +22,13 @@ Reordered stuff on home page and added pulsating animation to Play now
 
 0.4.2
 New progression, hopefully less boring for HN
+
+0.4.3
+Added a (not good) final level screen.
+
+
+0.5
+This will be the version for mall testing with the demonstration.
+
+0.5.1
+The first demo + restart suggestion, to show to js meetup people.

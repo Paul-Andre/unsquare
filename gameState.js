@@ -19,20 +19,15 @@ function GameState(level) {
   this.numMoves = 0;
   this.runningSolution = level.solutionVector.slice();
 
-    this.operations = compute_operations_for_level(this.level);
-    this.inverseOperations = new Map();
-    for (let i=0; i<this.operations.length; i++) {
-      this.inverseOperations.set(this.operations[i].join(""), i);
-    }
+  this.operations = compute_operations_for_level(this.level);
+  this.inverseOperations = new Map();
+  for (let i=0; i<this.operations.length; i++) {
+    this.inverseOperations.set(this.operations[i].join(""), i);
+  }
 }
 
 
 GameState.prototype.applyMove = function (move, action) {
-
-
-
-
-
   if (move != null) {
     this.undoList.push({
       tiles: this.tiles.clone(),
@@ -40,15 +35,15 @@ GameState.prototype.applyMove = function (move, action) {
       runningSolution: this.runningSolution.slice(),
     });
 
-      this.level.tileShape.forTilesInMoveSet(this.tiles, move, action);
-      let vector = this.level.tileShape.moveToVector(this.tiles, move)
-      let opIndex = this.inverseOperations.get(vector.join(""));
-      // console.log(vector);
-      // console.log(opIndex);
-      if (this.runningSolution) {
-        this.runningSolution[opIndex] += 1;
-        vector_simplify_arithmetic(this.runningSolution, this.arithmetic);
-      }
+    this.level.tileShape.forTilesInMoveSet(this.tiles, move, action);
+    let vector = this.level.tileShape.moveToVector(this.tiles, move)
+    let opIndex = this.inverseOperations.get(vector.join(""));
+    // console.log(vector);
+    // console.log(opIndex);
+    if (this.runningSolution) {
+      this.runningSolution[opIndex] += 1;
+      vector_simplify_arithmetic(this.runningSolution, this.arithmetic);
+    }
 
 
   }

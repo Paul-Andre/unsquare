@@ -101,6 +101,7 @@
 
   // Turns a "move" object to a 0-1 vector representing it
   // Unfortunate that "move" can be interpreted as a verb
+  // TODO: I believe I created a whole lexicon of nouns here, so possibly rename
   function moveToVector(grid, move) {
     let move_grid = Grid.empty(grid.width, grid.height);
     move_grid.setAll(0);
@@ -222,6 +223,7 @@
   tileShapes.square = {
     name: "square",
     coordinatesFromMousePosition: coordinatesFromMousePosition,
+    positionFromCoordinates: positionFromCoordinates,
     moveFromMousePositions: moveFromMousePositions,
     select: select,
     draw: draw,

@@ -4,12 +4,7 @@
 
 /// This is what does the basics of drawing the tiles to the screen.
 ///
-function makeGameBase(canvasId, divId /*unused*/)  {
-
-  // produceGameState = produceGameState || function(level) {
-  //   return new GameState(level);
-  // }
-
+function makeGameBase2(canvasId, divId) {
   var canvas = document.getElementById(canvasId);
   var ctx = canvas.getContext("2d");
 
@@ -25,9 +20,12 @@ function makeGameBase(canvasId, divId /*unused*/)  {
   };
 
   var game = {
-
-
+    gameState: null,
+    // TODO: encapsulate these in an object
+    demoDrag: null,
+    demoDragTime: 0,
   };
+
 
   game.div = document.getElementById(divId);
 
@@ -39,74 +37,67 @@ function makeGameBase(canvasId, divId /*unused*/)  {
     //canvasVirtualSize = Math.min(window.innerWidth, window.innerHeight, MAX_WIDTH);
     canvasVirtualSize = Math.min(this.div.offsetWidth, this.div.offsetHeight, MAX_WIDTH);
 
+    // var text = "w.iw " + window.innerWidth + " s.w " + screen.width +" d.iw "+this.div.offsetWidth;
+    // document.getElementById("Debugger").innerText = text;
+
     canvasSize = canvasVirtualSize * (window.devicePixelRatio || 1);
     canvas.width = canvas.height = canvasSize;
     canvas.style.width = canvas.style.height = canvasVirtualSize + "px";
     this.draw();
   };
 
-  // This should probably be renamed to openLevel, and the other openLevel be
-  // renamed to resetComponent or something
-  game.initializeTiles = function(level, book) {
-    let tiles = level.tiles;
-
-    this.level = level;
-    this.book = book;
-
-    this.tiles = tiles.clone();
-
-    var tileStates = tiles.clone();
-    tileStates.forEachSet(function () {
-      return {
-        selected: false,
-        oldSelected: false,
-        transitionState: 0,
-      };
-    });
-
-    this.tileStates = tileStates;
-
-    this.operations = compute_operations_for_level(this.level);
-    this.inverseOperations = new Map();
-    for (let i=0; i<this.operations.length; i++) {
-      this.inverseOperations.set(this.operations[i].join(""), i);
-    }
-    assert(level.solutionVector);
-
-    this.runningSolution = level.solutionVector.slice();
-
-    this.arithmetic = level.colorScheme.arithmetic;
-
-    this.updateGui();
-  }
-
   game.displayLevelGui = function(){};
 
 
+  var firstDemoDrag = {
+    start: {
+      x: 0.3,
+      y: 0.3,
+    },
+    end: {
+      x: 0.7,
+      y: 0.7,
+    }
+  }
+
   game.openLevel = function (level, book) {
 
-    this.undoList = [];
+    this.gameState = new GameState(level);
+    this.level = level;
+    this.book = book;
 
-    this.initializeTiles(level, book);
+    trackLevelStart(level, book);
 
-    this.lastUpdateTimestamp = performance.now();
-    this.numMoves = 0;
 
     mouseStart.pressed = false;
 
     this.displayLevelGui(level);
+
   };
 
-  // These should be in the base file
+  // TODO: remove glitch
+  //
+
   game.doMouseDown = function (x, y) {
     mouseStart.x = x / canvasSize;
     mouseStart.y = y / canvasSize;
     mouseStart.pressed = true;
+
+
+    // One of the rare things that it might make sense to overwrite?
+    var a = game.div.getElementsByClassName("finishedLevel")[0];
+    // console.log(a)
+    a.style.display = "none";
+
   };
+
 
   game.doMouseMove = function (x, y) {
     mouseNow.x = x / canvasSize;
     mouseNow.y = y / canvasSize;
+    // var text = "move " + mouseNow.x + " " + mouseNow.y;
+    //document.getElementById("Debugger").innerText = text;
+
 
     if (mouseStart.pressed) {
       var potentialMove = this.level.tileShape.moveFromMousePositions(
@@ -114,26 +105,24 @@ function makeGameBase(canvasId, divId /*unused*/)  {
         mouseStart.y,
         x / canvasSize,
         y / canvasSize,
-        this.tileStates
+        this.gameState.tileStates
       );
 
-      this.tileStates.forEach(function (v) {
+      this.gameState.tileStates.forEach(function (v) {
         v.oldSelected = v.selected;
         v.selected = false;
       });
 
-
       this.level.tileShape.forTilesInMove(
-        this.tileStates,
+        this.gameState.tileStates,
         potentialMove,
         function (v) {
           v.selected = true;
         }
       );
 
-
       var different = false;
-      this.tileStates.forEach(function (v) {
+      this.gameState.tileStates.forEach(function (v) {
         if (v.selected != v.oldSelected) {
           different = true;
         }
@@ -144,64 +133,10 @@ function makeGameBase(canvasId, divId /*unused*/)  {
           navigator.vibrate(2);
         }
       }
-      //game.drawCanvas()
-      game.draw()
-
-
+      game.drawCanvas()
     }
   };
 
-
-  // This is meant to be overwritten
-  game.createUndoState = function(move) {
-    return {
-      tiles: this.tiles.clone(),
-      runningSolution: this.runningSolution.slice(),
-      solutionType: this.solutionType,
-      move: move,
-    }
-  }
-
-  // This is also meant to be overwritten
-  game.restoreUndoState = function(undo) {
-    this.initializeTiles(undo.tiles, undo.runningSolution, undo.solutionType);
-    this.runningSolution = undo.runningSolution
-    this.numMoves-=1;
-  }
-
-  game.saveStateForUndo = function(move=null) {
-    this.undoList.push(game.createUndoState(move));
-  }
-
-  game.updateGui = function () { }
-  game.postApplyMove = function() { }
-
-  game.applyMove = function (move, action) {
-    if (move != null) {
-      this.saveStateForUndo(move);
-
-      this.level.tileShape.forTilesInMoveSet(this.tiles, move, action);
-      let vector = this.level.tileShape.moveToVector(this.tiles, move)
-      let opIndex = this.inverseOperations.get(vector.join(""));
-      // console.log(vector);
-      // console.log(opIndex);
-      if (this.runningSolution) {
-        this.runningSolution[opIndex] += 1;
-        vector_simplify_arithmetic(this.runningSolution, this.arithmetic);
-      }
-      game.postApplyMove(move, action);
-
-    }
-    this.numMoves+=1;
-    this.updateGui();
-  };
-
-  game.undo = function () {
-    if (this.undoList.length > 0) {
-      var undo = this.undoList.pop();
-      this.restoreUndoState(undo);
-    }
-  };
 
   game.doMouseUp = function (x, y) {
     if (mouseStart.pressed) {
@@ -211,23 +146,26 @@ function makeGameBase(canvasId, divId /*unused*/)  {
         mouseStart.y,
         x / canvasSize,
         y / canvasSize,
-        this.tileStates
+        this.gameState.tileStates
       );
 
       if (move !== null) {
-        this.applyMove(move, this.action);
-        this.tileStates.forEach(function (v) {
+        this.gameState.applyMove(move, this.action);
+        this.gameState.tileStates.forEach(function (v) {
           v.selected = false;
           v.transitionState = 0;
         });
+        if (navigator.vibrate) {
+          navigator.vibrate(3);
+        }
       }
-      if (navigator.vibrate) {
-        navigator.vibrate(3);
+      game.draw()
+      if (game.isFinished()) {
+        game.finishedLevel()
       }
-      game.draw();
     }
-  };
 
+  };
 
   // Gets the coordinates of the touch/mouse relative to the canvas element.
   //http://www.jacklmoore.com/notes/mouse-position/
@@ -261,10 +199,9 @@ function makeGameBase(canvasId, divId /*unused*/)  {
       return function (event) {
         if (event.changedTouches) {
           var coords = getCoordinates(event.changedTouches[0]);
-          console.log(coords);
           fn(coords.x, coords.y);
         }
-        return cancelEvent(event);
+        //return cancelEvent(event);
       };
     }
 
@@ -301,7 +238,16 @@ function makeGameBase(canvasId, divId /*unused*/)  {
       "mouseup",
       createMouseListener(game.doMouseUp.bind(game))
     );
+
+
+    /*
+https://developer.mozilla.org/en-US/docs/Web/API/Element/setPointerCapture#javascript
+*/
+    // TODO: eh? Does this actually work on enough modern browsers?
+    //
+
   }else{
+
     function beginSliding(e) {
       console.log("begin", e)
       var coords = getCoordinates(e);
@@ -355,9 +301,9 @@ function makeGameBase(canvasId, divId /*unused*/)  {
     );
 
 
-
-
   }
+
+
 
   window.addEventListener(
     "resize",
@@ -367,62 +313,185 @@ function makeGameBase(canvasId, divId /*unused*/)  {
     false
   );
 
-  // TODO: eh?
+  // TODO: Make this not use CPU all the time
+  //
+  //
   var hidden = true;
   // to make sure we don't requestAnimationFrame if it's already been requested
+
   var numRequested = 0;
 
-  // The idea is that a 
+  game.updateGui = function () {
 
-  game.drawCanvasContinuous = function () {
+    // TODO: this should probably not be in the base
+    if (game.level.id == "level_1693531796434" && this.gameState.numMoves == 0) {
+      game.demoDrag = firstDemoDrag;
+    } else {
+      game.demoDrag = null;
+    }
 
+    let suggestsRestart = false;
+    if (game.level.id == "level_1693531796434" && this.gameState.numMoves >= 1 && !game.isFinished()) {
+      suggestsRestart = true;
+    }
+
+    let restartButton = this.div.getElementsByClassName("restart_button")[0];
+    if (suggestsRestart) {
+      restartButton.classList.add("in_yo_face");
+    } else {
+      restartButton.classList.remove("in_yo_face");
+    }
+
+
+
+    if (game.isFinished()) {
+      if (game.level.index >= game.book.levels.length-1) {
+        // TODO: won game.
+        var a = this.div.getElementsByClassName("finishedGame")[0];
+        a.style.display = "block";
+      } else {
+        var a = this.div.getElementsByClassName("finishedLevel")[0];
+        a.style.display = "block";
+      }
+    }
+
+    if (this.gameState){
+
+      var a = this.div.getElementsByClassName("movesContent")[0]
+      a.innerText = this.gameState.numMoves;
+    }
+
+    var a = this.div.getElementsByClassName("bestContent")[0]
+    var b = game.getCurrentBest();
+
+    if (b===null || b===undefined) {
+      a.innerText = "-";
+    }else {
+      a.innerText = b;
+    }
   }
 
-  game.draw = function () {
-    if (!hidden && this.tiles) {
-      this.level.tileShape.draw_expanded(ctx, this.tiles, this.tileStates, this.level.colorScheme, this.action);
+  game.draw = function() {
+    game.updateGui();
+    game.drawCanvas();
+  }
+
+
+  game.drawCanvas = function () {
+
+    if (!hidden && this.gameState) {
+
+      this.level.tileShape.draw(ctx, this.gameState, this.action);
+
+      if (this.demoDrag) {
+        this.overlayDemoDrag();
+      }
 
       if (numRequested == 0) {
-        requestAnimationFrame(function (timeStamp) {
-          numRequested--;
 
-          var previousTimestamp = game.lastUpdateTimestamp;
-          game.tileStates.forEach(function (v) {
+        requestAnimationFrame(function (timeStamp) {
+
+          numRequested--;
+          var previousTimestamp = game.gameState.lastUpdateTimestamp;
+
+          var changed = false;
+          if (game.demoDrag) {
+            //TODO: make it so this doesn't use so much CPU
+            changed = true;
+            game.demoDragTime += (timeStamp - previousTimestamp)/1000;
+            game.demoDragTime %= 1;
+          }
+          
+          game.gameState.tileStates.forEach(function (v) {
+
+            var prevTS = v.transitionState;
+
             if (v.selected) {
               v.transitionState = Math.min(
                 1,
-                v.transitionState + (timeStamp - previousTimestamp) / 100
+                v.transitionState + (timeStamp - previousTimestamp) / 10
               );
+              v.transitionState = 1;
             } else {
               v.transitionState = Math.max(
                 0,
-                v.transitionState - (timeStamp - previousTimestamp) / 100
+                v.transitionState - (timeStamp - previousTimestamp) / 10
               );
+              v.transitionState = 0;
+            }
+
+            if (v.transitionState != prevTS){
+              changed = true;
             }
 
           });
-          game.lastUpdateTimestamp = timeStamp;
-          game.draw();
+          game.gameState.lastUpdateTimestamp = timeStamp;
+
+          if (changed) {
+            game.drawCanvas();
+          }
         });
+
         numRequested++;
       }
     }
+
+
   };
 
-  game.specificOnShow = function() {};
+  // TODO put these in a better file
+  function interpolate(a,b,t) {
+    return a + (b-a)*t;
+  }
+
+  // [0,1] -> [0,1]
+  // https://stackoverflow.com/a/25730573/2356347
+  function bezierBlend(t){
+      return t * t * (3.0 - 2.0 * t);
+  }
+
+  // TODO: overlay this on a separate canvas for efficiency?  eh...
+  game.overlayDemoDrag = function () {
+    if (!game.demoDrag) {
+      return;
+    }
+    let width = canvas.width;
+    let height = canvas.height;
+    ctx.strokeStyle = "#4fb6ff55";
+
+    // TODO: base this on the size of canvas
+    // Possibly by scaling the context
+    ctx.lineWidth = 45;
+    ctx.lineCap = "round";
+    ctx.beginPath()
+    ctx.moveTo(game.demoDrag.start.x * width, game.demoDrag.start.y * height);
+    ctx.lineTo(game.demoDrag.end.x *width, game.demoDrag.end.y *height);
+    ctx.stroke();
+
+    let animTime = game.demoDragTime;
+    let easedTime = bezierBlend(animTime);
+    let bubbleX = interpolate(game.demoDrag.start.x, game.demoDrag.end.x, easedTime) * width;
+    let bubbleY = interpolate(game.demoDrag.start.y, game.demoDrag.end.y, easedTime) * height;
+
+    let bubbleSize = 60;
+    ctx.fillStyle = "#4fb6ff55";
+    ctx.beginPath();
+    ctx.arc(bubbleX, bubbleY, bubbleSize, 0, 2 * Math.PI);
+    ctx.fill();
+
+  }
 
   game.onShow = function () {
     hidden = false;
     document.body.style.zoom = '100%';
     this.draw();
     this.onResize();
-    this.specificOnShow();
   };
 
   game.onHide = function () {
     hidden = true;
   };
 
-  game.onResize();
   return game;
+
 }
