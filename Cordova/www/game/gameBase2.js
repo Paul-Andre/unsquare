@@ -323,10 +323,23 @@ https://developer.mozilla.org/en-US/docs/Web/API/Element/setPointerCapture#javas
 
   game.updateGui = function () {
 
+    // TODO: this should probably not be in the base
     if (game.level.id == "level_1693531796434" && this.gameState.numMoves == 0) {
       game.demoDrag = firstDemoDrag;
     } else {
       game.demoDrag = null;
+    }
+
+    let suggestsRestart = false;
+    if (game.level.id == "level_1693531796434" && this.gameState.numMoves >= 1 && !game.isFinished()) {
+      suggestsRestart = true;
+    }
+
+    let restartButton = this.div.getElementsByClassName("restart_button")[0];
+    if (suggestsRestart) {
+      restartButton.classList.add("in_yo_face");
+    } else {
+      restartButton.classList.remove("in_yo_face");
     }
 
 

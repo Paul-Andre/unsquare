@@ -275,15 +275,32 @@ button.action:enabled:hover {
   border: solid 2px #6b6762;
 }
 
+button.in_yo_face {
+  border-color: #4fb6ff;
+  animation: huge-pulse-animation 2s infinite;
+}
 
 @keyframes pulse-animation {
-0% {
+  0% {
     box-shadow: 0 0 5px 0px rgb(115 191 241 / 50%);
+  }
+
+  100% {
+    box-shadow: 0 0 10px 20px rgb(115 191 241 / 0%);
+  }
 }
 
-100% {
-    box-shadow: 0 0 10px 20px rgb(115 191 241 / 0%);
-}
+@keyframes huge-pulse-animation {
+  0% {
+    box-shadow: 0 0 5px 0px rgb(115 191 241 / 50%);
+  }
+
+  50% {
+    box-shadow: 0 0 5px 20px rgb(115 191 241 / 50%);
+  }
+  100% {
+    box-shadow: 0 0 5px 0px rgb(115 191 241 / 50%);
+  }
 }
 
 .finishedLevel {
