@@ -457,12 +457,15 @@ https://developer.mozilla.org/en-US/docs/Web/API/Element/setPointerCapture#javas
     }
     let width = canvas.width;
     let height = canvas.height;
-    ctx.strokeStyle = "#4fb6ff55";
 
-    // TODO: base this on the size of canvas
-    // Possibly by scaling the context
-    ctx.lineWidth = 45;
+    // TODO: maybe include this in the demoDrag object?
+    let relativeDragSize = 40/MAX_WIDTH;
+    let relativeLineSize = relativeDragSize*0.75;
+
+    // TODO: figure out whether to use width or height. Only issue when rectangles
+    ctx.lineWidth = relativeLineSize * width;
     ctx.lineCap = "round";
+    ctx.strokeStyle = "#4fb6ff55";
     ctx.beginPath()
     ctx.moveTo(game.demoDrag.start.x * width, game.demoDrag.start.y * height);
     ctx.lineTo(game.demoDrag.end.x *width, game.demoDrag.end.y *height);
@@ -473,7 +476,7 @@ https://developer.mozilla.org/en-US/docs/Web/API/Element/setPointerCapture#javas
     let bubbleX = interpolate(game.demoDrag.start.x, game.demoDrag.end.x, easedTime) * width;
     let bubbleY = interpolate(game.demoDrag.start.y, game.demoDrag.end.y, easedTime) * height;
 
-    let bubbleSize = 60;
+    let bubbleSize = relativeDragSize * width;
     ctx.fillStyle = "#4fb6ff55";
     ctx.beginPath();
     ctx.arc(bubbleX, bubbleY, bubbleSize, 0, 2 * Math.PI);
