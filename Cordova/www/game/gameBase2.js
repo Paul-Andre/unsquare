@@ -334,6 +334,9 @@ https://developer.mozilla.org/en-US/docs/Web/API/Element/setPointerCapture#javas
     if (game.level.id == "level_1693531796434" && this.gameState.numMoves >= 1 && !game.isFinished()) {
       suggestsRestart = true;
     }
+    if (game.level.index<10 && this.gameState.numMoves > this.level.par*2) {
+      suggestsRestart = true;
+    }
 
     let restartButton = this.div.getElementsByClassName("restart_button")[0];
     if (suggestsRestart) {

@@ -190,3 +190,8 @@ Level.prototype.showsDemo = function() {
   return this.index === 0;
 }
 
+Level.prototype.getPar = function() {
+  let par = vector_sum(this.solutionVector);
+  return par;
+}
+
