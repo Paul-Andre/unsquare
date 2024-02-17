@@ -187,11 +187,12 @@ Level.prototype.getBestNumMoves = function() {
 }
 
 Level.prototype.showsDemo = function() {
-  return this.index === 0;
+  return this.id == "level_1693531796434";
 }
 
 Level.prototype.getPar = function() {
   let par = vector_sum(this.solutionVector);
   return par;
 }
+
 
