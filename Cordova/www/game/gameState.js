@@ -50,6 +50,12 @@ GameState.prototype.applyMove = function (move, action) {
   this.numMoves+=1;
 };
 
+// Returns either a move
+// or "undo" or "restart"
+GameState.prototype.getHint = function () {
+  //TODO
+}
+
 // TODO: make undo be at a different level
 
 GameState.prototype.undo = function () {
