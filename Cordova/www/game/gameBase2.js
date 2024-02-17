@@ -398,7 +398,7 @@ https://developer.mozilla.org/en-US/docs/Web/API/Element/setPointerCapture#javas
           if (game.demoDrag) {
             //TODO: make it so this doesn't use so much CPU
             changed = true;
-            game.demoDragTime += (timeStamp - previousTimestamp)/1000;
+            game.demoDragTime += (timeStamp - previousTimestamp)/2000;
             game.demoDragTime %= 1;
           }
           
@@ -450,6 +450,35 @@ https://developer.mozilla.org/en-US/docs/Web/API/Element/setPointerCapture#javas
       return t * t * (3.0 - 2.0 * t);
   }
 
+  ctx.strokeStyle = "#4fb6ff55";
+  //function cubic
+  
+  function clamp(x) {
+    return Math.min(1, Math.max(0, x));
+  }
+
+  function easeOut(x) {
+    return interpolate(
+
+    interpolate(x,
+      1,x 
+      ), 1, x);
+  }
+
+  function dragBlend(x) {
+    return interpolate(
+
+    interpolate(
+    interpolate(
+
+      bezierBlend(x),
+
+      1,x ),
+      1,x ),
+      
+      1, x);
+  }
+
   // TODO: overlay this on a separate canvas for efficiency?  eh...
   game.overlayDemoDrag = function () {
     if (!game.demoDrag) {
@@ -471,8 +500,10 @@ https://developer.mozilla.org/en-US/docs/Web/API/Element/setPointerCapture#javas
     ctx.lineTo(game.demoDrag.end.x *width, game.demoDrag.end.y *height);
     ctx.stroke();
 
+    // TODO: the ease-out should actually be related to the size of the grid ideally
     let animTime = game.demoDragTime;
-    let easedTime = bezierBlend(animTime);
+    //let easedTime = animTime; //bezierBlend(animTime);
+    let easedTime = dragBlend(animTime);
     let bubbleX = interpolate(game.demoDrag.start.x, game.demoDrag.end.x, easedTime) * width;
     let bubbleY = interpolate(game.demoDrag.start.y, game.demoDrag.end.y, easedTime) * height;
 
