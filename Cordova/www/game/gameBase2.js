@@ -329,6 +329,10 @@ https://developer.mozilla.org/en-US/docs/Web/API/Element/setPointerCapture#javas
     } else {
       game.demoDrag = null;
     }
+    // The logic would be something like:
+    // Check if needs to provide hint according to level json
+    // Run a basic hint system to get the next move to be hinted, or otherwise to undo
+    // If a move to be hinted, calculate the drag based on that move, and set it as game.demoDrag
 
     let suggestsRestart = false;
     if (game.level.id == "level_1693531796434" && this.gameState.numMoves >= 1 && !game.isFinished()) {
