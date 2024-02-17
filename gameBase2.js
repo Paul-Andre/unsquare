@@ -329,9 +329,16 @@ https://developer.mozilla.org/en-US/docs/Web/API/Element/setPointerCapture#javas
     } else {
       game.demoDrag = null;
     }
+    // The logic would be something like:
+    // Check if needs to provide hint according to level json
+    // Run a basic hint system to get the next move to be hinted, or otherwise to undo
+    // If a move to be hinted, calculate the drag based on that move, and set it as game.demoDrag
 
     let suggestsRestart = false;
     if (game.level.id == "level_1693531796434" && this.gameState.numMoves >= 1 && !game.isFinished()) {
+      suggestsRestart = true;
+    }
+    if (game.level.index<10 && this.gameState.numMoves > this.level.par*2) {
       suggestsRestart = true;
     }
 
@@ -398,7 +405,7 @@ https://developer.mozilla.org/en-US/docs/Web/API/Element/setPointerCapture#javas
           if (game.demoDrag) {
             //TODO: make it so this doesn't use so much CPU
             changed = true;
-            game.demoDragTime += (timeStamp - previousTimestamp)/1000;
+            game.demoDragTime += (timeStamp - previousTimestamp)/2000;
             game.demoDragTime %= 1;
           }
           
@@ -450,6 +457,35 @@ https://developer.mozilla.org/en-US/docs/Web/API/Element/setPointerCapture#javas
       return t * t * (3.0 - 2.0 * t);
   }
 
+  ctx.strokeStyle = "#4fb6ff55";
+  //function cubic
+  
+  function clamp(x) {
+    return Math.min(1, Math.max(0, x));
+  }
+
+  function easeOut(x) {
+    return interpolate(
+
+    interpolate(x,
+      1,x 
+      ), 1, x);
+  }
+
+  function dragBlend(x) {
+    return interpolate(
+
+    interpolate(
+    interpolate(
+
+      bezierBlend(x),
+
+      1,x ),
+      1,x ),
+      
+      1, x);
+  }
+
   // TODO: overlay this on a separate canvas for efficiency?  eh...
   game.overlayDemoDrag = function () {
     if (!game.demoDrag) {
@@ -457,23 +493,28 @@ https://developer.mozilla.org/en-US/docs/Web/API/Element/setPointerCapture#javas
     }
     let width = canvas.width;
     let height = canvas.height;
-    ctx.strokeStyle = "#4fb6ff55";
 
-    // TODO: base this on the size of canvas
-    // Possibly by scaling the context
-    ctx.lineWidth = 45;
+    // TODO: maybe include this in the demoDrag object?
+    let relativeDragSize = 40/MAX_WIDTH;
+    let relativeLineSize = relativeDragSize*0.75;
+
+    // TODO: figure out whether to use width or height. Only issue when rectangles
+    ctx.lineWidth = relativeLineSize * width;
     ctx.lineCap = "round";
+    ctx.strokeStyle = "#4fb6ff55";
     ctx.beginPath()
     ctx.moveTo(game.demoDrag.start.x * width, game.demoDrag.start.y * height);
     ctx.lineTo(game.demoDrag.end.x *width, game.demoDrag.end.y *height);
     ctx.stroke();
 
+    // TODO: the ease-out should actually be related to the size of the grid ideally
     let animTime = game.demoDragTime;
-    let easedTime = bezierBlend(animTime);
+    //let easedTime = animTime; //bezierBlend(animTime);
+    let easedTime = dragBlend(animTime);
     let bubbleX = interpolate(game.demoDrag.start.x, game.demoDrag.end.x, easedTime) * width;
     let bubbleY = interpolate(game.demoDrag.start.y, game.demoDrag.end.y, easedTime) * height;
 
-    let bubbleSize = 60;
+    let bubbleSize = relativeDragSize * width;
     ctx.fillStyle = "#4fb6ff55";
     ctx.beginPath();
     ctx.arc(bubbleX, bubbleY, bubbleSize, 0, 2 * Math.PI);
