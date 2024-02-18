@@ -33,11 +33,13 @@ This will be the version for mall testing with the demonstration.
 0.5.1
 The first demo + restart suggestion, to show to js meetup people.
 
-0.5.2
 17 feb 2024
+0.5.2
 The second demo + restart suggestion,
 Not much, mainly changed the order slightly, and restart suggestion more
 0.5.3
 reorder a bit more
 
-
+18 Feb 2024
+0.5.4
+add url reset
