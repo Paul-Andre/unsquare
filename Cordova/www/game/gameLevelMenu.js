@@ -4,7 +4,7 @@ var gameLevelMenu = activateLevelMenu("gameLevelMenu", false);
 screenManager.additionalFunctions.gameLevelMenu = gameLevelMenu;
 
 
-let bookUrl = "2024_feb_17_better_intro.json";
+let bookUrl = "2024_feb_17_better_intro_2.json";
 //let bookUrl = "tiny_for_testing.json";
 
 //https://stackoverflow.com/a/35294675

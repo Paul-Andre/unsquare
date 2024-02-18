@@ -159,6 +159,11 @@ editor.saveAndReturn = function () {
   screenManager.goBack();
 };
 
+editor.setText = function(text) {
+  this.level.text = text;
+
+}
+
 editor.printFlat = function () {
   var ret = "";
   ret += this.tiles.width;
