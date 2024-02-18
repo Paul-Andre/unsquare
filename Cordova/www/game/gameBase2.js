@@ -33,12 +33,7 @@ function makeGameBase2(canvasId, divId) {
   var canvasSize;
 
   game.onResize = function () {
-    //console.log(document.body.offsetWidth, document.body.offsetHeight);
-    //canvasVirtualSize = Math.min(window.innerWidth, window.innerHeight, MAX_WIDTH);
     canvasVirtualSize = Math.min(this.div.offsetWidth, this.div.offsetHeight, MAX_WIDTH);
-
-    // var text = "w.iw " + window.innerWidth + " s.w " + screen.width +" d.iw "+this.div.offsetWidth;
-    // document.getElementById("Debugger").innerText = text;
 
     canvasSize = canvasVirtualSize * (window.devicePixelRatio || 1);
     canvas.width = canvas.height = canvasSize;
@@ -95,9 +90,6 @@ function makeGameBase2(canvasId, divId) {
   game.doMouseMove = function (x, y) {
     mouseNow.x = x / canvasSize;
     mouseNow.y = y / canvasSize;
-    // var text = "move " + mouseNow.x + " " + mouseNow.y;
-    //document.getElementById("Debugger").innerText = text;
-
 
     if (mouseStart.pressed) {
       var potentialMove = this.level.tileShape.moveFromMousePositions(
