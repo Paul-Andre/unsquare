@@ -37,5 +37,7 @@ The first demo + restart suggestion, to show to js meetup people.
 17 feb 2024
 The second demo + restart suggestion,
 Not much, mainly changed the order slightly, and restart suggestion more
+0.5.3
+reorder a bit more
 
 

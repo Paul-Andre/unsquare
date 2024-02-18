@@ -71,12 +71,12 @@ game.displayLevelGui = function(level) {
 
   // TODO: really ugly hack
   {
-  var a = this.div.getElementsByClassName("finishedLevel")[0];
-  a.style.display = "none";
+    var a = this.div.getElementsByClassName("finishedLevel")[0];
+    a.style.display = "none";
   }
   {
-  var a = this.div.getElementsByClassName("finishedGame")[0];
-  a.style.display = "none";
+    var a = this.div.getElementsByClassName("finishedGame")[0];
+    a.style.display = "none";
   }
 
   document.getElementById("TextShower").innerText = level.text;
@@ -96,7 +96,7 @@ game.displayLevelGui = function(level) {
   } else {
     document.getElementById("LevelIndicator").innerText = "Level " + (1+ index);
   }
-  
+
   let states = calculateStates(this.book);
 
   {
@@ -119,7 +119,7 @@ game.displayLevelGui = function(level) {
     }
   }
 
-  
+
 
 };
 
@@ -140,7 +140,7 @@ function nextLevel() {
     index+=1
     var nextLevel = levels[index];
 
-     // = nextLevel;
+    // = nextLevel;
     game.openLevel(nextLevel, game.book);
 
     game.onShow();
