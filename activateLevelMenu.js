@@ -290,6 +290,7 @@ function activateLevelMenu(elementId, isEditor) {
     save_editor_book(this.book);
   }
 
+  // TODO: put this in "subclass"
   levelMenu.clearAllBests = function() {
     for (let i=0; i<levelMenu.book.levels.length; i++) {
       clearBestNumMoves(levelMenu.book.levels[i]);

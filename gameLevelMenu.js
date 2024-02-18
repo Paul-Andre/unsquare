@@ -41,6 +41,12 @@ request.onload = function () {
     button.removeAttribute("disabled");
     button.innerText="Start Game!";
 
+    // if ?reset added at the end of the url, reset the bests
+    let resetUrlParam = (new URLSearchParams(location.search)).get("reset");
+    if (resetUrlParam !== null) {
+      gameLevelMenu.clearAllBests();
+    }
+
   } 
 };
 
