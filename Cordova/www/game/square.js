@@ -159,12 +159,14 @@
       ctx.fillStyle =
         gameState.level.colorScheme.cells[changeFunction(tileValue)].fill;
 
-      var squareWidth = (width) * tileState.insetState * 0.5;
-      var squareHeight = (height) * tileState.insetState * 0.5;
+      var insetProportion = 0.5
+
+      var squareWidth = (width) * tileState.insetState * insetProportion;
+      var squareHeight = (height) * tileState.insetState * insetProportion;
       var squareOffsetX =
-        (width) * (1 - tileState.insetState * 0.5) * 0.5;
+        (width) * (1 - tileState.insetState * insetProportion) * 0.5;
       var squareOffsetY =
-        (height) * (1 - tileState.insetState * 0.5) * 0.5;
+        (height) * (1 - tileState.insetState * insetProportion) * 0.5;
       ctx.fillRect(
         x + squareOffsetX,
         y + squareOffsetY,
