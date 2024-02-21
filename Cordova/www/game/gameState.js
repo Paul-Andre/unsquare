@@ -6,7 +6,7 @@ function GameState(level) {
     return {
       selected: false,
       oldSelected: false,
-      transitionState: 0,
+      insetState: 0,
     };
   });
 

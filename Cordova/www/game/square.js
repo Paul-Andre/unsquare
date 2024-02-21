@@ -168,12 +168,12 @@
       ctx.fillStyle =
         gameState.level.colorScheme.cells[changeFunction(value)].fill;
 
-      var squareWidth = (width - padding) * tileState.transitionState * 0.5;
-      var squareHeight = (height - padding) * tileState.transitionState * 0.5;
+      var squareWidth = (width - padding) * tileState.insetState * 0.5;
+      var squareHeight = (height - padding) * tileState.insetState * 0.5;
       var squareOffsetX =
-        (width - padding) * (1 - tileState.transitionState * 0.5) * 0.5;
+        (width - padding) * (1 - tileState.insetState * 0.5) * 0.5;
       var squareOffsetY =
-        (height - padding) * (1 - tileState.transitionState * 0.5) * 0.5;
+        (height - padding) * (1 - tileState.insetState * 0.5) * 0.5;
       ctx.fillRect(
         x * width + padding + squareOffsetX,
         y * height + padding + squareOffsetY,
@@ -205,12 +205,12 @@
       ctx.fillStyle =
         colorScheme.cells[changeFunction(value)].fill;
 
-      var squareWidth = (width - padding) * tileState.transitionState * 0.5;
-      var squareHeight = (height - padding) * tileState.transitionState * 0.5;
+      var squareWidth = (width - padding) * tileState.insetState * 0.5;
+      var squareHeight = (height - padding) * tileState.insetState * 0.5;
       var squareOffsetX =
-        (width - padding) * (1 - tileState.transitionState * 0.5) * 0.5;
+        (width - padding) * (1 - tileState.insetState * 0.5) * 0.5;
       var squareOffsetY =
-        (height - padding) * (1 - tileState.transitionState * 0.5) * 0.5;
+        (height - padding) * (1 - tileState.insetState * 0.5) * 0.5;
       ctx.fillRect(
         x * width + padding + squareOffsetX,
         y * height + padding + squareOffsetY,

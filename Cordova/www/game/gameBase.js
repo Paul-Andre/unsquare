@@ -60,7 +60,7 @@ function makeGameBase(canvasId, divId /*unused*/)  {
       return {
         selected: false,
         oldSelected: false,
-        transitionState: 0,
+        insetState: 0,
       };
     });
 
@@ -218,7 +218,7 @@ function makeGameBase(canvasId, divId /*unused*/)  {
         this.applyMove(move, this.action);
         this.tileStates.forEach(function (v) {
           v.selected = false;
-          v.transitionState = 0;
+          v.insetState = 0;
         });
       }
       if (navigator.vibrate) {
@@ -389,14 +389,14 @@ function makeGameBase(canvasId, divId /*unused*/)  {
           var previousTimestamp = game.lastUpdateTimestamp;
           game.tileStates.forEach(function (v) {
             if (v.selected) {
-              v.transitionState = Math.min(
+              v.insetState = Math.min(
                 1,
-                v.transitionState + (timeStamp - previousTimestamp) / 100
+                v.insetState + (timeStamp - previousTimestamp) / 100
               );
             } else {
-              v.transitionState = Math.max(
+              v.insetState = Math.max(
                 0,
-                v.transitionState - (timeStamp - previousTimestamp) / 100
+                v.insetState - (timeStamp - previousTimestamp) / 100
               );
             }
 
