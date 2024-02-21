@@ -148,31 +148,31 @@
   // TODO: refactor or expose?
   // TODO: standardize whether use context transforms or passing coordinates...
   function draw_tile(ctx, gameState, changeFunction, x, y, width, height, tileValue, tileState) {
-      ctx.fillStyle = gameState.level.colorScheme.cells[tileValue].fill;
-      ctx.fillRect(
-        x,
-        y,
-        width,
-        height,
-      );
+    ctx.fillStyle = gameState.level.colorScheme.cells[tileValue].fill;
+    ctx.fillRect(
+      x,
+      y,
+      width,
+      height,
+    );
 
-      ctx.fillStyle =
-        gameState.level.colorScheme.cells[changeFunction(tileValue)].fill;
+    ctx.fillStyle =
+      gameState.level.colorScheme.cells[changeFunction(tileValue)].fill;
 
-      var insetProportion = 0.5
+    var insetProportion = 0.5
 
-      var squareWidth = (width) * tileState.insetState * insetProportion;
-      var squareHeight = (height) * tileState.insetState * insetProportion;
-      var squareOffsetX =
-        (width) * (1 - tileState.insetState * insetProportion) * 0.5;
-      var squareOffsetY =
-        (height) * (1 - tileState.insetState * insetProportion) * 0.5;
-      ctx.fillRect(
-        x + squareOffsetX,
-        y + squareOffsetY,
-        squareWidth,
-        squareHeight
-      );
+    var squareWidth = (width) * tileState.insetState * insetProportion;
+    var squareHeight = (height) * tileState.insetState * insetProportion;
+    var squareOffsetX =
+      (width) * (1 - tileState.insetState * insetProportion) * 0.5;
+    var squareOffsetY =
+      (height) * (1 - tileState.insetState * insetProportion) * 0.5;
+    ctx.fillRect(
+      x + squareOffsetX,
+      y + squareOffsetY,
+      squareWidth,
+      squareHeight
+    );
 
   }
 
