@@ -384,60 +384,79 @@ https://developer.mozilla.org/en-US/docs/Web/API/Element/setPointerCapture#javas
   }
 
 
-  game.drawCanvas = function () {
-
-    if (!hidden && this.gameState) {
-
+  // TODO: This is probably an intermediate step in refactor
+  game.actuallyDrawCanvas = function actuallyDrawCanvas() {
       this.level.tileShape.draw(ctx, this.gameState, this.action);
 
       if (this.demoDrag) {
         this.overlayDemoDrag();
       }
 
+
+  }
+  
+  // Updates the states, doesn't actually draw
+  // returns a boolean, whether things have changed
+  game.updateCanvasAnimations = function updateCanvasAnimations(timeStamp) {
+    var changed = false;
+
+    var previousTimestamp = game.gameState.lastUpdateTimestamp;
+
+    var changed = false;
+    if (game.demoDrag) {
+      //TODO: make it so this doesn't use so much CPU
+      changed = true;
+      game.demoDragTime += (timeStamp - previousTimestamp)/2000;
+      game.demoDragTime %= 1;
+    }
+
+    game.gameState.tileStates.forEach(function (v) {
+
+      var prevIS = v.insetState;
+      var prevTS = v.transitionState;
+
+      if (v.selected) {
+        v.insetState = 1;
+      } else {
+        v.insetState = 0;
+      }
+
+      v.transitionState = Math.min(
+        1,
+        v.transitionState + (timeStamp - previousTimestamp) / 200
+      );
+
+      if (v.insetState != prevIS){
+        changed = true;
+      }
+      if (v.transitionState != prevTS){
+        changed = true;
+      }
+
+    });
+    game.gameState.lastUpdateTimestamp = timeStamp;
+    return changed;
+
+
+  }
+
+  game.drawCanvas = function () {
+
+    if (!hidden && this.gameState) {
+
+      game.actuallyDrawCanvas();
+
+
       if (numRequested == 0) {
 
         requestAnimationFrame(function (timeStamp) {
-
           numRequested--;
-          var previousTimestamp = game.gameState.lastUpdateTimestamp;
-
-          var changed = false;
-          if (game.demoDrag) {
-            //TODO: make it so this doesn't use so much CPU
-            changed = true;
-            game.demoDragTime += (timeStamp - previousTimestamp)/2000;
-            game.demoDragTime %= 1;
-          }
-          
-          game.gameState.tileStates.forEach(function (v) {
-
-            var prevIS = v.insetState;
-            var prevTS = v.transitionState;
-
-            if (v.selected) {
-              v.insetState = 1;
-            } else {
-              v.insetState = 0;
-            }
-
-            v.transitionState = Math.min(
-              1,
-              v.transitionState + (timeStamp - previousTimestamp) / 200
-            );
-
-            if (v.insetState != prevIS){
-              changed = true;
-            }
-            if (v.transitionState != prevTS){
-              changed = true;
-            }
-
-          });
-          game.gameState.lastUpdateTimestamp = timeStamp;
+          var changed = game.updateCanvasAnimations(timeStamp);
 
           if (changed) {
             game.drawCanvas();
           }
+
         });
 
         numRequested++;
