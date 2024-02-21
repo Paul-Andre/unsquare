@@ -148,31 +148,58 @@
   // TODO: refactor or expose?
   // TODO: standardize whether use context transforms or passing coordinates...
   function draw_tile(ctx, gameState, changeFunction, x, y, width, height, tileValue, tileState) {
-    ctx.fillStyle = gameState.level.colorScheme.cells[tileValue].fill;
+    var transitionState = tileState.transitionState;
+
+    var mainColor;
+    var insetColor;
+    var insetState;
+
+    if (transitionState < 0.5) {
+
+      mainColor = gameState.level.colorScheme.cells[changeFunction(tileValue)].fill;
+      insetColor = gameState.level.colorScheme.cells[tileValue].fill;
+      insetState = tileState.reverseInsetState;
+
+    } else {
+
+      mainColor = gameState.level.colorScheme.cells[tileValue].fill;
+      insetColor = gameState.level.colorScheme.cells[changeFunction(tileValue)].fill;
+      insetState = tileState.insetState;
+    }
+
+    var heightMult = Math.abs(Math.cos(transitionState * Math.PI));
+
+    var newHeight = height*heightMult;
+    var newY = y + (height-newHeight)*0.5;
+
+    height = newHeight;
+    y = newY;
+
+    ctx.fillStyle = mainColor;
     ctx.fillRect(
       x,
       y,
       width,
-      height,
+      height * heightMult,
     );
 
-    ctx.fillStyle =
-      gameState.level.colorScheme.cells[changeFunction(tileValue)].fill;
+    ctx.fillStyle = insetColor;
 
-    var insetProportion = 0.5
-
-    var squareWidth = (width) * tileState.insetState * insetProportion;
-    var squareHeight = (height) * tileState.insetState * insetProportion;
-    var squareOffsetX =
-      (width) * (1 - tileState.insetState * insetProportion) * 0.5;
-    var squareOffsetY =
-      (height) * (1 - tileState.insetState * insetProportion) * 0.5;
-    ctx.fillRect(
-      x + squareOffsetX,
-      y + squareOffsetY,
-      squareWidth,
-      squareHeight
-    );
+    if (insetState) {
+      var insetProportion = 0.5
+      var squareWidth = (width) * insetState * insetProportion;
+      var squareHeight = (height * heightMult) * insetState * insetProportion;
+      var squareOffsetX =
+        (width) * (1 - insetState * insetProportion) * 0.5;
+      var squareOffsetY =
+        (height * heightMult) * (1 - insetState * insetProportion) * 0.5;
+      ctx.fillRect(
+        x + squareOffsetX,
+        y + squareOffsetY,
+        squareWidth,
+        squareHeight
+      );
+    }
 
   }
 

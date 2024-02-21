@@ -146,7 +146,15 @@ function makeGameBase2(canvasId, divId) {
         this.gameState.tileStates.forEach(function (v) {
           v.selected = false;
           v.insetState = 0;
+          // v.transitionState = 0;
         });
+        this.level.tileShape.forTilesInMove(
+          this.gameState.tileStates,
+          move,
+          function (v) {
+            v.transitionState = 0;
+          });
+
         if (navigator.vibrate) {
           navigator.vibrate(3);
         }
@@ -403,23 +411,24 @@ https://developer.mozilla.org/en-US/docs/Web/API/Element/setPointerCapture#javas
           
           game.gameState.tileStates.forEach(function (v) {
 
-            var prevTS = v.insetState;
+            var prevIS = v.insetState;
+            var prevTS = v.transitionState;
 
             if (v.selected) {
-              v.insetState = Math.min(
-                1,
-                v.insetState + (timeStamp - previousTimestamp) / 1000
-              );
               v.insetState = 1;
             } else {
-              v.insetState = Math.max(
-                0,
-                v.insetState - (timeStamp - previousTimestamp) / 1000
-              );
               v.insetState = 0;
             }
 
-            if (v.insetState != prevTS){
+            v.transitionState = Math.min(
+              1,
+              v.transitionState + (timeStamp - previousTimestamp) / 200
+            );
+
+            if (v.insetState != prevIS){
+              changed = true;
+            }
+            if (v.transitionState != prevTS){
               changed = true;
             }
 

@@ -10,8 +10,8 @@ function GameState(level) {
       selected: false,
       oldSelected: false,
       insetState: 0,
-      reverseInsetState: 0,
-      transitionState: 0,
+      reverseInsetState: 1,
+      transitionState: 1,
     };
   });
 
