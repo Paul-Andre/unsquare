@@ -3,10 +3,15 @@
 function GameState(level) {
   var tileStates = level.tiles.clone();
   tileStates.forEachSet(function () {
+    // TODO: ok, but seriously, does this make sense?
+    // Maybe put the animation in a separate object, or combine the tileState
+    // value with these? idk... I guess whatever this is works for now...
     return {
       selected: false,
       oldSelected: false,
       insetState: 0,
+      reverseInsetState: 0,
+      transitionState: 0,
     };
   });
 

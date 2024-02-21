@@ -145,6 +145,35 @@
     }
   }
 
+  // TODO: refactor or expose?
+  // TODO: standardize whether use context transforms or passing coordinates...
+  function draw_tile(ctx, gameState, changeFunction, x, y, width, height, tileValue, tileState) {
+      ctx.fillStyle = gameState.level.colorScheme.cells[tileValue].fill;
+      ctx.fillRect(
+        x,
+        y,
+        width,
+        height,
+      );
+
+      ctx.fillStyle =
+        gameState.level.colorScheme.cells[changeFunction(tileValue)].fill;
+
+      var squareWidth = (width) * tileState.insetState * 0.5;
+      var squareHeight = (height) * tileState.insetState * 0.5;
+      var squareOffsetX =
+        (width) * (1 - tileState.insetState * 0.5) * 0.5;
+      var squareOffsetY =
+        (height) * (1 - tileState.insetState * 0.5) * 0.5;
+      ctx.fillRect(
+        x + squareOffsetX,
+        y + squareOffsetY,
+        squareWidth,
+        squareHeight
+      );
+
+  }
+
   // TODO: remove this from here
   function draw(ctx, gameState, changeFunction) {
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
@@ -158,27 +187,17 @@
       var tileState = gameState.tileStates.get(x, y);
 
       ctx.fillStyle = gameState.level.colorScheme.cells[value].fill;
-      ctx.fillRect(
+
+      draw_tile(
+        ctx,
+        gameState,
+        changeFunction,
         x * width + padding,
         y * height + padding,
         width - padding,
-        height - padding
-      );
-
-      ctx.fillStyle =
-        gameState.level.colorScheme.cells[changeFunction(value)].fill;
-
-      var squareWidth = (width - padding) * tileState.insetState * 0.5;
-      var squareHeight = (height - padding) * tileState.insetState * 0.5;
-      var squareOffsetX =
-        (width - padding) * (1 - tileState.insetState * 0.5) * 0.5;
-      var squareOffsetY =
-        (height - padding) * (1 - tileState.insetState * 0.5) * 0.5;
-      ctx.fillRect(
-        x * width + padding + squareOffsetX,
-        y * height + padding + squareOffsetY,
-        squareWidth,
-        squareHeight
+        height - padding,
+        value,
+        tileState,
       );
     });
   }
