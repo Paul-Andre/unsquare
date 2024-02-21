@@ -398,14 +398,13 @@ https://developer.mozilla.org/en-US/docs/Web/API/Element/setPointerCapture#javas
   // Updates the states, doesn't actually draw
   // returns a boolean, whether things have changed
   game.updateCanvasAnimations = function updateCanvasAnimations(timeStamp) {
-    var changed = false;
 
     var previousTimestamp = game.gameState.lastUpdateTimestamp;
 
-    var changed = false;
+    var unsettled = false;
     if (game.demoDrag) {
       //TODO: make it so this doesn't use so much CPU
-      changed = true;
+      unsettled = true;
       game.demoDragTime += (timeStamp - previousTimestamp)/2000;
       game.demoDragTime %= 1;
     }
@@ -413,7 +412,6 @@ https://developer.mozilla.org/en-US/docs/Web/API/Element/setPointerCapture#javas
     game.gameState.tileStates.forEach(function (v) {
 
       var prevIS = v.insetState;
-      var prevTS = v.transitionState;
 
       if (v.selected) {
         v.insetState = 1;
@@ -427,15 +425,15 @@ https://developer.mozilla.org/en-US/docs/Web/API/Element/setPointerCapture#javas
       );
 
       if (v.insetState != prevIS){
-        changed = true;
+        unsettled = true;
       }
-      if (v.transitionState != prevTS){
-        changed = true;
+      if (v.transitionState != 1) {
+        unsettled = true;
       }
 
     });
     game.gameState.lastUpdateTimestamp = timeStamp;
-    return changed;
+    return unsettled;
 
 
   }
@@ -445,7 +443,6 @@ https://developer.mozilla.org/en-US/docs/Web/API/Element/setPointerCapture#javas
     if (!hidden && this.gameState) {
 
       game.actuallyDrawCanvas();
-
 
       if (numRequested == 0) {
 
@@ -461,8 +458,11 @@ https://developer.mozilla.org/en-US/docs/Web/API/Element/setPointerCapture#javas
 
         numRequested++;
       }
-    }
 
+
+    } else {
+      console.log("either hidden or gameState isn't there, not drawing");
+    }
 
   };
 
