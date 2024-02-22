@@ -379,8 +379,8 @@ https://developer.mozilla.org/en-US/docs/Web/API/Element/setPointerCapture#javas
   }
 
   game.draw = function() {
-    game.updateGui();
     game.drawCanvas();
+    game.updateGui();
   }
 
 
@@ -397,21 +397,25 @@ https://developer.mozilla.org/en-US/docs/Web/API/Element/setPointerCapture#javas
   
   // Updates the states, doesn't actually draw
   // returns a boolean, whether things have changed
-  game.updateCanvasAnimations = function updateCanvasAnimations(timeStamp) {
+  game.updateCanvasAnimations = function updateCanvasAnimations(timestamp) {
 
     var previousTimestamp = game.gameState.lastUpdateTimestamp;
 
+    // TODO: technically, this is unsettled_or_changed,
+    // And perhaps it might make sense to return both those variables...
     var unsettled = false;
+
     if (game.demoDrag) {
       //TODO: make it so this doesn't use so much CPU
       unsettled = true;
-      game.demoDragTime += (timeStamp - previousTimestamp)/2000;
+      game.demoDragTime += (timestamp - previousTimestamp)/2000;
       game.demoDragTime %= 1;
     }
 
     game.gameState.tileStates.forEach(function (v) {
 
-      var prevIS = v.insetState;
+      let prevIS = v.insetState;
+      let prevTS = v.transitionState;
 
       if (v.selected) {
         v.insetState = 1;
@@ -421,18 +425,18 @@ https://developer.mozilla.org/en-US/docs/Web/API/Element/setPointerCapture#javas
 
       v.transitionState = Math.min(
         1,
-        v.transitionState + (timeStamp - previousTimestamp) / 200
+        v.transitionState + (timestamp - previousTimestamp) / 200
       );
 
       if (v.insetState != prevIS){
         unsettled = true;
       }
-      if (v.transitionState != 1) {
+      if (v.transitionState != 1 || v.transitionState != prevTS) {
         unsettled = true;
       }
 
     });
-    game.gameState.lastUpdateTimestamp = timeStamp;
+    game.gameState.lastUpdateTimestamp = timestamp;
     return unsettled;
 
 
@@ -442,21 +446,30 @@ https://developer.mozilla.org/en-US/docs/Web/API/Element/setPointerCapture#javas
 
     if (!hidden && this.gameState) {
 
+      let timestamp = performance.now()
+      //TODO: is document.animationTimeline.currentTime better?
+
+      if (game.gameState.lastUpdateTimestamp === timestamp){
+        return;
+      }
+
+      let unsettled = game.updateCanvasAnimations(timestamp);
       game.actuallyDrawCanvas();
+      if (unsettled) {
 
-      if (numRequested == 0) {
+        if (numRequested == 0) {
 
-        requestAnimationFrame(function (timeStamp) {
-          numRequested--;
-          var changed = game.updateCanvasAnimations(timeStamp);
+          requestAnimationFrame(function (timestamp) {
+            numRequested--;
 
-          if (changed) {
-            game.drawCanvas();
-          }
+            if (unsettled) {
+              game.drawCanvas();
+            }
 
-        });
+          });
 
-        numRequested++;
+          numRequested++;
+        }
       }
 
 
