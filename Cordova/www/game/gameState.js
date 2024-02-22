@@ -67,6 +67,13 @@ GameState.prototype.undo = function () {
   if (this.undoList.length > 0) {
     var undo = this.undoList.pop();
     this.tiles = undo.tiles;
+    this.level.tileShape.forTilesInMove(this.tileStates,
+      undo.move,
+      function(ts) {
+        ts.transitionState = 0;
+      }
+    );
+
     this.runningSolution = undo.runningSolution;
     this.numMoves-=1;
   }
