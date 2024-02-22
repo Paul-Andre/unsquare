@@ -125,7 +125,9 @@ function makeGameBase2(canvasId, divId) {
           navigator.vibrate(2);
         }
       }
-      game.drawCanvas()
+      if (different) {
+        game.drawCanvas()
+      }
     }
   };
 
@@ -425,7 +427,7 @@ https://developer.mozilla.org/en-US/docs/Web/API/Element/setPointerCapture#javas
 
       v.transitionState = Math.min(
         1,
-        v.transitionState + (timestamp - previousTimestamp) / 150
+        v.transitionState + (timestamp - previousTimestamp) / 200
         // TODO: calculate actually how many milliseconds this uses
       );
 
