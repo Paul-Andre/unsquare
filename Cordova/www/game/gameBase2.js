@@ -425,7 +425,8 @@ https://developer.mozilla.org/en-US/docs/Web/API/Element/setPointerCapture#javas
 
       v.transitionState = Math.min(
         1,
-        v.transitionState + (timestamp - previousTimestamp) / 200
+        v.transitionState + (timestamp - previousTimestamp) / 150
+        // TODO: calculate actually how many milliseconds this uses
       );
 
       if (v.insetState != prevIS){
@@ -442,7 +443,10 @@ https://developer.mozilla.org/en-US/docs/Web/API/Element/setPointerCapture#javas
 
   }
 
+  let wasPaused = true;
+
   game.drawCanvas = function () {
+    let requested = false;
 
     if (!hidden && this.gameState) {
 
@@ -453,6 +457,11 @@ https://developer.mozilla.org/en-US/docs/Web/API/Element/setPointerCapture#javas
         return;
       }
 
+      if (wasPaused) {
+        // Hack so that updateCanvasAnimations doesn't calculated a huge timestamp.
+        // TODO: perhaps, instead do this in places such as when I change tilestate?
+        game.gameState.lastUpdateTimestamp = timestamp;
+      }
       let unsettled = game.updateCanvasAnimations(timestamp);
       game.actuallyDrawCanvas();
       if (unsettled) {
@@ -462,20 +471,18 @@ https://developer.mozilla.org/en-US/docs/Web/API/Element/setPointerCapture#javas
           requestAnimationFrame(function (timestamp) {
             numRequested--;
 
-            if (unsettled) {
-              game.drawCanvas();
-            }
+            game.drawCanvas();
 
           });
-
           numRequested++;
+          requested = true;
+
         }
       }
-
-
     } else {
       console.log("either hidden or gameState isn't there, not drawing");
     }
+    wasPaused  = !requested;
 
   };
 
