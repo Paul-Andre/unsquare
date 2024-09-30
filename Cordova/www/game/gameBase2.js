@@ -385,8 +385,8 @@ https://developer.mozilla.org/en-US/docs/Web/API/Element/setPointerCapture#javas
   }
 
   game.draw = function() {
-    game.drawCanvas();
     game.updateGui();
+    game.drawCanvas();
   }
 
 
