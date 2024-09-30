@@ -3,10 +3,15 @@
 function GameState(level) {
   var tileStates = level.tiles.clone();
   tileStates.forEachSet(function () {
+    // TODO: ok, but seriously, does this make sense?
+    // Maybe put the animation in a separate object, or combine the tileState
+    // value with these? idk... I guess whatever this is works for now...
     return {
       selected: false,
       oldSelected: false,
-      transitionState: 0,
+      insetState: 0,
+      reverseInsetState: 1,
+      transitionState: 1,
     };
   });
 
@@ -62,6 +67,13 @@ GameState.prototype.undo = function () {
   if (this.undoList.length > 0) {
     var undo = this.undoList.pop();
     this.tiles = undo.tiles;
+    this.level.tileShape.forTilesInMove(this.tileStates,
+      undo.move,
+      function(ts) {
+        ts.transitionState = 0;
+      }
+    );
+
     this.runningSolution = undo.runningSolution;
     this.numMoves-=1;
   }

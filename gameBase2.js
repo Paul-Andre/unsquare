@@ -125,7 +125,9 @@ function makeGameBase2(canvasId, divId) {
           navigator.vibrate(2);
         }
       }
-      game.drawCanvas()
+      if (different) {
+        game.drawCanvas()
+      }
     }
   };
 
@@ -145,8 +147,16 @@ function makeGameBase2(canvasId, divId) {
         this.gameState.applyMove(move, this.action);
         this.gameState.tileStates.forEach(function (v) {
           v.selected = false;
-          v.transitionState = 0;
+          v.insetState = 0;
+          // v.transitionState = 0;
         });
+        this.level.tileShape.forTilesInMove(
+          this.gameState.tileStates,
+          move,
+          function (v) {
+            v.transitionState = 0;
+          });
+
         if (navigator.vibrate) {
           navigator.vibrate(3);
         }
@@ -371,70 +381,110 @@ https://developer.mozilla.org/en-US/docs/Web/API/Element/setPointerCapture#javas
   }
 
   game.draw = function() {
-    game.updateGui();
     game.drawCanvas();
+    game.updateGui();
   }
 
 
-  game.drawCanvas = function () {
-
-    if (!hidden && this.gameState) {
-
+  // TODO: This is probably an intermediate step in refactor
+  game.actuallyDrawCanvas = function actuallyDrawCanvas() {
       this.level.tileShape.draw(ctx, this.gameState, this.action);
 
       if (this.demoDrag) {
         this.overlayDemoDrag();
       }
 
-      if (numRequested == 0) {
 
-        requestAnimationFrame(function (timeStamp) {
+  }
+  
+  // Updates the states, doesn't actually draw
+  // returns a boolean, whether things have changed
+  game.updateCanvasAnimations = function updateCanvasAnimations(timestamp) {
 
-          numRequested--;
-          var previousTimestamp = game.gameState.lastUpdateTimestamp;
+    var previousTimestamp = game.gameState.lastUpdateTimestamp;
 
-          var changed = false;
-          if (game.demoDrag) {
-            //TODO: make it so this doesn't use so much CPU
-            changed = true;
-            game.demoDragTime += (timeStamp - previousTimestamp)/2000;
-            game.demoDragTime %= 1;
-          }
-          
-          game.gameState.tileStates.forEach(function (v) {
+    // TODO: technically, this is unsettled_or_changed,
+    // And perhaps it might make sense to return both those variables...
+    var unsettled = false;
 
-            var prevTS = v.transitionState;
-
-            if (v.selected) {
-              v.transitionState = Math.min(
-                1,
-                v.transitionState + (timeStamp - previousTimestamp) / 10
-              );
-              v.transitionState = 1;
-            } else {
-              v.transitionState = Math.max(
-                0,
-                v.transitionState - (timeStamp - previousTimestamp) / 10
-              );
-              v.transitionState = 0;
-            }
-
-            if (v.transitionState != prevTS){
-              changed = true;
-            }
-
-          });
-          game.gameState.lastUpdateTimestamp = timeStamp;
-
-          if (changed) {
-            game.drawCanvas();
-          }
-        });
-
-        numRequested++;
-      }
+    if (game.demoDrag) {
+      //TODO: make it so this doesn't use so much CPU
+      unsettled = true;
+      game.demoDragTime += (timestamp - previousTimestamp)/2000;
+      game.demoDragTime %= 1;
     }
 
+    game.gameState.tileStates.forEach(function (v) {
+
+      let prevIS = v.insetState;
+      let prevTS = v.transitionState;
+
+      if (v.selected) {
+        v.insetState = 1;
+      } else {
+        v.insetState = 0;
+      }
+
+      v.transitionState = Math.min(
+        1,
+        v.transitionState + (timestamp - previousTimestamp) / 200
+        // TODO: calculate actually how many milliseconds this uses
+      );
+
+      if (v.insetState != prevIS){
+        unsettled = true;
+      }
+      if (v.transitionState != 1 || v.transitionState != prevTS) {
+        unsettled = true;
+      }
+
+    });
+    game.gameState.lastUpdateTimestamp = timestamp;
+    return unsettled;
+
+
+  }
+
+  let wasPaused = true;
+
+  game.drawCanvas = function () {
+    let requested = false;
+
+    if (!hidden && this.gameState) {
+
+      let timestamp = performance.now()
+      //TODO: is document.animationTimeline.currentTime better?
+
+      if (game.gameState.lastUpdateTimestamp === timestamp){
+        return;
+      }
+
+      if (wasPaused) {
+        // Hack so that updateCanvasAnimations doesn't calculated a huge timestamp.
+        // TODO: perhaps, instead do this in places such as when I change tilestate?
+        game.gameState.lastUpdateTimestamp = timestamp;
+      }
+      let unsettled = game.updateCanvasAnimations(timestamp);
+      game.actuallyDrawCanvas();
+      if (unsettled) {
+
+        if (numRequested == 0) {
+
+          requestAnimationFrame(function (timestamp) {
+            numRequested--;
+
+            game.drawCanvas();
+
+          });
+          numRequested++;
+          requested = true;
+
+        }
+      }
+    } else {
+      console.log("either hidden or gameState isn't there, not drawing");
+    }
+    wasPaused  = !requested;
 
   };
 

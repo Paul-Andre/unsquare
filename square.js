@@ -145,6 +145,64 @@
     }
   }
 
+  // TODO: refactor or expose?
+  // TODO: standardize whether use context transforms or passing coordinates...
+  function draw_tile(ctx, gameState, changeFunction, x, y, width, height, tileValue, tileState) {
+    var transitionState = tileState.transitionState;
+
+    var mainColor;
+    var insetColor;
+    var insetState;
+
+    if (transitionState < 0.5) {
+
+      mainColor = gameState.level.colorScheme.cells[changeFunction(tileValue)].fill;
+      insetColor = gameState.level.colorScheme.cells[tileValue].fill;
+      insetState = tileState.reverseInsetState;
+
+    } else {
+
+      mainColor = gameState.level.colorScheme.cells[tileValue].fill;
+      insetColor = gameState.level.colorScheme.cells[changeFunction(tileValue)].fill;
+      insetState = tileState.insetState;
+    }
+
+    var heightMult = Math.abs(Math.cos(transitionState * Math.PI));
+
+    var newHeight = height*heightMult;
+    var newY = y + (height-newHeight)*0.5;
+
+    height = newHeight;
+    y = newY;
+
+    ctx.fillStyle = mainColor;
+    ctx.fillRect(
+      x,
+      y,
+      width,
+      height * heightMult,
+    );
+
+    ctx.fillStyle = insetColor;
+
+    if (insetState) {
+      var insetProportion = 0.5
+      var squareWidth = (width) * insetState * insetProportion;
+      var squareHeight = (height * heightMult) * insetState * insetProportion;
+      var squareOffsetX =
+        (width) * (1 - insetState * insetProportion) * 0.5;
+      var squareOffsetY =
+        (height * heightMult) * (1 - insetState * insetProportion) * 0.5;
+      ctx.fillRect(
+        x + squareOffsetX,
+        y + squareOffsetY,
+        squareWidth,
+        squareHeight
+      );
+    }
+
+  }
+
   // TODO: remove this from here
   function draw(ctx, gameState, changeFunction) {
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
@@ -158,27 +216,17 @@
       var tileState = gameState.tileStates.get(x, y);
 
       ctx.fillStyle = gameState.level.colorScheme.cells[value].fill;
-      ctx.fillRect(
+
+      draw_tile(
+        ctx,
+        gameState,
+        changeFunction,
         x * width + padding,
         y * height + padding,
         width - padding,
-        height - padding
-      );
-
-      ctx.fillStyle =
-        gameState.level.colorScheme.cells[changeFunction(value)].fill;
-
-      var squareWidth = (width - padding) * tileState.transitionState * 0.5;
-      var squareHeight = (height - padding) * tileState.transitionState * 0.5;
-      var squareOffsetX =
-        (width - padding) * (1 - tileState.transitionState * 0.5) * 0.5;
-      var squareOffsetY =
-        (height - padding) * (1 - tileState.transitionState * 0.5) * 0.5;
-      ctx.fillRect(
-        x * width + padding + squareOffsetX,
-        y * height + padding + squareOffsetY,
-        squareWidth,
-        squareHeight
+        height - padding,
+        value,
+        tileState,
       );
     });
   }
@@ -205,12 +253,12 @@
       ctx.fillStyle =
         colorScheme.cells[changeFunction(value)].fill;
 
-      var squareWidth = (width - padding) * tileState.transitionState * 0.5;
-      var squareHeight = (height - padding) * tileState.transitionState * 0.5;
+      var squareWidth = (width - padding) * tileState.insetState * 0.5;
+      var squareHeight = (height - padding) * tileState.insetState * 0.5;
       var squareOffsetX =
-        (width - padding) * (1 - tileState.transitionState * 0.5) * 0.5;
+        (width - padding) * (1 - tileState.insetState * 0.5) * 0.5;
       var squareOffsetY =
-        (height - padding) * (1 - tileState.transitionState * 0.5) * 0.5;
+        (height - padding) * (1 - tileState.insetState * 0.5) * 0.5;
       ctx.fillRect(
         x * width + padding + squareOffsetX,
         y * height + padding + squareOffsetY,
