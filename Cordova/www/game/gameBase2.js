@@ -354,13 +354,17 @@ https://developer.mozilla.org/en-US/docs/Web/API/Element/setPointerCapture#javas
 
 
     if (game.isFinished()) {
-      if (game.level.index >= game.book.levels.length-1) {
-        // TODO: won game.
-        var a = this.div.getElementsByClassName("finishedGame")[0];
-        a.style.display = "block";
-      } else {
-        var a = this.div.getElementsByClassName("finishedLevel")[0];
-        a.style.display = "block";
+      // XXX this if statement is a hack to separate between the main levels, and editor levels
+      // TODO: on Custom levels, still add a success screen.
+      if (game.book.source.endsWith(".json") ) {
+        if (game.level.index >= game.book.levels.length-1) {
+          // TODO: won game.
+          var a = this.div.getElementsByClassName("finishedGame")[0];
+          a.style.display = "block";
+        } else {
+          var a = this.div.getElementsByClassName("finishedLevel")[0];
+          a.style.display = "block";
+        }
       }
     }
 
