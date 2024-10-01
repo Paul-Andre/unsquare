@@ -426,3 +426,10 @@ footer a {
   font: 75%;
   color: var(--black);
 }
+
+button.discord_button {
+  background: white url('discord-mark-blue.svg') no-repeat center right;
+  background-position: right 4px center;
+  background-size: 28px;
+  padding-right: 38px;
+}
