@@ -323,6 +323,11 @@ https://developer.mozilla.org/en-US/docs/Web/API/Element/setPointerCapture#javas
 
   var numRequested = 0;
 
+  game.isInBasicBook = function() {
+    // TODO: add some kind of flag to the book object for this.
+    return game.book.source.endsWith(".json")
+  }
+
   game.updateGui = function () {
 
     // TODO: this should probably not be in the base
@@ -340,7 +345,7 @@ https://developer.mozilla.org/en-US/docs/Web/API/Element/setPointerCapture#javas
     if (game.level.id == "level_1693531796434" && this.gameState.numMoves >= 1 && !game.isFinished()) {
       suggestsRestart = true;
     }
-    if (game.level.index<10 && this.gameState.numMoves > this.level.par*3 && !game.isFinished()) {
+    if (game.isInBasicBook() && game.level.index<10 && this.gameState.numMoves > this.level.par*3 && !game.isFinished()) {
       suggestsRestart = true;
     }
 
@@ -354,9 +359,7 @@ https://developer.mozilla.org/en-US/docs/Web/API/Element/setPointerCapture#javas
 
 
     if (game.isFinished()) {
-      // XXX this if statement is a hack to separate between the main levels, and editor levels
-      // TODO: on Custom levels, still add a success screen.
-      if (game.book.source.endsWith(".json") ) {
+      if (game.isInBasicBook()) {
         if (game.level.index >= game.book.levels.length-1) {
           // TODO: won game.
           var a = this.div.getElementsByClassName("finishedGame")[0];

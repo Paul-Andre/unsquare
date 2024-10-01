@@ -44,6 +44,8 @@ reorder a bit more
 0.5.4
 add url reset
 
+[ pause ... ]
+
 30 Sep 2024
 0.5.5
 (code is old, but released now)
@@ -52,3 +54,7 @@ Tile flip animation
 30 Sep 2024
 0.5.6
 Add discord logo + some bug fixes
+
+30 Sep 2024
+0.5.7
+small bug fix
