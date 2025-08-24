@@ -154,7 +154,11 @@ class Editor extends GameBase2 {
       // TODO make sure it doesn't break the Grid abstraction here.
       var size = new Number(size);
       if (!isNaN(size)) {
-        this.saveStateForUndo();
+        // Save current state for undo
+        this.undoList.push({
+          level: this.level.clone(),
+          gameState: this.gameState
+        });
 
         var grid = Grid.empty(size, size);
 
