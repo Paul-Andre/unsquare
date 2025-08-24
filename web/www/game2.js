@@ -162,4 +162,13 @@ console.log("Game instance methods:", Object.getOwnPropertyNames(window.game));
 
 screenManager.additionalFunctions.game = window.game;
 
+// Make nextLevel and prevLevel globally available for HTML onclick handlers
+function nextLevel() {
+  window.game.nextLevel();
+}
+
+function prevLevel() {
+  window.game.prevLevel();
+}
+
 
