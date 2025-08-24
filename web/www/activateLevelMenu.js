@@ -161,7 +161,7 @@ class LevelMenuActivator {
 
   // this function is to be called on icons using the onclick event
   // so "this" refers to the icon element, not levelMenu
-  onIconClick() {
+  onIconClick(event) {
     const levelMenu = this; // 'this' is the LevelMenuActivator instance due to bind()
     const iconElement = event.target.closest('.level_icon'); // Get the icon element
     
