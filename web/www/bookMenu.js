@@ -168,36 +168,6 @@ class BookMenu {
 
   loadBooks() {}
 
-let bookTemplate =
-  "<div class='bookSummary'> \
-  <div class='bookIconContainer'> \
-  \
-  \
-  </div>\
-  <div class='bookInfoContainer'>\
-  <div>\
-    <span class='bookName'>\
-    </span>\
-    <br/>\
-    <span class='bookId'>\
-    </span>\
-</div>\
-  </div>\
-</div>";
-
-function select_book_icon_level(book) {
-  for (let i=0; i<book.levels.length; i++) {
-    let level = book.levels[i];
-    if (level.isIcon) {
-      return level;
-    }
-  }
-  if (book.levels.length >= 1) {
-    return book.levels[0];
-  }
-  return null;
-}
-
   prepareBook(book) {
 
     let node = htmlStringToElement(bookTemplate);
@@ -227,6 +197,38 @@ function select_book_icon_level(book) {
 
     return node;
   }
+}
+
+}
+
+let bookTemplate =
+  "<div class='bookSummary'> \
+  <div class='bookIconContainer'> \
+  \
+  \
+  </div>\
+  <div class='bookInfoContainer'>\
+  <div>\
+    <span class='bookName'>\
+    </span>\
+    <br/>\
+    <span class='bookId'>\
+    </span>\
+</div>\
+  </div>\
+</div>";
+
+function select_book_icon_level(book) {
+  for (let i=0; i<book.levels.length; i++) {
+    let level = book.levels[i];
+    if (level.isIcon) {
+      return level;
+    }
+  }
+  if (book.levels.length >= 1) {
+    return book.levels[0];
+  }
+  return null;
 }
 
 const bookMenu = new BookMenu();
