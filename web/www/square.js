@@ -1,23 +1,28 @@
 "use strict";
 
-(function () {
-  /// Given fractional positions the two corners of the dragged rectangle
-  /// relative to the grid, returns the top right corner and size of square
-  /// to be inverted.  Output is in the form of {x: int, y: int, size: int}
-  /// You still need to check if the "size" of the output is bigger than 1.
-  /// The numbers are between 0 and gridWidth or gridHeight, not between 0
-  /// and 1.
-  function calculateSquare(x1, y1, x2, y2, gridWidth, gridHeight) {
+class SquareTileShape {
+  constructor() {
+    this.name = "square";
+  }
+
+  /**
+   * Given fractional positions the two corners of the dragged rectangle
+   * relative to the grid, returns the top right corner and size of square
+   * to be inverted. Output is in the form of {x: int, y: int, size: int}
+   * You still need to check if the "size" of the output is bigger than 1.
+   * The numbers are between 0 and gridWidth or gridHeight, not between 0 and 1.
+   */
+  calculateSquare(x1, y1, x2, y2, gridWidth, gridHeight) {
     // Specify the direction in which the square goes. 1 is the default value.
-    var xSign = Math.sign(x2 - x1) || 1;
-    var ySign = Math.sign(y2 - y1) || 1;
+    const xSign = Math.sign(x2 - x1) || 1;
+    const ySign = Math.sign(y2 - y1) || 1;
 
     // Get the starting cell.
-    var x = Math.floor(x1);
-    var y = Math.floor(y1);
+    let x = Math.floor(x1);
+    let y = Math.floor(y1);
 
     // The size of the square
-    var size =
+    let size =
       Math.max(Math.abs(Math.floor(x2) - x), Math.abs(Math.floor(y2) - y)) + 1;
 
     // Adjustments if the square goes in negative directions
@@ -48,33 +53,39 @@
     };
   }
 
-  function gridFromJsonObject(tiles) {
+  gridFromJsonObject(tiles) {
     return Grid.from2dArray(tiles);
   }
 
-  /// From [0, 1] to [0, "grid dimention"]
-  function coordinatesFromMousePosition(x, y, tiles) {
+  /**
+   * From [0, 1] to [0, "grid dimension"]
+   */
+  coordinatesFromMousePosition(x, y, tiles) {
     return {
       x: Math.floor(x * tiles.width),
       y: Math.floor(y * tiles.height),
     };
   }
 
-  /// position on the canvas as if it was stretch to be from 0 to 1
-  function positionFromCoordinates(x, y, tiles) {
+  /**
+   * Position on the canvas as if it was stretched to be from 0 to 1
+   */
+  positionFromCoordinates(x, y, tiles) {
     return {
       x: (x + 0.5) / tiles.width,
       y: (y + 0.5) / tiles.height,
     };
   }
 
-  /// Function that creates a move based on the coordinates of start and
-  /// end of the mouse drag.
-  function moveFromMousePositions(x1, y1, x2, y2, tiles) {
-    var width = tiles.width;
-    var height = tiles.height;
+  /**
+   * Function that creates a move based on the coordinates of start and
+   * end of the mouse drag.
+   */
+  moveFromMousePositions(x1, y1, x2, y2, tiles) {
+    const width = tiles.width;
+    const height = tiles.height;
 
-    var move = calculateSquare(
+    const move = this.calculateSquare(
       x1 * width,
       y1 * height,
       x2 * width,
@@ -90,7 +101,7 @@
     }
   }
 
-  function forTilesInMoveSet(grid, move, action) {
+  forTilesInMoveSet(grid, move, action) {
     if (move !== null)
       grid
         .window(move.x, move.y, move.size, move.size)
@@ -102,14 +113,14 @@
   // Turns a "move" object to a 0-1 vector representing it
   // Unfortunate that "move" can be interpreted as a verb
   // TODO: I believe I created a whole lexicon of nouns here, so possibly rename
-  function moveToVector(grid, move) {
+  moveToVector(grid, move) {
     let move_grid = Grid.empty(grid.width, grid.height);
     move_grid.setAll(0);
-    forTilesInMoveSet(move_grid, move, () => 1);
+    this.forTilesInMoveSet(move_grid, move, () => 1);
     return move_grid.array;
   }
 
-  function forTilesInMove(grid, move, action) {
+  forTilesInMove(grid, move, action) {
     if (move !== null)
       grid
         .window(move.x, move.y, move.size, move.size)
@@ -118,11 +129,11 @@
         });
   }
 
-  function select(x1, y1, x2, y2, tileStates) {
-    var width = tileStates.width;
-    var height = tileStates.height;
+  select(x1, y1, x2, y2, tileStates) {
+    const width = tileStates.width;
+    const height = tileStates.height;
 
-    var invertingSquare = calculateSquare(
+    const invertingSquare = this.calculateSquare(
       x1 * width,
       y1 * height,
       x2 * width,
@@ -130,9 +141,9 @@
       width,
       height
     );
-    var x = invertingSquare.x;
-    var y = invertingSquare.y;
-    var size = invertingSquare.size;
+    const x = invertingSquare.x;
+    const y = invertingSquare.y;
+    const size = invertingSquare.size;
 
     tileStates.forEach(function (v) {
       v.selected = false;
@@ -147,30 +158,27 @@
 
   // TODO: refactor or expose?
   // TODO: standardize whether use context transforms or passing coordinates...
-  function draw_tile(ctx, gameState, changeFunction, x, y, width, height, tileValue, tileState) {
-    var transitionState = tileState.transitionState;
+  draw_tile(ctx, gameState, changeFunction, x, y, width, height, tileValue, tileState) {
+    const transitionState = tileState.transitionState;
 
-    var mainColor;
-    var insetColor;
-    var insetState;
+    let mainColor;
+    let insetColor;
+    let insetState;
 
     if (transitionState < 0.5) {
-
       mainColor = gameState.level.colorScheme.cells[changeFunction(tileValue)].fill;
       insetColor = gameState.level.colorScheme.cells[tileValue].fill;
       insetState = tileState.reverseInsetState;
-
     } else {
-
       mainColor = gameState.level.colorScheme.cells[tileValue].fill;
       insetColor = gameState.level.colorScheme.cells[changeFunction(tileValue)].fill;
       insetState = tileState.insetState;
     }
 
-    var heightMult = Math.abs(Math.cos(transitionState * Math.PI));
+    const heightMult = Math.abs(Math.cos(transitionState * Math.PI));
 
-    var newHeight = height*heightMult;
-    var newY = y + (height-newHeight)*0.5;
+    const newHeight = height * heightMult;
+    const newY = y + (height - newHeight) * 0.5;
 
     height = newHeight;
     y = newY;
@@ -186,12 +194,12 @@
     ctx.fillStyle = insetColor;
 
     if (insetState) {
-      var insetProportion = 0.5
-      var squareWidth = (width) * insetState * insetProportion;
-      var squareHeight = (height * heightMult) * insetState * insetProportion;
-      var squareOffsetX =
+      const insetProportion = 0.5;
+      const squareWidth = (width) * insetState * insetProportion;
+      const squareHeight = (height * heightMult) * insetState * insetProportion;
+      const squareOffsetX =
         (width) * (1 - insetState * insetProportion) * 0.5;
-      var squareOffsetY =
+      const squareOffsetY =
         (height * heightMult) * (1 - insetState * insetProportion) * 0.5;
       ctx.fillRect(
         x + squareOffsetX,
@@ -200,24 +208,23 @@
         squareHeight
       );
     }
-
   }
 
   // TODO: remove this from here
-  function draw(ctx, gameState, changeFunction) {
+  draw(ctx, gameState, changeFunction) {
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
-    var width = ctx.canvas.width / (gameState.tiles.width + 0.1);
-    var height = ctx.canvas.height / (gameState.tiles.height + 0.1);
+    const width = ctx.canvas.width / (gameState.tiles.width + 0.1);
+    const height = ctx.canvas.height / (gameState.tiles.height + 0.1);
 
-    var padding = width * 0.1;
+    const padding = width * 0.1;
 
-    gameState.tiles.forEach(function (value, x, y) {
-      var tileState = gameState.tileStates.get(x, y);
+    gameState.tiles.forEach((value, x, y) => {
+      const tileState = gameState.tileStates.get(x, y);
 
       ctx.fillStyle = gameState.level.colorScheme.cells[value].fill;
 
-      draw_tile(
+      this.draw_tile(
         ctx,
         gameState,
         changeFunction,
@@ -231,16 +238,16 @@
     });
   }
 
-  function draw_expanded(ctx, tiles, tileStates, colorScheme, changeFunction) {
+  draw_expanded(ctx, tiles, tileStates, colorScheme, changeFunction) {
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
-    var width = ctx.canvas.width / (tiles.width + 0.1);
-    var height = ctx.canvas.height / (tiles.height + 0.1);
+    const width = ctx.canvas.width / (tiles.width + 0.1);
+    const height = ctx.canvas.height / (tiles.height + 0.1);
 
-    var padding = width * 0.1;
+    const padding = width * 0.1;
 
-    tiles.forEach(function (value, x, y) {
-      var tileState = tileStates.get(x, y);
+    tiles.forEach((value, x, y) => {
+      const tileState = tileStates.get(x, y);
 
       ctx.fillStyle = colorScheme.cells[value].fill;
       ctx.fillRect(
@@ -253,11 +260,11 @@
       ctx.fillStyle =
         colorScheme.cells[changeFunction(value)].fill;
 
-      var squareWidth = (width - padding) * tileState.insetState * 0.5;
-      var squareHeight = (height - padding) * tileState.insetState * 0.5;
-      var squareOffsetX =
+      const squareWidth = (width - padding) * tileState.insetState * 0.5;
+      const squareHeight = (height - padding) * tileState.insetState * 0.5;
+      const squareOffsetX =
         (width - padding) * (1 - tileState.insetState * 0.5) * 0.5;
-      var squareOffsetY =
+      const squareOffsetY =
         (height - padding) * (1 - tileState.insetState * 0.5) * 0.5;
       ctx.fillRect(
         x * width + padding + squareOffsetX,
@@ -267,18 +274,7 @@
       );
     });
   }
+}
 
-  tileShapes.square = {
-    name: "square",
-    coordinatesFromMousePosition: coordinatesFromMousePosition,
-    positionFromCoordinates: positionFromCoordinates,
-    moveFromMousePositions: moveFromMousePositions,
-    select: select,
-    draw: draw,
-    forTilesInMove: forTilesInMove,
-    forTilesInMoveSet: forTilesInMoveSet,
-    gridFromJsonObject: gridFromJsonObject,
-    moveToVector: moveToVector,
-    draw_expanded: draw_expanded,
-  };
-})();
+// Create global instance for backward compatibility
+tileShapes.square = new SquareTileShape();
