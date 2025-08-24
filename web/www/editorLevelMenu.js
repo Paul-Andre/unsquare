@@ -1,5 +1,5 @@
 "use strict";
 
-var editorLevelMenu = activateLevelMenu("editorLevelMenu", true);
+var editorLevelMenu = new LevelMenuActivator("editorLevelMenu", true);
 
 screenManager.additionalFunctions.editorLevelMenu = editorLevelMenu;

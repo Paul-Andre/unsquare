@@ -14,7 +14,7 @@ class GameLevelMenu {
   initializeLevelMenu() {
     // Wait for game to be available
     if (window.game) {
-      this.levelMenu = activateLevelMenu("gameLevelMenu", false);
+      this.levelMenu = new LevelMenuActivator("gameLevelMenu", false);
       screenManager.additionalFunctions.gameLevelMenu = this.levelMenu;
     } else {
       // Retry after a short delay
@@ -73,24 +73,8 @@ class GameLevelMenu {
   }
 }
 
-// Create global instance and attach methods to global scope for backward compatibility
+// Create global instance
 const gameLevelMenuInstance = new GameLevelMenu();
 
-// Expose methods globally for backward compatibility
-function getLskForBestNumMoves(level) {
-  return gameLevelMenuInstance.getLskForBestNumMoves(level);
-}
-
-function getBestNumMoves(level) {
-  return gameLevelMenuInstance.getBestNumMoves(level);
-}
-
-function setBestNumMoves(level, num) {
-  return gameLevelMenuInstance.setBestNumMoves(level, num);
-}
-
-function clearBestNumMoves(level) {
-  return gameLevelMenuInstance.clearBestNumMoves(level);
-}
 
 

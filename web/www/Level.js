@@ -166,7 +166,7 @@ class Level {
   }
 
   getBestNumMoves() {
-    return getBestNumMoves(this);
+    return gameLevelMenuInstance.getBestNumMoves(this);
   }
 
   showsDemo() {

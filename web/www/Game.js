@@ -85,12 +85,12 @@ class Game extends GameBase {
       save_editor_book(this.book);
     }
 
-    let prevBest = getBestNumMoves(this.level);
+    let prevBest = gameLevelMenuInstance.getBestNumMoves(this.level);
 
     let numMoves = this.gameState.numMoves
 
     if (prevBest === null || numMoves < prevBest){
-      setBestNumMoves(this.level, numMoves);
+      gameLevelMenuInstance.setBestNumMoves(this.level, numMoves);
     } 
 
     // TODO: make sure this isn't sent excessively for some reason.
@@ -102,7 +102,7 @@ class Game extends GameBase {
 
   getCurrentBest() {
     if (this.level) {
-      return getBestNumMoves(this.level);
+      return gameLevelMenuInstance.getBestNumMoves(this.level);
     }
     return null;
   }

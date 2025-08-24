@@ -293,7 +293,7 @@ class LevelMenuActivator {
   // TODO: put this in "subclass"
   clearAllBests() {
     for (let i = 0; i < this.book.levels.length; i++) {
-      clearBestNumMoves(this.book.levels[i]);
+              gameLevelMenuInstance.clearBestNumMoves(this.book.levels[i]);
     }
     this.displayIcons();
   }
@@ -304,7 +304,5 @@ class LevelMenuActivator {
 }
 
 // Factory function for backward compatibility
-function activateLevelMenu(elementId, isEditor) {
-  return new LevelMenuActivator(elementId, isEditor);
-}
+
 

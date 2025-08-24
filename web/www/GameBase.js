@@ -511,7 +511,4 @@ class GameBase {
   }
 }
 
-// Factory function for backward compatibility
-function makeGameBase(canvasId, divId) {
-  return new GameBase(canvasId, divId);
-}
+
