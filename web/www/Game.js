@@ -29,6 +29,17 @@ class Game extends GameBase {
   }
 
   restart() {
+    // Save current state for undo before restarting
+    if (this.gameState && this.gameState.numMoves > 0) {
+      this.gameState.undoList.push({
+        tiles: this.gameState.tiles.clone(),
+        move: "restart",
+        runningSolution: this.gameState.runningSolution.slice(),
+        numMoves: this.gameState.numMoves,
+        isRestart: true
+      });
+    }
+    
     this.openLevel(this.level, this.book);
     this.draw();
     // Force an immediate redraw to ensure canvas updates
