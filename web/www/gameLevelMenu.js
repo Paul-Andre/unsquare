@@ -1,59 +1,85 @@
 "use strict";
 
-var gameLevelMenu = activateLevelMenu("gameLevelMenu", false);
-screenManager.additionalFunctions.gameLevelMenu = gameLevelMenu;
+class GameLevelMenu {
+  constructor() {
+    this.bookUrl = "2024_feb_17_better_intro_2.json";
+    // this.bookUrl = "tiny_for_testing.json";
+    
+    this.levelMenu = activateLevelMenu("gameLevelMenu", false);
+    screenManager.additionalFunctions.gameLevelMenu = this.levelMenu;
+    
+    this.loadBook();
+  }
 
+  // Best moves storage methods
+  getLskForBestNumMoves(level) {
+    return level.getFullIdentifier() + " bestNumMoves";
+  }
 
-let bookUrl = "2024_feb_17_better_intro_2.json";
-//let bookUrl = "tiny_for_testing.json";
+  getBestNumMoves(level) {
+    let sol = localStorage.getItem(this.getLskForBestNumMoves(level));
+    if (sol === null) return null;
+    return Number(sol);
+  }
 
-//https://stackoverflow.com/a/35294675
-let request = new XMLHttpRequest();
-request.open("GET", bookUrl, true);
+  setBestNumMoves(level, num) {
+    localStorage.setItem(this.getLskForBestNumMoves(level), num);
+  }
 
+  clearBestNumMoves(level) {
+    localStorage.removeItem(this.getLskForBestNumMoves(level));
+  }
 
+  loadBook() {
+    // https://stackoverflow.com/a/35294675
+    let request = new XMLHttpRequest();
+    request.open("GET", this.bookUrl, true);
 
-// TODO: put these all inside a scope or object or something
-// Reminder: "best" in this case means the user's best
+    request.onload = () => {
+      if (request.status >= 200 && request.status < 400) {
+        let data = JSON.parse(request.responseText, book_reviver);
+        data.source = this.bookUrl;
+
+        this.levelMenu.openBook(data);
+
+        let button = document.getElementById("homePlayButton");
+        button.removeAttribute("disabled");
+        button.innerText = "Start Game!";
+
+        // if ?reset added at the end of the url, reset the bests
+        let resetUrlParam = (new URLSearchParams(location.search)).get("reset");
+        if (resetUrlParam !== null) {
+          this.levelMenu.clearAllBests();
+        }
+      }
+    };
+
+    request.onerror = (e) => {
+      alert("Error loading levels");
+    };
+
+    request.send();
+  }
+}
+
+// Create global instance and attach methods to global scope for backward compatibility
+const gameLevelMenuInstance = new GameLevelMenu();
+
+// Expose methods globally for backward compatibility
 function getLskForBestNumMoves(level) {
-  return level.getFullIdentifier() + " bestNumMoves";
+  return gameLevelMenuInstance.getLskForBestNumMoves(level);
 }
+
 function getBestNumMoves(level) {
-  let sol = localStorage.getItem(getLskForBestNumMoves(level));
-  if (sol === null) return null;
-  return Number(sol);
+  return gameLevelMenuInstance.getBestNumMoves(level);
 }
+
 function setBestNumMoves(level, num) {
-  localStorage.setItem(getLskForBestNumMoves(level), num);
-}
-function clearBestNumMoves(level, num) {
-  localStorage.removeItem(getLskForBestNumMoves(level));
+  return gameLevelMenuInstance.setBestNumMoves(level, num);
 }
 
-request.onload = function () {
-  if (request.status >= 200 && request.status < 400) {
-    let data = JSON.parse(request.responseText, book_reviver);
-    data.source = bookUrl;
-
-    gameLevelMenu.openBook(data);
-
-    let button = document.getElementById("homePlayButton");
-    button.removeAttribute("disabled");
-    button.innerText="Start Game!";
-
-    // if ?reset added at the end of the url, reset the bests
-    let resetUrlParam = (new URLSearchParams(location.search)).get("reset");
-    if (resetUrlParam !== null) {
-      gameLevelMenu.clearAllBests();
-    }
-
-  } 
-};
-
-request.onerror = function (e) {
-  alert("Error loading levels");
-};
-
-request.send();
+function clearBestNumMoves(level) {
+  return gameLevelMenuInstance.clearBestNumMoves(level);
+}
 
 
