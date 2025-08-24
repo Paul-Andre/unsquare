@@ -8,6 +8,9 @@ class Editor extends GameBase {
     
     // Override openLevel to handle editor-specific behavior
     this.openLevel = this.editorOpenLevel.bind(this);
+    
+    // Bind the action method to preserve 'this' context when passed as callback
+    this.action = this.action.bind(this);
   }
 
   editorOpenLevel(level, book) {
