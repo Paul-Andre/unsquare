@@ -43,7 +43,7 @@ let new_book_format = {
 
 // info is information stored regarding the how the player did,
 // as opposed to data, which is meant to be immutable while the player is playing,
-/I created this/ such as the static data about the levels.
+//I created this/ such as the static data about the levels.
 let level_info = {
   best_solution: null,
 }
