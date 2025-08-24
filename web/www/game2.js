@@ -2,6 +2,8 @@
 
 window.game = makeGameBase2("gameCanvas", "game");
 console.log("Game instance created:", window.game);
+console.log("Game instance type:", typeof window.game);
+console.log("Game instance methods:", Object.getOwnPropertyNames(window.game));
 
 screenManager.additionalFunctions.game = game;
 

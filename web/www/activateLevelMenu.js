@@ -186,8 +186,17 @@ class LevelMenuActivator {
         editor.openLevel(iconElement.level, this.book);
         screenManager.switchTo("editor");
       } else {
-        game.openLevel(iconElement.level, this.book);
-        screenManager.switchTo("game");
+        console.log("Attempting to open level:", iconElement.level);
+        console.log("Game object:", game);
+        console.log("Window.game object:", window.game);
+        console.log("Game.openLevel method:", game?.openLevel);
+        console.log("Window.game.openLevel method:", window.game?.openLevel);
+        if (window.game && window.game.openLevel) {
+          window.game.openLevel(iconElement.level, this.book);
+          screenManager.switchTo("game");
+        } else {
+          console.error("Game or game.openLevel is not available!");
+        }
       }
     }
   }
