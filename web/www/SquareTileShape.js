@@ -226,6 +226,7 @@ class SquareTileShape {
 
     // Don't draw inset for single tile selections
     if (insetState && !isSingleTileSelection) {
+      return;
       const insetProportion = 0.5;
       const squareWidth = width * insetState * insetProportion;
       const squareHeight = height * heightMult * insetState * insetProportion;
