@@ -1,102 +1,99 @@
 "use strict";
 
-
-
 /// This is what does the basics of drawing the tiles to the screen.
 ///
-function makeGameBase2(canvasId, divId) {
-  var canvas = document.getElementById(canvasId);
-  var ctx = canvas.getContext("2d");
+class GameBase2 {
+  constructor(canvasId, divId) {
+    this.canvas = document.getElementById(canvasId);
+    this.ctx = this.canvas.getContext("2d");
+    this.div = document.getElementById(divId);
 
-  var mouseStart = {
-    x: 0,
-    y: 0,
-    pressed: false,
-  };
+    this.mouseStart = {
+      x: 0,
+      y: 0,
+      pressed: false,
+    };
 
-  var mouseNow = {
-    x: 0,
-    y: 0,
-  };
+    this.mouseNow = {
+      x: 0,
+      y: 0,
+    };
 
-  var game = {
-    gameState: null,
+    this.gameState = null;
     // TODO: encapsulate these in an object
-    demoDrag: null,
-    demoDragTime: 0,
-  };
+    this.demoDrag = null;
+    this.demoDragTime = 0;
 
+    this.canvasVirtualSize = 0;
+    this.canvasSize = 0;
 
-  game.div = document.getElementById(divId);
+    // TODO: Make this not use CPU all the time
+    this.hidden = true;
+    // to make sure we don't requestAnimationFrame if it's already been requested
+    this.numRequested = 0;
 
-  var canvasVirtualSize;
-  var canvasSize;
+    this.firstDemoDrag = {
+      start: {
+        x: 0.3,
+        y: 0.3,
+      },
+      end: {
+        x: 0.7,
+        y: 0.7,
+      }
+    };
 
-  game.onResize = function () {
-    canvasVirtualSize = Math.min(this.div.offsetWidth, this.div.offsetHeight, MAX_WIDTH);
+    this.wasPaused = true;
 
-    canvasSize = canvasVirtualSize * (window.devicePixelRatio || 1);
-    canvas.width = canvas.height = canvasSize;
-    canvas.style.width = canvas.style.height = canvasVirtualSize + "px";
-    this.draw();
-  };
-
-  game.displayLevelGui = function(){};
-
-
-  var firstDemoDrag = {
-    start: {
-      x: 0.3,
-      y: 0.3,
-    },
-    end: {
-      x: 0.7,
-      y: 0.7,
-    }
+    this.setupEventListeners();
+    this.onResize();
   }
 
-  game.openLevel = function (level, book) {
+  onResize() {
+    this.canvasVirtualSize = Math.min(this.div.offsetWidth, this.div.offsetHeight, MAX_WIDTH);
 
+    this.canvasSize = this.canvasVirtualSize * (window.devicePixelRatio || 1);
+    this.canvas.width = this.canvas.height = this.canvasSize;
+    this.canvas.style.width = this.canvas.style.height = this.canvasVirtualSize + "px";
+    this.draw();
+  }
+
+  displayLevelGui() {}
+
+  openLevel(level, book) {
     this.gameState = new GameState(level);
     this.level = level;
     this.book = book;
 
     trackLevelStart(level, book);
 
-
-    mouseStart.pressed = false;
+    this.mouseStart.pressed = false;
 
     this.displayLevelGui(level);
-
-  };
+  }
 
   // TODO: remove glitch
-  //
-
-  game.doMouseDown = function (x, y) {
-    mouseStart.x = x / canvasSize;
-    mouseStart.y = y / canvasSize;
-    mouseStart.pressed = true;
-
+  doMouseDown(x, y) {
+    this.mouseStart.x = x / this.canvasSize;
+    this.mouseStart.y = y / this.canvasSize;
+    this.mouseStart.pressed = true;
 
     // One of the rare things that it might make sense to overwrite?
-    var a = game.div.getElementsByClassName("finishedLevel")[0];
+    const a = this.div.getElementsByClassName("finishedLevel")[0];
     // console.log(a)
     a.style.display = "none";
+  }
 
-  };
+  doMouseMove(x, y) {
+    this.mouseNow.x = x / this.canvasSize;
+    this.mouseNow.y = y / this.canvasSize;
 
-
-  game.doMouseMove = function (x, y) {
-    mouseNow.x = x / canvasSize;
-    mouseNow.y = y / canvasSize;
-
-    if (mouseStart.pressed) {
-      var potentialMove = this.level.tileShape.moveFromMousePositions(
-        mouseStart.x,
-        mouseStart.y,
-        x / canvasSize,
-        y / canvasSize,
+    if (this.mouseStart.pressed) {
+      const potentialMove = this.level.tileShape.moveFromMousePositions(
+        this.mouseStart.x,
+        this.mouseStart.y,
+        x / this.canvasSize,
+        y / this.canvasSize,
         this.gameState.tileStates
       );
 
@@ -113,12 +110,12 @@ function makeGameBase2(canvasId, divId) {
         }
       );
 
-      var different = false;
+      let different = false;
       this.gameState.tileStates.forEach(function (v) {
         if (v.selected != v.oldSelected) {
           different = true;
         }
-      })
+      });
 
       if (different) {
         if (navigator.vibrate) {
@@ -126,20 +123,19 @@ function makeGameBase2(canvasId, divId) {
         }
       }
       if (different) {
-        game.drawCanvas()
+        this.drawCanvas();
       }
     }
-  };
+  }
 
-
-  game.doMouseUp = function (x, y) {
-    if (mouseStart.pressed) {
-      mouseStart.pressed = false;
-      var move = this.level.tileShape.moveFromMousePositions(
-        mouseStart.x,
-        mouseStart.y,
-        x / canvasSize,
-        y / canvasSize,
+  doMouseUp(x, y) {
+    if (this.mouseStart.pressed) {
+      this.mouseStart.pressed = false;
+      const move = this.level.tileShape.moveFromMousePositions(
+        this.mouseStart.x,
+        this.mouseStart.y,
+        x / this.canvasSize,
+        y / this.canvasSize,
         this.gameState.tileStates
       );
 
@@ -161,26 +157,25 @@ function makeGameBase2(canvasId, divId) {
           navigator.vibrate(3);
         }
       }
-      game.draw()
-      if (game.isFinished()) {
-        game.finishedLevel()
+      this.draw();
+      if (this.isFinished()) {
+        this.finishedLevel();
       }
     }
-
-  };
+  }
 
   // Gets the coordinates of the touch/mouse relative to the canvas element.
   //http://www.jacklmoore.com/notes/mouse-position/
-  function getCoordinates(event) {
-    var style = window.getComputedStyle(canvas, null);
-    var borderLeftWidth = parseInt(style.borderLeftWidth, 10);
-    var borderTopWidth = parseInt(style.borderTopWidth, 10);
-    var rect = canvas.getBoundingClientRect();
+  getCoordinates(event) {
+    const style = window.getComputedStyle(this.canvas, null);
+    const borderLeftWidth = parseInt(style.borderLeftWidth, 10);
+    const borderTopWidth = parseInt(style.borderTopWidth, 10);
+    const rect = this.canvas.getBoundingClientRect();
     return {
       x: Math.max(
         0,
         Math.min(
-          canvas.width - 2,
+          this.canvas.width - 2,
           (event.clientX - rect.left - borderLeftWidth) *
           (window.devicePixelRatio || 1)
         )
@@ -188,7 +183,7 @@ function makeGameBase2(canvasId, divId) {
       y: Math.max(
         0,
         Math.min(
-          canvas.height - 2,
+          this.canvas.height - 2,
           (event.clientY - rect.top - borderTopWidth) *
           (window.devicePixelRatio || 1)
         )
@@ -196,156 +191,109 @@ function makeGameBase2(canvasId, divId) {
     };
   }
 
-  if (false) {
-    function createTouchListener(fn) {
-      return function (event) {
-        if (event.changedTouches) {
-          var coords = getCoordinates(event.changedTouches[0]);
-          fn(coords.x, coords.y);
-        }
-        //return cancelEvent(event);
+  setupEventListeners() {
+    if (false) {
+      const createTouchListener = (fn) => {
+        return (event) => {
+          if (event.changedTouches) {
+            const coords = this.getCoordinates(event.changedTouches[0]);
+            fn(coords.x, coords.y);
+          }
+          //return cancelEvent(event);
+        };
       };
-    }
 
-    canvas.addEventListener(
-      "touchstart",
-      createTouchListener(game.doMouseDown.bind(game))
-    );
-    canvas.addEventListener(
-      "touchmove",
-      createTouchListener(game.doMouseMove.bind(game))
-    );
-    canvas.addEventListener(
-      "touchend",
-      createTouchListener(game.doMouseUp.bind(game))
-    );
+      this.canvas.addEventListener(
+        "touchstart",
+        createTouchListener(this.doMouseDown.bind(this))
+      );
+      this.canvas.addEventListener(
+        "touchmove",
+        createTouchListener(this.doMouseMove.bind(this))
+      );
+      this.canvas.addEventListener(
+        "touchend",
+        createTouchListener(this.doMouseUp.bind(this))
+      );
 
-    function createMouseListener(fn) {
-      return function (event) {
-        var coords = getCoordinates(event);
-        fn(coords.x, coords.y);
+      const createMouseListener = (fn) => {
+        return (event) => {
+          const coords = this.getCoordinates(event);
+          fn(coords.x, coords.y);
+          return cancelEvent(event);
+        };
+      };
+
+      this.canvas.addEventListener(
+        "mousedown",
+        createMouseListener(this.doMouseDown.bind(this))
+      );
+      this.canvas.addEventListener(
+        "mousemove",
+        createMouseListener(this.doMouseMove.bind(this))
+      );
+      this.canvas.addEventListener(
+        "mouseup",
+        createMouseListener(this.doMouseUp.bind(this))
+      );
+    } else {
+      const beginSliding = (e) => {
+        console.log("begin", e);
+        const coords = this.getCoordinates(e);
+        this.doMouseDown(coords.x, coords.y);
         return cancelEvent(event);
       };
+
+      const slide = (e) => {
+        // console.log("slide", e)
+        const coords = this.getCoordinates(e);
+        this.doMouseMove(coords.x, coords.y);
+        return cancelEvent(event);
+      };
+
+      const stopSliding = (e) => {
+        console.log("asdfasd");
+        const coords = this.getCoordinates(e);
+        this.doMouseUp(coords.x, coords.y);
+        return cancelEvent(event);
+      };
+
+      this.canvas.addEventListener("pointerdown", beginSliding);
+      this.canvas.addEventListener("pointermove", slide);
+      this.canvas.addEventListener("pointerup", stopSliding);
     }
 
-    canvas.addEventListener(
-      "mousedown",
-      createMouseListener(game.doMouseDown.bind(game))
+    window.addEventListener(
+      "resize",
+      () => {
+        this.onResize();
+      },
+      false
     );
-    canvas.addEventListener(
-      "mousemove",
-      createMouseListener(game.doMouseMove.bind(game))
-    );
-    canvas.addEventListener(
-      "mouseup",
-      createMouseListener(game.doMouseUp.bind(game))
-    );
-
-
-    /*
-https://developer.mozilla.org/en-US/docs/Web/API/Element/setPointerCapture#javascript
-*/
-    // TODO: eh? Does this actually work on enough modern browsers?
-    //
-
-  }else{
-
-    function beginSliding(e) {
-      console.log("begin", e)
-      var coords = getCoordinates(e);
-      game.doMouseDown(coords.x, coords.y);
-
-      //canvas.onpointermove = slide;
-      //canvas.setPointerCapture(e.pointerId);
-
-
-      return cancelEvent(event);
-    }
-
-    function slide(e) {
-      // console.log("slide", e)
-      var coords = getCoordinates(e);
-      game.doMouseMove(coords.x, coords.y);
-
-      //canvas.setPointerCapture(e.pointerId);
-
-      return cancelEvent(event);
-    }
-
-    function stopSliding(e) {
-      console.log("asdfasd")
-      var coords = getCoordinates(e);
-      game.doMouseUp(coords.x, coords.y);
-
-
-      //canvas.releasePointerCapture(e.pointerId);
-      return cancelEvent(event);
-
-    }
-
-    // canvas.onpointerdown = beginSliding;
-    // canvas.onpointermove = slide;
-    // canvas.onpointerup = stopSliding;
-
-    canvas.addEventListener(
-      "pointerdown",
-      beginSliding,
-    );
-
-    canvas.addEventListener(
-      "pointermove",
-      slide,
-
-    );
-    canvas.addEventListener(
-      "pointerup",
-      stopSliding,
-    );
-
-
   }
 
-
-
-  window.addEventListener(
-    "resize",
-    function () {
-      game.onResize();
-    },
-    false
-  );
-
-  // TODO: Make this not use CPU all the time
-  //
-  //
-  var hidden = true;
-  // to make sure we don't requestAnimationFrame if it's already been requested
-
-  var numRequested = 0;
-
-  game.isInBasicBook = function() {
+  isInBasicBook() {
     // TODO: add some kind of flag to the book object for this.
-    return game.book.source.endsWith(".json")
+    return this.book.source.endsWith(".json");
   }
 
-  game.updateGui = function () {
-
+  updateGui() {
     // TODO: this should probably not be in the base
-    if (game.level.id == "level_1693531796434" && this.gameState.numMoves == 0) {
-      game.demoDrag = firstDemoDrag;
+    if (this.level.id == "level_1693531796434" && this.gameState.numMoves == 0) {
+      this.demoDrag = this.firstDemoDrag;
     } else {
-      game.demoDrag = null;
+      this.demoDrag = null;
     }
     // The logic would be something like:
     // Check if needs to provide hint according to level json
     // Run a basic hint system to get the next move to be hinted, or otherwise to undo
-    // If a move to be hinted, calculate the drag based on that move, and set it as game.demoDrag
+    // If a move to be hinted, calculate the drag based on that move, and set it as this.demoDrag
 
     let suggestsRestart = false;
-    if (game.level.id == "level_1693531796434" && this.gameState.numMoves >= 1 && !game.isFinished()) {
+    if (this.level.id == "level_1693531796434" && this.gameState.numMoves >= 1 && !this.isFinished()) {
       suggestsRestart = true;
     }
-    if (game.isInBasicBook() && game.level.index<10 && this.gameState.numMoves > this.level.par*3 && !game.isFinished()) {
+    if (this.isInBasicBook() && this.level.index < 10 && this.gameState.numMoves > this.level.par * 3 && !this.isFinished()) {
       suggestsRestart = true;
     }
 
@@ -356,73 +304,65 @@ https://developer.mozilla.org/en-US/docs/Web/API/Element/setPointerCapture#javas
       restartButton.classList.remove("in_yo_face");
     }
 
-
-
-    if (game.isFinished()) {
-      if (game.isInBasicBook()) {
-        if (game.level.index >= game.book.levels.length-1) {
+    if (this.isFinished()) {
+      if (this.isInBasicBook()) {
+        if (this.level.index >= this.book.levels.length - 1) {
           // TODO: won game.
-          var a = this.div.getElementsByClassName("finishedGame")[0];
+          const a = this.div.getElementsByClassName("finishedGame")[0];
           a.style.display = "block";
         } else {
-          var a = this.div.getElementsByClassName("finishedLevel")[0];
+          const a = this.div.getElementsByClassName("finishedLevel")[0];
           a.style.display = "block";
         }
       }
     }
 
-    if (this.gameState){
-
-      var a = this.div.getElementsByClassName("movesContent")[0]
+    if (this.gameState) {
+      const a = this.div.getElementsByClassName("movesContent")[0];
       a.innerText = this.gameState.numMoves;
     }
 
-    var a = this.div.getElementsByClassName("bestContent")[0]
-    var b = game.getCurrentBest();
+    const a = this.div.getElementsByClassName("bestContent")[0];
+    const b = this.getCurrentBest();
 
-    if (b===null || b===undefined) {
+    if (b === null || b === undefined) {
       a.innerText = "-";
-    }else {
+    } else {
       a.innerText = b;
     }
   }
 
-  game.draw = function() {
-    game.updateGui();
-    game.drawCanvas();
+  draw() {
+    this.updateGui();
+    this.drawCanvas();
   }
-
 
   // TODO: This is probably an intermediate step in refactor
-  game.actuallyDrawCanvas = function actuallyDrawCanvas() {
-      this.level.tileShape.draw(ctx, this.gameState, this.action);
+  actuallyDrawCanvas() {
+    this.level.tileShape.draw(this.ctx, this.gameState, this.action);
 
-      if (this.demoDrag) {
-        this.overlayDemoDrag();
-      }
-
-
+    if (this.demoDrag) {
+      this.overlayDemoDrag();
+    }
   }
-  
+
   // Updates the states, doesn't actually draw
   // returns a boolean, whether things have changed
-  game.updateCanvasAnimations = function updateCanvasAnimations(timestamp) {
-
-    var previousTimestamp = game.gameState.lastUpdateTimestamp;
+  updateCanvasAnimations(timestamp) {
+    const previousTimestamp = this.gameState.lastUpdateTimestamp;
 
     // TODO: technically, this is unsettled_or_changed,
     // And perhaps it might make sense to return both those variables...
-    var unsettled = false;
+    let unsettled = false;
 
-    if (game.demoDrag) {
+    if (this.demoDrag) {
       //TODO: make it so this doesn't use so much CPU
       unsettled = true;
-      game.demoDragTime += (timestamp - previousTimestamp)/2000;
-      game.demoDragTime %= 1;
+      this.demoDragTime += (timestamp - previousTimestamp) / 2000;
+      this.demoDragTime %= 1;
     }
 
-    game.gameState.tileStates.forEach(function (v) {
-
+    this.gameState.tileStates.forEach((v) => {
       let prevIS = v.insetState;
       let prevTS = v.transitionState;
 
@@ -438,150 +378,128 @@ https://developer.mozilla.org/en-US/docs/Web/API/Element/setPointerCapture#javas
         // TODO: calculate actually how many milliseconds this uses
       );
 
-      if (v.insetState != prevIS){
+      if (v.insetState != prevIS) {
         unsettled = true;
       }
       if (v.transitionState != 1 || v.transitionState != prevTS) {
         unsettled = true;
       }
-
     });
-    game.gameState.lastUpdateTimestamp = timestamp;
+    this.gameState.lastUpdateTimestamp = timestamp;
     return unsettled;
-
-
   }
 
-  let wasPaused = true;
-
-  game.drawCanvas = function () {
+  drawCanvas() {
     let requested = false;
 
-    if (!hidden && this.gameState) {
-
-      let timestamp = performance.now()
+    if (!this.hidden && this.gameState) {
+      let timestamp = performance.now();
       //TODO: is document.animationTimeline.currentTime better?
 
-      if (game.gameState.lastUpdateTimestamp === timestamp){
+      if (this.gameState.lastUpdateTimestamp === timestamp) {
         return;
       }
 
-      if (wasPaused) {
+      if (this.wasPaused) {
         // Hack so that updateCanvasAnimations doesn't calculated a huge timestamp.
         // TODO: perhaps, instead do this in places such as when I change tilestate?
-        game.gameState.lastUpdateTimestamp = timestamp;
+        this.gameState.lastUpdateTimestamp = timestamp;
       }
-      let unsettled = game.updateCanvasAnimations(timestamp);
-      game.actuallyDrawCanvas();
+      let unsettled = this.updateCanvasAnimations(timestamp);
+      this.actuallyDrawCanvas();
       if (unsettled) {
-
-        if (numRequested == 0) {
-
-          requestAnimationFrame(function (timestamp) {
-            numRequested--;
-
-            game.drawCanvas();
-
+        if (this.numRequested == 0) {
+          requestAnimationFrame((timestamp) => {
+            this.numRequested--;
+            this.drawCanvas();
           });
-          numRequested++;
+          this.numRequested++;
           requested = true;
-
         }
       }
     } else {
       console.log("either hidden or gameState isn't there, not drawing");
     }
-    wasPaused  = !requested;
-
-  };
+    this.wasPaused = !requested;
+  }
 
   // TODO put these in a better file
-  function interpolate(a,b,t) {
-    return a + (b-a)*t;
+  interpolate(a, b, t) {
+    return a + (b - a) * t;
   }
 
   // [0,1] -> [0,1]
   // https://stackoverflow.com/a/25730573/2356347
-  function bezierBlend(t){
-      return t * t * (3.0 - 2.0 * t);
+  bezierBlend(t) {
+    return t * t * (3.0 - 2.0 * t);
   }
 
-  ctx.strokeStyle = "#4fb6ff55";
-  //function cubic
-  
-  function clamp(x) {
+  clamp(x) {
     return Math.min(1, Math.max(0, x));
   }
 
-  function easeOut(x) {
-    return interpolate(
-
-    interpolate(x,
-      1,x 
-      ), 1, x);
+  easeOut(x) {
+    return this.interpolate(
+      this.interpolate(x, 1, x), 1, x);
   }
 
-  function dragBlend(x) {
-    return interpolate(
-
-    interpolate(
-    interpolate(
-
-      bezierBlend(x),
-
-      1,x ),
-      1,x ),
-      
+  dragBlend(x) {
+    return this.interpolate(
+      this.interpolate(
+        this.interpolate(
+          this.bezierBlend(x),
+          1, x), 1, x),
       1, x);
   }
 
   // TODO: overlay this on a separate canvas for efficiency?  eh...
-  game.overlayDemoDrag = function () {
-    if (!game.demoDrag) {
+  overlayDemoDrag() {
+    if (!this.demoDrag) {
       return;
     }
-    let width = canvas.width;
-    let height = canvas.height;
+    let width = this.canvas.width;
+    let height = this.canvas.height;
 
     // TODO: maybe include this in the demoDrag object?
-    let relativeDragSize = 40/MAX_WIDTH;
-    let relativeLineSize = relativeDragSize*0.75;
+    let relativeDragSize = 40 / MAX_WIDTH;
+    let relativeLineSize = relativeDragSize * 0.75;
 
     // TODO: figure out whether to use width or height. Only issue when rectangles
-    ctx.lineWidth = relativeLineSize * width;
-    ctx.lineCap = "round";
-    ctx.strokeStyle = "#4fb6ff55";
-    ctx.beginPath()
-    ctx.moveTo(game.demoDrag.start.x * width, game.demoDrag.start.y * height);
-    ctx.lineTo(game.demoDrag.end.x *width, game.demoDrag.end.y *height);
-    ctx.stroke();
+    this.ctx.lineWidth = relativeLineSize * width;
+    this.ctx.lineCap = "round";
+    this.ctx.strokeStyle = "#4fb6ff55";
+    this.ctx.beginPath();
+    this.ctx.moveTo(this.demoDrag.start.x * width, this.demoDrag.start.y * height);
+    this.ctx.lineTo(this.demoDrag.end.x * width, this.demoDrag.end.y * height);
+    this.ctx.stroke();
 
     // TODO: the ease-out should actually be related to the size of the grid ideally
-    let animTime = game.demoDragTime;
+    let animTime = this.demoDragTime;
     //let easedTime = animTime; //bezierBlend(animTime);
-    let easedTime = dragBlend(animTime);
-    let bubbleX = interpolate(game.demoDrag.start.x, game.demoDrag.end.x, easedTime) * width;
-    let bubbleY = interpolate(game.demoDrag.start.y, game.demoDrag.end.y, easedTime) * height;
+    let easedTime = this.dragBlend(animTime);
+    let bubbleX = this.interpolate(this.demoDrag.start.x, this.demoDrag.end.x, easedTime) * width;
+    let bubbleY = this.interpolate(this.demoDrag.start.y, this.demoDrag.end.y, easedTime) * height;
 
     let bubbleSize = relativeDragSize * width;
-    ctx.fillStyle = "#4fb6ff55";
-    ctx.beginPath();
-    ctx.arc(bubbleX, bubbleY, bubbleSize, 0, 2 * Math.PI);
-    ctx.fill();
-
+    this.ctx.fillStyle = "#4fb6ff55";
+    this.ctx.beginPath();
+    this.ctx.arc(bubbleX, bubbleY, bubbleSize, 0, 2 * Math.PI);
+    this.ctx.fill();
   }
 
-  game.onShow = function () {
-    hidden = false;
+  onShow() {
+    this.hidden = false;
     document.body.style.zoom = '100%';
     this.draw();
     this.onResize();
-  };
+  }
 
-  game.onHide = function () {
-    hidden = true;
-  };
+  onHide() {
+    this.hidden = true;
+  }
+}
 
-  return game;
-
+// Factory function for backward compatibility
+function makeGameBase2(canvasId, divId) {
+  return new GameBase2(canvasId, divId);
 }
