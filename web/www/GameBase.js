@@ -96,7 +96,7 @@ class GameBase {
     );
 
     // Redraw to show the selection
-    this.drawCanvas();
+    this.forceRedraw();
 
     // Hook for subclasses to implement game-specific logic
     this.onMouseDown();
@@ -128,7 +128,7 @@ class GameBase {
         if (navigator.vibrate) {
           navigator.vibrate(2);
         }
-        this.drawCanvas();
+        this.forceRedraw();
       }
     }
   }
@@ -159,8 +159,12 @@ class GameBase {
           move,
           function (v) {
             v.transitionState = 0;
+            console.log("Set transitionState to 0 for tile");
           }
         );
+
+        // Update timestamp when starting animations to prevent huge delta time
+        this.gameState.lastUpdateTimestamp = performance.now();
 
         if (navigator.vibrate) {
           navigator.vibrate(3);
@@ -172,6 +176,8 @@ class GameBase {
         });
       }
       this.draw();
+      // Start animation loop if animations were triggered
+      this.startAnimationLoopIfNeeded();
       // Game-specific logic moved to subclasses
       this.postMove();
     }
@@ -185,7 +191,7 @@ class GameBase {
   handleMouseLeave(event) {
     // Mouse left canvas - clear hover state
     this.hoveredTile = null;
-    this.drawCanvas();
+    this.forceRedraw();
   }
 
   handleMouseMove(event) {
@@ -215,12 +221,12 @@ class GameBase {
           this.hoveredTile.y !== newHoveredTile.y
         ) {
           this.hoveredTile = newHoveredTile;
-          this.drawCanvas();
+          this.forceRedraw();
         }
       } else {
         if (this.hoveredTile) {
           this.hoveredTile = null;
-          this.drawCanvas();
+          this.forceRedraw();
         }
       }
     }
@@ -428,12 +434,11 @@ class GameBase {
   draw() {
     this.updateGui();
     if (this.level && this.gameState) {
+      // Draw once immediately
       this.drawCanvas();
-      // Start animation loop if not already running
-      if (!this.animationRunning) {
-        this.animationRunning = true;
-        requestAnimationFrame(() => this.drawCanvas());
-      }
+
+      // Start animation loop if there are actual animations
+      this.startAnimationLoopIfNeeded();
     }
   }
 
@@ -449,6 +454,54 @@ class GameBase {
     if (this.demoDrag) {
       this.overlayDemoDrag();
     }
+  }
+
+  // Force a single redraw without starting animation loop
+  forceRedraw() {
+    if (!this.hidden && this.gameState && this.level) {
+      this.actuallyDrawCanvas();
+    }
+  }
+
+  // Start animation loop if there are animations
+  startAnimationLoopIfNeeded() {
+    if (!this.animationRunning && this.hasAnimations()) {
+      console.log("Starting animation loop");
+      this.animationRunning = true;
+      requestAnimationFrame(() => this.drawCanvas());
+    }
+  }
+
+  // Check if there are any animations running (without updating them)
+  hasAnimations() {
+    // Check if gameState exists
+    if (!this.gameState || !this.gameState.tileStates) {
+      return false;
+    }
+
+    // Check demo drag animation
+    if (this.demoDrag) {
+      return true;
+    }
+
+    // Check tile animations
+    let hasTileAnimations = false;
+    let transitionStateValues = [];
+    this.gameState.tileStates.forEach(tileState => {
+      transitionStateValues.push(tileState.transitionState);
+      if (tileState.transitionState < 1) {
+        hasTileAnimations = true;
+      }
+    });
+
+    if (hasTileAnimations) {
+      console.log("Found tile animations, transitionState < 1");
+      return true;
+    } else {
+      console.log("No animations found. transitionState values:", transitionStateValues);
+    }
+
+    return false;
   }
 
   // Simple animation system - returns true if any animations are still running
@@ -476,11 +529,13 @@ class GameBase {
       if (tileState.transitionState < 1) {
         hasAnimations = true;
         // Animate over 300ms
+        const deltaTime = timestamp - this.gameState.lastUpdateTimestamp;
+        const oldTransitionState = tileState.transitionState;
         tileState.transitionState = Math.min(
           1,
-          tileState.transitionState +
-            (timestamp - this.gameState.lastUpdateTimestamp) / 300
+          tileState.transitionState + deltaTime / 300
         );
+        console.log(`Animating tile: ${oldTransitionState} -> ${tileState.transitionState}, deltaTime: ${deltaTime}`);
       }
     });
 
@@ -498,8 +553,8 @@ class GameBase {
       // Always draw the current state
       this.actuallyDrawCanvas();
 
-      // Continue animation loop if there are animations or if we're in the main loop
-      if (hasAnimations || this.animationRunning) {
+      // Only continue animation loop if there are actual animations
+      if (hasAnimations) {
         requestAnimationFrame(() => this.drawCanvas());
       } else {
         this.animationRunning = false;
