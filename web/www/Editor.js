@@ -88,7 +88,7 @@ class Editor extends GameBase {
       // Save current state for undo
       this.undoList.push({
         level: this.level.clone(),
-        gameState: this.gameState
+        gameState: new GameState(this.level) // Create a fresh game state clone
       });
       
       this.level.solutionVector = sol;
@@ -108,7 +108,7 @@ class Editor extends GameBase {
       // Save current state for undo
       this.undoList.push({
         level: this.level.clone(),
-        gameState: this.gameState
+        gameState: new GameState(this.level) // Create a fresh game state clone
       });
       
       this.level = level;
@@ -134,7 +134,7 @@ class Editor extends GameBase {
     // Save current state for undo
     this.undoList.push({
       level: this.level.clone(),
-      gameState: this.gameState
+      gameState: new GameState(this.level) // Create a fresh game state clone
     });
     
     this.gameState.tiles.forEachSet(function () {
@@ -166,7 +166,7 @@ class Editor extends GameBase {
         // Save current state for undo
         this.undoList.push({
           level: this.level.clone(),
-          gameState: this.gameState
+          gameState: new GameState(this.level) // Create a fresh game state clone
         });
 
         var grid = Grid.empty(size, size);
