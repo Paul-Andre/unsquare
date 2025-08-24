@@ -12,6 +12,22 @@ class Game2 extends GameBase2 {
     return this.level.colorScheme.unsquare(v);
   }
 
+  // Game-specific logic for mouse down
+  onMouseDown() {
+    // Hide the finished level element
+    const a = this.div.getElementsByClassName("finishedLevel")[0];
+    if (a) {
+      a.style.display = "none";
+    }
+  }
+
+  // Game-specific logic after a move
+  postMove() {
+    if (this.isFinished()) {
+      this.finishedLevel();
+    }
+  }
+
   restart() {
     this.openLevel(this.level, this.book);
     this.draw();

@@ -79,10 +79,8 @@ class GameBase2 {
     this.mouseStart.y = y / this.canvasSize;
     this.mouseStart.pressed = true;
 
-    // One of the rare things that it might make sense to overwrite?
-    const a = this.div.getElementsByClassName("finishedLevel")[0];
-    // console.log(a)
-    a.style.display = "none";
+    // Hook for subclasses to implement game-specific logic
+    this.onMouseDown();
   }
 
   doMouseMove(x, y) {
@@ -159,9 +157,8 @@ class GameBase2 {
         }
       }
       this.draw();
-      if (this.isFinished()) {
-        this.finishedLevel();
-      }
+      // Game-specific logic moved to subclasses
+      this.postMove();
     }
   }
 
@@ -493,6 +490,16 @@ class GameBase2 {
     if (this.level && this.gameState) {
       this.actuallyDrawCanvas();
     }
+  }
+
+  // Hook for subclasses to implement game-specific logic after a move
+  postMove() {
+    // Override in subclasses
+  }
+
+  // Hook for subclasses to implement game-specific logic on mouse down
+  onMouseDown() {
+    // Override in subclasses
   }
 }
 
