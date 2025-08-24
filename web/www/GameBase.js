@@ -103,6 +103,8 @@ class GameBase {
         v.insetState = 0;
       }
     });
+    
+    this.hoveredTile = null;
 
     // Redraw to show the selection
     this.forceRedraw();

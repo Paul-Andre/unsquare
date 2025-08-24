@@ -218,7 +218,7 @@ class SquareTileShape {
     // Draw hover border
     if (isHovered && !tileState.selected) {
       ctx.strokeStyle = "#87ceeb"; // Light blue color
-      ctx.lineWidth = this.getBorderWidth(width, height * heightMult)*0.75;
+      ctx.lineWidth = this.getBorderWidth(width, height * heightMult)*0.5;
       ctx.strokeRect(x, y, width, height * heightMult);
     }
 
