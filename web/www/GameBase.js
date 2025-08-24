@@ -84,6 +84,18 @@ class GameBase {
     this.mouseStart.y = y / this.canvasSize;
     this.mouseStart.pressed = true;
 
+    // Immediately select the tile under the mouse cursor
+    this.level.tileShape.select(
+      this.mouseStart.x,
+      this.mouseStart.y,
+      this.mouseStart.x,
+      this.mouseStart.y,
+      this.gameState.tileStates
+    );
+
+    // Redraw to show the selection
+    this.drawCanvas();
+
     // Hook for subclasses to implement game-specific logic
     this.onMouseDown();
   }
@@ -93,7 +105,8 @@ class GameBase {
     this.mouseNow.y = y / this.canvasSize;
 
     if (this.mouseStart.pressed) {
-      const potentialMove = this.level.tileShape.moveFromMousePositions(
+      // Use the select method which properly handles single tile selection
+      this.level.tileShape.select(
         this.mouseStart.x,
         this.mouseStart.y,
         x / this.canvasSize,
@@ -101,19 +114,7 @@ class GameBase {
         this.gameState.tileStates
       );
 
-      this.gameState.tileStates.forEach(function (v) {
-        v.oldSelected = v.selected;
-        v.selected = false;
-      });
-
-      this.level.tileShape.forTilesInMove(
-        this.gameState.tileStates,
-        potentialMove,
-        function (v) {
-          v.selected = true;
-        }
-      );
-
+      // Check if selection changed and redraw if needed
       let different = false;
       this.gameState.tileStates.forEach(function (v) {
         if (v.selected != v.oldSelected) {
@@ -125,8 +126,6 @@ class GameBase {
         if (navigator.vibrate) {
           navigator.vibrate(2);
         }
-      }
-      if (different) {
         this.drawCanvas();
       }
     }
@@ -164,6 +163,11 @@ class GameBase {
         if (navigator.vibrate) {
           navigator.vibrate(3);
         }
+      } else {
+        // Clear selection for invalid moves (like single tile selection)
+        this.gameState.tileStates.forEach(function (v) {
+          v.selected = false;
+        });
       }
       this.draw();
       // Game-specific logic moved to subclasses

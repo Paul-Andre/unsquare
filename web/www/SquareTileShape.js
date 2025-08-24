@@ -145,15 +145,16 @@ class SquareTileShape {
     const y = invertingSquare.y;
     const size = invertingSquare.size;
 
+    // Store old selection state for comparison
     tileStates.forEach(function (v) {
+      v.oldSelected = v.selected;
       v.selected = false;
     });
 
-    if (invertingSquare.size > 1) {
-      tileStates.window(x, y, size, size).forEach(function (v) {
-        v.selected = true;
-      });
-    }
+    // Select tiles for both single and multiple tile selections
+    tileStates.window(x, y, size, size).forEach(function (v) {
+      v.selected = true;
+    });
   }
 
   // TODO: refactor or expose?
@@ -167,7 +168,8 @@ class SquareTileShape {
     width,
     height,
     tileValue,
-    tileState
+    tileState,
+    isSingleTileSelection = false
   ) {
     const transitionState = tileState.transitionState;
 
@@ -200,7 +202,8 @@ class SquareTileShape {
 
     ctx.fillStyle = insetColor;
 
-    if (insetState) {
+    // Don't draw inset for single tile selections
+    if (insetState && !isSingleTileSelection) {
       const insetProportion = 0.5;
       const squareWidth = width * insetState * insetProportion;
       const squareHeight = height * heightMult * insetState * insetProportion;
@@ -225,6 +228,24 @@ class SquareTileShape {
 
     const padding = width * 0.1;
 
+    // Calculate selection bounds and count
+    let minX = Infinity;
+    let minY = Infinity;
+    let maxX = -Infinity;
+    let maxY = -Infinity;
+    let hasSelection = false;
+    let selectedTiles = [];
+    let selectedCount = 0;
+
+    // First pass: count selected tiles
+    gameState.tiles.forEach((value, x, y) => {
+      const tileState = gameState.tileStates.get(x, y);
+      if (tileState.selected) {
+        selectedCount++;
+      }
+    });
+
+    // Second pass: draw tiles and track bounds
     gameState.tiles.forEach((value, x, y) => {
       const tileState = gameState.tileStates.get(x, y);
 
@@ -239,9 +260,47 @@ class SquareTileShape {
         width - padding,
         height - padding,
         value,
-        tileState
+        tileState,
+        selectedCount === 1 && tileState.selected
       );
+
+      // Track selection bounds
+      if (tileState.selected) {
+        hasSelection = true;
+        selectedTiles.push({ x, y });
+        const tileX = x * width + padding;
+        const tileY = y * height + padding;
+        const tileWidth = width - padding;
+        const tileHeight = height - padding;
+
+        minX = Math.min(minX, tileX);
+        minY = Math.min(minY, tileY);
+        maxX = Math.max(maxX, tileX + tileWidth);
+        maxY = Math.max(maxY, tileY + tileHeight);
+      }
     });
+
+    // Draw selection border
+    if (hasSelection) {
+      ctx.strokeStyle = "#4fb6ff";
+      ctx.lineWidth = 3;
+
+      if (selectedTiles.length === 1) {
+        // Single tile selected - draw dashed border around that tile
+        const tile = selectedTiles[0];
+        const tileX = tile.x * width + padding;
+        const tileY = tile.y * height + padding;
+        const tileWidth = width - padding;
+        const tileHeight = height - padding;
+
+        ctx.setLineDash([5, 5]); // Create dashed line
+        ctx.strokeRect(tileX, tileY, tileWidth, tileHeight);
+        ctx.setLineDash([]); // Reset to solid line
+      } else {
+        // Multiple tiles selected - draw solid border around entire selection
+        ctx.strokeRect(minX, minY, maxX - minX, maxY - minY);
+      }
+    }
   }
 
   draw_expanded(ctx, tiles, tileStates, colorScheme, changeFunction) {
