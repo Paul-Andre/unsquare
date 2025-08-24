@@ -278,6 +278,11 @@ class GameBase2 {
   }
 
   updateGui() {
+    // Return early if no level is loaded yet
+    if (!this.level || !this.gameState) {
+      return;
+    }
+
     // TODO: this should probably not be in the base
     if (this.level.id == "level_1693531796434" && this.gameState.numMoves == 0) {
       this.demoDrag = this.firstDemoDrag;
@@ -334,7 +339,9 @@ class GameBase2 {
 
   draw() {
     this.updateGui();
-    this.drawCanvas();
+    if (this.level && this.gameState) {
+      this.drawCanvas();
+    }
   }
 
   // TODO: This is probably an intermediate step in refactor
@@ -392,7 +399,7 @@ class GameBase2 {
   drawCanvas() {
     let requested = false;
 
-    if (!this.hidden && this.gameState) {
+    if (!this.hidden && this.gameState && this.level) {
       let timestamp = performance.now();
       //TODO: is document.animationTimeline.currentTime better?
 
