@@ -95,32 +95,6 @@ function save_editor_book(book) {
   localStorage.setItem(key, JSON.stringify(book, book_replacer));
 }
 
-var bookMenu = {};
-
-bookMenu.onShow = function () {
-  load_editor_books();
-  this.books = editor_books;
-
-  // this.books = static_books;
-  this.showBooks();
-};
-
-bookMenu.showBooks = function () {
-  var container = document.getElementById("bookContainer");
-
-  container.innerHTML = "";
-  
-
-  for (var i = 0; i < this.books.length; i++) {
-    container.append(bookMenu.prepareBook(this.books[i]));
-  }
-};
-
-bookMenu.openBook = function (book) {
-  editorLevelMenu.openBook(book);
-  screenManager.switchTo("editorLevelMenu");
-};
-
 function create_empty_book() {
   let book = {
     id: generate_id("book"),
@@ -130,40 +104,69 @@ function create_empty_book() {
   return book;
 }
 
-bookMenu.newBook = function () {
-  console.assert(IS_EDITOR);
-  var book = create_empty_book();
-  save_editor_book(book);
+class BookMenu {
+  constructor() {
+    this.books = [];
+  }
 
-  this.books.push(book);
+  onShow() {
+    load_editor_books();
+    this.books = editor_books;
 
-  this.showBooks();
-};
+    // this.books = static_books;
+    this.showBooks();
+  }
 
-bookMenu.saveAll = function() {
-    for (let i=0; i<this.books.length; i++) {
-      save_editor_book(this.books[i]);
+  showBooks() {
+    var container = document.getElementById("bookContainer");
+
+    container.innerHTML = "";
+    
+
+    for (var i = 0; i < this.books.length; i++) {
+      container.append(this.prepareBook(this.books[i]));
     }
-}
+  }
 
-bookMenu.addFromJson = function() {
-  var saveStr = prompt("Paste JSON");
-  if (saveStr) {
+  openBook(book) {
+    editorLevelMenu.openBook(book);
+    screenManager.switchTo("editorLevelMenu");
+  }
 
-    let book = JSON.parse(saveStr, book_reviver);
-    book.id = generate_id("book");
-
-    console.log(book);
+  newBook() {
+    console.assert(IS_EDITOR);
+    var book = create_empty_book();
     save_editor_book(book);
 
     this.books.push(book);
 
     this.showBooks();
-
   }
-}
 
-bookMenu.loadBooks = function () {};
+  saveAll() {
+      for (let i=0; i<this.books.length; i++) {
+        save_editor_book(this.books[i]);
+      }
+  }
+
+  addFromJson() {
+    var saveStr = prompt("Paste JSON");
+    if (saveStr) {
+
+      let book = JSON.parse(saveStr, book_reviver);
+      book.id = generate_id("book");
+
+      console.log(book);
+      save_editor_book(book);
+
+      this.books.push(book);
+
+      this.showBooks();
+
+    }
+  }
+
+  loadBooks() {}
 
 let bookTemplate =
   "<div class='bookSummary'> \
@@ -195,34 +198,37 @@ function select_book_icon_level(book) {
   return null;
 }
 
-bookMenu.prepareBook = function (book) {
+  prepareBook(book) {
 
-  let node = htmlStringToElement(bookTemplate);
-  {
-  let bn = node.getElementsByClassName("bookName")[0];
-  bn.innerHTML = book.title;
+    let node = htmlStringToElement(bookTemplate);
+    {
+    let bn = node.getElementsByClassName("bookName")[0];
+    bn.innerHTML = book.title;
+    }
+    {
+    let bn = node.getElementsByClassName("bookId")[0];
+    bn.innerHTML = book.id;
+    }
+
+
+    let icon_level = select_book_icon_level(book);
+    if (icon_level) {
+        let icon = createLevelIcon(icon_level);
+
+        let bic = node.getElementsByClassName("bookIconContainer")[0];
+        bic.append(icon);
+
+    }
+
+    node.book = book;
+    node.onclick = () => {
+      this.openBook(book);
+    };
+
+    return node;
   }
-  {
-  let bn = node.getElementsByClassName("bookId")[0];
-  bn.innerHTML = book.id;
-  }
+}
 
-
-  let icon_level = select_book_icon_level(book);
-  if (icon_level) {
-      let icon = createLevelIcon(icon_level);
-
-      let bic = node.getElementsByClassName("bookIconContainer")[0];
-      bic.append(icon);
-
-  }
-
-  node.book = book;
-  node.onclick = function () {
-    bookMenu.openBook(book);
-  };
-
-  return node;
-};
+const bookMenu = new BookMenu();
 
 screenManager.additionalFunctions.bookMenu = bookMenu;
