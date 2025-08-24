@@ -5,10 +5,21 @@ class GameLevelMenu {
     this.bookUrl = "2024_feb_17_better_intro_2.json";
     // this.bookUrl = "tiny_for_testing.json";
     
-    this.levelMenu = activateLevelMenu("gameLevelMenu", false);
-    screenManager.additionalFunctions.gameLevelMenu = this.levelMenu;
+    // Delay the creation of level menu until after game is ready
+    this.initializeLevelMenu();
     
     this.loadBook();
+  }
+
+  initializeLevelMenu() {
+    // Wait for game to be available
+    if (window.game) {
+      this.levelMenu = activateLevelMenu("gameLevelMenu", false);
+      screenManager.additionalFunctions.gameLevelMenu = this.levelMenu;
+    } else {
+      // Retry after a short delay
+      setTimeout(() => this.initializeLevelMenu(), 100);
+    }
   }
 
   // Best moves storage methods
