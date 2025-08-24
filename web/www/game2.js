@@ -1,6 +1,7 @@
 "use strict";
 
-var game = makeGameBase2("gameCanvas", "game");
+window.game = makeGameBase2("gameCanvas", "game");
+console.log("Game instance created:", window.game);
 
 screenManager.additionalFunctions.game = game;
 
