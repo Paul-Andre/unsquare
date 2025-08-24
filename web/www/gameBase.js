@@ -1,53 +1,50 @@
 "use strict";
 
-
-
 /// This is what does the basics of drawing the tiles to the screen.
 ///
-function makeGameBase(canvasId, divId /*unused*/)  {
+class GameBase {
+  constructor(canvasId, divId /*unused*/) {
+    this.canvas = document.getElementById(canvasId);
+    this.ctx = this.canvas.getContext("2d");
+    this.div = document.getElementById(divId);
 
-  // produceGameState = produceGameState || function(level) {
-  //   return new GameState(level);
-  // }
+    this.mouseStart = {
+      x: 0,
+      y: 0,
+      pressed: false,
+    };
 
-  var canvas = document.getElementById(canvasId);
-  var ctx = canvas.getContext("2d");
+    this.mouseNow = {
+      x: 0,
+      y: 0,
+    };
 
-  var mouseStart = {
-    x: 0,
-    y: 0,
-    pressed: false,
-  };
+    this.canvasVirtualSize = 0;
+    this.canvasSize = 0;
 
-  var mouseNow = {
-    x: 0,
-    y: 0,
-  };
+    // TODO: eh?
+    this.hidden = true;
+    // to make sure we don't requestAnimationFrame if it's already been requested
+    this.numRequested = 0;
 
-  var game = {
+    this.setupEventListeners();
+    this.onResize();
+  }
 
-
-  };
-
-  game.div = document.getElementById(divId);
-
-  var canvasVirtualSize;
-  var canvasSize;
-
-  game.onResize = function () {
+  onResize() {
     //console.log(document.body.offsetWidth, document.body.offsetHeight);
-    //canvasVirtualSize = Math.min(window.innerWidth, window.innerHeight, MAX_WIDTH);
-    canvasVirtualSize = Math.min(this.div.offsetWidth, this.div.offsetHeight, MAX_WIDTH);
+    //this.canvasVirtualSize = Math.min(window.innerWidth, window.innerHeight, MAX_WIDTH);
+    this.canvasVirtualSize = Math.min(this.div.offsetWidth, this.div.offsetHeight, MAX_WIDTH);
 
-    canvasSize = canvasVirtualSize * (window.devicePixelRatio || 1);
-    canvas.width = canvas.height = canvasSize;
-    canvas.style.width = canvas.style.height = canvasVirtualSize + "px";
+    this.canvasSize = this.canvasVirtualSize * (window.devicePixelRatio || 1);
+    this.canvas.width = this.canvas.height = this.canvasSize;
+    this.canvas.style.width = this.canvas.style.height = this.canvasVirtualSize + "px";
     this.draw();
-  };
+  }
 
   // This should probably be renamed to openLevel, and the other openLevel be
   // renamed to resetComponent or something
-  game.initializeTiles = function(level, book) {
+  initializeTiles(level, book) {
     let tiles = level.tiles;
 
     this.level = level;
@@ -55,7 +52,7 @@ function makeGameBase(canvasId, divId /*unused*/)  {
 
     this.tiles = tiles.clone();
 
-    var tileStates = tiles.clone();
+    const tileStates = tiles.clone();
     tileStates.forEachSet(function () {
       return {
         selected: false,
@@ -68,7 +65,7 @@ function makeGameBase(canvasId, divId /*unused*/)  {
 
     this.operations = compute_operations_for_level(this.level);
     this.inverseOperations = new Map();
-    for (let i=0; i<this.operations.length; i++) {
+    for (let i = 0; i < this.operations.length; i++) {
       this.inverseOperations.set(this.operations[i].join(""), i);
     }
     assert(level.solutionVector);
@@ -80,11 +77,9 @@ function makeGameBase(canvasId, divId /*unused*/)  {
     this.updateGui();
   }
 
-  game.displayLevelGui = function(){};
+  displayLevelGui() {}
 
-
-  game.openLevel = function (level, book) {
-
+  openLevel(level, book) {
     this.undoList = [];
 
     this.initializeTiles(level, book);
@@ -92,28 +87,28 @@ function makeGameBase(canvasId, divId /*unused*/)  {
     this.lastUpdateTimestamp = performance.now();
     this.numMoves = 0;
 
-    mouseStart.pressed = false;
+    this.mouseStart.pressed = false;
 
     this.displayLevelGui(level);
-  };
+  }
 
   // These should be in the base file
-  game.doMouseDown = function (x, y) {
-    mouseStart.x = x / canvasSize;
-    mouseStart.y = y / canvasSize;
-    mouseStart.pressed = true;
-  };
+  doMouseDown(x, y) {
+    this.mouseStart.x = x / this.canvasSize;
+    this.mouseStart.y = y / this.canvasSize;
+    this.mouseStart.pressed = true;
+  }
 
-  game.doMouseMove = function (x, y) {
-    mouseNow.x = x / canvasSize;
-    mouseNow.y = y / canvasSize;
+  doMouseMove(x, y) {
+    this.mouseNow.x = x / this.canvasSize;
+    this.mouseNow.y = y / this.canvasSize;
 
-    if (mouseStart.pressed) {
-      var potentialMove = this.level.tileShape.moveFromMousePositions(
-        mouseStart.x,
-        mouseStart.y,
-        x / canvasSize,
-        y / canvasSize,
+    if (this.mouseStart.pressed) {
+      const potentialMove = this.level.tileShape.moveFromMousePositions(
+        this.mouseStart.x,
+        this.mouseStart.y,
+        x / this.canvasSize,
+        y / this.canvasSize,
         this.tileStates
       );
 
@@ -121,7 +116,6 @@ function makeGameBase(canvasId, divId /*unused*/)  {
         v.oldSelected = v.selected;
         v.selected = false;
       });
-
 
       this.level.tileShape.forTilesInMove(
         this.tileStates,
@@ -131,57 +125,53 @@ function makeGameBase(canvasId, divId /*unused*/)  {
         }
       );
 
-
-      var different = false;
+      let different = false;
       this.tileStates.forEach(function (v) {
         if (v.selected != v.oldSelected) {
           different = true;
         }
-      })
+      });
 
       if (different) {
         if (navigator.vibrate) {
           navigator.vibrate(2);
         }
       }
-      //game.drawCanvas()
-      game.draw()
-
-
+      //this.drawCanvas()
+      this.draw();
     }
-  };
-
+  }
 
   // This is meant to be overwritten
-  game.createUndoState = function(move) {
+  createUndoState(move) {
     return {
       tiles: this.tiles.clone(),
       runningSolution: this.runningSolution.slice(),
       solutionType: this.solutionType,
       move: move,
-    }
+    };
   }
 
   // This is also meant to be overwritten
-  game.restoreUndoState = function(undo) {
+  restoreUndoState(undo) {
     this.initializeTiles(undo.tiles, undo.runningSolution, undo.solutionType);
-    this.runningSolution = undo.runningSolution
-    this.numMoves-=1;
+    this.runningSolution = undo.runningSolution;
+    this.numMoves -= 1;
   }
 
-  game.saveStateForUndo = function(move=null) {
-    this.undoList.push(game.createUndoState(move));
+  saveStateForUndo(move = null) {
+    this.undoList.push(this.createUndoState(move));
   }
 
-  game.updateGui = function () { }
-  game.postApplyMove = function() { }
+  updateGui() {}
+  postApplyMove() {}
 
-  game.applyMove = function (move, action) {
+  applyMove(move, action) {
     if (move != null) {
       this.saveStateForUndo(move);
 
       this.level.tileShape.forTilesInMoveSet(this.tiles, move, action);
-      let vector = this.level.tileShape.moveToVector(this.tiles, move)
+      let vector = this.level.tileShape.moveToVector(this.tiles, move);
       let opIndex = this.inverseOperations.get(vector.join(""));
       // console.log(vector);
       // console.log(opIndex);
@@ -189,28 +179,27 @@ function makeGameBase(canvasId, divId /*unused*/)  {
         this.runningSolution[opIndex] += 1;
         vector_simplify_arithmetic(this.runningSolution, this.arithmetic);
       }
-      game.postApplyMove(move, action);
-
+      this.postApplyMove(move, action);
     }
-    this.numMoves+=1;
+    this.numMoves += 1;
     this.updateGui();
-  };
+  }
 
-  game.undo = function () {
+  undo() {
     if (this.undoList.length > 0) {
-      var undo = this.undoList.pop();
+      const undo = this.undoList.pop();
       this.restoreUndoState(undo);
     }
-  };
+  }
 
-  game.doMouseUp = function (x, y) {
-    if (mouseStart.pressed) {
-      mouseStart.pressed = false;
-      var move = this.level.tileShape.moveFromMousePositions(
-        mouseStart.x,
-        mouseStart.y,
-        x / canvasSize,
-        y / canvasSize,
+  doMouseUp(x, y) {
+    if (this.mouseStart.pressed) {
+      this.mouseStart.pressed = false;
+      const move = this.level.tileShape.moveFromMousePositions(
+        this.mouseStart.x,
+        this.mouseStart.y,
+        x / this.canvasSize,
+        y / this.canvasSize,
         this.tileStates
       );
 
@@ -224,23 +213,22 @@ function makeGameBase(canvasId, divId /*unused*/)  {
       if (navigator.vibrate) {
         navigator.vibrate(3);
       }
-      game.draw();
+      this.draw();
     }
-  };
-
+  }
 
   // Gets the coordinates of the touch/mouse relative to the canvas element.
   //http://www.jacklmoore.com/notes/mouse-position/
-  function getCoordinates(event) {
-    var style = window.getComputedStyle(canvas, null);
-    var borderLeftWidth = parseInt(style.borderLeftWidth, 10);
-    var borderTopWidth = parseInt(style.borderTopWidth, 10);
-    var rect = canvas.getBoundingClientRect();
+  getCoordinates(event) {
+    const style = window.getComputedStyle(this.canvas, null);
+    const borderLeftWidth = parseInt(style.borderLeftWidth, 10);
+    const borderTopWidth = parseInt(style.borderTopWidth, 10);
+    const rect = this.canvas.getBoundingClientRect();
     return {
       x: Math.max(
         0,
         Math.min(
-          canvas.width - 2,
+          this.canvas.width - 2,
           (event.clientX - rect.left - borderLeftWidth) *
           (window.devicePixelRatio || 1)
         )
@@ -248,7 +236,7 @@ function makeGameBase(canvasId, divId /*unused*/)  {
       y: Math.max(
         0,
         Math.min(
-          canvas.height - 2,
+          this.canvas.height - 2,
           (event.clientY - rect.top - borderTopWidth) *
           (window.devicePixelRatio || 1)
         )
@@ -256,138 +244,101 @@ function makeGameBase(canvasId, divId /*unused*/)  {
     };
   }
 
-  if (false) {
-    function createTouchListener(fn) {
-      return function (event) {
-        if (event.changedTouches) {
-          var coords = getCoordinates(event.changedTouches[0]);
-          console.log(coords);
+  setupEventListeners() {
+    if (false) {
+      const createTouchListener = (fn) => {
+        return (event) => {
+          if (event.changedTouches) {
+            const coords = this.getCoordinates(event.changedTouches[0]);
+            console.log(coords);
+            fn(coords.x, coords.y);
+          }
+          return cancelEvent(event);
+        };
+      };
+
+      this.canvas.addEventListener(
+        "touchstart",
+        createTouchListener(this.doMouseDown.bind(this))
+      );
+      this.canvas.addEventListener(
+        "touchmove",
+        createTouchListener(this.doMouseMove.bind(this))
+      );
+      this.canvas.addEventListener(
+        "touchend",
+        createTouchListener(this.doMouseUp.bind(this))
+      );
+
+      const createMouseListener = (fn) => {
+        return (event) => {
+          const coords = this.getCoordinates(event);
           fn(coords.x, coords.y);
-        }
+          return cancelEvent(event);
+        };
+      };
+
+      this.canvas.addEventListener(
+        "mousedown",
+        createMouseListener(this.doMouseDown.bind(this))
+      );
+      this.canvas.addEventListener(
+        "mousemove",
+        createMouseListener(this.doMouseMove.bind(this))
+      );
+      this.canvas.addEventListener(
+        "mouseup",
+        createMouseListener(this.doMouseUp.bind(this))
+      );
+    } else {
+      const beginSliding = (e) => {
+        console.log("begin", e);
+        const coords = this.getCoordinates(e);
+        this.doMouseDown(coords.x, coords.y);
         return cancelEvent(event);
       };
-    }
 
-    canvas.addEventListener(
-      "touchstart",
-      createTouchListener(game.doMouseDown.bind(game))
-    );
-    canvas.addEventListener(
-      "touchmove",
-      createTouchListener(game.doMouseMove.bind(game))
-    );
-    canvas.addEventListener(
-      "touchend",
-      createTouchListener(game.doMouseUp.bind(game))
-    );
-
-    function createMouseListener(fn) {
-      return function (event) {
-        var coords = getCoordinates(event);
-        fn(coords.x, coords.y);
+      const slide = (e) => {
+        // console.log("slide", e)
+        const coords = this.getCoordinates(e);
+        this.doMouseMove(coords.x, coords.y);
         return cancelEvent(event);
       };
+
+      const stopSliding = (e) => {
+        console.log("asdfasd");
+        const coords = this.getCoordinates(e);
+        this.doMouseUp(coords.x, coords.y);
+        return cancelEvent(event);
+      };
+
+      this.canvas.addEventListener("pointerdown", beginSliding);
+      this.canvas.addEventListener("pointermove", slide);
+      this.canvas.addEventListener("pointerup", stopSliding);
     }
 
-    canvas.addEventListener(
-      "mousedown",
-      createMouseListener(game.doMouseDown.bind(game))
+    window.addEventListener(
+      "resize",
+      () => {
+        this.onResize();
+      },
+      false
     );
-    canvas.addEventListener(
-      "mousemove",
-      createMouseListener(game.doMouseMove.bind(game))
-    );
-    canvas.addEventListener(
-      "mouseup",
-      createMouseListener(game.doMouseUp.bind(game))
-    );
-  }else{
-    function beginSliding(e) {
-      console.log("begin", e)
-      var coords = getCoordinates(e);
-      game.doMouseDown(coords.x, coords.y);
-
-      //canvas.onpointermove = slide;
-      //canvas.setPointerCapture(e.pointerId);
-
-
-      return cancelEvent(event);
-    }
-
-    function slide(e) {
-      // console.log("slide", e)
-      var coords = getCoordinates(e);
-      game.doMouseMove(coords.x, coords.y);
-
-      //canvas.setPointerCapture(e.pointerId);
-
-      return cancelEvent(event);
-    }
-
-    function stopSliding(e) {
-      console.log("asdfasd")
-      var coords = getCoordinates(e);
-      game.doMouseUp(coords.x, coords.y);
-
-
-      //canvas.releasePointerCapture(e.pointerId);
-      return cancelEvent(event);
-
-    }
-
-    // canvas.onpointerdown = beginSliding;
-    // canvas.onpointermove = slide;
-    // canvas.onpointerup = stopSliding;
-
-    canvas.addEventListener(
-      "pointerdown",
-      beginSliding,
-    );
-
-    canvas.addEventListener(
-      "pointermove",
-      slide,
-
-    );
-    canvas.addEventListener(
-      "pointerup",
-      stopSliding,
-    );
-
-
-
-
   }
-
-  window.addEventListener(
-    "resize",
-    function () {
-      game.onResize();
-    },
-    false
-  );
-
-  // TODO: eh?
-  var hidden = true;
-  // to make sure we don't requestAnimationFrame if it's already been requested
-  var numRequested = 0;
 
   // The idea is that a 
+  drawCanvasContinuous() {}
 
-  game.drawCanvasContinuous = function () {
+  draw() {
+    if (!this.hidden && this.tiles) {
+      this.level.tileShape.draw_expanded(this.ctx, this.tiles, this.tileStates, this.level.colorScheme, this.action);
 
-  }
+      if (this.numRequested == 0) {
+        requestAnimationFrame((timeStamp) => {
+          this.numRequested--;
 
-  game.draw = function () {
-    if (!hidden && this.tiles) {
-      this.level.tileShape.draw_expanded(ctx, this.tiles, this.tileStates, this.level.colorScheme, this.action);
-
-      if (numRequested == 0) {
-        requestAnimationFrame(function (timeStamp) {
-          numRequested--;
-
-          var previousTimestamp = game.lastUpdateTimestamp;
-          game.tileStates.forEach(function (v) {
+          const previousTimestamp = this.lastUpdateTimestamp;
+          this.tileStates.forEach(function (v) {
             if (v.selected) {
               v.insetState = Math.min(
                 1,
@@ -399,30 +350,31 @@ function makeGameBase(canvasId, divId /*unused*/)  {
                 v.insetState - (timeStamp - previousTimestamp) / 100
               );
             }
-
           });
-          game.lastUpdateTimestamp = timeStamp;
-          game.draw();
+          this.lastUpdateTimestamp = timeStamp;
+          this.draw();
         });
-        numRequested++;
+        this.numRequested++;
       }
     }
-  };
+  }
 
-  game.specificOnShow = function() {};
+  specificOnShow() {}
 
-  game.onShow = function () {
-    hidden = false;
+  onShow() {
+    this.hidden = false;
     document.body.style.zoom = '100%';
     this.draw();
     this.onResize();
     this.specificOnShow();
-  };
+  }
 
-  game.onHide = function () {
-    hidden = true;
-  };
+  onHide() {
+    this.hidden = true;
+  }
+}
 
-  game.onResize();
-  return game;
+// Factory function for backward compatibility
+function makeGameBase(canvasId, divId) {
+  return new GameBase(canvasId, divId);
 }
