@@ -139,6 +139,9 @@ class GameBase2 {
       );
 
       if (move !== null) {
+        // Hook for subclasses to save state before move
+        this.preMove(move);
+        
         this.gameState.applyMove(move, this.action);
         this.gameState.tileStates.forEach(function (v) {
           v.selected = false;
@@ -499,6 +502,11 @@ class GameBase2 {
 
   // Hook for subclasses to implement game-specific logic on mouse down
   onMouseDown() {
+    // Override in subclasses
+  }
+
+  // Hook for subclasses to save state before a move is applied
+  preMove(move) {
     // Override in subclasses
   }
 }

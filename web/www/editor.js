@@ -26,6 +26,15 @@ class Editor extends GameBase2 {
     return this.level.colorScheme.resquare(v);
   }
 
+  // Save state before a move is applied (for undo)
+  preMove(move) {
+    // Save current state for undo
+    this.undoList.push({
+      level: this.level.clone(),
+      gameState: new GameState(this.level) // Create a fresh game state
+    });
+  }
+
   updateLevelInfo() {
     // Return early if no game state is loaded yet
     if (!this.gameState || !this.level) {
