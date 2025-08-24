@@ -95,6 +95,15 @@ class GameBase {
       this.gameState.tileStates
     );
 
+    // Update inset states for immediate selection
+    this.gameState.tileStates.forEach(function (v) {
+      if (v.selected) {
+        v.insetState = 1;
+      } else {
+        v.insetState = 0;
+      }
+    });
+
     // Redraw to show the selection
     this.forceRedraw();
 
@@ -121,6 +130,12 @@ class GameBase {
       this.gameState.tileStates.forEach(function (v) {
         if (v.selected != v.oldSelected) {
           different = true;
+        }
+        // Update inset state based on selection
+        if (v.selected) {
+          v.insetState = 1;
+        } else {
+          v.insetState = 0;
         }
       });
 
@@ -159,7 +174,6 @@ class GameBase {
           move,
           function (v) {
             v.transitionState = 0;
-            console.log("Set transitionState to 0 for tile");
           }
         );
 
@@ -434,6 +448,15 @@ class GameBase {
   draw() {
     this.updateGui();
     if (this.level && this.gameState) {
+      // Update inset states before drawing
+      this.gameState.tileStates.forEach(tileState => {
+        if (tileState.selected) {
+          tileState.insetState = 1;
+        } else {
+          tileState.insetState = 0;
+        }
+      });
+
       // Draw once immediately
       this.drawCanvas();
 
@@ -459,6 +482,14 @@ class GameBase {
   // Force a single redraw without starting animation loop
   forceRedraw() {
     if (!this.hidden && this.gameState && this.level) {
+      // Update inset states before drawing
+      this.gameState.tileStates.forEach(tileState => {
+        if (tileState.selected) {
+          tileState.insetState = 1;
+        } else {
+          tileState.insetState = 0;
+        }
+      });
       this.actuallyDrawCanvas();
     }
   }
@@ -466,7 +497,6 @@ class GameBase {
   // Start animation loop if there are animations
   startAnimationLoopIfNeeded() {
     if (!this.animationRunning && this.hasAnimations()) {
-      console.log("Starting animation loop");
       this.animationRunning = true;
       requestAnimationFrame(() => this.drawCanvas());
     }
@@ -486,20 +516,17 @@ class GameBase {
 
     // Check tile animations
     let hasTileAnimations = false;
-    let transitionStateValues = [];
     this.gameState.tileStates.forEach(tileState => {
-      transitionStateValues.push(tileState.transitionState);
       if (tileState.transitionState < 1) {
         hasTileAnimations = true;
       }
     });
 
     if (hasTileAnimations) {
-      console.log("Found tile animations, transitionState < 1");
       return true;
-    } else {
-      console.log("No animations found. transitionState values:", transitionStateValues);
     }
+
+    return false;
 
     return false;
   }
@@ -518,7 +545,7 @@ class GameBase {
 
     // Update tile animations
     this.gameState.tileStates.forEach(tileState => {
-      // Update inset state (selection)
+      // Update inset state (selection) - inset squares should appear when selected
       if (tileState.selected) {
         tileState.insetState = 1;
       } else {
@@ -530,12 +557,10 @@ class GameBase {
         hasAnimations = true;
         // Animate over 300ms
         const deltaTime = timestamp - this.gameState.lastUpdateTimestamp;
-        const oldTransitionState = tileState.transitionState;
         tileState.transitionState = Math.min(
           1,
           tileState.transitionState + deltaTime / 300
         );
-        console.log(`Animating tile: ${oldTransitionState} -> ${tileState.transitionState}, deltaTime: ${deltaTime}`);
       }
     });
 
