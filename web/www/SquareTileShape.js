@@ -157,6 +157,20 @@ class SquareTileShape {
     });
   }
 
+  // Calculate proportional border width based on tile size
+  getBorderWidth(tileWidth, tileHeight) {
+    const minDimension = Math.min(tileWidth, tileHeight);
+    // Base border width is 2px, scale up to 8px max based on tile size
+    // TODO: this seems to be overly complicated, but I'll leave it for now
+    const baseWidth = 2;
+    const maxWidth = 8;
+    const scaleFactor = Math.min(minDimension / 100, 1); // Scale based on 50px reference
+    return Math.max(
+      baseWidth,
+      Math.min(maxWidth, baseWidth + (maxWidth - baseWidth) * scaleFactor)
+    );
+  }
+
   // TODO: refactor or expose?
   // TODO: standardize whether use context transforms or passing coordinates...
   draw_tile(
@@ -204,7 +218,7 @@ class SquareTileShape {
     // Draw hover border
     if (isHovered && !tileState.selected) {
       ctx.strokeStyle = "#87ceeb"; // Light blue color
-      ctx.lineWidth = 2;
+      ctx.lineWidth = this.getBorderWidth(width, height * heightMult)*0.75;
       ctx.strokeRect(x, y, width, height * heightMult);
     }
 
@@ -292,7 +306,11 @@ class SquareTileShape {
     // Draw selection border
     if (hasSelection) {
       ctx.strokeStyle = "#4fb6ff";
-      ctx.lineWidth = 3;
+      const borderWidth = this.getBorderWidth(
+        width - padding,
+        height - padding
+      );
+      ctx.lineWidth = borderWidth;
 
       if (selectedTiles.length === 1) {
         // Single tile selected - draw dashed border around that tile
@@ -302,7 +320,9 @@ class SquareTileShape {
         const tileWidth = width - padding;
         const tileHeight = height - padding;
 
-        ctx.setLineDash([5, 5]); // Create dashed line
+        // Make dash pattern proportional to border width
+        const dashLength = Math.max(3, Math.floor(borderWidth * 2));
+        ctx.setLineDash([dashLength, dashLength]); // Create dashed line
         ctx.strokeRect(tileX, tileY, tileWidth, tileHeight);
         ctx.setLineDash([]); // Reset to solid line
       } else {
