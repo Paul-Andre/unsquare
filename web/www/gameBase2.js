@@ -387,9 +387,11 @@ class GameBase2 {
 
       if (v.insetState != prevIS) {
         unsettled = true;
+        console.log("Inset state changed:", prevIS, "->", v.insetState);
       }
-      if (v.transitionState != 1 || v.transitionState != prevTS) {
+      if (v.transitionState != 1 && v.transitionState != prevTS) {
         unsettled = true;
+        console.log("Transition state changed:", prevTS, "->", v.transitionState);
       }
     });
     this.gameState.lastUpdateTimestamp = timestamp;
@@ -416,7 +418,10 @@ class GameBase2 {
       let unsettled = this.updateCanvasAnimations(timestamp);
       this.actuallyDrawCanvas();
       if (unsettled) {
-        if (this.numRequested == 0) {
+        // Debug: log when animations are triggered
+        console.log("Animation triggered, unsettled:", unsettled, "numRequested:", this.numRequested);
+        // Always request animation frame when unsettled, but limit concurrent requests
+        if (this.numRequested < 2) {
           requestAnimationFrame((timestamp) => {
             this.numRequested--;
             this.drawCanvas();
