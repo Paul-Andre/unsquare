@@ -2,7 +2,7 @@
 
 /// This is what does the basics of drawing the tiles to the screen.
 ///
-class GameBase2 {
+class GameBase {
   constructor(canvasId, divId) {
     this.canvas = document.getElementById(canvasId);
     this.ctx = this.canvas.getContext("2d");
@@ -512,6 +512,6 @@ class GameBase2 {
 }
 
 // Factory function for backward compatibility
-function makeGameBase2(canvasId, divId) {
-  return new GameBase2(canvasId, divId);
+function makeGameBase(canvasId, divId) {
+  return new GameBase(canvasId, divId);
 }

@@ -1,6 +1,6 @@
 "use strict";
 
-class Game2 extends GameBase2 {
+class Game extends GameBase {
   constructor(canvasId, divId) {
     super(canvasId, divId);
     // Bind the action method to preserve 'this' context when passed as callback
@@ -177,7 +177,7 @@ class Game2 extends GameBase2 {
   }
 }
 
-window.game = new Game2("gameCanvas", "game");
+window.game = new Game("gameCanvas", "game");
 console.log("Game instance created:", window.game);
 console.log("Game instance type:", typeof window.game);
 console.log("Game instance methods:", Object.getOwnPropertyNames(window.game));

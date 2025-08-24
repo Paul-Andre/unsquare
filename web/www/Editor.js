@@ -1,6 +1,6 @@
 "use strict";
 
-class Editor extends GameBase2 {
+class Editor extends GameBase {
   constructor(canvasId, divId) {
     super(canvasId, divId);
     this.referenceToOriginalLevel = null;
