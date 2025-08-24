@@ -129,13 +129,11 @@ function calculateStates(book) {
 
   // Just unlock all...
   return calculateStatesWithParams(book, 100000, 50);
-
-
 }
 
-// The term activate in this sense means to take something that is an html element in the static dom, and to turn and put data in it and or attach listeners, etc
-// And return an object that represents the "conceptual" object of that.
-class LevelMenuActivator {
+// This component manages a level menu DOM element, populating it with level data and handling user interactions.
+// It encapsulates the functionality for displaying and interacting with a collection of puzzle levels.
+class LevelMenuComponent {
   constructor(elementId, isEditor) {
     this.elementId = elementId;
     this.isEditor = isEditor;
@@ -200,7 +198,7 @@ class LevelMenuActivator {
   }
 
   // this function is to be called on icons using the onclick event
-  // now "this" refers to the LevelMenuActivator instance due to bind()
+  // now "this" refers to the LevelMenuComponent instance due to bind()
   onIconClick(event) {
     const iconElement = event.target.closest(".level_icon"); // Get the icon element
 

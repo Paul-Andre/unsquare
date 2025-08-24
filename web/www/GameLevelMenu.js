@@ -14,7 +14,7 @@ class GameLevelMenu {
   initializeLevelMenu() {
     // Wait for game to be available
     if (window.game) {
-      this.levelMenu = new LevelMenuActivator("gameLevelMenu", false);
+      this.levelMenu = new LevelMenuComponent("gameLevelMenu", false);
       screenManager.additionalFunctions.gameLevelMenu = this.levelMenu;
     } else {
       // Retry after a short delay
