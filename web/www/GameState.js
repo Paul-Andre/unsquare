@@ -64,17 +64,18 @@ class GameState {
     if (this.undoList.length > 0) {
       const undo = this.undoList.pop();
       this.tiles = undo.tiles;
-      
+
       // Handle restart operations differently
       if (undo.isRestart) {
         // For restart, we just restore the state without animation
         this.runningSolution = undo.runningSolution;
-        this.numMoves = undo.numMoves || (this.numMoves - 1);
+        this.numMoves = undo.numMoves || this.numMoves - 1;
       } else {
         // For regular moves, animate the reverse
-        this.level.tileShape.forTilesInMove(this.tileStates,
+        this.level.tileShape.forTilesInMove(
+          this.tileStates,
           undo.move,
-          function(ts) {
+          function (ts) {
             ts.transitionState = 0;
           }
         );

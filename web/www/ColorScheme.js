@@ -18,13 +18,17 @@ class ColorScheme {
 
 class BWColorScheme extends ColorScheme {
   constructor() {
-    super("BW", {
-      1: { fill: "white" },
-      2: { fill: "#333333" }
-    }, {
-      type: "modular",
-      modulus: 2
-    });
+    super(
+      "BW",
+      {
+        1: { fill: "white" },
+        2: { fill: "#333333" },
+      },
+      {
+        type: "modular",
+        modulus: 2,
+      }
+    );
   }
 
   unsquare(e) {
@@ -38,14 +42,18 @@ class BWColorScheme extends ColorScheme {
 
 class TriColorScheme extends ColorScheme {
   constructor() {
-    super("tri", {
-      1: { fill: "#F9FAC8" },
-      2: { fill: "#0431D4" },
-      3: { fill: "#FF0040" }
-    }, {
-      type: "modular",
-      modulus: 3
-    });
+    super(
+      "tri",
+      {
+        1: { fill: "#F9FAC8" },
+        2: { fill: "#0431D4" },
+        3: { fill: "#FF0040" },
+      },
+      {
+        type: "modular",
+        modulus: 3,
+      }
+    );
   }
 
   unsquare(e) {
@@ -59,18 +67,22 @@ class TriColorScheme extends ColorScheme {
 
 class RainbowColorScheme extends ColorScheme {
   constructor() {
-    super("rainbow", {
-      1: { fill: "#BE81F7" },
-      2: { fill: "#5882FA" },
-      3: { fill: "#58FAF4" },
-      4: { fill: "#82FA58" },
-      5: { fill: "#F4FA58" },
-      6: { fill: "#FE9A2E" },
-      7: { fill: "#FA5858" }
-    }, {
-      type: "",
-      modulus: 7
-    });
+    super(
+      "rainbow",
+      {
+        1: { fill: "#BE81F7" },
+        2: { fill: "#5882FA" },
+        3: { fill: "#58FAF4" },
+        4: { fill: "#82FA58" },
+        5: { fill: "#F4FA58" },
+        6: { fill: "#FE9A2E" },
+        7: { fill: "#FA5858" },
+      },
+      {
+        type: "",
+        modulus: 7,
+      }
+    );
   }
 
   unsquare(e) {
@@ -92,19 +104,23 @@ class RainbowColorScheme extends ColorScheme {
 
 class Rainbow2ColorScheme extends ColorScheme {
   constructor() {
-    super("rainbow2", {
-      1: { fill: "white" },
-      2: { fill: "#BE81F7" },
-      3: { fill: "#5882FA" },
-      4: { fill: "#58FAF4" },
-      5: { fill: "#82FA58" },
-      6: { fill: "#F4FA58" },
-      7: { fill: "#FE9A2E" },
-      8: { fill: "#FA5858" }
-    }, {
-      type: "modular",
-      modulus: 8
-    });
+    super(
+      "rainbow2",
+      {
+        1: { fill: "white" },
+        2: { fill: "#BE81F7" },
+        3: { fill: "#5882FA" },
+        4: { fill: "#58FAF4" },
+        5: { fill: "#82FA58" },
+        6: { fill: "#F4FA58" },
+        7: { fill: "#FE9A2E" },
+        8: { fill: "#FA5858" },
+      },
+      {
+        type: "modular",
+        modulus: 8,
+      }
+    );
   }
 
   unsquare(e) {
@@ -129,7 +145,7 @@ const colorSchemes = {
   BW: new BWColorScheme(),
   tri: new TriColorScheme(),
   rainbow: new RainbowColorScheme(),
-  rainbow2: new Rainbow2ColorScheme()
+  rainbow2: new Rainbow2ColorScheme(),
 };
 
 let colorSchemeByMod = {
@@ -139,13 +155,12 @@ let colorSchemeByMod = {
 
 let modular_arithmetic_colors_cells = {
   [2]: colorSchemes.BW.cells,
-  [3]: colorSchemes.tri.cells
+  [3]: colorSchemes.tri.cells,
 };
 
 function get_arithmetic_color(n, arithmetic) {
   if (arithmetic.type == "modular") {
-    return modular_arithmetic_colors_cells[arithmetic.modulus][n-1].fill;
+    return modular_arithmetic_colors_cells[arithmetic.modulus][n - 1].fill;
   }
   throw Error(`Not supporting arithmetic ${JSON.stringify(arithmetic)} `);
 }
-

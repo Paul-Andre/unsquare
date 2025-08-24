@@ -1,4 +1,3 @@
-
 // Modern class-based API and Storage
 class Api {
   static ready(fn) {
@@ -25,4 +24,3 @@ class Storage {
 // Backward compatibility
 var api = Api;
 var storage = Storage;
-

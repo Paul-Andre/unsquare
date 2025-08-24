@@ -18,7 +18,7 @@ class Level {
 
     let operations = compute_operations_for_level(level);
     let m = operations.length;
-    
+
     level.solutionVector = new Array(m).fill(0);
     level.solutionType = "confirmed";
 
@@ -33,15 +33,15 @@ class Level {
     level.par = json.par;
     level.text = json.text || "";
     level.index = json.index;
-    level.isIcon = !!(json.isIcon);
+    level.isIcon = !!json.isIcon;
     if (json.id) {
       level.id = json.id;
     } else {
-      level.id = generate_id("level")
+      level.id = generate_id("level");
     }
     let hasValidSolution = false;
     if (json.solutionVector) {
-      level.solutionVector = json.solutionVector
+      level.solutionVector = json.solutionVector;
       level.solutionType = json.solutionType;
 
       hasValidSolution = level_check_solution(level);
@@ -58,7 +58,7 @@ class Level {
   }
 
   static fromCompact(s) {
-    let [geo,arith,tOrV,data] = s.split("$");
+    let [geo, arith, tOrV, data] = s.split("$");
     if (!geo.startsWith("s_")) {
       return null;
     }
@@ -88,7 +88,7 @@ class Level {
     level.id = "custom";
 
     if (tOrV == "v") {
-      let operations = compute_operations( {
+      let operations = compute_operations({
         type: "square",
         width: w,
         height: h,
@@ -96,16 +96,15 @@ class Level {
 
       let solution = data;
 
-      let reach = vector_multiply_matrix(solution, operations)
+      let reach = vector_multiply_matrix(solution, operations);
       vector_simplify_arithmetic(reach, level_get_arithmetic(level));
 
-      reach = reach.map((a)=>a+1)
+      reach = reach.map(a => a + 1);
       level.tiles = Grid.usingFlatArray(reach, w, h);
 
       level.solutionVector = solution;
       level.solutionType = "submitted";
-      
-    } else  {
+    } else {
       return null;
     }
 
@@ -133,7 +132,7 @@ class Level {
     json.solutionVector = this.solutionVector;
     json.solutionType = this.solutionType;
 
-    json.__type__ = "Level"
+    json.__type__ = "Level";
     return json;
   }
 
@@ -192,5 +191,3 @@ function compute_gaussian_solution(level) {
     level.solutionType = "confirmed";
   }
 }
-
-

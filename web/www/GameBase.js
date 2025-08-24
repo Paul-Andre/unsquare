@@ -40,7 +40,7 @@ class GameBase {
       end: {
         x: 0.7,
         y: 0.7,
-      }
+      },
     };
 
     this.wasPaused = true;
@@ -51,11 +51,16 @@ class GameBase {
   }
 
   onResize() {
-    this.canvasVirtualSize = Math.min(this.div.offsetWidth, this.div.offsetHeight, MAX_WIDTH);
+    this.canvasVirtualSize = Math.min(
+      this.div.offsetWidth,
+      this.div.offsetHeight,
+      MAX_WIDTH
+    );
 
     this.canvasSize = this.canvasVirtualSize * (window.devicePixelRatio || 1);
     this.canvas.width = this.canvas.height = this.canvasSize;
-    this.canvas.style.width = this.canvas.style.height = this.canvasVirtualSize + "px";
+    this.canvas.style.width = this.canvas.style.height =
+      this.canvasVirtualSize + "px";
     this.draw();
   }
 
@@ -141,7 +146,7 @@ class GameBase {
       if (move !== null) {
         // Hook for subclasses to save state before move
         this.preMove(move);
-        
+
         this.gameState.applyMove(move, this.action);
         this.gameState.tileStates.forEach(function (v) {
           v.selected = false;
@@ -153,7 +158,8 @@ class GameBase {
           move,
           function (v) {
             v.transitionState = 0;
-          });
+          }
+        );
 
         if (navigator.vibrate) {
           navigator.vibrate(3);
@@ -178,7 +184,7 @@ class GameBase {
         Math.min(
           this.canvas.width - 2,
           (event.clientX - rect.left - borderLeftWidth) *
-          (window.devicePixelRatio || 1)
+            (window.devicePixelRatio || 1)
         )
       ),
       y: Math.max(
@@ -186,7 +192,7 @@ class GameBase {
         Math.min(
           this.canvas.height - 2,
           (event.clientY - rect.top - borderTopWidth) *
-          (window.devicePixelRatio || 1)
+            (window.devicePixelRatio || 1)
         )
       ),
     };
@@ -194,8 +200,8 @@ class GameBase {
 
   setupEventListeners() {
     if (false) {
-      const createTouchListener = (fn) => {
-        return (event) => {
+      const createTouchListener = fn => {
+        return event => {
           if (event.changedTouches) {
             const coords = this.getCoordinates(event.changedTouches[0]);
             fn(coords.x, coords.y);
@@ -217,8 +223,8 @@ class GameBase {
         createTouchListener(this.doMouseUp.bind(this))
       );
 
-      const createMouseListener = (fn) => {
-        return (event) => {
+      const createMouseListener = fn => {
+        return event => {
           const coords = this.getCoordinates(event);
           fn(coords.x, coords.y);
           return cancelEvent(event);
@@ -238,21 +244,21 @@ class GameBase {
         createMouseListener(this.doMouseUp.bind(this))
       );
     } else {
-      const beginSliding = (e) => {
+      const beginSliding = e => {
         console.log("begin", e);
         const coords = this.getCoordinates(e);
         this.doMouseDown(coords.x, coords.y);
         return cancelEvent(event);
       };
 
-      const slide = (e) => {
+      const slide = e => {
         // console.log("slide", e)
         const coords = this.getCoordinates(e);
         this.doMouseMove(coords.x, coords.y);
         return cancelEvent(event);
       };
 
-      const stopSliding = (e) => {
+      const stopSliding = e => {
         console.log("asdfasd");
         const coords = this.getCoordinates(e);
         this.doMouseUp(coords.x, coords.y);
@@ -285,7 +291,10 @@ class GameBase {
     }
 
     // TODO: this should probably not be in the base
-    if (this.level.id == "level_1693531796434" && this.gameState.numMoves == 0) {
+    if (
+      this.level.id == "level_1693531796434" &&
+      this.gameState.numMoves == 0
+    ) {
       this.demoDrag = this.firstDemoDrag;
     } else {
       this.demoDrag = null;
@@ -296,10 +305,19 @@ class GameBase {
     // If a move to be hinted, calculate the drag based on that move, and set it as this.demoDrag
 
     let suggestsRestart = false;
-    if (this.level.id == "level_1693531796434" && this.gameState.numMoves >= 1 && !this.isFinished()) {
+    if (
+      this.level.id == "level_1693531796434" &&
+      this.gameState.numMoves >= 1 &&
+      !this.isFinished()
+    ) {
       suggestsRestart = true;
     }
-    if (this.isInBasicBook() && this.level.index < 10 && this.gameState.numMoves > this.level.par * 3 && !this.isFinished()) {
+    if (
+      this.isInBasicBook() &&
+      this.level.index < 10 &&
+      this.gameState.numMoves > this.level.par * 3 &&
+      !this.isFinished()
+    ) {
       suggestsRestart = true;
     }
 
@@ -362,16 +380,17 @@ class GameBase {
   // Simple animation system - returns true if any animations are still running
   updateCanvasAnimations(timestamp) {
     let hasAnimations = false;
-    
+
     // Update demo drag animation
     if (this.demoDrag) {
       hasAnimations = true;
-      this.demoDragTime += (timestamp - this.gameState.lastUpdateTimestamp) / 1000; // 1 second cycle
+      this.demoDragTime +=
+        (timestamp - this.gameState.lastUpdateTimestamp) / 1000; // 1 second cycle
       this.demoDragTime %= 1;
     }
 
     // Update tile animations
-    this.gameState.tileStates.forEach((tileState) => {
+    this.gameState.tileStates.forEach(tileState => {
       // Update inset state (selection)
       if (tileState.selected) {
         tileState.insetState = 1;
@@ -383,7 +402,11 @@ class GameBase {
       if (tileState.transitionState < 1) {
         hasAnimations = true;
         // Animate over 300ms
-        tileState.transitionState = Math.min(1, tileState.transitionState + (timestamp - this.gameState.lastUpdateTimestamp) / 300);
+        tileState.transitionState = Math.min(
+          1,
+          tileState.transitionState +
+            (timestamp - this.gameState.lastUpdateTimestamp) / 300
+        );
       }
     });
 
@@ -394,13 +417,13 @@ class GameBase {
   drawCanvas() {
     if (!this.hidden && this.gameState && this.level) {
       const timestamp = performance.now();
-      
+
       // Update animations
       const hasAnimations = this.updateCanvasAnimations(timestamp);
-      
+
       // Always draw the current state
       this.actuallyDrawCanvas();
-      
+
       // Continue animation loop if there are animations or if we're in the main loop
       if (hasAnimations || this.animationRunning) {
         requestAnimationFrame(() => this.drawCanvas());
@@ -428,17 +451,15 @@ class GameBase {
   }
 
   easeOut(x) {
-    return this.interpolate(
-      this.interpolate(x, 1, x), 1, x);
+    return this.interpolate(this.interpolate(x, 1, x), 1, x);
   }
 
   dragBlend(x) {
     return this.interpolate(
-      this.interpolate(
-        this.interpolate(
-          this.bezierBlend(x),
-          1, x), 1, x),
-      1, x);
+      this.interpolate(this.interpolate(this.bezierBlend(x), 1, x), 1, x),
+      1,
+      x
+    );
   }
 
   // TODO: overlay this on a separate canvas for efficiency?  eh...
@@ -458,7 +479,10 @@ class GameBase {
     this.ctx.lineCap = "round";
     this.ctx.strokeStyle = "#4fb6ff55";
     this.ctx.beginPath();
-    this.ctx.moveTo(this.demoDrag.start.x * width, this.demoDrag.start.y * height);
+    this.ctx.moveTo(
+      this.demoDrag.start.x * width,
+      this.demoDrag.start.y * height
+    );
     this.ctx.lineTo(this.demoDrag.end.x * width, this.demoDrag.end.y * height);
     this.ctx.stroke();
 
@@ -466,8 +490,12 @@ class GameBase {
     let animTime = this.demoDragTime;
     //let easedTime = animTime; //bezierBlend(animTime);
     let easedTime = this.dragBlend(animTime);
-    let bubbleX = this.interpolate(this.demoDrag.start.x, this.demoDrag.end.x, easedTime) * width;
-    let bubbleY = this.interpolate(this.demoDrag.start.y, this.demoDrag.end.y, easedTime) * height;
+    let bubbleX =
+      this.interpolate(this.demoDrag.start.x, this.demoDrag.end.x, easedTime) *
+      width;
+    let bubbleY =
+      this.interpolate(this.demoDrag.start.y, this.demoDrag.end.y, easedTime) *
+      height;
 
     let bubbleSize = relativeDragSize * width;
     this.ctx.fillStyle = "#4fb6ff55";
@@ -478,7 +506,7 @@ class GameBase {
 
   onShow() {
     this.hidden = false;
-    document.body.style.zoom = '100%';
+    document.body.style.zoom = "100%";
     this.onResize();
     // Force a redraw after resize
     this.draw();
@@ -510,5 +538,3 @@ class GameBase {
     // Override in subclasses
   }
 }
-
-

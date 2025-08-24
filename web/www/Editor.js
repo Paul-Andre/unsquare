@@ -5,10 +5,10 @@ class Editor extends GameBase {
     super(canvasId, divId);
     this.referenceToOriginalLevel = null;
     this.undoList = [];
-    
+
     // Override openLevel to handle editor-specific behavior
     this.openLevel = this.editorOpenLevel.bind(this);
-    
+
     // Bind the action method to preserve 'this' context when passed as callback
     this.action = this.action.bind(this);
   }
@@ -31,7 +31,7 @@ class Editor extends GameBase {
     // Save current state for undo
     this.undoList.push({
       level: this.level.clone(),
-      gameState: new GameState(this.level) // Create a fresh game state
+      gameState: new GameState(this.level), // Create a fresh game state
     });
   }
 
@@ -40,7 +40,7 @@ class Editor extends GameBase {
     if (!this.gameState || !this.level) {
       return;
     }
-    
+
     // Note that this modifies the copy of level, not the reference to the original level
     this.level.tiles = this.gameState.tiles;
     this.level.solutionVector = this.gameState.runningSolution;
@@ -79,7 +79,7 @@ class Editor extends GameBase {
 
   submitSolution() {
     let sol_string = window.prompt("Solution in 01010101010 format");
-    let sol = Array.from(sol_string).map((x) => Number(x));
+    let sol = Array.from(sol_string).map(x => Number(x));
     console.log(sol);
 
     this.updateLevelInfo();
@@ -88,9 +88,9 @@ class Editor extends GameBase {
       // Save current state for undo
       this.undoList.push({
         level: this.level.clone(),
-        gameState: new GameState(this.level) // Create a fresh game state clone
+        gameState: new GameState(this.level), // Create a fresh game state clone
       });
-      
+
       this.level.solutionVector = sol;
       this.level.solutionType = "submitted";
 
@@ -102,15 +102,17 @@ class Editor extends GameBase {
   }
 
   submitCompact() {
-    let string = window.prompt("String representing the level (as found in the link's custom param");
+    let string = window.prompt(
+      "String representing the level (as found in the link's custom param"
+    );
     let level = Level.fromCompact(string);
     if (level) {
       // Save current state for undo
       this.undoList.push({
         level: this.level.clone(),
-        gameState: new GameState(this.level) // Create a fresh game state clone
+        gameState: new GameState(this.level), // Create a fresh game state clone
       });
-      
+
       this.level = level;
       this.gameState = new GameState(this.level);
     } else {
@@ -120,7 +122,10 @@ class Editor extends GameBase {
 
   postApplyMove() {
     this.updateLevelInfo();
-    if (this.level.solutionType == "reverse" || this.level.solutionType == "confirmed") {
+    if (
+      this.level.solutionType == "reverse" ||
+      this.level.solutionType == "confirmed"
+    ) {
       this.level.solutionType = "reverse";
     } else {
       this.level.solutionType = "mixed";
@@ -134,9 +139,9 @@ class Editor extends GameBase {
     // Save current state for undo
     this.undoList.push({
       level: this.level.clone(),
-      gameState: new GameState(this.level) // Create a fresh game state clone
+      gameState: new GameState(this.level), // Create a fresh game state clone
     });
-    
+
     this.gameState.tiles.forEachSet(function () {
       return 1;
     });
@@ -152,7 +157,9 @@ class Editor extends GameBase {
   }
 
   specificOnShow() {
-    if (!vector_equal(this.level.solutionVector, this.gameState.runningSolution)) {
+    if (
+      !vector_equal(this.level.solutionVector, this.gameState.runningSolution)
+    ) {
       this.gameState = new GameState(this.level);
     }
   }
@@ -166,7 +173,7 @@ class Editor extends GameBase {
         // Save current state for undo
         this.undoList.push({
           level: this.level.clone(),
-          gameState: new GameState(this.level) // Create a fresh game state clone
+          gameState: new GameState(this.level), // Create a fresh game state clone
         });
 
         var grid = Grid.empty(size, size);
@@ -185,7 +192,7 @@ class Editor extends GameBase {
 
         let operations = compute_operations_for_level(this.level);
         let m = operations.length;
-        
+
         this.level.solutionVector = new Array(m).fill(0);
         this.level.solutionType = "confirmed";
 
@@ -231,7 +238,8 @@ class Editor extends GameBase {
     if (this.gameState.runningSolution) {
       let sum = vector_sum(this.level.solutionVector);
       let type = this.level.solutionType;
-      this.div.getElementsByClassName("editorBest")[0].innerText = sum + " " + type;
+      this.div.getElementsByClassName("editorBest")[0].innerText =
+        sum + " " + type;
     } else {
       this.div.getElementsByClassName("editorBest")[0].innerText = "? " + type;
     }

@@ -22,7 +22,7 @@ function createLevelIconCanvas(level) {
  * 2 - unsolved
  * 3 - suboptimal
  * 4 - optimal
-  */
+ */
 function calculateStatesWithParams(book, allowedUnsolved, allowedLocked) {
   let states = [];
   for (let i = 0; i < book.levels.length; i++) {
@@ -100,11 +100,11 @@ class LevelMenuActivator {
     this.elementId = elementId;
     this.isEditor = isEditor;
     this.container = document.querySelector("#" + elementId + " .content");
-    
+
     // TODO: turn it into a single state variable
     this.deleting = false;
     this.selectingIcon = false;
-    
+
     this.onIconClick = this.onIconClick.bind(this);
   }
 
@@ -142,11 +142,11 @@ class LevelMenuActivator {
       }
     } else {
       let stateClass = {
-        "0": "icon_hidden",
-        "1": "icon_locked",
-        "2": "icon_unsolved",
-        "3": "icon_suboptimal",
-        "4": "icon_optimal",
+        0: "icon_hidden",
+        1: "icon_locked",
+        2: "icon_unsolved",
+        3: "icon_suboptimal",
+        4: "icon_optimal",
       }[state];
 
       element.classList.add(stateClass);
@@ -156,14 +156,14 @@ class LevelMenuActivator {
     }
 
     return element;
-    // TODO: add classes based on 
+    // TODO: add classes based on
   }
 
   // this function is to be called on icons using the onclick event
   // now "this" refers to the LevelMenuActivator instance due to bind()
   onIconClick(event) {
-    const iconElement = event.target.closest('.level_icon'); // Get the icon element
-    
+    const iconElement = event.target.closest(".level_icon"); // Get the icon element
+
     if (this.deleting) {
       iconElement.remove();
       this.saveIconOrder();
@@ -218,9 +218,11 @@ class LevelMenuActivator {
 
     for (let i = 0; i < this.book.levels.length; i++) {
       let level = this.book.levels[i];
-      let glow = (!this.isEditor && i == 0 && states[i] == 2);
+      let glow = !this.isEditor && i == 0 && states[i] == 2;
       // check par, and based on it figure out the restriction level.
-      this.container.appendChild(this.createLevelInfo(level, this.isEditor ? 2 : states[i], glow));
+      this.container.appendChild(
+        this.createLevelInfo(level, this.isEditor ? 2 : states[i], glow)
+      );
     }
   }
 
@@ -279,10 +281,7 @@ class LevelMenuActivator {
   }
 
   changeBookTitle() {
-    let new_title = prompt(
-      "Set book title",
-      this.book.title,
-    );
+    let new_title = prompt("Set book title", this.book.title);
 
     if (new_title) {
       this.book.title = new_title;
@@ -293,7 +292,7 @@ class LevelMenuActivator {
   // TODO: put this in "subclass"
   clearAllBests() {
     for (let i = 0; i < this.book.levels.length; i++) {
-              gameLevelMenuInstance.clearBestNumMoves(this.book.levels[i]);
+      gameLevelMenuInstance.clearBestNumMoves(this.book.levels[i]);
     }
     this.displayIcons();
   }
@@ -304,5 +303,3 @@ class LevelMenuActivator {
 }
 
 // Factory function for backward compatibility
-
-

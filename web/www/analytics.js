@@ -1,7 +1,13 @@
-
 function getGtagLevelName(level, book) {
-  let a = "Level_" + (level.index+1) + " " + book.source + " " + level.getFullIdentifier() + " tag_v1";
-  console.log(a)
+  let a =
+    "Level_" +
+    (level.index + 1) +
+    " " +
+    book.source +
+    " " +
+    level.getFullIdentifier() +
+    " tag_v1";
+  console.log(a);
   return a;
 }
 
@@ -23,7 +29,7 @@ function trackLevelEnd(level, book) {
       let name = getGtagLevelName(level, book);
       gtag("event", "level_end", {
         level_name: name,
-        success: true
+        success: true,
       });
     }
   }, 0);

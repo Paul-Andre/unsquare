@@ -7,7 +7,7 @@ class Grid {
   get(x, y) {
     throw new Error("get method must be implemented by subclass");
   }
-  
+
   set(x, y, v) {
     throw new Error("set method must be implemented by subclass");
   }
@@ -35,7 +35,7 @@ class Grid {
     blank(con, w, h) {
       return new GridFromArray(new con(w * h), w, h);
     },
-    
+
     fromArray(con, array) {
       const h = array.length;
       const w = array[0].length;
@@ -45,7 +45,7 @@ class Grid {
       });
       return grid;
     },
-    
+
     fromFunction(con, w, h, f) {
       const grid = new GridFromArray(new con(w * h), w, h);
       grid.forEach(function (_, x, y) {
@@ -125,7 +125,12 @@ class VirtualGrid extends Grid {
   }
 
   get(x, y) {
-    if (x < 0 || y < 0 || x >= this.original.width || y >= this.original.height) {
+    if (
+      x < 0 ||
+      y < 0 ||
+      x >= this.original.width ||
+      y >= this.original.height
+    ) {
       return this.virtual(x, y, this.original);
     } else {
       return this.original.get(x, y);

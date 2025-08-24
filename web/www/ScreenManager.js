@@ -8,7 +8,7 @@ class ScreenManager {
     this.stack = [];
     this.currentScreenName = "home";
     this.currentScreen = document.getElementById("loading");
-    
+
     // Initialize loading screen functions
     this.additionalFunctions.loadingScreen = {
       onHide: () => {
@@ -42,14 +42,16 @@ class ScreenManager {
     if (this.currentScreen) {
       this.currentScreen.classList.remove("variant_shown");
     } else {
-      document.getElementById(this.currentScreenName).classList.remove("variant_shown");
+      document
+        .getElementById(this.currentScreenName)
+        .classList.remove("variant_shown");
     }
 
     this.stack.push({
       name: this.currentScreenName,
       keepAsIs: !!keepAsIs,
     });
-    
+
     if (!keepAsIs) {
       this.executeFunction(this.currentScreenName, "onHide");
     }
@@ -71,7 +73,7 @@ class ScreenManager {
     this.currentScreenName = popped.name;
     this.currentScreen = document.getElementById(this.currentScreenName);
     this.currentScreen.classList.add("variant_shown");
-    
+
     if (!popped.keepAsIs) {
       this.executeFunction(this.currentScreenName, "onShow");
     }

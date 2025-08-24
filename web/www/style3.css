@@ -1,21 +1,32 @@
 /* reset from https://www.joshwcomeau.com/css/custom-css-reset/ */
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
 }
 * {
   margin: 0;
 }
-html, body {
+html,
+body {
   height: 100%;
 }
 body {
   line-height: 1.2;
   font-size: 20px;
 }
-input, button, textarea, select {
+input,
+button,
+textarea,
+select {
   font: inherit;
 }
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   overflow-wrap: break-word;
   font-weight: 500;
 }
@@ -24,16 +35,24 @@ h1 {
   font-size: 2em;
 }
 
-h1,h2,h3{line-height:1.2; margin-top: 0.5em}
-p{margin-top: 0.5em; margin-bottom: 0.5em;}
+h1,
+h2,
+h3 {
+  line-height: 1.2;
+  margin-top: 0.5em;
+}
+p {
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+}
 
-img{
+img {
   max-width: 100%;
   height: auto;
   display: block;
 }
 
-:root { 
+:root {
   --white: #ffffff;
   --black: #333333;
   --border_gray: #c1bbaf;
@@ -51,38 +70,39 @@ img{
 
 /* TODO: make proper web font */
 @font-face {
-   font-family: 'Source Sans 3';
-      src: url('ss3/SourceSans3-Italic-VariableFont_wght.ttf') format('truetype');
-   font-style: italic;
-   font-display: swap;
+  font-family: "Source Sans 3";
+  src: url("ss3/SourceSans3-Italic-VariableFont_wght.ttf") format("truetype");
+  font-style: italic;
+  font-display: swap;
 }
 @font-face {
-   font-family: 'Source Sans 3';
-      src: url('ss3/SourceSans3-VariableFont_wght.ttf') format('truetype');
-   font-style: normal;
-   font-display: swap;
+  font-family: "Source Sans 3";
+  src: url("ss3/SourceSans3-VariableFont_wght.ttf") format("truetype");
+  font-style: normal;
+  font-display: swap;
 }
 
 body {
-	position: relative;
-	margin: auto;
-	background: var(--bg_gray);
+  position: relative;
+  margin: auto;
+  background: var(--bg_gray);
   color: var(--black);
 
-  font-family: 'Source Sans 3', sans-serif;
+  font-family: "Source Sans 3", sans-serif;
   font-weight: 400;
-  font-feature-settings: 
-  'cv01' on, 'cv04' on, 'cv03' on;
-
+  font-feature-settings:
+    "cv01" on,
+    "cv04" on,
+    "cv03" on;
 }
 
 .screen_container {
   /* background: red; */
-	position: absolute;
+  position: absolute;
 
   position: relative;
 
-        width: 504px;
+  width: 504px;
   max-width: 100%;
 
   /* top: 50%; */
@@ -91,7 +111,6 @@ body {
   /*transform: translate(-50%, 0);*/
   height: 100%;
   margin: 0 auto;
-
 }
 .copyright {
   font-size: 75%;
@@ -99,11 +118,11 @@ body {
 
 section {
   /* background: red; */
-	/* position: absolute; */
+  /* position: absolute; */
 
   /* position: relative; */
 
-        /* width: 500px; */
+  /* width: 500px; */
   /* max-width: 100%; */
 
   /* /1* top: 50%; *1/ */
@@ -130,39 +149,38 @@ section#game header {
 
 /** ---------------Containers-------------- **/
 
-
 section#bookMenuScreen .header,
 section#aboutScreen .header,
 section#resetScreen .header {
-	float: left;
-	width: 100%;
+  float: left;
+  width: 100%;
 }
 
 /** ------------end of containers------------- **/
 
 /** Buttons **/
 
-button, .level_icon {
-    background: white;
-    border: solid 2px var(--border_gray);
-    margin: 2px;
-    /*box-shadow: 1px 1px #9b9b9b;*/
-    color: var(--black);
+button,
+.level_icon {
+  background: white;
+  border: solid 2px var(--border_gray);
+  margin: 2px;
+  /*box-shadow: 1px 1px #9b9b9b;*/
+  color: var(--black);
 }
 
 .level_icon {
-	vertical-align: top;
+  vertical-align: top;
 }
 
-
-button:hover, .level_icon:hover {
-    background: white;
-    border: solid 2px #6b6762;
-    margin: 2px;
-    /*box-shadow: 1px 1px #555555;*/
-    color: var(--black);
+button:hover,
+.level_icon:hover {
+  background: white;
+  border: solid 2px #6b6762;
+  margin: 2px;
+  /*box-shadow: 1px 1px #555555;*/
+  color: var(--black);
 }
-
 
 .level_icon:before {
   content: "";
@@ -171,32 +189,31 @@ button:hover, .level_icon:hover {
   height: 100%;
 }
 
-
-
-.icon_hidden, .icon_hidden:hover {
+.icon_hidden,
+.icon_hidden:hover {
   border: solid 2px var(--inactive_border);
 }
-.icon_hidden:before, .icon_hidden:hover:before {
+.icon_hidden:before,
+.icon_hidden:hover:before {
   border: solid 2px var(--inactive_border);
   background: var(--inactive_background);
-
 }
 
-.icon_locked, .icon_locked:hover {
-    border: solid 2px var(--inactive_border);
+.icon_locked,
+.icon_locked:hover {
+  border: solid 2px var(--inactive_border);
 }
 
-.icon_locked:before, .icon_locked:hover:before {
+.icon_locked:before,
+.icon_locked:hover:before {
   box-sizing: border-box;
   border: solid 2px var(--inactive_border);
   /*background: #cbc7bfba;*/
   background: var(--inactive_overlay);
-  
 
-    /*box-shadow: inset 0px 0px 40px 10px var(--inactive_background);*/
-    /*box-shadow: inset 0px 0px 40px 10px #b7b3ac; */
+  /*box-shadow: inset 0px 0px 40px 10px var(--inactive_background);*/
+  /*box-shadow: inset 0px 0px 40px 10px #b7b3ac; */
 }
-
 
 .icon_unsolved {
 }
@@ -205,51 +222,50 @@ button:hover, .level_icon:hover {
   border-color: #4fb6ff;
   animation: pulse-animation 2s infinite;
 }
-.icon_glow:before{
+.icon_glow:before {
 }
 
 .icon_suboptimal {
-    border: solid 2px var(--bronze);
+  border: solid 2px var(--bronze);
 }
-.icon_suboptimal:before{
-    border: dashed 3px var(--bronze);
-    /*box-shadow: inset 0px 0px 13px 3px #ffd700;*/
+.icon_suboptimal:before {
+  border: dashed 3px var(--bronze);
+  /*box-shadow: inset 0px 0px 13px 3px #ffd700;*/
 }
 
 .icon_optimal {
-    border: solid 2px var(--gold);
+  border: solid 2px var(--gold);
 }
-.icon_optimal:before{
-    border: solid 2px var(--gold);
-    box-shadow: inset 0px 0px 20px 0px var(--gold);
+.icon_optimal:before {
+  border: solid 2px var(--gold);
+  box-shadow: inset 0px 0px 20px 0px var(--gold);
 }
 
 button:disabled,
 button[disabled] {
-	background: var(--inactive_background);
-	border-color: var(--inactive_border);
-	color: var(--inactive_text);
+  background: var(--inactive_background);
+  border-color: var(--inactive_border);
+  color: var(--inactive_text);
 }
 
 #iconContainer {
   /*text-align: center;*/
 
-    display: grid;
-    grid-template-columns: repeat(auto-fill, 63px);
-    justify-content: center;
-
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 63px);
+  justify-content: center;
 }
 
 div#iconContainer.deleting .level_icon:before {
-	border: solid 2px red;
+  border: solid 2px red;
 }
 
 div#iconContainer.selectingIcon .level_icon:before {
-	border: dashed 2px lime;
+  border: dashed 2px lime;
 }
 
 .level_icon.bookIconRepresentative:before {
-	border: solid lime;
+  border: solid lime;
 }
 
 .gameCanvas {
@@ -257,7 +273,6 @@ div#iconContainer.selectingIcon .level_icon:before {
 
   touch-action: none;
 }
-
 
 button.action {
   font-size: 125%;
@@ -304,12 +319,11 @@ button.in_yo_face {
 }
 
 .finishedLevel {
-  position:absolute;
+  position: absolute;
 
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-
 }
 .content {
   position: relative;
@@ -330,13 +344,11 @@ button.in_yo_face {
 #LevelIndicator {
   font-size: 1.2em;
   margin-left: 0.1em;
-
 }
 
 .IndicContainer {
   line-height: 1.2;
   /* padding: 8px; */
-  
 }
 
 section header {
@@ -352,8 +364,6 @@ section header {
   line-height: 1.1;
   font-size: 0.9em;
 }
-
-
 
 .variant_container {
   position: relative;
@@ -380,12 +390,10 @@ section header {
   margin-top: 2px;
   margin-bottom: 2px;
   /* clear: both; */
-    border: solid 1px darkgray;
+  border: solid 1px darkgray;
 }
 .bookSummary:hover {
-    border: solid 1px #555555;
-
-
+  border: solid 1px #555555;
 }
 
 .bookSummary canvas {
@@ -402,8 +410,8 @@ section header {
 }
 
 .level_icon {
-    display: inline-block;
-    position: relative;
+  display: inline-block;
+  position: relative;
 }
 
 .level_icon_image {
@@ -411,15 +419,15 @@ section header {
 }
 
 .level_icon_par {
-    position: absolute;
-    bottom: 0px;
-    right: 0px;
-    line-height: 1;
-    /* font-size: 12pt; */
-    margin-bottom: 2px;
-    margin-right: 4px;
-    font-weight: 700;
-    color: #c918c9;
+  position: absolute;
+  bottom: 0px;
+  right: 0px;
+  line-height: 1;
+  /* font-size: 12pt; */
+  margin-bottom: 2px;
+  margin-right: 4px;
+  font-weight: 700;
+  color: #c918c9;
 }
 
 footer a {
@@ -428,7 +436,7 @@ footer a {
 }
 
 button.discord_button {
-  background: white url('discord-mark-blue.svg') no-repeat center right;
+  background: white url("discord-mark-blue.svg") no-repeat center right;
   background-position: right 4px center;
   background-size: 28px;
   padding-right: 38px;

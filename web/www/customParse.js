@@ -1,6 +1,6 @@
-let customLevelString = (new URLSearchParams(location.search)).get("custom");
+let customLevelString = new URLSearchParams(location.search).get("custom");
 if (customLevelString !== null) {
-  let customLevel= Level.fromCompact(customLevelString);
+  let customLevel = Level.fromCompact(customLevelString);
   customLevel.custom = true;
   game.openLevel(customLevel, {
     levels: [],
@@ -8,4 +8,3 @@ if (customLevelString !== null) {
   });
   screenManager.switchTo("game");
 }
-

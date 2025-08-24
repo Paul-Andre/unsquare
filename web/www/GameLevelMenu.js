@@ -4,10 +4,10 @@ class GameLevelMenu {
   constructor() {
     this.bookUrl = "data/2024_feb_17_better_intro_2.json";
     // this.bookUrl = "data/tiny_for_testing.json";
-    
+
     // Delay the creation of level menu until after game is ready
     this.initializeLevelMenu();
-    
+
     this.loadBook();
   }
 
@@ -58,14 +58,14 @@ class GameLevelMenu {
         button.innerText = "Start Game!";
 
         // if ?reset added at the end of the url, reset the bests
-        let resetUrlParam = (new URLSearchParams(location.search)).get("reset");
+        let resetUrlParam = new URLSearchParams(location.search).get("reset");
         if (resetUrlParam !== null) {
           this.levelMenu.clearAllBests();
         }
       }
     };
 
-    request.onerror = (e) => {
+    request.onerror = e => {
       alert("Error loading levels");
     };
 
@@ -75,6 +75,3 @@ class GameLevelMenu {
 
 // Create global instance
 const gameLevelMenuInstance = new GameLevelMenu();
-
-
-

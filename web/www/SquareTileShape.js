@@ -158,7 +158,17 @@ class SquareTileShape {
 
   // TODO: refactor or expose?
   // TODO: standardize whether use context transforms or passing coordinates...
-  draw_tile(ctx, gameState, changeFunction, x, y, width, height, tileValue, tileState) {
+  draw_tile(
+    ctx,
+    gameState,
+    changeFunction,
+    x,
+    y,
+    width,
+    height,
+    tileValue,
+    tileState
+  ) {
     const transitionState = tileState.transitionState;
 
     let mainColor;
@@ -166,12 +176,14 @@ class SquareTileShape {
     let insetState;
 
     if (transitionState < 0.5) {
-      mainColor = gameState.level.colorScheme.cells[changeFunction(tileValue)].fill;
+      mainColor =
+        gameState.level.colorScheme.cells[changeFunction(tileValue)].fill;
       insetColor = gameState.level.colorScheme.cells[tileValue].fill;
       insetState = tileState.reverseInsetState;
     } else {
       mainColor = gameState.level.colorScheme.cells[tileValue].fill;
-      insetColor = gameState.level.colorScheme.cells[changeFunction(tileValue)].fill;
+      insetColor =
+        gameState.level.colorScheme.cells[changeFunction(tileValue)].fill;
       insetState = tileState.insetState;
     }
 
@@ -184,23 +196,17 @@ class SquareTileShape {
     y = newY;
 
     ctx.fillStyle = mainColor;
-    ctx.fillRect(
-      x,
-      y,
-      width,
-      height * heightMult,
-    );
+    ctx.fillRect(x, y, width, height * heightMult);
 
     ctx.fillStyle = insetColor;
 
     if (insetState) {
       const insetProportion = 0.5;
-      const squareWidth = (width) * insetState * insetProportion;
-      const squareHeight = (height * heightMult) * insetState * insetProportion;
-      const squareOffsetX =
-        (width) * (1 - insetState * insetProportion) * 0.5;
+      const squareWidth = width * insetState * insetProportion;
+      const squareHeight = height * heightMult * insetState * insetProportion;
+      const squareOffsetX = width * (1 - insetState * insetProportion) * 0.5;
       const squareOffsetY =
-        (height * heightMult) * (1 - insetState * insetProportion) * 0.5;
+        height * heightMult * (1 - insetState * insetProportion) * 0.5;
       ctx.fillRect(
         x + squareOffsetX,
         y + squareOffsetY,
@@ -233,7 +239,7 @@ class SquareTileShape {
         width - padding,
         height - padding,
         value,
-        tileState,
+        tileState
       );
     });
   }
@@ -257,8 +263,7 @@ class SquareTileShape {
         height - padding
       );
 
-      ctx.fillStyle =
-        colorScheme.cells[changeFunction(value)].fill;
+      ctx.fillStyle = colorScheme.cells[changeFunction(value)].fill;
 
       const squareWidth = (width - padding) * tileState.insetState * 0.5;
       const squareHeight = (height - padding) * tileState.insetState * 0.5;

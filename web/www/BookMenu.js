@@ -1,6 +1,5 @@
 "use strict";
 
-
 function load_static_books() {
   let books = [];
 
@@ -12,7 +11,6 @@ function load_static_books() {
 
   {
     for (let i = 0; i < bookUrls.length; i++) {
-
       let bookUrl = bookUrls[i];
 
       //https://stackoverflow.com/a/35294675
@@ -38,16 +36,13 @@ function load_static_books() {
   return books;
 }
 
-
 //let static_books = load_static_books();
-
 
 let editor_books = [];
 
-
 function load_editor_books() {
   editor_books = [];
-  for (let i=0; i<localStorage.length; i++) {
+  for (let i = 0; i < localStorage.length; i++) {
     let key = localStorage.key(i);
     if (key.startsWith("editor_book")) {
       let value = localStorage.getItem(key);
@@ -57,9 +52,7 @@ function load_editor_books() {
       editor_books.push(book);
     }
   }
-};
-
-
+}
 
 // For use with JSON.stringify
 function book_replacer(key, value) {
@@ -71,7 +64,7 @@ function book_replacer(key, value) {
 
 // For use with JSON.parse
 function book_reviver(key, value) {
-  if ( typeof value === "object" && value !== null) {
+  if (typeof value === "object" && value !== null) {
     if (value.__type__ == "Level") {
       return Level.fromJsonObject(value);
     }
@@ -82,7 +75,7 @@ function book_reviver(key, value) {
       return Level.fromJsonObject(value);
     }
     if (value.levels) {
-      for (var i=0; i<value.levels.length; i++) {
+      for (var i = 0; i < value.levels.length; i++) {
         value.levels[i].index = i;
       }
     }
@@ -121,7 +114,6 @@ class BookMenu {
     var container = document.getElementById("bookContainer");
 
     container.innerHTML = "";
-    
 
     for (var i = 0; i < this.books.length; i++) {
       container.append(this.prepareBook(this.books[i]));
@@ -144,15 +136,14 @@ class BookMenu {
   }
 
   saveAll() {
-      for (let i=0; i<this.books.length; i++) {
-        save_editor_book(this.books[i]);
-      }
+    for (let i = 0; i < this.books.length; i++) {
+      save_editor_book(this.books[i]);
+    }
   }
 
   addFromJson() {
     var saveStr = prompt("Paste JSON");
     if (saveStr) {
-
       let book = JSON.parse(saveStr, book_reviver);
       book.id = generate_id("book");
 
@@ -162,32 +153,28 @@ class BookMenu {
       this.books.push(book);
 
       this.showBooks();
-
     }
   }
 
   loadBooks() {}
 
   prepareBook(book) {
-
     let node = htmlStringToElement(bookTemplate);
     {
-    let bn = node.getElementsByClassName("bookName")[0];
-    bn.innerHTML = book.title;
+      let bn = node.getElementsByClassName("bookName")[0];
+      bn.innerHTML = book.title;
     }
     {
-    let bn = node.getElementsByClassName("bookId")[0];
-    bn.innerHTML = book.id;
+      let bn = node.getElementsByClassName("bookId")[0];
+      bn.innerHTML = book.id;
     }
-
 
     let icon_level = select_book_icon_level(book);
     if (icon_level) {
-        let icon = createLevelIcon(icon_level);
+      let icon = createLevelIcon(icon_level);
 
-        let bic = node.getElementsByClassName("bookIconContainer")[0];
-        bic.append(icon);
-
+      let bic = node.getElementsByClassName("bookIconContainer")[0];
+      bic.append(icon);
     }
 
     node.book = book;
@@ -217,7 +204,7 @@ let bookTemplate =
 </div>";
 
 function select_book_icon_level(book) {
-  for (let i=0; i<book.levels.length; i++) {
+  for (let i = 0; i < book.levels.length; i++) {
     let level = book.levels[i];
     if (level.isIcon) {
       return level;
