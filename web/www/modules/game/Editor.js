@@ -81,6 +81,9 @@ export class Editor extends GameBase {
       this.level = undo.level;
       this.gameState = undo.gameState;
       this.numMoves -= 1;
+      this.draw();
+      // Start animation loop if animations were triggered
+      this.startAnimationLoopIfNeeded();
     }
   }
 
@@ -149,12 +152,20 @@ export class Editor extends GameBase {
       gameState: new GameState(this.level), // Create a fresh game state clone
     });
 
+    // Animate the clear by setting transition state to 0 for all tiles
+    this.gameState.tileStates.forEach(function (tileState) {
+      tileState.transitionState = 0;
+    });
+
     this.gameState.tiles.forEachSet(function () {
       return 1;
     });
     let m = this.gameState.operations.length;
     this.gameState.runningSolution = new Array(m).fill(0);
     this.updateGui();
+    this.draw();
+    // Start animation loop if animations were triggered
+    this.startAnimationLoopIfNeeded();
   }
 
   play() {

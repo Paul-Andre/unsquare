@@ -172,6 +172,8 @@ export class Game extends GameBase {
   undo() {
     this.gameState.undo();
     this.draw();
+    // Start animation loop if animations were triggered
+    this.startAnimationLoopIfNeeded();
   }
 
   nextLevel() {

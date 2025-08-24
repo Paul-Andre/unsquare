@@ -74,15 +74,34 @@ export class GameState {
         this.numMoves = undo.numMoves || this.numMoves - 1;
       } else {
         // For regular moves, animate the reverse
-        this.level.tileShape.forTilesInMove(
-          this.tileStates,
-          undo.move,
-          function (ts) {
+        // Reset all tileStates to default state first
+        this.tileStates.forEach(function (ts) {
+          ts.selected = false;
+          ts.oldSelected = false;
+          ts.insetState = 0;
+          ts.reverseInsetState = 1;
+          ts.transitionState = 1;
+        });
+        
+        // Debug: check if undo.move exists
+        if (undo.move) {
+          this.level.tileShape.forTilesInMove(
+            this.tileStates,
+            undo.move,
+            function (ts) {
+              ts.transitionState = 0;
+            }
+          );
+        } else {
+          // If no move, just reset all tiles to trigger animation
+          this.tileStates.forEach(function (ts) {
             ts.transitionState = 0;
-          }
-        );
+          });
+        }
         this.runningSolution = undo.runningSolution;
         this.numMoves -= 1;
+        // Update timestamp for animation system
+        this.lastUpdateTimestamp = performance.now();
       }
     }
   }

@@ -534,8 +534,6 @@ export class GameBase {
     }
 
     return false;
-
-    return false;
   }
 
   // Simple animation system - returns true if any animations are still running
