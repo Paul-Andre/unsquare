@@ -3,6 +3,8 @@
 class Game2 extends GameBase2 {
   constructor(canvasId, divId) {
     super(canvasId, divId);
+    // Bind the action method to preserve 'this' context when passed as callback
+    this.action = this.action.bind(this);
   }
 
   // this specifies what happens when you activate squares
