@@ -30,8 +30,11 @@ class Game extends GameBase {
 
   restart() {
     // Save current state for undo before restarting
+    // TODO: this is a bit of a hack, but it works for now.
+    let savedUndoList = null;
     if (this.gameState && this.gameState.numMoves > 0) {
-      this.gameState.undoList.push({
+      savedUndoList = [...this.gameState.undoList];
+      savedUndoList.push({
         tiles: this.gameState.tiles.clone(),
         move: "restart",
         runningSolution: this.gameState.runningSolution.slice(),
@@ -41,6 +44,12 @@ class Game extends GameBase {
     }
     
     this.openLevel(this.level, this.book);
+    
+    // Restore the undo list after creating new game state
+    if (savedUndoList) {
+      this.gameState.undoList = savedUndoList;
+    }
+    
     this.draw();
     // Force an immediate redraw to ensure canvas updates
     this.forceRedraw();
