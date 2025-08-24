@@ -1,5 +1,14 @@
 "use strict";
 
+// Level state constants to replace magic numbers
+const LEVEL_STATES = {
+  HIDDEN: 0, // not visible at all
+  LOCKED: 1, // visible but not playable
+  UNSOLVED: 2, // playable, not yet solved
+  SUBOPTIMAL: 3, // solved, but not in optimal moves
+  OPTIMAL: 4, // solved in optimal moves
+};
+
 // TODO: move these to a different file
 function createLevelIcon(level) {
   return createLevelIconCanvas(level);
@@ -15,13 +24,29 @@ function createLevelIconCanvas(level) {
   return icon;
 }
 
-//TODO: "state" creates a pun. Call this something else.
-/*
- * 0 - hidden
- * 1 - locked
- * 2 - unsolved
- * 3 - suboptimal
- * 4 - optimal
+/**
+ * Calculates the state of each level in the book for the level menu, using fixed parameters for how many unsolved and locked levels are allowed to be visible.
+ *
+ * States:
+ *   LEVEL_STATES.HIDDEN (0) - hidden (not visible at all)
+ *   LEVEL_STATES.LOCKED (1) - locked (visible but not playable)
+ *   LEVEL_STATES.UNSOLVED (2) - unsolved (playable, not yet solved)
+ *   LEVEL_STATES.SUBOPTIMAL (3) - suboptimal (solved, but not in optimal moves)
+ *   LEVEL_STATES.OPTIMAL (4) - optimal (solved in optimal moves)
+ *
+ * Parameters:
+ *   book            - The book object containing levels.
+ *   allowedUnsolved - The maximum number of unsolved (but playable) levels to show.
+ *   allowedLocked   - The maximum number of locked (but visible) levels to show.
+ *
+ * The function iterates through each level and assigns a state based on the player's progress:
+ *   - If the level is unsolved and allowedUnsolved > 0, it is marked as unsolved and allowedUnsolved is decremented.
+ *   - If the level is unsolved but allowedUnsolved is 0 and allowedLocked > 0, it is marked as locked and allowedLocked is decremented.
+ *   - If neither unsolved nor locked slots are available, the level is hidden.
+ *   - If the level is solved suboptimally, it is marked as suboptimal.
+ *   - If the level is solved optimally, it is marked as optimal.
+ *
+ * Returns an array of states for each level.
  */
 function calculateStatesWithParams(book, allowedUnsolved, allowedLocked) {
   let states = [];
@@ -31,23 +56,33 @@ function calculateStatesWithParams(book, allowedUnsolved, allowedLocked) {
     let best = level.getBestNumMoves();
     if (best === null) {
       if (allowedUnsolved) {
-        states[i] = 2;
+        states[i] = LEVEL_STATES.UNSOLVED;
         allowedUnsolved -= 1;
       } else if (allowedLocked) {
-        states[i] = 1;
+        states[i] = LEVEL_STATES.LOCKED;
         allowedLocked -= 1;
       } else {
-        states[i] = 0;
+        states[i] = LEVEL_STATES.HIDDEN;
       }
     } else if (best > par) {
-      states[i] = 3;
+      states[i] = LEVEL_STATES.SUBOPTIMAL;
     } else {
-      states[i] = 4;
+      states[i] = LEVEL_STATES.OPTIMAL;
     }
   }
   return states;
 }
 
+// Calculates the state of each level in the book for the level menu, using a proportional unlocking system.
+// - Starts with a fixed number of unsolved levels allowed to be visible (allowedUnsolved = 3).
+// - As the player solves levels suboptimally or optimally, allowedUnsolved increases by a small amount (suboptimalIncrease or optimalIncrease).
+// - Levels are marked as:
+//   LEVEL_STATES.HIDDEN (0): hidden (not visible at all)
+//   LEVEL_STATES.LOCKED (1): locked (visible but not playable)
+//   LEVEL_STATES.UNSOLVED (2): unsolved (playable, not yet solved)
+//   LEVEL_STATES.SUBOPTIMAL (3): suboptimal (solved, but not in optimal moves)
+//   LEVEL_STATES.OPTIMAL (4): optimal (solved in optimal moves)
+// - Up to 50 locked levels are allowed to be visible.
 function calculateStatesProportional(book) {
   let allowedUnsolved = 3;
   const suboptimalIncrease = 0.2;
@@ -62,19 +97,19 @@ function calculateStatesProportional(book) {
     let best = level.getBestNumMoves();
     if (best === null) {
       if (allowedUnsolved > 0) {
-        states[i] = 2;
+        states[i] = LEVEL_STATES.UNSOLVED; // unsolved and playable
         allowedUnsolved -= 1;
       } else if (allowedLocked) {
-        states[i] = 1;
+        states[i] = LEVEL_STATES.LOCKED; // locked but visible
         allowedLocked -= 1;
       } else {
-        states[i] = 0;
+        states[i] = LEVEL_STATES.HIDDEN; // hidden
       }
     } else if (best > par) {
-      states[i] = 3;
+      states[i] = LEVEL_STATES.SUBOPTIMAL; // solved suboptimally
       allowedUnsolved += suboptimalIncrease;
     } else {
-      states[i] = 4;
+      states[i] = LEVEL_STATES.OPTIMAL; // solved optimally
       allowedUnsolved += optimalIncrease;
     }
   }
@@ -86,11 +121,13 @@ function calculateStates(book) {
     return [];
   }
   // There's two modes: the first one just shows the first level, forcing
-  if (book.levels[0].getBestNumMoves() === null) {
-    return calculateStatesWithParams(book, 1, 50);
-  } else {
-    return calculateStatesProportional(book);
-  }
+  // if (book.levels[0].getBestNumMoves() === null) {
+  //   return calculateStatesWithParams(book, 1, 50);
+  // } else {
+  //   return calculateStatesProportional(book);
+  // }
+
+  return calculateStatesWithParams(book, 10000, 50);
 }
 
 // The term activate in this sense means to take something that is an html element in the static dom, and to turn and put data in it and or attach listeners, etc
@@ -142,11 +179,11 @@ class LevelMenuActivator {
       }
     } else {
       let stateClass = {
-        0: "icon_hidden",
-        1: "icon_locked",
-        2: "icon_unsolved",
-        3: "icon_suboptimal",
-        4: "icon_optimal",
+        [LEVEL_STATES.HIDDEN]: "icon_hidden",
+        [LEVEL_STATES.LOCKED]: "icon_locked",
+        [LEVEL_STATES.UNSOLVED]: "icon_unsolved",
+        [LEVEL_STATES.SUBOPTIMAL]: "icon_suboptimal",
+        [LEVEL_STATES.OPTIMAL]: "icon_optimal",
       }[state];
 
       element.classList.add(stateClass);
@@ -218,10 +255,14 @@ class LevelMenuActivator {
 
     for (let i = 0; i < this.book.levels.length; i++) {
       let level = this.book.levels[i];
-      let glow = !this.isEditor && i == 0 && states[i] == 2;
+      let glow = !this.isEditor && i == 0 && states[i] == LEVEL_STATES.UNSOLVED;
       // check par, and based on it figure out the restriction level.
       this.container.appendChild(
-        this.createLevelInfo(level, this.isEditor ? 2 : states[i], glow)
+        this.createLevelInfo(
+          level,
+          this.isEditor ? LEVEL_STATES.UNSOLVED : states[i],
+          glow
+        )
       );
     }
   }
