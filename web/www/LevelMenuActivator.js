@@ -127,7 +127,10 @@ function calculateStates(book) {
   //   return calculateStatesProportional(book);
   // }
 
-  return calculateStatesWithParams(book, 10000, 50);
+  // Just unlock all...
+  return calculateStatesWithParams(book, 100000, 50);
+
+
 }
 
 // The term activate in this sense means to take something that is an html element in the static dom, and to turn and put data in it and or attach listeners, etc
