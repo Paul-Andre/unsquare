@@ -19,6 +19,8 @@ class GameBase {
       y: 0,
     };
 
+    this.hoveredTile = null; // Track which tile is being hovered
+
     this.gameState = null;
     // TODO: encapsulate these in an object
     this.demoDrag = null;
@@ -175,6 +177,55 @@ class GameBase {
     }
   }
 
+  // Handle mouse hover events
+  handleMouseEnter(event) {
+    // Mouse entered canvas
+  }
+
+  handleMouseLeave(event) {
+    // Mouse left canvas - clear hover state
+    this.hoveredTile = null;
+    this.drawCanvas();
+  }
+
+  handleMouseMove(event) {
+    if (!this.mouseStart.pressed) {
+      // Only handle hover when not dragging
+      const coords = this.getCoordinates(event);
+      const x = coords.x / this.canvasSize;
+      const y = coords.y / this.canvasSize;
+
+      // Convert to tile coordinates
+      const tileX = Math.floor(x * this.gameState.tiles.width);
+      const tileY = Math.floor(y * this.gameState.tiles.height);
+
+      // Check if coordinates are within bounds
+      if (
+        tileX >= 0 &&
+        tileX < this.gameState.tiles.width &&
+        tileY >= 0 &&
+        tileY < this.gameState.tiles.height
+      ) {
+        const newHoveredTile = { x: tileX, y: tileY };
+
+        // Only redraw if hovered tile changed
+        if (
+          !this.hoveredTile ||
+          this.hoveredTile.x !== newHoveredTile.x ||
+          this.hoveredTile.y !== newHoveredTile.y
+        ) {
+          this.hoveredTile = newHoveredTile;
+          this.drawCanvas();
+        }
+      } else {
+        if (this.hoveredTile) {
+          this.hoveredTile = null;
+          this.drawCanvas();
+        }
+      }
+    }
+  }
+
   // Gets the coordinates of the touch/mouse relative to the canvas element.
   //http://www.jacklmoore.com/notes/mouse-position/
   getCoordinates(event) {
@@ -272,6 +323,20 @@ class GameBase {
       this.canvas.addEventListener("pointerdown", beginSliding);
       this.canvas.addEventListener("pointermove", slide);
       this.canvas.addEventListener("pointerup", stopSliding);
+
+      // Add mouse hover events
+      this.canvas.addEventListener(
+        "mouseenter",
+        this.handleMouseEnter.bind(this)
+      );
+      this.canvas.addEventListener(
+        "mouseleave",
+        this.handleMouseLeave.bind(this)
+      );
+      this.canvas.addEventListener(
+        "mousemove",
+        this.handleMouseMove.bind(this)
+      );
     }
 
     window.addEventListener(
@@ -374,7 +439,12 @@ class GameBase {
 
   // TODO: This is probably an intermediate step in refactor
   actuallyDrawCanvas() {
-    this.level.tileShape.draw(this.ctx, this.gameState, this.action);
+    this.level.tileShape.draw(
+      this.ctx,
+      this.gameState,
+      this.action,
+      this.hoveredTile
+    );
 
     if (this.demoDrag) {
       this.overlayDemoDrag();

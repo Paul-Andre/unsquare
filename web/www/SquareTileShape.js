@@ -169,7 +169,8 @@ class SquareTileShape {
     height,
     tileValue,
     tileState,
-    isSingleTileSelection = false
+    isSingleTileSelection = false,
+    isHovered = false
   ) {
     const transitionState = tileState.transitionState;
 
@@ -200,6 +201,13 @@ class SquareTileShape {
     ctx.fillStyle = mainColor;
     ctx.fillRect(x, y, width, height * heightMult);
 
+    // Draw hover border
+    if (isHovered && !tileState.selected) {
+      ctx.strokeStyle = "#87ceeb"; // Light blue color
+      ctx.lineWidth = 2;
+      ctx.strokeRect(x, y, width, height * heightMult);
+    }
+
     ctx.fillStyle = insetColor;
 
     // Don't draw inset for single tile selections
@@ -220,7 +228,7 @@ class SquareTileShape {
   }
 
   // TODO: remove this from here
-  draw(ctx, gameState, changeFunction) {
+  draw(ctx, gameState, changeFunction, hoveredTile = null) {
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
     const width = ctx.canvas.width / (gameState.tiles.width + 0.1);
@@ -261,7 +269,8 @@ class SquareTileShape {
         height - padding,
         value,
         tileState,
-        selectedCount === 1 && tileState.selected
+        selectedCount === 1 && tileState.selected,
+        hoveredTile && hoveredTile.x === x && hoveredTile.y === y
       );
 
       // Track selection bounds
