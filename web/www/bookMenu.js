@@ -199,8 +199,6 @@ class BookMenu {
   }
 }
 
-}
-
 let bookTemplate =
   "<div class='bookSummary'> \
   <div class='bookIconContainer'> \
