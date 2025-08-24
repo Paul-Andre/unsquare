@@ -130,7 +130,7 @@ class LevelMenuActivator {
     element.level = level;
 
     if (this.isEditor || state >= 2) {
-      element.onclick = this.onIconClick;
+      element.onclick = this.onIconClick.bind(this);
     }
 
     if (this.isEditor) {
@@ -160,34 +160,33 @@ class LevelMenuActivator {
   }
 
   // this function is to be called on icons using the onclick event
-  // so "this" refers to the icon element, not levelMenu
+  // now "this" refers to the LevelMenuActivator instance due to bind()
   onIconClick(event) {
-    const levelMenu = this; // 'this' is the LevelMenuActivator instance due to bind()
     const iconElement = event.target.closest('.level_icon'); // Get the icon element
     
-    if (levelMenu.deleting) {
+    if (this.deleting) {
       iconElement.remove();
-      levelMenu.saveIconOrder();
-    } else if (levelMenu.selectingIcon) {
-      levelMenu.book.levels.forEach(function (a) {
+      this.saveIconOrder();
+    } else if (this.selectingIcon) {
+      this.book.levels.forEach(function (a) {
         a.isIcon = false;
       });
       iconElement.level.isIcon = true;
 
-      levelMenu.toggleSelectIcon();
-      levelMenu.displayIcons();
-      levelMenu.saveBook();
+      this.toggleSelectIcon();
+      this.displayIcons();
+      this.saveBook();
     } else {
       //let levelObject = Level.fromJsonObject(iconElement.level);
 
-      if (levelMenu.isEditor) {
-        //editor.setBook(levelMenu.book);
+      if (this.isEditor) {
+        //editor.setBook(this.book);
 
         // TODO: some kind of callback in order to nicely set level data?
-        editor.openLevel(iconElement.level, levelMenu.book);
+        editor.openLevel(iconElement.level, this.book);
         screenManager.switchTo("editor");
       } else {
-        game.openLevel(iconElement.level, levelMenu.book);
+        game.openLevel(iconElement.level, this.book);
         screenManager.switchTo("game");
       }
     }
