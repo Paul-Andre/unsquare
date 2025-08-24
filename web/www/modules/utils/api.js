@@ -1,11 +1,11 @@
 // Modern class-based API and Storage
-class Api {
+export class Api {
   static ready(fn) {
     fn();
   }
 }
 
-class Storage {
+export class Storage {
   static load(id, callback) {
     callback({
       data: localStorage.getItem(id),
@@ -22,5 +22,5 @@ class Storage {
 }
 
 // Backward compatibility
-var api = Api;
-var storage = Storage;
+export var api = Api;
+export var storage = Storage;

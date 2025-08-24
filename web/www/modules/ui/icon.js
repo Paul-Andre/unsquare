@@ -6,7 +6,21 @@
 
 // }
 
-function drawIcon(level, canvas) {
+export function createLevelIcon(level) {
+  return createLevelIconCanvas(level);
+}
+
+export function createLevelIconCanvas(level) {
+  const icon = document.createElement("canvas");
+  icon.style.width = "55px";
+  icon.style.height = "55px";
+  icon.width = 55 * window.devicePixelRatio;
+  icon.height = 55 * window.devicePixelRatio;
+  drawIcon(level, icon);
+  return icon;
+}
+
+export function drawIcon(level, canvas) {
   if (level.colorScheme) {
     let colorScheme = level.colorScheme;
 

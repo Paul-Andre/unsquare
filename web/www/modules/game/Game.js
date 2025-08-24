@@ -1,6 +1,10 @@
 "use strict";
 
-class Game extends GameBase {
+import { GameBase } from './GameBase.js';
+import { vector_sum, vector_add, vector_simplify_arithmetic, level_get_arithmetic } from '../core/algo.js';
+import { trackLevelEnd } from '../utils/analytics.js';
+
+export class Game extends GameBase {
   constructor(canvasId, divId) {
     super(canvasId, divId);
     // Bind the action method to preserve 'this' context when passed as callback
@@ -201,20 +205,4 @@ class Game extends GameBase {
       this.forceRedraw();
     }
   }
-}
-
-window.game = new Game("gameCanvas", "game");
-console.log("Game instance created:", window.game);
-console.log("Game instance type:", typeof window.game);
-console.log("Game instance methods:", Object.getOwnPropertyNames(window.game));
-
-screenManager.additionalFunctions.game = window.game;
-
-// Make nextLevel and prevLevel globally available for HTML onclick handlers
-function nextLevel() {
-  window.game.nextLevel();
-}
-
-function prevLevel() {
-  window.game.prevLevel();
 }

@@ -1,6 +1,10 @@
 "use strict";
 
-class GameLevelMenu {
+import { LevelMenuComponent } from './LevelMenuComponent.js';
+import { screenManager } from './ScreenManager.js';
+import { book_reviver } from './BookMenu.js';
+
+export class GameLevelMenu {
   constructor() {
     this.bookUrl = "data/2024_feb_17_better_intro_2.json";
     // this.bookUrl = "data/tiny_for_testing.json";
@@ -74,4 +78,4 @@ class GameLevelMenu {
 }
 
 // Create global instance
-const gameLevelMenuInstance = new GameLevelMenu();
+export const gameLevelMenuInstance = new GameLevelMenu();

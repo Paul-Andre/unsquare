@@ -1,6 +1,8 @@
 "use strict";
 
-class SquareTileShape {
+import { Grid } from './Grid.js';
+
+export class SquareTileShape {
   constructor() {
     this.name = "square";
   }
@@ -371,4 +373,4 @@ class SquareTileShape {
 }
 
 // Create global instance for backward compatibility
-tileShapes.square = new SquareTileShape();
+export const squareTileShape = new SquareTileShape();

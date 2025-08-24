@@ -1,12 +1,12 @@
 "use strict";
 
-function assert(a) {
+export function assert(a) {
   if (!a) {
     throw Error("Assertion failed");
   }
 }
 
-function compute_operations(geometry) {
+export function compute_operations(geometry) {
   let operations = [];
   if (geometry.type == "square") {
     let w = geometry.width;
@@ -31,11 +31,11 @@ function compute_operations(geometry) {
   throw new Error(`geometry ${JSON.stringify(geometry)} not supported`);
 }
 
-function get_geometry_m(geometry) {
+export function get_geometry_m(geometry) {
   return compute_operations(geometry).length;
 }
 
-function vector_sum(v) {
+export function vector_sum(v) {
   let sum = 0;
   for (let i = 0; i < v.length; i++) {
     sum += v[i];
@@ -43,7 +43,7 @@ function vector_sum(v) {
   return sum;
 }
 
-function vector_equal(a, b) {
+export function vector_equal(a, b) {
   if (a.length != b.length) {
     return false;
   }
@@ -60,7 +60,7 @@ function vector_equal(a, b) {
   assert(vector_equal([], []));
 }
 
-function compute_operations_for_level(level) {
+export function compute_operations_for_level(level) {
   if (level.geometry) {
     return compute_operations(level.geometry);
   } else if (level.tileShape.name == "square") {
@@ -78,7 +78,7 @@ function compute_operations_for_level(level) {
 // what is this coding style bruv
 // fix it
 
-function level_get_geometry(level) {
+export function level_get_geometry(level) {
   if (level.geometry) {
     return level.geometry;
   }
@@ -93,7 +93,7 @@ function level_get_geometry(level) {
   return "what is this?";
 }
 
-function vector_add(a, b) {
+export function vector_add(a, b) {
   assert(a.length == b.length);
   let c = new Array(a.length).fill(0);
   for (let i = 0; i < a.length; i++) {
@@ -102,21 +102,21 @@ function vector_add(a, b) {
   return c;
 }
 
-function vector_self_add(self, other) {
+export function vector_self_add(self, other) {
   assert(self.length == other.length);
   for (let i = 0; i < self.length; i++) {
     self[i] += other[i];
   }
   return self;
 }
-function vector_self_sub(self, other) {
+export function vector_self_sub(self, other) {
   assert(self.length == other.length);
   for (let i = 0; i < self.length; i++) {
     self[i] -= other[i];
   }
   return self;
 }
-function vector_apply_modulus(self, modulus) {
+export function vector_apply_modulus(self, modulus) {
   for (let i = 0; i < self.length; i++) {
     self[i] %= modulus;
     self[i] += modulus;
@@ -124,7 +124,7 @@ function vector_apply_modulus(self, modulus) {
   }
 }
 
-function vector_simplify_arithmetic(vector, arithmetic) {
+export function vector_simplify_arithmetic(vector, arithmetic) {
   if (!arithmetic) {
     // nothing (but probably better to create null object for natural arithmetic
   } else if (arithmetic.type == "modular") {
@@ -134,20 +134,20 @@ function vector_simplify_arithmetic(vector, arithmetic) {
   }
 }
 
-function get_geometry_compact(geometry) {
+export function get_geometry_compact(geometry) {
   if (geometry.type == "square") {
     return `s_${geometry.width}_${geometry.height}`;
   }
   throw new Error(`geometry ${JSON.stringify(geometry)} not supported`);
 }
-function get_arithmetic_compact(arithmetic) {
+export function get_arithmetic_compact(arithmetic) {
   if ((arithmetic.type = "modular")) {
     return `m_${arithmetic.modulus}`;
   }
   throw new Error(`arithmetic ${JSON.stringify(geometry)} not supported`);
 }
 
-function get_level_compact_tiles(level) {
+export function get_level_compact_tiles(level) {
   // todo: make a lowercase "t" for cases where the digits fit.
   // for (let i=0; i<level.tiles.length; i++) {
   //   assert(level.tiles[i]>= 1 level.tiles[i] <= 9);
@@ -164,7 +164,7 @@ function get_level_compact_tiles(level) {
   // If do to2dArray() instead of array, then magically works... maybe want that?
 }
 
-function get_level_full_identifier(level) {
+export function get_level_full_identifier(level) {
   return level.id + "$" + get_level_compact_tiles(level);
 }
 
@@ -172,7 +172,7 @@ function get_level_full_identifier(level) {
 // representing the level by transmitting its solution
 // And it's not even the most compact representation...
 // small "s" is the compact version, big "S" is the version with underscores.
-function get_level_compact_solution(level) {
+export function get_level_compact_solution(level) {
   return (
     get_geometry_compact(level_get_geometry(level)) +
     "$" +
@@ -183,7 +183,7 @@ function get_level_compact_solution(level) {
   );
 }
 
-function vector_multiply_matrix(applications, operations, arithmetic) {
+export function vector_multiply_matrix(applications, operations, arithmetic) {
   let m = applications.length;
   assert(operations.length == m);
   let n = operations[0].length;
@@ -202,7 +202,7 @@ let MOD_2 = {
   modulus: 2,
 };
 
-function transpose_matrix(a) {
+export function transpose_matrix(a) {
   let m = a.length;
   let n = a[0].length;
   let ret = [];
@@ -235,7 +235,7 @@ function transpose_matrix(a) {
 }
 
 // Used to rapidly create tests where it's possible to have
-function test_multiply_and_gaussian(a, b) {
+export function test_multiply_and_gaussian(a, b) {
   let c = vector_multiply_matrix(a, b);
   vector_apply_modulus(c, 2);
   console.log(a, b, c);
@@ -252,14 +252,14 @@ function test_multiply_and_gaussian(a, b) {
   test_multiply_and_gaussian(a, b);
 }
 
-function random_vector(n, mod) {
+export function random_vector(n, mod) {
   let rr = [];
   for (let j = 0; j < n; j++) {
     rr.push(Math.floor(Math.random() * mod));
   }
   return rr;
 }
-function random_matrix(m, n, mod) {
+export function random_matrix(m, n, mod) {
   let ret = [];
   for (let i = 0; i < m; i++) {
     let rr = [];
@@ -282,7 +282,7 @@ if (false) {
 }
 
 // Aw man, gaussian elimination
-function solve_gaussian(operations, tiles, arithmetic) {
+export function solve_gaussian(operations, tiles, arithmetic) {
   let mat = transpose_matrix(operations);
   let target = tiles.slice();
 
@@ -400,7 +400,7 @@ function solve_gaussian(operations, tiles, arithmetic) {
   return ret;
 }
 
-function get_level_tiles_vector(level) {
+export function get_level_tiles_vector(level) {
   let tilesVector = level.tiles.array.slice();
   for (let i = 0; i < tilesVector.length; i++) {
     tilesVector[i] -= 1;
@@ -408,12 +408,12 @@ function get_level_tiles_vector(level) {
   return tilesVector;
 }
 
-function level_get_arithmetic(level) {
+export function level_get_arithmetic(level) {
   return level.colorScheme.arithmetic;
 }
 
 // TODO: do some kind of check more specific than try catch
-function level_check_solution(level, solution = null) {
+export function level_check_solution(level, solution = null) {
   if (solution === null) {
     solution = level.solutionVector;
   }
@@ -427,7 +427,7 @@ function level_check_solution(level, solution = null) {
   return vector_equal(target, reach);
 }
 
-function get_gaussian_solution_for_level(level) {
+export function get_gaussian_solution_for_level(level) {
   //let level.tiles.array
   let arithmetic = level.colorScheme.arithmetic;
   let operations = compute_operations_for_level(level);

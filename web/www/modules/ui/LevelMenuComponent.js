@@ -1,7 +1,12 @@
 "use strict";
 
+import { drawIcon } from './icon.js';
+import { htmlStringToElement } from '../utils/helpers.js';
+import { vector_sum } from '../core/algo.js';
+import { screenManager } from './ScreenManager.js';
+
 // Level state constants to replace magic numbers
-const LEVEL_STATES = {
+export const LEVEL_STATES = {
   HIDDEN: 0, // not visible at all
   LOCKED: 1, // visible but not playable
   UNSOLVED: 2, // playable, not yet solved
@@ -10,11 +15,11 @@ const LEVEL_STATES = {
 };
 
 // TODO: move these to a different file
-function createLevelIcon(level) {
+export function createLevelIcon(level) {
   return createLevelIconCanvas(level);
 }
 
-function createLevelIconCanvas(level) {
+export function createLevelIconCanvas(level) {
   const icon = document.createElement("canvas");
   icon.style.width = "55px";
   icon.style.height = "55px";
@@ -48,7 +53,7 @@ function createLevelIconCanvas(level) {
  *
  * Returns an array of states for each level.
  */
-function calculateStatesWithParams(book, allowedUnsolved, allowedLocked) {
+export function calculateStatesWithParams(book, allowedUnsolved, allowedLocked) {
   let states = [];
   for (let i = 0; i < book.levels.length; i++) {
     let level = book.levels[i];
@@ -83,7 +88,7 @@ function calculateStatesWithParams(book, allowedUnsolved, allowedLocked) {
 //   LEVEL_STATES.SUBOPTIMAL (3): suboptimal (solved, but not in optimal moves)
 //   LEVEL_STATES.OPTIMAL (4): optimal (solved in optimal moves)
 // - Up to 50 locked levels are allowed to be visible.
-function calculateStatesProportional(book) {
+export function calculateStatesProportional(book) {
   let allowedUnsolved = 3;
   const suboptimalIncrease = 0.2;
   const optimalIncrease = 0.5;
@@ -116,7 +121,7 @@ function calculateStatesProportional(book) {
   return states;
 }
 
-function calculateStates(book) {
+export function calculateStates(book) {
   if (book.levels.length == 0) {
     return [];
   }
@@ -133,7 +138,7 @@ function calculateStates(book) {
 
 // This component manages a level menu DOM element, populating it with level data and handling user interactions.
 // It encapsulates the functionality for displaying and interacting with a collection of puzzle levels.
-class LevelMenuComponent {
+export class LevelMenuComponent {
   constructor(elementId, isEditor) {
     this.elementId = elementId;
     this.isEditor = isEditor;

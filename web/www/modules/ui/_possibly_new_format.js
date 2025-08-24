@@ -1,6 +1,6 @@
 "use strict";
 
-let new_level_format = {
+export let new_level_format = {
   id: "level_1234123412341234",
 
   geometry: {
@@ -25,7 +25,7 @@ let new_level_format = {
   },
 };
 
-let new_book_format = {
+export let new_book_format = {
   id: "book_123412343132413",
   // either a string or a localization object
   title: {
@@ -41,11 +41,11 @@ let new_book_format = {
 // info is information stored regarding the how the player did,
 // as opposed to data, which is meant to be immutable while the player is playing,
 //I created this/ such as the static data about the levels.
-let level_info = {
+export let level_info = {
   best_solution: null,
 };
 
-let state = {
+export let state = {
   tiles: [],
   // Should I just shove the whole "level" inside here?
   // If I do so, then changing size will be carried on through the undo stack

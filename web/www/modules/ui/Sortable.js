@@ -1345,3 +1345,6 @@
   Sortable.version = '1.4.2';
   return Sortable;
 });
+
+// Export for ES6 modules
+export default window.Sortable;

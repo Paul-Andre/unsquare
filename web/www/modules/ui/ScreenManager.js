@@ -2,7 +2,7 @@
 
 "use strict";
 
-class ScreenManager {
+export class ScreenManager {
   constructor() {
     this.additionalFunctions = {};
     this.stack = [];
@@ -81,4 +81,4 @@ class ScreenManager {
 }
 
 // Create global instance for backward compatibility
-const screenManager = new ScreenManager();
+export const screenManager = new ScreenManager();

@@ -2,7 +2,7 @@
  * This file is written using modern ES6 classes with inheritance.
  */
 
-class Grid {
+export class Grid {
   // Abstract base class - get and set methods should be implemented by subclasses
   get(x, y) {
     throw new Error("get method must be implemented by subclass");
@@ -56,7 +56,7 @@ class Grid {
   };
 }
 
-class BoundedGrid extends Grid {
+export class BoundedGrid extends Grid {
   forEach(f) {
     // f(v,x,y,grid)
     for (let i = 0; i < this.width; i++) {
@@ -98,7 +98,7 @@ class BoundedGrid extends Grid {
   }
 }
 
-class GridWindow extends BoundedGrid {
+export class GridWindow extends BoundedGrid {
   constructor(original, x, y, w, h) {
     super();
     this.original = original;
@@ -117,7 +117,7 @@ class GridWindow extends BoundedGrid {
   }
 }
 
-class VirtualGrid extends Grid {
+export class VirtualGrid extends Grid {
   constructor(original, virtual) {
     super();
     this.original = original;
@@ -138,7 +138,7 @@ class VirtualGrid extends Grid {
   }
 }
 
-class GridFromArray extends BoundedGrid {
+export class GridFromArray extends BoundedGrid {
   constructor(a, w, h) {
     super();
     this.array = a;

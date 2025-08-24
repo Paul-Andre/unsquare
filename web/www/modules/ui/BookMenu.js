@@ -1,6 +1,14 @@
 "use strict";
 
-function load_static_books() {
+import { Level } from '../core/Level.js';
+import { generate_id } from '../utils/helpers.js';
+import { htmlStringToElement } from '../utils/helpers.js';
+import { createLevelIcon } from './icon.js';
+import { editorLevelMenu } from './editorLevelMenu.js';
+import { screenManager } from './ScreenManager.js';
+import { IS_EDITOR } from '../utils/config.js';
+
+export function load_static_books() {
   let books = [];
 
   let bookUrls = [
@@ -40,7 +48,7 @@ function load_static_books() {
 
 let editor_books = [];
 
-function load_editor_books() {
+export function load_editor_books() {
   editor_books = [];
   for (let i = 0; i < localStorage.length; i++) {
     let key = localStorage.key(i);
@@ -55,7 +63,7 @@ function load_editor_books() {
 }
 
 // For use with JSON.stringify
-function book_replacer(key, value) {
+export function book_replacer(key, value) {
   if (value instanceof Level) {
     return value.toJsonObject();
   }
@@ -63,7 +71,7 @@ function book_replacer(key, value) {
 }
 
 // For use with JSON.parse
-function book_reviver(key, value) {
+export function book_reviver(key, value) {
   if (typeof value === "object" && value !== null) {
     if (value.__type__ == "Level") {
       return Level.fromJsonObject(value);
@@ -83,12 +91,12 @@ function book_reviver(key, value) {
   return value;
 }
 
-function save_editor_book(book) {
+export function save_editor_book(book) {
   let key = "editor_" + book.id;
   localStorage.setItem(key, JSON.stringify(book, book_replacer));
 }
 
-function create_empty_book() {
+export function create_empty_book() {
   let book = {
     id: generate_id("book"),
     title: "New Book",
@@ -97,7 +105,7 @@ function create_empty_book() {
   return book;
 }
 
-class BookMenu {
+export class BookMenu {
   constructor() {
     this.books = [];
   }
@@ -203,7 +211,7 @@ let bookTemplate =
   </div>\
 </div>";
 
-function select_book_icon_level(book) {
+export function select_book_icon_level(book) {
   for (let i = 0; i < book.levels.length; i++) {
     let level = book.levels[i];
     if (level.isIcon) {
@@ -216,6 +224,4 @@ function select_book_icon_level(book) {
   return null;
 }
 
-const bookMenu = new BookMenu();
-
-screenManager.additionalFunctions.bookMenu = bookMenu;
+export const bookMenu = new BookMenu();

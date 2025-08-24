@@ -1,6 +1,12 @@
 "use strict";
 
-class Level {
+import { Grid } from './Grid.js';
+import { colorSchemes, colorSchemeByMod } from './ColorScheme.js';
+import { tileShapes } from './tileShapes.js';
+import { compute_operations_for_level, compute_operations, vector_multiply_matrix, vector_simplify_arithmetic, level_get_arithmetic, level_check_solution, vector_sum, get_gaussian_solution_for_level, assert, get_level_full_identifier } from './algo.js';
+import { generate_id } from '../utils/helpers.js';
+
+export class Level {
   constructor() {}
 
   static empty(size) {
@@ -178,7 +184,7 @@ class Level {
   }
 }
 
-function compute_gaussian_solution(level) {
+export function compute_gaussian_solution(level) {
   let sol = get_gaussian_solution_for_level(level);
   if (sol) {
     level.solutionVector = sol;

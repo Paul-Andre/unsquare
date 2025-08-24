@@ -2,7 +2,7 @@
  * This function retrieves the entire info stored in localStorage,
  * concatenates it in a string, and retunrs that string.
  */
-function getStored() {
+export function getStored() {
   var output = "";
   var i;
   var key;
@@ -18,7 +18,7 @@ function getStored() {
   return output;
 }
 
-function displaySaveStr() {
+export function displaySaveStr() {
   var str = getStored();
   encodeSaveStr(str);
 
@@ -27,16 +27,16 @@ function displaySaveStr() {
 }
 
 //Do this
-function encodeSaveStr(str) {
+export function encodeSaveStr(str) {
   return str;
 }
 
 //And this
-function decodeSaveStr(str) {
+export function decodeSaveStr(str) {
   return str;
 }
 
-function importSave() {
+export function importSave() {
   var saveStr = prompt("Paste your save string in the text box below.");
 
   if (saveStr == "") {

@@ -1,6 +1,6 @@
 "use strict";
 
-class ColorScheme {
+export class ColorScheme {
   constructor(name, cells, arithmetic) {
     this.name = name;
     this.cells = cells;
@@ -16,7 +16,7 @@ class ColorScheme {
   }
 }
 
-class BWColorScheme extends ColorScheme {
+export class BWColorScheme extends ColorScheme {
   constructor() {
     super(
       "BW",
@@ -40,7 +40,7 @@ class BWColorScheme extends ColorScheme {
   }
 }
 
-class TriColorScheme extends ColorScheme {
+export class TriColorScheme extends ColorScheme {
   constructor() {
     super(
       "tri",
@@ -65,7 +65,7 @@ class TriColorScheme extends ColorScheme {
   }
 }
 
-class RainbowColorScheme extends ColorScheme {
+export class RainbowColorScheme extends ColorScheme {
   constructor() {
     super(
       "rainbow",
@@ -102,7 +102,7 @@ class RainbowColorScheme extends ColorScheme {
   }
 }
 
-class Rainbow2ColorScheme extends ColorScheme {
+export class Rainbow2ColorScheme extends ColorScheme {
   constructor() {
     super(
       "rainbow2",
@@ -141,24 +141,24 @@ class Rainbow2ColorScheme extends ColorScheme {
 }
 
 // Create instances of color schemes
-const colorSchemes = {
+export const colorSchemes = {
   BW: new BWColorScheme(),
   tri: new TriColorScheme(),
   rainbow: new RainbowColorScheme(),
   rainbow2: new Rainbow2ColorScheme(),
 };
 
-let colorSchemeByMod = {
+export let colorSchemeByMod = {
   [2]: colorSchemes.BW,
   [3]: colorSchemes.tri,
 };
 
-let modular_arithmetic_colors_cells = {
+export let modular_arithmetic_colors_cells = {
   [2]: colorSchemes.BW.cells,
   [3]: colorSchemes.tri.cells,
 };
 
-function get_arithmetic_color(n, arithmetic) {
+export function get_arithmetic_color(n, arithmetic) {
   if (arithmetic.type == "modular") {
     return modular_arithmetic_colors_cells[arithmetic.modulus][n - 1].fill;
   }

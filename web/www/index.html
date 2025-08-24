@@ -31,32 +31,7 @@
       gtag("config", "G-GTG52YV9R0");
     </script>
 
-    <script src="api.js"></script>
-    <script src="Grid.js"></script>
-    <script>
-      var IS_EDITOR = true; /////////whaaaaaa
-
-      const MAX_WIDTH = 504;
-    </script>
-    <!-- Nothing in head should have code that does significant stuff outside of functions. -->
-    <script src="ColorScheme.js"></script>
-    <script src="tileShapes.js"></script>
-    <script src="SquareTileShape.js"></script>
-    <script src="icon.js"></script>
-    <script src="helpers.js"></script>
-    <script src="ScreenManager.js"></script>
-
-    <script src="algo.js"></script>
-    <script src="tote.js"></script>
-
-    <script src="Sortable.js"></script>
-    <script src="BookMenu.js"></script>
-    <script src="drawing.js"></script>
-    <script src="exportSave.js"></script>
-    <script src="Level.js"></script>
-    <script src="analytics.js"></script>
-    <script src="GameState.js"></script>
-    <script src="GameBase.js"></script>
+    <script type="module" src="main.js"></script>
 
     <link
       rel="preload"
@@ -403,28 +378,7 @@
       </div>
     </div>
 
-    <script src="Game.js"></script>
-    <script src="Editor.js"></script>
-    <script src="LevelMenuComponent.js"></script>
-    <script src="editorLevelMenu.js"></script>
-    <script src="GameLevelMenu.js"></script>
-    <script src="customParse.js"></script>
-    <script>
-      function openEditor() {
-        IS_EDITOR = true;
-        screenManager.switchTo("bookMenu");
-      }
 
-      function openPlayerEditor() {
-        IS_EDITOR = true;
-        let level = Level.empty(6);
-        level.index = 0;
-        editor.openLevel(level, {
-          levels: [level],
-          source: "playerEditor",
-        });
-        screenManager.switchTo("editor");
-      }
-    </script>
+
   </body>
 </html>

@@ -1,8 +1,13 @@
 "use strict";
 
+import { GameState } from '../core/GameState.js';
+import { trackLevelStart } from '../utils/analytics.js';
+import { MAX_WIDTH } from '../utils/config.js';
+import { cancelEvent } from '../utils/helpers.js';
+
 /// This is what does the basics of drawing the tiles to the screen.
 ///
-class GameBase {
+export class GameBase {
   constructor(canvasId, divId) {
     this.canvas = document.getElementById(canvasId);
     this.ctx = this.canvas.getContext("2d");

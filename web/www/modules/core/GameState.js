@@ -1,6 +1,8 @@
 "use strict";
 
-class GameState {
+import { compute_operations_for_level, vector_simplify_arithmetic } from './algo.js';
+
+export class GameState {
   constructor(level) {
     const tileStates = level.tiles.clone();
     tileStates.forEachSet(function () {
