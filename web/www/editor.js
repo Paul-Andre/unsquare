@@ -1,10 +1,10 @@
 "use strict";
 
-class Editor extends GameBase {
+class Editor extends GameBase2 {
   constructor(canvasId, divId) {
     super(canvasId, divId);
     this.referenceToOriginalLevel = null;
-    this.runningSolution = null;
+    this.undoList = [];
     
     // Override openLevel to handle editor-specific behavior
     this.openLevel = this.editorOpenLevel.bind(this);
@@ -27,9 +27,14 @@ class Editor extends GameBase {
   }
 
   updateLevelInfo() {
+    // Return early if no game state is loaded yet
+    if (!this.gameState || !this.level) {
+      return;
+    }
+    
     // Note that this modifies the copy of level, not the reference to the original level
-    this.level.tiles = this.tiles;
-    this.level.solutionVector = this.runningSolution;
+    this.level.tiles = this.gameState.tiles;
+    this.level.solutionVector = this.gameState.runningSolution;
     // TODO: ???
     this.level.par = null;
   }
@@ -41,7 +46,9 @@ class Editor extends GameBase {
   }
 
   restoreUndoState(undo) {
-    this.initializeTiles(undo.level, this.book);
+    // Create a new game state from the undo level
+    this.gameState = new GameState(undo.level);
+    this.level = undo.level;
     this.numMoves -= 1;
   }
 
@@ -52,6 +59,15 @@ class Editor extends GameBase {
     };
   }
 
+  undo() {
+    if (this.undoList.length > 0) {
+      const undo = this.undoList.pop();
+      this.level = undo.level;
+      this.gameState = undo.gameState;
+      this.numMoves -= 1;
+    }
+  }
+
   submitSolution() {
     let sol_string = window.prompt("Solution in 01010101010 format");
     let sol = Array.from(sol_string).map((x) => Number(x));
@@ -60,11 +76,17 @@ class Editor extends GameBase {
     this.updateLevelInfo();
     let check = level_check_solution(this.level, sol);
     if (check) {
-      this.saveStateForUndo();
+      // Save current state for undo
+      this.undoList.push({
+        level: this.level.clone(),
+        gameState: this.gameState
+      });
+      
       this.level.solutionVector = sol;
       this.level.solutionType = "submitted";
 
-      this.initializeTiles(this.level, this.book);
+      // Create new game state
+      this.gameState = new GameState(this.level);
     } else {
       alert("Solution not satisfactory");
     }
@@ -74,9 +96,14 @@ class Editor extends GameBase {
     let string = window.prompt("String representing the level (as found in the link's custom param");
     let level = Level.fromCompact(string);
     if (level) {
-      this.saveStateForUndo();
+      // Save current state for undo
+      this.undoList.push({
+        level: this.level.clone(),
+        gameState: this.gameState
+      });
+      
       this.level = level;
-      this.initializeTiles(this.level, this.book);
+      this.gameState = new GameState(this.level);
     } else {
       alert("Could not parse string");
     }
@@ -95,12 +122,17 @@ class Editor extends GameBase {
   }
 
   clear() {
-    this.saveStateForUndo();
-    this.tiles.forEachSet(function () {
+    // Save current state for undo
+    this.undoList.push({
+      level: this.level.clone(),
+      gameState: this.gameState
+    });
+    
+    this.gameState.tiles.forEachSet(function () {
       return 1;
     });
-    let m = this.operations.length;
-    this.runningSolution = new Array(m).fill(0);
+    let m = this.gameState.operations.length;
+    this.gameState.runningSolution = new Array(m).fill(0);
     this.updateGui();
   }
 
@@ -111,8 +143,8 @@ class Editor extends GameBase {
   }
 
   specificOnShow() {
-    if (!vector_equal(this.level.solutionVector, this.runningSolution)) {
-      this.initializeTiles(this.level, this.book);
+    if (!vector_equal(this.level.solutionVector, this.gameState.runningSolution)) {
+      this.gameState = new GameState(this.level);
     }
   }
 
@@ -130,8 +162,8 @@ class Editor extends GameBase {
 
         console.log(grid);
 
-        if (size >= this.tiles.width) {
-          // this.tiles.forEach(function (v, x, y) {
+        if (size >= this.gameState.tiles.width) {
+          // this.gameState.tiles.forEach(function (v, x, y) {
           //   grid.set(x, y, v);
           // });
         } else {
@@ -144,8 +176,8 @@ class Editor extends GameBase {
         this.level.solutionVector = new Array(m).fill(0);
         this.level.solutionType = "confirmed";
 
-        this.initializeTiles(this.level, this.book);
-        //this.tiles = grid;
+        this.gameState = new GameState(this.level);
+        //this.gameState.tiles = grid;
       }
     }
   }
@@ -161,11 +193,11 @@ class Editor extends GameBase {
 
   printFlat() {
     var ret = "";
-    ret += this.tiles.width;
+    ret += this.gameState.tiles.width;
     ret += " ";
-    ret += this.tiles.height;
+    ret += this.gameState.tiles.height;
     ret += "\n";
-    var tiles = this.tiles;
+    var tiles = this.gameState.tiles;
     for (var j = 0; j < tiles.height; j++) {
       for (var i = 0; i < tiles.width; i++) {
         ret += "" + (tiles.get(i, j) - 1);
@@ -178,7 +210,12 @@ class Editor extends GameBase {
   updateGui() {
     this.updateLevelInfo();
 
-    if (this.runningSolution) {
+    // Return early if no game state is loaded yet
+    if (!this.gameState || !this.level) {
+      return;
+    }
+
+    if (this.gameState.runningSolution) {
       let sum = vector_sum(this.level.solutionVector);
       let type = this.level.solutionType;
       this.div.getElementsByClassName("editorBest")[0].innerText = sum + " " + type;
