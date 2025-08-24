@@ -5,9 +5,9 @@ function load_static_books() {
   let books = [];
 
   let bookUrls = [
-    "book1Old.json",
-    "basicBlackWhite.json",
-    "niceLevels.json",
+    "data/book1Old.json",
+    "data/basicBlackWhite.json",
+    "data/niceLevels.json",
   ];
 
   {
