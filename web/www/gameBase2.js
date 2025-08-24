@@ -30,7 +30,7 @@ class GameBase2 {
     // TODO: Make this not use CPU all the time
     this.hidden = true;
     // to make sure we don't requestAnimationFrame if it's already been requested
-    this.numRequested = 0;
+    // Animation system properties
 
     this.firstDemoDrag = {
       start: {
@@ -44,6 +44,7 @@ class GameBase2 {
     };
 
     this.wasPaused = true;
+    this.animationRunning = false;
 
     this.setupEventListeners();
     this.onResize();
@@ -341,6 +342,11 @@ class GameBase2 {
     this.updateGui();
     if (this.level && this.gameState) {
       this.drawCanvas();
+      // Start animation loop if not already running
+      if (!this.animationRunning) {
+        this.animationRunning = true;
+        requestAnimationFrame(() => this.drawCanvas());
+      }
     }
   }
 
@@ -353,87 +359,57 @@ class GameBase2 {
     }
   }
 
-  // Updates the states, doesn't actually draw
-  // returns a boolean, whether things have changed
+  // Simple animation system - returns true if any animations are still running
   updateCanvasAnimations(timestamp) {
-    const previousTimestamp = this.gameState.lastUpdateTimestamp;
-
-    // TODO: technically, this is unsettled_or_changed,
-    // And perhaps it might make sense to return both those variables...
-    let unsettled = false;
-
+    let hasAnimations = false;
+    
+    // Update demo drag animation
     if (this.demoDrag) {
-      //TODO: make it so this doesn't use so much CPU
-      unsettled = true;
-      this.demoDragTime += (timestamp - previousTimestamp) / 2000;
+      hasAnimations = true;
+      this.demoDragTime += (timestamp - this.gameState.lastUpdateTimestamp) / 1000; // 1 second cycle
       this.demoDragTime %= 1;
     }
 
-    this.gameState.tileStates.forEach((v) => {
-      let prevIS = v.insetState;
-      let prevTS = v.transitionState;
-
-      if (v.selected) {
-        v.insetState = 1;
+    // Update tile animations
+    this.gameState.tileStates.forEach((tileState) => {
+      // Update inset state (selection)
+      if (tileState.selected) {
+        tileState.insetState = 1;
       } else {
-        v.insetState = 0;
+        tileState.insetState = 0;
       }
 
-      v.transitionState = Math.min(
-        1,
-        v.transitionState + (timestamp - previousTimestamp) / 200
-        // TODO: calculate actually how many milliseconds this uses
-      );
-
-      if (v.insetState != prevIS) {
-        unsettled = true;
-        console.log("Inset state changed:", prevIS, "->", v.insetState);
-      }
-      if (v.transitionState != 1 && v.transitionState != prevTS) {
-        unsettled = true;
-        console.log("Transition state changed:", prevTS, "->", v.transitionState);
+      // Update transition state (flip animation)
+      if (tileState.transitionState < 1) {
+        hasAnimations = true;
+        // Animate over 300ms
+        tileState.transitionState = Math.min(1, tileState.transitionState + (timestamp - this.gameState.lastUpdateTimestamp) / 300);
       }
     });
+
     this.gameState.lastUpdateTimestamp = timestamp;
-    return unsettled;
+    return hasAnimations;
   }
 
   drawCanvas() {
-    let requested = false;
-
     if (!this.hidden && this.gameState && this.level) {
-      let timestamp = performance.now();
-      //TODO: is document.animationTimeline.currentTime better?
-
-      // Only skip if we've already processed this exact timestamp
-      if (this.gameState.lastUpdateTimestamp === timestamp && !this.wasPaused) {
-        return;
-      }
-
-      if (this.wasPaused) {
-        // Hack so that updateCanvasAnimations doesn't calculated a huge timestamp.
-        // TODO: perhaps, instead do this in places such as when I change tilestate?
-        this.gameState.lastUpdateTimestamp = timestamp;
-      }
-      let unsettled = this.updateCanvasAnimations(timestamp);
+      const timestamp = performance.now();
+      
+      // Update animations
+      const hasAnimations = this.updateCanvasAnimations(timestamp);
+      
+      // Always draw the current state
       this.actuallyDrawCanvas();
-      if (unsettled) {
-        // Debug: log when animations are triggered
-        console.log("Animation triggered, unsettled:", unsettled, "numRequested:", this.numRequested);
-        // Always request animation frame when unsettled, but limit concurrent requests
-        if (this.numRequested < 2) {
-          requestAnimationFrame((timestamp) => {
-            this.numRequested--;
-            this.drawCanvas();
-          });
-          this.numRequested++;
-          requested = true;
-        }
+      
+      // Continue animation loop if there are animations or if we're in the main loop
+      if (hasAnimations || this.animationRunning) {
+        requestAnimationFrame(() => this.drawCanvas());
+      } else {
+        this.animationRunning = false;
       }
     } else {
-      console.log("either hidden or gameState isn't there, not drawing");
+      this.animationRunning = false;
     }
-    this.wasPaused = !requested;
   }
 
   // TODO put these in a better file
