@@ -15,6 +15,8 @@ class Game2 extends GameBase2 {
   restart() {
     this.openLevel(this.level, this.book);
     this.draw();
+    // Force an immediate redraw to ensure canvas updates
+    this.forceRedraw();
   }
 
   isFinished() {
@@ -137,6 +139,8 @@ class Game2 extends GameBase2 {
 
       this.openLevel(nextLevel, this.book);
       this.onShow();
+      // Force redraw to ensure canvas updates
+      this.forceRedraw();
     }
   }
 
@@ -151,6 +155,8 @@ class Game2 extends GameBase2 {
 
       this.openLevel(nextLevel, this.book);
       this.onShow();
+      // Force redraw to ensure canvas updates
+      this.forceRedraw();
     }
   }
 }

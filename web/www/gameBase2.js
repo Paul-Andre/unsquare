@@ -403,7 +403,8 @@ class GameBase2 {
       let timestamp = performance.now();
       //TODO: is document.animationTimeline.currentTime better?
 
-      if (this.gameState.lastUpdateTimestamp === timestamp) {
+      // Only skip if we've already processed this exact timestamp
+      if (this.gameState.lastUpdateTimestamp === timestamp && !this.wasPaused) {
         return;
       }
 
@@ -497,12 +498,20 @@ class GameBase2 {
   onShow() {
     this.hidden = false;
     document.body.style.zoom = '100%';
-    this.draw();
     this.onResize();
+    // Force a redraw after resize
+    this.draw();
   }
 
   onHide() {
     this.hidden = true;
+  }
+
+  forceRedraw() {
+    // Force an immediate redraw regardless of animation state
+    if (this.level && this.gameState) {
+      this.actuallyDrawCanvas();
+    }
   }
 }
 
