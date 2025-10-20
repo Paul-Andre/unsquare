@@ -1,327 +1,452 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, minimum-scale=1"
+    />
     <meta name="apple-mobile-web-app-capable" content="yes" />
-    <title> Unflip </title>
+    <title>Unflip</title>
 
     <link rel="canonical" href="https://www.unflipgame.com/" />
-    <meta name="description"
-    content="The puzzle game about unraveling complex patterns by flipping square areas." />
+    <meta
+      name="description"
+      content="The puzzle game about unraveling complex patterns by flipping square areas."
+    />
 
-    <link rel="stylesheet" type="text/css" href="style3.css">
-    
+    <link rel="stylesheet" type="text/css" href="style3.css" />
+
     <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-GTG52YV9R0"></script>
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-GTG52YV9R0"
+    ></script>
     <script>
       window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-GTG52YV9R0');
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+      gtag("config", "G-GTG52YV9R0");
     </script>
 
-    <script src="api.js"></script>
-    <script src="Grid.js"></script>
+<script>
+    !function(t,e){var o,n,p,r;e.__SV||(window.posthog && window.posthog.__loaded)||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.crossOrigin="anonymous",p.async=!0,p.src=s.api_host.replace(".i.posthog.com","-assets.i.posthog.com")+"/static/array.js",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+".people (stub)"},o="init hi $r kr ui wr Er capture Ri calculateEventProperties Ir register register_once register_for_session unregister unregister_for_session Fr getFeatureFlag getFeatureFlagPayload isFeatureEnabled reloadFeatureFlags updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures on onFeatureFlags onSurveysLoaded onSessionId getSurveys getActiveMatchingSurveys renderSurvey displaySurvey canRenderSurvey canRenderSurveyAsync identify setPersonProperties group resetGroups setPersonPropertiesForFlags resetPersonPropertiesForFlags setGroupPropertiesForFlags resetGroupPropertiesForFlags reset get_distinct_id getGroups get_session_id get_session_replay_url alias set_config startSessionRecording stopSessionRecording sessionRecordingStarted captureException loadToolbar get_property getSessionProperty Cr Tr createPersonProfile Or yr Mr opt_in_capturing opt_out_capturing has_opted_in_capturing has_opted_out_capturing get_explicit_consent_status is_capturing clear_opt_in_out_capturing Pr debug L Rr getPageViewId captureTraceFeedback captureTraceMetric gr".split(" "),n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);
+    posthog.init('phc_xWxpfc04UVTMY3p72Nfhg3lckzux1BWZCf795XapDLH', {
+        api_host: 'https://us.i.posthog.com',
+        defaults: '2025-05-24',
+        //person_profiles: 'identified_only', // or 'always' to create profiles for anonymous users as well
+        person_profiles: 'always', // or 'always' to create profiles for anonymous users as well
+    })
+</script>
+
+    <script type="module" src="main.js"></script>
+
+    <link
+      rel="preload"
+      href="ss3/SourceSans3-Italic-VariableFont_wght.ttf"
+      as="font"
+      crossorigin="anonymous"
+    />
+    <link
+      rel="preload"
+      href="ss3/SourceSans3-VariableFont_wght.ttf"
+      as="font"
+      crossorigin="anonymous"
+    />
+
     <script>
-      var IS_EDITOR = true; /////////whaaaaaa
-
-      const MAX_WIDTH = 504;
-
+      if (location.hostname === "localhost") {
+        const script = document.createElement('script');
+        script.src = "https://livejs.com/live.js";
+        document.head.appendChild(script);
+      }
     </script>
-    <!-- Nothing in head should have code that does significant stuff outside of functions. --> 
-    <script src="colorSchemes.js"></script>
-    <script src="tileShapes.js"></script>
-    <script src="square.js"></script>
-    <script src="icon.js"></script>
-    <script src="helpers.js"></script>
-    <script src="screenManager.js"></script>
-
-    <script src="algo.js"></script>
-    <script src="tote.js"> </script>
-
-    <script src="Sortable.js"></script>
-    <script src="bookMenu.js"></script>
-    <script src="drawing.js"></script>
-    <script src="exportSave.js"></script>
-    <script src="level.js"></script>
-    <script src="analytics.js"></script>
-    <script src="gameState.js"></script>
-    <script src="gameBase.js"></script>
-
-    <link rel="preload" href="ss3/SourceSans3-Italic-VariableFont_wght.ttf" as="font" crossorigin="anonymous">
-    <link rel="preload" href="ss3/SourceSans3-VariableFont_wght.ttf" as="font" crossorigin="anonymous">
-
-    <!-- <script type="text/javascript" src="https://livejs.com/live.js"></script> -->
-
 
   </head>
 
   <body>
+    <div class="screen_container">
+      <div class="variant_container">
+        <!-- add variant_container? -->
 
-    <div class="screen_container"> <div class="variant_container">
-      <!-- add variant_container? -->
+        <section id="opening_instructions" class="screen variant_shown">
+          <div class="header">
+            <h1 style="text-align: center;">Unflip // Unsquare</h1>
+          </div>
+          <div class="content">
+            <div class="variant_container" id="onboardingSlides">
+              <div class="variant_shown">
+                <p> How to play: </p>
+                <img src="drag.gif" alt="Drag to flip" />
+                <p>Drag from one corner of a <strong>square area</strong> to the other to flip the tiles.</p>
+          <div class="footer">
+            <!-- <button id="onboardingPrevBtn" onclick="onboardingPrev();">&#60; Previous</button> -->
+            <button id="onboardingNextBtn" onclick="onboardingNext();" style="float: right">Next &#62;</button>
+          </div>
 
-      <section id="home" class="screen variant_shown">
+              </div>
+              <div>
+                <img src="flip.gif" alt="Colors flip"" />
+                <p>White tiles flip to black, and black tiles flip to white.</p>
+          <div class="footer">
+            <button id="onboardingPrevBtn" onclick="onboardingPrev();">&#60; Previous</button>
+            <button id="onboardingNextBtn" onclick="onboardingNext();" style="float: right">Next &#62;</button>
+          </div>
 
-        <h1>
-          Unflip
-        </h1>
-        <div class="wrapper">
+              </div>
+              <div>
+                <img src="to_win.png" alt="Make all white" style="display: block; margin: 0 auto;" />
+                <p>Make all tiles white to win!</p>
+          <div class="footer">
+            <button id="onboardingPrevBtn" onclick="onboardingPrev();">&#60; Previous</button>
+            <button id="onboardingNextBtn" onclick="onboardingNext();" style="float: right">Play!</button>
+          </div>
 
-          <!-- <button onclick="IS_EDITOR=true; screenManager.switchTo('bookMenu');" type="button"> -->
-          <!--   Editor -->
-          <!-- </button> -->
-          <!-- <button class="" onclick="screenManager.switchTo('options');" type="button"> -->
-          <!--   Options -->
-          <!-- </button> -->
+              </div>
+            </div>
+          </div>
+          
+        </section>
 
-          <!-- <button class="" onclick="screenManager.switchTo('about');" type="button"> -->
-          <!--   Credits -->
-          <!-- </button> -->
-        </div>
+        <section id="home" class="screen">
+          <h1>Unflip</h1>
+          <div class="wrapper">
+          </div>
 
-
-        <h2>
-          Instructions:
-        </h2>
-        <p>
-        Select square areas of size 2x2 or larger to invert the colors of the tiles.
-        </p>
-        <p>
-        Make all tiles white to win!
-        </p>
-          <button onclick="IS_EDITOR=false; screenManager.switchTo('gameLevelMenu');" id="homePlayButton" class="action" type="button" disabled> 
-            loading... <!-- Start Game -->
+          <h2>Instructions:</h2>
+          <p>
+            Select square areas of size 2x2 or larger to invert the colors of
+            the tiles.
+          </p>
+          <p>Make all tiles white to win!</p>
+          <button
+            onclick="IS_EDITOR=false; screenManager.switchTo('gameLevelMenu');"
+            id="homePlayButton"
+            class="action"
+            type="button"
+            disabled
+          >
+            loading...
+            <!-- Start Game -->
           </button>
           &ensp;
-          <button onclick="openPlayerEditor()">
-            Level Editor
-          </button>
+          <button onclick="openPlayerEditor()">Level Editor</button>
 
-          <form style="display: inline" target="_blank" action="https://discord.gg/Hg6zVmTJeP" method="get">
-            <button class="discord_button" >Discord</button>
+          <form
+            style="display: inline"
+            target="_blank"
+            action="https://discord.gg/Hg6zVmTJeP"
+            method="get"
+          >
+            <button class="discord_button">Discord</button>
           </form>
 
-        <img src="demo_2_3.gif" alt="Demo gif" width="484" height="484"/>
+          <img src="demo_2_3.gif" alt="Demo gif" width="484" height="484" />
+
+          <br />
+          <footer>
+            <!-- <a href="previous_versions"> -->
+            <!--   previous versions -->
+            <!-- </a> -->
+            <p class="copyright">
+              &copy; 2024 Paul-Andre Henegar. All rights reserved.
+            </p>
+          </footer>
+        </section>
+
+        <section id="options">
+          <button onclick="screenManager.goBack();" style="float: left">
+            Back
+          </button>
+        </section>
+
+        <section id="game" class="screen">
+          <header>
+            <div class="" style="float: left; width: 75%">
+              <span>
+                <span class="title"> Unflip &zwnj;</span>
+                <span id="LevelIndicator">Level 1</span>
+              </span>
+
+              <p id="TextShower" class="textShower">
+                Pull from one corner of the square to the other.
+              </p>
+              <p id="Debugger"></p>
+              <button onclick="screenManager.goBack();">&#8592; All Levels</button>
+            </div>
+
+            <button
+              onclick="screenManager.switchTo('instructions');"
+              style="float: right"
+            >
+              ?
+            </button>
+
+            <div style="float: right; width: 25%" class="IndicContainer">
+              <div class="indicator" id="BestIndicator">
+                best: <span class="bestContent"> </span>
+              </div>
+              <div class="indicator parContentInclusive" id="ParIndicator">
+                par:
+              </div>
+              <div class="indicator" id="MovesIndicator">
+                moves: <span class="movesContent"> </span>
+              </div>
+            </div>
+
+            <div style="clear: both; bottom: 0px">
+              <!-- <button onclick="screenManager.goBack();" style="float:left">&#8592; Levels</button> -->
+              <!--<button onclick="share();" style="float:left" id="inGameShareButton" > &#9733; Share</button>-->
+              <button
+                onclick="game.restart();"
+                style="float: right"
+                class="restart_button"
+              >
+                ⟳ Restart
+              </button>
+              <button onclick="game.undo();" style="float: right">
+                ⤺ Undo
+              </button>
+            </div>
+          </header>
+          <div class="content">
+            <div class="finishedLevel" style="display: none">
+              <!-- <button onclick="game.restart();" >⟳ Restart</button> -->
+
+              <!-- TODO: Check if this workds properly on different devices -->
+              <button
+                id="finishedLevelNextButton"
+                onclick="nextLevel();"
+                ontouchend="nextLevel();"
+                style="touch-action: none"
+              >
+                Next &#62;
+              </button>
+            </div>
+
+            <div class="finishedGame" style="display: none">
+              <!-- <button onclick="game.restart();" >⟳ Restart</button> -->
+              <h2>Congratulations! You finished the game!</h2>
+              <p>You can:</p>
+              <ul>
+                <li>
+                  Create and share your own levels, using the level editor
+                  (found from main menu)
+                </li>
+                <li>
+                  Leave an email to hear about further updates (more levels,
+                  daily levels, 3 color levels):
+                  <a href="https://forms.gle/Gn5qftq4MvhvGqfa7">
+                    https://forms.gle/Gn5qftq4MvhvGqfa7
+                  </a>
+                </li>
+                <li>
+                  Leave a comment or suggestion:
+                  <a href="https://forms.gle/y5Rx7UQdy5qNH2946">
+                    https://forms.gle/y5Rx7UQdy5qNH2946
+                  </a>
+                </li>
+                <!-- <li>Leave any comments or suggestions </li> -->
+              </ul>
+            </div>
+
+            <div class="interstitialMessage" style="display: none">
+              <p>Did you know you can create your own levels?</p>
+            </div>
+
+            <canvas
+              id="gameCanvas"
+              class="gameCanvas"
+              width="30px"
+              height="30px"
+            ></canvas>
+          </div>
+          <div class="footer">
+            <button id="prevButton" onclick="prevLevel();">&#60; Prev</button>
+            <button id="nextButton" onclick="nextLevel();" style="float: right">
+              Next &#62;
+            </button>
+          </div>
+        </section>
+
+        <section id="editor" class="screen">
+          <div class="header">
+            <div style="clear: both; bottom: 0px">
+              <button onclick="editor.saveAndReturn();" style="float: left">
+                Done
+              </button>
+              <button onclick="screenManager.goBack();" style="float: left">
+                Cancel
+              </button>
+
+              <button onclick="editor.undo();" style="float: right">
+                Undo
+              </button>
+              <button onclick="editor.clear();" style="float: right">
+                Clear
+              </button>
+              <!-- <button onclick="editor.saveLevel();" style="float:right;">Save</button> -->
+              <button onclick="editor.promptSize();" style="float: right">
+                Change size
+              </button>
+
+              <!-- <button onclick="editor.printFlat();" style="float:right;">Print Flat</button> -->
+
+              <!-- <button onclick="editor.submitSolution();" style="float:right;">Input Solution</button> -->
+              <button onclick="editor.submitCompact();" style="float: right">
+                Input String
+              </button>
+              <button onclick="editor.displayShare();" style="float: right">
+                Share Link
+              </button>
+              <button onclick="editor.play();" style="float: right">
+                Play
+              </button>
+
+              best: <span class="editorBest"> </span>
+            </div>
+          </div>
+          <div class="content">
+            <canvas id="editorCanvas" class="gameCanvas"></canvas>
+          </div>
+        </section>
+
+        <section id="editorLevelMenu" class="screen">
+          <div class="header">
+            <div class="IndicContainer" id="statsIndicator"></div>
+            <button onclick="screenManager.goBack();">&#8592; Menu</button>
+            <button
+              onclick="editorLevelMenu.displayBookJson();"
+              style="float: right"
+            >
+              To JSON
+            </button>
+            <button onclick="editorLevelMenu.newLevel();" style="float: right">
+              Add level
+            </button>
+            <button
+              onclick="editorLevelMenu.toggleDelete();"
+              style="float: right"
+              class="deleteButton"
+            >
+              Delete
+            </button>
+            <button
+              onclick="editorLevelMenu.toggleSelectIcon();"
+              style="float: right"
+            >
+              Select Book Icon
+            </button>
+            <button
+              onclick="editorLevelMenu.changeBookTitle();"
+              style="float: right"
+            >
+              Change Book Title
+            </button>
+          </div>
+
+          <div id="iconContainer" class="content"></div>
+          <div class="footer"></div>
+        </section>
+
+        <section id="gameLevelMenu" class="screen">
+          <div class="header">
+          <div class="header">
+            <h1 style="text-align: center;">Unflip // Unsquare</h1>
 
 
-        <br>
-        <footer> 
-        <!-- <a href="previous_versions"> -->
-        <!--   previous versions -->
-        <!-- </a> -->
-        <p class="copyright">
-        &copy; 2024 Paul-Andre Henegar. All rights reserved.
-        </p>
-        </footer>
-      </section>
+          <div style="display: flex; justify-content: center; gap: 1em; margin-bottom: 1em;">
 
-      <section id="options"> 
-            <button onclick="screenManager.goBack();" style="float:left">Back</button>
-      </section>
+            <button onclick="screenManager.switchTo('opening_instructions');"
+                                                            >Instructions</button>
 
 
-      <section id="game" class="screen">
-        <header>
-          <div class="" style="float: left; width: 75%">
-            <span> <span class="title"> Unflip &zwnj;</span>  <span id="LevelIndicator">Level 1</span> </span>
+            <form
+              style="display: inline"
+              target="_blank"
+              action="https://discord.gg/Hg6zVmTJeP"
+              method="get"
+            >
+              <button class="discord_button">Discord</button>
+            </form>
+            <button onclick="openPlayerEditor()">Create Your Own!</button>
+          </div>
+            
+          </div>
+            <div class="IndicContainer" id="statsIndicator"></div>
+            <h2>All Levels:</h2>
+            <!-- <button onclick="screenManager.goBack();">&#8592; Menu</button> -->
+          </div>
 
-            <p id="TextShower" class="textShower">  Pull from one corner of the square to the other. </p>
-            <p id="Debugger"> </p>
+          <div id="iconContainer" class="content"></div>
+          <div class="footer"></div>
+        </section>
+
+        <section id="bookMenu" class="screen">
+          <div class="header">
+            <h1>Puzzle Books:</h1>
             <button onclick="screenManager.goBack();">&#8592; Menu</button>
           </div>
+          <div id="bookContainer" class="content"></div>
+          <div class="footer">
+            <br />
+            <button onclick="displaySaveStr();" style="float: right">
+              Export save
+            </button>
+            <button onclick="importSave();" style="float: right">
+              Import save
+            </button>
 
-          <button onclick="screenManager.switchTo('instructions');" style="float:right;">?</button>
+            <button onclick="bookMenu.addFromJson();" style="float: right">
+              Add from json
+            </button>
 
-          <div style="float: right; width:25%;" class="IndicContainer">
-            <div class="indicator" id="BestIndicator" > best: <span class="bestContent"> </span></div>
-            <div class="indicator parContentInclusive" id="ParIndicator" > par: </div>
-            <div class="indicator" id="MovesIndicator"> moves: <span class="movesContent"> </span> </div>
+            <button onclick="bookMenu.newBook();" style="float: right">
+              Add book
+            </button>
           </div>
+        </section>
 
-          <div style="clear:both; bottom:0px">
-            <!-- <button onclick="screenManager.goBack();" style="float:left">&#8592; Levels</button> -->
-            <!--<button onclick="share();" style="float:left" id="inGameShareButton" > &#9733; Share</button>-->
-            <button onclick="game.restart();" style="float:right;" class="restart_button">⟳ Restart</button>
-            <button onclick="game.undo();" style="float:right;">⤺ Undo</button>
+        <section id="instructions" class="">
+          <button onclick="screenManager.goBack();">&#8592; Back</button>
+          <h1>Instructions</h1>
+          <p>
+            <!-- TODO: make two different screens, one for the mechanic, the other for the par/undo scren -->
+            The goal of the game is to turn all tiles white.
+            <!-- Some images of what that looks like -->
+          </p>
+          <p>
+            Drag from one corner to the opposite corner of a square area of size
+            2x2 or more to invert the colors (black turns white and white turns
+            black)
+          </p>
+          <img
+            src="demo_2_3.gif"
+            alt="Demo gif"
+            width="484"
+            height="484"
+            style="height: auto; width: 100%"
+          />
 
-          </div>
-        </header>
-        <div class="content" >
-          <div class="finishedLevel"  style="display: none;" >
-            <!-- <button onclick="game.restart();" >⟳ Restart</button> -->
+          <p>
+            "Par" is the minimum number of moves needed to solve a level. Use it
+            as a hint or as an added challenge.
+          </p>
 
-            <!-- TODO: Check if this workds properly on different devices -->
-            <button id="finishedLevelNextButton" onclick="nextLevel();"  ontouchend="nextLevel();" style="touch-action: none;">Next &#62;</button>
-
-          </div>
-
-          <div class="finishedGame"  style="display: none;" >
-            <!-- <button onclick="game.restart();" >⟳ Restart</button> -->
-            <h2>
-            Congratulations! You finished the game!
-            </h2>
-            <p>
-            You can:
-            </p>
-            <ul>
-              <li> Create and share your own levels, using the level editor (found from main menu) </li>
-              <li>Leave an email to hear about further updates (more levels, daily levels, 3 color levels): <a href="https://forms.gle/Gn5qftq4MvhvGqfa7"> https://forms.gle/Gn5qftq4MvhvGqfa7 </a> </li>
-              <li>Leave a comment or suggestion: <a href="https://forms.gle/y5Rx7UQdy5qNH2946">  https://forms.gle/y5Rx7UQdy5qNH2946 </a> </li>
-              <!-- <li>Leave any comments or suggestions </li> -->
-            </ul>
-
-          </div>
-
-          <div class="interstitialMessage"  style="display: none;" >
-            <p>
-            Did you know you can create your own levels?
-            </p>
-          </div>
-
-          <canvas id="gameCanvas" class="gameCanvas"  width="30px" height="30px"></canvas>
-        </div>
-        <div class="footer">
-          <button id="prevButton" onclick="prevLevel();">&#60; Prev</button>
-          <button id="nextButton" onclick="nextLevel();" style="float:right;">Next &#62;</button>
-        </div>
-      </section>
+          <p>
+            Use "Undo" to undo the last move and "Restart" to restart the level.
+          </p>
+          <!-- Need to change font; need new image; need images for invalid moves -->
+          <button onclick="screenManager.goBack();" style="float: left">
+            &#8592; Back
+          </button>
+        </section>
+      </div>
+    </div>
 
 
-      <section id="editor"  class="screen">
-        <div class="header">
-          <div style="clear:both; bottom:0px">
-            <button onclick="editor.saveAndReturn();" style="float:left">Done</button>
-            <button onclick="screenManager.goBack();" style="float:left">Cancel</button>
-
-            <button onclick="editor.undo();" style="float:right;">Undo</button>
-            <button onclick="editor.clear();" style="float:right;">Clear</button>
-            <!-- <button onclick="editor.saveLevel();" style="float:right;">Save</button> -->
-            <button onclick="editor.promptSize();" style="float:right;">Change size</button>
-
-            <!-- <button onclick="editor.printFlat();" style="float:right;">Print Flat</button> -->
-
-            <!-- <button onclick="editor.submitSolution();" style="float:right;">Input Solution</button> -->
-            <button onclick="editor.submitCompact();" style="float:right;">Input String</button>
-            <button onclick="editor.displayShare();" style="float:right;">Share Link</button>
-            <button onclick="editor.play();" style="float:right;">Play</button>
-
-            best: <span class="editorBest"> </span>
-          </div>
-        </div>
-        <div class="content">
-          <canvas id="editorCanvas" class="gameCanvas"></canvas>
-        </div>
-      </section>
-
-
-      <section id="editorLevelMenu" class="screen">
-        <div class="header">
-          <div class="IndicContainer" id="statsIndicator"></div>
-          <button onclick="screenManager.goBack();">&#8592; Menu</button>
-          <button onclick="editorLevelMenu.displayBookJson();" style="float:right;">To JSON</button>
-          <button onclick="editorLevelMenu.newLevel();" style="float:right;">Add level</button>
-          <button onclick="editorLevelMenu.toggleDelete();" style="float:right;" class="deleteButton">Delete</button>
-          <button onclick="editorLevelMenu.toggleSelectIcon();" style="float:right;">Select Book Icon</button>
-          <button onclick="editorLevelMenu.changeBookTitle();" style="float:right;">Change Book Title</button>
-        </div>
-
-        <div id="iconContainer" class="content">
-        </div>
-        <div class="footer">
-        </div>
-      </section>
-
-      <section id="gameLevelMenu" class="screen">
-        <div class="header">
-          <div class="IndicContainer" id="statsIndicator"></div>
-          <h2>Levels:</h2>
-          <button onclick="screenManager.goBack();">&#8592; Menu</button>
-        </div>
-
-        <div id="iconContainer" class="content">
-        </div>
-        <div class="footer">
-        </div>
-      </section>
-
-      <section id="bookMenu" class="screen">
-        <div class="header">
-          <h1>Puzzle Books:</h1>
-          <button onclick="screenManager.goBack();">&#8592; Menu</button>
-        </div>
-        <div id="bookContainer" class="content">
-
-        </div>
-        <div class="footer">
-          <br>
-          <button onclick="displaySaveStr();" style="float:right;">Export save</button>
-          <button onclick="importSave();" style="float:right;">Import save</button>
-
-          <button onclick="bookMenu.addFromJson();" style="float:right;">Add from json</button>
-
-          <button onclick="bookMenu.newBook();" style="float:right;">Add book</button>
-        </div>
-      </section>
-
-
-      <section id="instructions" class="">
-        <button onclick="screenManager.goBack();" >&#8592; Back</button>
-        <h1>
-
-          Instructions
-        </h1>
-        <p>
-        <!-- TODO: make two different screens, one for the mechanic, the other for the par/undo scren -->
-        The goal of the game is to turn all tiles white.
-        <!-- Some images of what that looks like -->
-        </p>
-        <p>
-        Drag from one corner to the opposite corner of a square area of size 2x2 or more to invert the colors (black turns white and white turns black)
-        </p>
-        <img src="demo_2_3.gif" alt="Demo gif" width="484" height="484" style="height: auto; width: 100%"/>
-
-        <p>
-        Use "Undo" to undo the last move and "Restart" to restart the level.
-        </p>
-
-        <p>
-        "Par" is the minimum number of moves needed to solve a level. Use it as a hint or as an added challenge.
-        </p>
-        <!-- Need to change font; need new image; need images for invalid moves -->
-        <button onclick="screenManager.goBack();" style="float:left;">&#8592; Back</button>
-      </section>
-
-
-      </div></div>
-
-
-
-    <script src="gameBase2.js"></script>
-    <script src="game2.js"></script>
-    <script src="editor.js"></script>
-    <script src="activateLevelMenu.js"></script>
-    <script src="editorLevelMenu.js"></script>
-    <script src="gameLevelMenu.js"></script>
-    <script src="customParse.js"></script>
-    <script>
-      function openEditor() {
-          IS_EDITOR=true; screenManager.switchTo('bookMenu');
-      }
-
-      function openPlayerEditor() {
-        IS_EDITOR=true; 
-        let level = Level.empty(6);
-        level.index = 0
-        editor.openLevel(level, {
-          levels: [level],
-          source: "playerEditor",
-        });
-        screenManager.switchTo('editor');
-      }
-    </script>
 
   </body>
-
 </html>
