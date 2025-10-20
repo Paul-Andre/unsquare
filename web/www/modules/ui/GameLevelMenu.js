@@ -78,4 +78,4 @@ export class GameLevelMenu {
 }
 
 // Create global instance
-export const gameLevelMenuInstance = new GameLevelMenu();
+export const gameLevelMenu = new GameLevelMenu();

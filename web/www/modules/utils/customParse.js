@@ -1,4 +1,7 @@
-export function parseCustomLevel() {
+import { Level } from '../core/Level.js';
+import { screenManager } from '../ui/ScreenManager.js';
+
+export function parseCustomLevel(game) {
   let customLevelString = new URLSearchParams(location.search).get("custom");
   if (customLevelString !== null) {
     let customLevel = Level.fromCompact(customLevelString);

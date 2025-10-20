@@ -3,7 +3,7 @@ import { Game } from './modules/game/Game.js';
 import { Editor, editor } from './modules/game/Editor.js';
 import { ScreenManager, screenManager } from './modules/ui/ScreenManager.js';
 import { BookMenu, bookMenu } from './modules/ui/BookMenu.js';
-import { GameLevelMenu, gameLevelMenuInstance } from './modules/ui/GameLevelMenu.js';
+import { GameLevelMenu, gameLevelMenu } from './modules/ui/GameLevelMenu.js';
 import { LevelMenuComponent } from './modules/ui/LevelMenuComponent.js';
 import { editorLevelMenu } from './modules/ui/editorLevelMenu.js';
 import { calculateStates } from './modules/ui/LevelMenuComponent.js';
@@ -27,7 +27,8 @@ window.game = new Game("gameCanvas", "game");
 window.editor = editor;
 window.screenManager = screenManager;
 window.bookMenu = bookMenu;
-window.gameLevelMenuInstance = gameLevelMenuInstance;
+window.gameLevelMenu = gameLevelMenu;
+window.editorLevelMenu = editorLevelMenu;
 
 // Set up screen manager additional functions
 window.screenManager.additionalFunctions.editorLevelMenu = editorLevelMenu;
@@ -79,6 +80,6 @@ window.openPlayerEditor = function() {
 window.screenManager.additionalFunctions.game = window.game;
 
 // Parse custom level if present in URL
-parseCustomLevel();
+parseCustomLevel(window.game);
 
 console.log("Application initialized with modules");

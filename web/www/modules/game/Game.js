@@ -3,6 +3,7 @@
 import { GameBase } from './GameBase.js';
 import { vector_sum, vector_add, vector_simplify_arithmetic, level_get_arithmetic } from '../core/algo.js';
 import { trackLevelEnd } from '../utils/analytics.js';
+import { gameLevelMenu } from '../ui/GameLevelMenu.js';
 
 export class Game extends GameBase {
   constructor(canvasId, divId) {
@@ -92,12 +93,12 @@ export class Game extends GameBase {
       save_editor_book(this.book);
     }
 
-    let prevBest = gameLevelMenuInstance.getBestNumMoves(this.level);
+    let prevBest = gameLevelMenu.getBestNumMoves(this.level);
 
     let numMoves = this.gameState.numMoves;
 
     if (prevBest === null || numMoves < prevBest) {
-      gameLevelMenuInstance.setBestNumMoves(this.level, numMoves);
+      gameLevelMenu.setBestNumMoves(this.level, numMoves);
     }
 
     // TODO: make sure this isn't sent excessively for some reason.
@@ -109,7 +110,7 @@ export class Game extends GameBase {
 
   getCurrentBest() {
     if (this.level) {
-      return gameLevelMenuInstance.getBestNumMoves(this.level);
+      return gameLevelMenu.getBestNumMoves(this.level);
     }
     return null;
   }

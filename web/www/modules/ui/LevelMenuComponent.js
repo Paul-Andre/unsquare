@@ -4,6 +4,10 @@ import { drawIcon } from './icon.js';
 import { htmlStringToElement } from '../utils/helpers.js';
 import { vector_sum } from '../core/algo.js';
 import { screenManager } from './ScreenManager.js';
+import { gameLevelMenu } from './GameLevelMenu.js';
+import { Level } from '../core/Level.js';
+import Sortable from './Sortable.js';
+
 
 // Level state constants to replace magic numbers
 export const LEVEL_STATES = {
@@ -339,7 +343,7 @@ export class LevelMenuComponent {
   // TODO: put this in "subclass"
   clearAllBests() {
     for (let i = 0; i < this.book.levels.length; i++) {
-      gameLevelMenuInstance.clearBestNumMoves(this.book.levels[i]);
+      gameLevelMenu.clearBestNumMoves(this.book.levels[i]);
     }
     this.displayIcons();
   }
