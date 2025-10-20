@@ -60,3 +60,9 @@ Add discord logo + some bug fixes
 30 Sep 2024
 0.5.7
 small bug fix
+
+20 Oct 2025
+0.6.0
+Refactor with the help of Cursor
+Add blue box
+When you open the page you get instruction screens.
