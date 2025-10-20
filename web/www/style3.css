@@ -449,7 +449,7 @@ footer a {
 }
 
 button.discord_button {
-  background: white url("discord-mark-blue.svg") no-repeat center right;
+  background: white url("discord-mark-grey.svg") no-repeat center right;
   background-position: right 4px center;
   background-size: 28px;
   padding-right: 38px;

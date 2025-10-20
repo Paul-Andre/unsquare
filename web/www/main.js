@@ -112,20 +112,28 @@ console.log("Application initialized with modules");
     showSlide(currentSlideIndex - 1);
   };
 
+  let has_already_went_to_first_level = false;
+
   window.onboardingNext = function() {
     if (currentSlideIndex === slides.length - 1) {
-      try { localStorage.setItem(ONBOARDING_LS_KEY, '1'); } catch (e) {}
-      // Switch to gameLevelMenu and then right after to game in order to have is
-      // in the history stack.
-      screenManager.switchTo('gameLevelMenu');
-      let book = gameLevelMenu.levelMenu.book;
-      window.game.openLevel(book.levels[0], book);
-      screenManager.switchTo("game");
+      //try { localStorage.setItem(ONBOARDING_LS_KEY, '1'); } catch (e) {}
+      if (has_already_went_to_first_level) {
+        screenManager.switchTo('gameLevelMenu');
+      } else {
+        // Switch to gameLevelMenu and then right after to game in order to have is
+        // in the history stack.
+        screenManager.switchTo('gameLevelMenu');
+        let book = gameLevelMenu.levelMenu.book;
+        window.game.openLevel(book.levels[0], book);
+        screenManager.switchTo("game");
+        has_already_went_to_first_level = true;
+      }
 
       return;
     }
     showSlide(currentSlideIndex + 1);
   };
+
 
   // Register screen lifecycle to reset slides when shown
   screenManager.additionalFunctions.opening_instructions = {

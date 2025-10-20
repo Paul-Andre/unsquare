@@ -56,7 +56,14 @@
       crossorigin="anonymous"
     />
 
-    <!-- <script type="text/javascript" src="https://livejs.com/live.js"></script> -->
+    <script>
+      if (location.hostname === "localhost") {
+        const script = document.createElement('script');
+        script.src = "https://livejs.com/live.js";
+        document.head.appendChild(script);
+      }
+    </script>
+
   </head>
 
   <body>
@@ -167,7 +174,7 @@
                 Pull from one corner of the square to the other.
               </p>
               <p id="Debugger"></p>
-              <button onclick="screenManager.goBack();">&#8592; Menu</button>
+              <button onclick="screenManager.goBack();">&#8592; All Levels</button>
             </div>
 
             <button
@@ -348,9 +355,28 @@
           <div class="header">
           <div class="header">
             <h1 style="text-align: center;">Unflip // Unsquare</h1>
+
+
+          <div style="display: flex; justify-content: center; gap: 1em; margin-bottom: 1em;">
+
+            <button onclick="screenManager.switchTo('opening_instructions');"
+                                                            >Instructions</button>
+
+
+            <form
+              style="display: inline"
+              target="_blank"
+              action="https://discord.gg/Hg6zVmTJeP"
+              method="get"
+            >
+              <button class="discord_button">Discord</button>
+            </form>
+            <button onclick="openPlayerEditor()">Create Your Own!</button>
+          </div>
+            
           </div>
             <div class="IndicContainer" id="statsIndicator"></div>
-            <h2>Levels:</h2>
+            <h2>All Levels:</h2>
             <!-- <button onclick="screenManager.goBack();">&#8592; Menu</button> -->
           </div>
 
@@ -405,12 +431,12 @@
           />
 
           <p>
-            Use "Undo" to undo the last move and "Restart" to restart the level.
+            "Par" is the minimum number of moves needed to solve a level. Use it
+            as a hint or as an added challenge.
           </p>
 
           <p>
-            "Par" is the minimum number of moves needed to solve a level. Use it
-            as a hint or as an added challenge.
+            Use "Undo" to undo the last move and "Restart" to restart the level.
           </p>
           <!-- Need to change font; need new image; need images for invalid moves -->
           <button onclick="screenManager.goBack();" style="float: left">
