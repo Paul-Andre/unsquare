@@ -15,6 +15,9 @@ body {
   line-height: 1.2;
   font-size: 20px;
 }
+p {
+    font-size: 1.2em;
+}
 input,
 button,
 textarea,
@@ -158,29 +161,7 @@ section#resetScreen .header {
 
 /** ------------end of containers------------- **/
 
-/** Buttons **/
 
-button,
-.level_icon {
-  background: white;
-  border: solid 2px var(--border_gray);
-  margin: 2px;
-  /*box-shadow: 1px 1px #9b9b9b;*/
-  color: var(--black);
-}
-
-.level_icon {
-  vertical-align: top;
-}
-
-button:hover,
-.level_icon:hover {
-  background: white;
-  border: solid 2px #6b6762;
-  margin: 2px;
-  /*box-shadow: 1px 1px #555555;*/
-  color: var(--black);
-}
 
 .level_icon:before {
   content: "";
@@ -241,12 +222,6 @@ button:hover,
   box-shadow: inset 0px 0px 20px 0px var(--gold);
 }
 
-button:disabled,
-button[disabled] {
-  background: var(--inactive_background);
-  border-color: var(--inactive_border);
-  color: var(--inactive_text);
-}
 
 #iconContainer {
   /*text-align: center;*/
@@ -274,6 +249,31 @@ div#iconContainer.selectingIcon .level_icon:before {
   touch-action: none;
 }
 
+
+/** Buttons **/
+
+button,
+.level_icon {
+  background: white;
+  border: solid 2px var(--border_gray);
+  margin: 2px;
+  /*box-shadow: 1px 1px #9b9b9b;*/
+  color: var(--black);
+}
+
+.level_icon {
+  vertical-align: top;
+}
+
+button:hover,
+.level_icon:hover {
+  background: white;
+  border: solid 2px #6b6762;
+  margin: 2px;
+  /*box-shadow: 1px 1px #555555;*/
+  color: var(--black);
+}
+
 button.action {
   font-size: 125%;
   padding: 0.5em 1em;
@@ -294,6 +294,15 @@ button.in_yo_face {
   border-color: #4fb6ff;
   animation: huge-pulse-animation 2s infinite;
 }
+
+
+button:disabled,
+button[disabled] {
+  background: var(--inactive_background);
+  border-color: var(--inactive_border);
+  color: var(--inactive_text);
+}
+
 
 @keyframes pulse-animation {
   0% {
@@ -366,7 +375,7 @@ section header {
 }
 
 .variant_container {
-  position: relative;
+   position: relative;
   height: 100%;
   width: 100%;
 }
@@ -374,15 +383,19 @@ section header {
 .variant_container > * {
   /* background: red; */
   display: none;
+
+}
+
+.variant_container > .variant_shown {
+  display: block;
+}
+
+.screen {
   position: absolute;
   left: 0;
   right: 0;
   width: 100%;
   height: 100%;
-}
-
-.variant_shown {
-  display: block;
 }
 
 .bookSummary {

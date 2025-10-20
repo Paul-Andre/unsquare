@@ -2,7 +2,7 @@
 
 import { GameState } from '../core/GameState.js';
 import { trackLevelStart } from '../utils/analytics.js';
-import { MAX_WIDTH } from '../utils/config.js';
+import { MAX_WIDTH, ONBOARDING_HINTS } from '../utils/config.js';
 import { cancelEvent } from '../utils/helpers.js';
 
 /// This is what does the basics of drawing the tiles to the screen.
@@ -386,44 +386,46 @@ export class GameBase {
       return;
     }
 
-    // TODO: this should probably not be in the base
-    if (
-      this.level.id == "level_1693531796434" &&
-      this.gameState.numMoves == 0
-    ) {
-      this.demoDrag = this.firstDemoDrag;
-    } else {
-      this.demoDrag = null;
-    }
-    // The logic would be something like:
-    // Check if needs to provide hint according to level json
-    // Run a basic hint system to get the next move to be hinted, or otherwise to undo
-    // If a move to be hinted, calculate the drag based on that move, and set it as this.demoDrag
+    if (ONBOARDING_HINTS) {
+      // TODO: this should probably not be in the base
+      if (
+        this.level.id == "level_1693531796434" &&
+        this.gameState.numMoves == 0
+      ) {
+        this.demoDrag = this.firstDemoDrag;
+      } else {
+        this.demoDrag = null;
+      }
+      // The logic would be something like:
+      // Check if needs to provide hint according to level json
+      // Run a basic hint system to get the next move to be hinted, or otherwise to undo
+      // If a move to be hinted, calculate the drag based on that move, and set it as this.demoDrag
 
-    let suggestsRestart = false;
-    if (
-      this.level.id == "level_1693531796434" &&
-      this.gameState.numMoves >= 1 &&
-      !this.isFinished()
-    ) {
-      suggestsRestart = true;
-    }
-    if (
-      this.isInBasicBook() &&
-      this.level.index < 10 &&
-      this.gameState.numMoves > this.level.par * 3 &&
-      !this.isFinished()
-    ) {
-      suggestsRestart = true;
-    }
+      let suggestsRestart = false;
+      if (
+        this.level.id == "level_1693531796434" &&
+        this.gameState.numMoves >= 1 &&
+        !this.isFinished()
+      ) {
+        suggestsRestart = true;
+      }
+      if (
+        this.isInBasicBook() &&
+        this.level.index < 10 &&
+        this.gameState.numMoves > this.level.par * 3 &&
+        !this.isFinished()
+      ) {
+        suggestsRestart = true;
+      }
 
-    let restartButton = this.div.getElementsByClassName("restart_button")[0];
-    if (suggestsRestart) {
-      restartButton.classList.add("in_yo_face");
-    } else {
-      restartButton.classList.remove("in_yo_face");
-    }
+      let restartButton = this.div.getElementsByClassName("restart_button")[0];
+      if (suggestsRestart) {
+        restartButton.classList.add("in_yo_face");
+      } else {
+        restartButton.classList.remove("in_yo_face");
+      }
 
+    }
     if (this.isFinished()) {
       if (this.isInBasicBook()) {
         if (this.level.index >= this.book.levels.length - 1) {

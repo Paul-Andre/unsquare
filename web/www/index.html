@@ -64,25 +64,46 @@
       <div class="variant_container">
         <!-- add variant_container? -->
 
-        <section id="opening_instructions">
-          Unflip / Unsquare
-          <div class="variant_container">
-            <div class="variant_shown">
-              Drag from one corner of a square area to flip the colors.
-            </div>
-            <div>
-              Drag from one corner of a square area to flip the colors.
-
-            </div>
-            <div>
-              Make 
-
-            </div>
+        <section id="opening_instructions" class="screen variant_shown">
+          <div class="header">
+            <h1 style="text-align: center;">Unflip // Unsquare</h1>
+          </div>
+          <div class="content">
+            <div class="variant_container" id="onboardingSlides">
+              <div class="variant_shown">
+                <p> How to play: </p>
+                <img src="drag.gif" alt="Drag to flip" />
+                <p>Drag from one corner of a <strong>square area</strong> to the other to flip the tiles.</p>
+          <div class="footer">
+            <!-- <button id="onboardingPrevBtn" onclick="onboardingPrev();">&#60; Previous</button> -->
+            <button id="onboardingNextBtn" onclick="onboardingNext();" style="float: right">Next &#62;</button>
           </div>
 
+              </div>
+              <div>
+                <img src="flip.gif" alt="Colors flip"" />
+                <p>White flips to black, and black flips to white.</p>
+          <div class="footer">
+            <button id="onboardingPrevBtn" onclick="onboardingPrev();">&#60; Previous</button>
+            <button id="onboardingNextBtn" onclick="onboardingNext();" style="float: right">Next &#62;</button>
+          </div>
+
+              </div>
+              <div>
+                <img src="to_win.png" alt="Make all white" style="display: block; margin: 0 auto;" />
+                <p>Make all tiles white to win!</p>
+          <div class="footer">
+            <button id="onboardingPrevBtn" onclick="onboardingPrev();">&#60; Previous</button>
+            <button id="onboardingNextBtn" onclick="onboardingNext();" style="float: right">Play!</button>
+          </div>
+
+              </div>
+            </div>
+          </div>
+          
         </section>
 
-        <section id="home" class="screen variant_shown">
+        <section id="home" class="screen">
           <h1>Unflip</h1>
           <div class="wrapper">
           </div>
@@ -325,9 +346,12 @@
 
         <section id="gameLevelMenu" class="screen">
           <div class="header">
+          <div class="header">
+            <h1 style="text-align: center;">Unflip // Unsquare</h1>
+          </div>
             <div class="IndicContainer" id="statsIndicator"></div>
             <h2>Levels:</h2>
-            <button onclick="screenManager.goBack();">&#8592; Menu</button>
+            <!-- <button onclick="screenManager.goBack();">&#8592; Menu</button> -->
           </div>
 
           <div id="iconContainer" class="content"></div>

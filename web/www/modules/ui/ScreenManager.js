@@ -6,7 +6,7 @@ export class ScreenManager {
   constructor() {
     this.additionalFunctions = {};
     this.stack = [];
-    this.currentScreenName = "home";
+    this.currentScreenName = "opening_instructions"
     this.currentScreen = document.getElementById("loading");
 
     // Initialize loading screen functions

@@ -83,3 +83,64 @@ window.screenManager.additionalFunctions.game = window.game;
 parseCustomLevel(window.game);
 
 console.log("Application initialized with modules");
+
+// Onboarding flow (first-run instructions)
+(function setupOnboarding() {
+  const ONBOARDING_LS_KEY = 'unflip.onboarding.seen';
+  const slidesContainer = document.getElementById('onboardingSlides');
+  const openingSection = document.getElementById('opening_instructions');
+  const prevBtn = document.getElementById('onboardingPrevBtn');
+  const nextBtn = document.getElementById('onboardingNextBtn');
+
+  let currentSlideIndex = 0;
+  const slides = Array.from(slidesContainer.children);
+
+  function showSlide(idx) {
+    currentSlideIndex = Math.max(0, Math.min(idx, slides.length - 1));
+    for (let i = 0; i < slides.length; i++) {
+      slides[i].classList.toggle('variant_shown', i === currentSlideIndex);
+    }
+    prevBtn.disabled = currentSlideIndex === 0;
+    if (currentSlideIndex === slides.length - 1) {
+      nextBtn.textContent = 'Play';
+    } else {
+      nextBtn.textContent = 'Next >';
+    }
+  }
+
+  window.onboardingPrev = function() {
+    showSlide(currentSlideIndex - 1);
+  };
+
+  window.onboardingNext = function() {
+    if (currentSlideIndex === slides.length - 1) {
+      try { localStorage.setItem(ONBOARDING_LS_KEY, '1'); } catch (e) {}
+      // Switch to gameLevelMenu and then right after to game in order to have is
+      // in the history stack.
+      screenManager.switchTo('gameLevelMenu');
+      let book = gameLevelMenu.levelMenu.book;
+      window.game.openLevel(book.levels[0], book);
+      screenManager.switchTo("game");
+
+      return;
+    }
+    showSlide(currentSlideIndex + 1);
+  };
+
+  // Register screen lifecycle to reset slides when shown
+  screenManager.additionalFunctions.opening_instructions = {
+    onShow: function() {
+      showSlide(0);
+    }
+  };
+
+  showSlide(0);
+
+  // Show on first run only
+  // let hasSeen = false;
+  // try { hasSeen = !!localStorage.getItem(ONBOARDING_LS_KEY); } catch (e) {}
+  // if (!hasSeen) {
+  //   // Start on the onboarding screen
+  //   screenManager.switchTo('opening_instructions');
+  // }
+})();
