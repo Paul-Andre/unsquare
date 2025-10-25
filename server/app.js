@@ -48,3 +48,4 @@ app.use(function(err, req, res, next) {
 });
 
 module.exports = app;
+console.log("got to the bottom of app.js");
