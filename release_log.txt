@@ -72,3 +72,6 @@ When you open the page you get instruction screens.
 Shopify Sunday demo/test
 small fixes...
 
+0.6.2
+Smaller instruction image
+
