@@ -16,11 +16,10 @@ import Sortable from './modules/ui/Sortable.js';
 import { parseCustomLevel } from './modules/utils/customParse.js';
 import { displaySaveStr, importSave } from './modules/utils/exportSave.js';
 import { Level } from './modules/core/Level.js';
-import { MAX_WIDTH, IS_EDITOR } from './modules/utils/config.js';
+import * as config from './modules/utils/config.js';
 
 // Global configuration
-window.IS_EDITOR = IS_EDITOR;
-window.MAX_WIDTH = MAX_WIDTH;
+window.config = config;
 
 // Initialize global instances
 window.game = new Game("gameCanvas", "game");

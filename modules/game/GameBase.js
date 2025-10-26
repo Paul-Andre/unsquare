@@ -2,7 +2,7 @@
 
 import { GameState } from '../core/GameState.js';
 import { trackLevelStart } from '../utils/analytics.js';
-import { MAX_WIDTH, ONBOARDING_HINTS } from '../utils/config.js';
+import * as config from '../utils/config.js';
 import { cancelEvent } from '../utils/helpers.js';
 
 /// This is what does the basics of drawing the tiles to the screen.
@@ -61,7 +61,7 @@ export class GameBase {
     this.canvasVirtualSize = Math.min(
       this.div.offsetWidth,
       this.div.offsetHeight,
-      MAX_WIDTH
+      config.MAX_WIDTH
     );
 
     this.canvasSize = this.canvasVirtualSize * (window.devicePixelRatio || 1);
@@ -386,7 +386,7 @@ export class GameBase {
       return;
     }
 
-    if (ONBOARDING_HINTS) {
+    if (config.ONBOARDING_HINTS) {
       // TODO: this should probably not be in the base
       if (
         this.level.id == "level_1693531796434" &&
@@ -632,7 +632,7 @@ export class GameBase {
     let height = this.canvas.height;
 
     // TODO: maybe include this in the demoDrag object?
-    let relativeDragSize = 40 / MAX_WIDTH;
+    let relativeDragSize = 40 / config.MAX_WIDTH;
     let relativeLineSize = relativeDragSize * 0.75;
 
     // TODO: figure out whether to use width or height. Only issue when rectangles

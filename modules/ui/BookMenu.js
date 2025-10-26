@@ -6,7 +6,6 @@ import { htmlStringToElement } from '../utils/helpers.js';
 import { createLevelIcon } from './icon.js';
 import { editorLevelMenu } from './editorLevelMenu.js';
 import { screenManager } from './ScreenManager.js';
-import { IS_EDITOR } from '../utils/config.js';
 
 export function load_static_books() {
   let books = [];
@@ -134,7 +133,7 @@ export class BookMenu {
   }
 
   newBook() {
-    console.assert(IS_EDITOR);
+
     var book = create_empty_book();
     save_editor_book(book);
 

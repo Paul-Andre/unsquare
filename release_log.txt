@@ -66,3 +66,9 @@ small bug fix
 Refactor with the help of Cursor
 Add blue box
 When you open the page you get instruction screens.
+
+26 Oct 2025
+0.6.1
+Shopify Sunday demo/test
+small fixes...
+

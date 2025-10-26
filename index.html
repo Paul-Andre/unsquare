@@ -7,7 +7,7 @@
       content="width=device-width, initial-scale=1, minimum-scale=1"
     />
     <meta name="apple-mobile-web-app-capable" content="yes" />
-    <title>Unflip</title>
+    <title>Unflip // Unsquare</title>
 
     <link rel="canonical" href="https://www.unflipgame.com/" />
     <meta
@@ -73,14 +73,15 @@
 
         <section id="opening_instructions" class="screen variant_shown">
           <div class="header">
-            <h1 style="text-align: center;">Unflip // Unsquare</h1>
+            <h1 style="text-align: center;">Unflip</h1>
+            <p> How to play: </p>
+
           </div>
           <div class="content">
             <div class="variant_container" id="onboardingSlides">
               <div class="variant_shown">
-                <p> How to play: </p>
                 <img src="drag.gif" alt="Drag to flip" />
-                <p>Drag from one corner of a <strong>square area</strong> to the other to flip the tiles.</p>
+                <p>Select <strong>square</strong> areas (2x2 or larger) to flip the tiles.</p>
           <div class="footer">
             <!-- <button id="onboardingPrevBtn" onclick="onboardingPrev();">&#60; Previous</button> -->
             <button id="onboardingNextBtn" onclick="onboardingNext();" style="float: right">Next &#62;</button>
@@ -89,7 +90,7 @@
               </div>
               <div>
                 <img src="flip.gif" alt="Colors flip"" />
-                <p>White tiles flip to black, and black tiles flip to white.</p>
+                <p>White tiles flip to black. Black tiles flip to white.</p>
           <div class="footer">
             <button id="onboardingPrevBtn" onclick="onboardingPrev();">&#60; Previous</button>
             <button id="onboardingNextBtn" onclick="onboardingNext();" style="float: right">Next &#62;</button>
@@ -122,7 +123,7 @@
           </p>
           <p>Make all tiles white to win!</p>
           <button
-            onclick="IS_EDITOR=false; screenManager.switchTo('gameLevelMenu');"
+            onclick="screenManager.switchTo('gameLevelMenu');"
             id="homePlayButton"
             class="action"
             type="button"
@@ -183,6 +184,16 @@
             >
               ?
             </button>
+
+            <form
+              style="display: inline; float: right"
+              target="_blank"
+              action="https://discord.gg/Hg6zVmTJeP"
+              method="get"
+            >
+              <button class="discord_button_simple">&nbsp;</button>
+            </form>
+
 
             <div style="float: right; width: 25%" class="IndicContainer">
               <div class="indicator" id="BestIndicator">

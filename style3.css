@@ -454,3 +454,10 @@ button.discord_button {
   background-size: 28px;
   padding-right: 38px;
 }
+
+button.discord_button_simple {
+  background: white url("discord-mark-blue.svg") no-repeat center right;
+  background-position: center center;
+  background-size: 28px;
+  padding-right: 30px;
+}

@@ -309,11 +309,13 @@ export class SquareTileShape {
     // Draw selection border
     if (hasSelection) {
       ctx.strokeStyle = "#4fb6ff";
+      // get DPI
+      const dpi = window.devicePixelRatio;
       const borderWidth = this.getBorderWidth(
         width - padding,
         height - padding
       );
-      ctx.lineWidth = borderWidth;
+      ctx.lineWidth = borderWidth*dpi;
 
       if (selectedTiles.length === 1) {
         // Single tile selected - draw dashed border around that tile
@@ -324,7 +326,7 @@ export class SquareTileShape {
         const tileHeight = height - padding;
 
         // Make dash pattern proportional to border width
-        const dashLength = Math.max(3, Math.floor(borderWidth * 2));
+        const dashLength = Math.max(3, Math.floor(borderWidth * 2))*dpi;
         ctx.setLineDash([dashLength, dashLength]); // Create dashed line
         ctx.strokeRect(tileX, tileY, tileWidth, tileHeight);
         ctx.setLineDash([]); // Reset to solid line
