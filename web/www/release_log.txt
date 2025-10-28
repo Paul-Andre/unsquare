@@ -79,3 +79,5 @@ Simplify instructions and make image smaller
 Add Open Graph and QR page
 0.6.4
 Instructions in og:description
+0.6.5
+qr.html: Play Game with proper utm
