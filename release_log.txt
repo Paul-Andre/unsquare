@@ -71,7 +71,9 @@ When you open the page you get instruction screens.
 0.6.1
 Shopify Sunday demo/test
 small fixes...
-
 0.6.2
-Smaller instruction image
+Simplify instructions and make image smaller
 
+27 Oct 2025
+0.6.3
+Add Open Graph and QR page
