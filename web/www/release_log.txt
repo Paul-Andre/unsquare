@@ -81,3 +81,5 @@ Add Open Graph and QR page
 Instructions in og:description
 0.6.5
 qr.html: Play Game with proper utm
+0.6.6
+colors of the tiles
