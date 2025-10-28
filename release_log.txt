@@ -77,3 +77,5 @@ Simplify instructions and make image smaller
 27 Oct 2025
 0.6.3
 Add Open Graph and QR page
+0.6.4
+Instructions in og:description
