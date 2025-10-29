@@ -14,7 +14,6 @@ import { trackLevelStart, trackLevelEnd } from './modules/utils/analytics.js';
 import { vector_sum, vector_add, vector_simplify_arithmetic, level_get_arithmetic } from './modules/core/algo.js';
 import Sortable from './modules/ui/Sortable.js';
 import { parseCustomLevel } from './modules/utils/customParse.js';
-import { displaySaveStr, importSave } from './modules/utils/exportSave.js';
 import { Level } from './modules/core/Level.js';
 import * as config from './modules/utils/config.js';
 
@@ -57,9 +56,6 @@ window.prevLevel = function() {
   window.game.prevLevel();
 };
 
-// Make other functions globally available for HTML onclick handlers
-window.displaySaveStr = displaySaveStr;
-window.importSave = importSave;
 
 window.openEditor = function() {
   window.screenManager.switchTo("bookMenu");
