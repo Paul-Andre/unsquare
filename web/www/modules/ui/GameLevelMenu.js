@@ -26,6 +26,7 @@ export class GameLevelMenu {
     }
   }
 
+  // "lsk" = local storage key
   // Best moves storage methods
   getLskForBestNumMoves(level) {
     return level.getFullIdentifier() + " bestNumMoves";
@@ -66,6 +67,7 @@ export class GameLevelMenu {
         if (resetUrlParam !== null) {
           this.levelMenu.clearAllBests();
         }
+        this.levelMenu.displayIcons();
       }
     };
 

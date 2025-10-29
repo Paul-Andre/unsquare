@@ -85,7 +85,6 @@ console.log("Application initialized with modules");
 
 // Onboarding flow (first-run instructions)
 (function setupOnboarding() {
-  const ONBOARDING_LS_KEY = 'unflip.onboarding.seen';
   const slidesContainer = document.getElementById('onboardingSlides');
   const openingSection = document.getElementById('opening_instructions');
   const prevBtn = document.getElementById('onboardingPrevBtn');
@@ -115,13 +114,13 @@ console.log("Application initialized with modules");
 
   window.onboardingNext = function() {
     if (currentSlideIndex === slides.length - 1) {
-      //try { localStorage.setItem(ONBOARDING_LS_KEY, '1'); } catch (e) {}
       if (has_already_went_to_first_level) {
         screenManager.switchTo('gameLevelMenu');
       } else {
         // Switch to gameLevelMenu and then right after to game in order to have is
         // in the history stack.
         screenManager.switchTo('gameLevelMenu');
+
         let book = gameLevelMenu.levelMenu.book;
         window.game.openLevel(book.levels[0], book);
         screenManager.switchTo("game");
@@ -143,11 +142,21 @@ console.log("Application initialized with modules");
 
   showSlide(0);
 
-  // Show on first run only
-  // let hasSeen = false;
-  // try { hasSeen = !!localStorage.getItem(ONBOARDING_LS_KEY); } catch (e) {}
-  // if (!hasSeen) {
-  //   // Start on the onboarding screen
-  //   screenManager.switchTo('opening_instructions');
-  // }
+  let num_levels_done = 0;
+  for (var key in localStorage) {
+    if (key.startsWith("level_") && key.endsWith("bestNumMoves")) {
+      num_levels_done += 1;
+    }
+  }
+
+  let skip_instructions = num_levels_done >= 5;
+
+  if (!skip_instructions) {
+    // Start on the onboarding screen
+    screenManager.switchTo('opening_instructions');
+  } else {
+    has_already_went_to_first_level = true;
+    // todo: 
+    screenManager.switchTo('gameLevelMenu');
+  }
 })();
