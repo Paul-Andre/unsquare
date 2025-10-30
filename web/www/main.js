@@ -1,14 +1,11 @@
 // Main entry point for the application
 import { Game } from './modules/game/Game.js';
-import { Editor, editor } from './modules/game/Editor.js';
-import { ScreenManager, screenManager } from './modules/ui/ScreenManager.js';
-import { BookMenu, bookMenu } from './modules/ui/BookMenu.js';
-import { GameLevelMenu, gameLevelMenu } from './modules/ui/GameLevelMenu.js';
+import { editor } from './modules/game/Editor.js';
+import { screenManager } from './modules/ui/ScreenManager.js';
+import { bookMenu } from './modules/ui/BookMenu.js';
+import { gameLevelMenu } from './modules/ui/GameLevelMenu.js';
 import { editorLevelMenu } from './modules/ui/editorLevelMenu.js';
-import { tileShapes } from './modules/core/tileShapes.js';
-import { squareTileShape } from './modules/core/SquareTileShape.js';
 import { parseCustomLevel } from './modules/utils/customParse.js';
-import { Level } from './modules/core/Level.js';
 import * as config from './modules/utils/config.js';
 
 // Global configuration
@@ -27,9 +24,6 @@ window.screenManager.additionalFunctions.editorLevelMenu = editorLevelMenu;
 window.screenManager.additionalFunctions.bookMenu = bookMenu;
 window.screenManager.additionalFunctions.editor = editor;
 window.screenManager.additionalFunctions.game = window.game;
-
-// Set up tileShapes
-tileShapes.square = squareTileShape;
 
 // Make nextLevel and prevLevel globally available for HTML onclick handlers
 window.nextLevel = function() {
@@ -57,8 +51,6 @@ window.openPlayerEditor = function() {
 
 // Parse custom level if present in URL
 parseCustomLevel(window.game);
-
-console.log("Application initialized with modules");
 
 // Onboarding flow (first-run instructions)
 (function setupOnboarding() {
