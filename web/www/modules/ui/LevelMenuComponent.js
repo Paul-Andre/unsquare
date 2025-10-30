@@ -10,7 +10,7 @@ import { save_editor_book } from '../core/bookUtils.js';
 
 // Level state constants to replace magic numbers
 export const LEVEL_STATES = {
-  HIDDEN: 0, // not visible at all
+  HIDDEN: 0, // contents of level not visible
   LOCKED: 1, // visible but not playable
   UNSOLVED: 2, // playable, not yet solved
   SUBOPTIMAL: 3, // solved, but not in optimal moves

@@ -6,6 +6,7 @@ import { bookMenu } from './modules/ui/BookMenu.js';
 import { gameLevelMenu } from './modules/ui/GameLevelMenu.js';
 import { editorLevelMenu } from './modules/ui/editorLevelMenu.js';
 import { parseCustomLevel } from './modules/utils/customParse.js';
+import { Level } from './modules/core/Level.js';
 import * as config from './modules/utils/config.js';
 
 // Global configuration
@@ -33,7 +34,6 @@ window.nextLevel = function() {
 window.prevLevel = function() {
   window.game.prevLevel();
 };
-
 
 window.openEditor = function() {
   window.screenManager.switchTo("bookMenu");
@@ -120,11 +120,10 @@ parseCustomLevel(window.game);
 
   let skip_instructions = num_levels_done >= 5;
 
-  if (!skip_instructions) {
-    // Start on the onboarding screen
-    screenManager.switchTo('opening_instructions');
-  } else {
+  if (skip_instructions) {
     has_already_went_to_first_level = true;
     screenManager.switchTo('gameLevelMenu');
+  } else {
+    screenManager.switchTo('opening_instructions');
   }
 })();
