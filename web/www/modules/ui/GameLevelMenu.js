@@ -2,7 +2,7 @@
 
 import { LevelMenuComponent } from './LevelMenuComponent.js';
 import { screenManager } from './ScreenManager.js';
-import { book_reviver } from './BookMenu.js';
+import { book_reviver } from '../core/bookUtils.js';
 
 export class GameLevelMenu {
   constructor() {
@@ -26,25 +26,6 @@ export class GameLevelMenu {
     }
   }
 
-  // "lsk" = local storage key
-  // Best moves storage methods
-  getLskForBestNumMoves(level) {
-    return level.getFullIdentifier() + " bestNumMoves";
-  }
-
-  getBestNumMoves(level) {
-    let sol = localStorage.getItem(this.getLskForBestNumMoves(level));
-    if (sol === null) return null;
-    return Number(sol);
-  }
-
-  setBestNumMoves(level, num) {
-    localStorage.setItem(this.getLskForBestNumMoves(level), num);
-  }
-
-  clearBestNumMoves(level) {
-    localStorage.removeItem(this.getLskForBestNumMoves(level));
-  }
 
   loadBook() {
     // https://stackoverflow.com/a/35294675
