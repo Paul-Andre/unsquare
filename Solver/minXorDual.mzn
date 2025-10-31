@@ -2,7 +2,7 @@ set of int: W;
 set of int: H;
 array[W,H] of 0..1: a;
 array[W] of 0..1: target;
-array[W] of int: costs;
+%array[W] of int: costs;
 int : at_most;
 
 array[H] of var 0..1: v;

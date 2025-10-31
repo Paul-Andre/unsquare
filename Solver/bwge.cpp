@@ -65,13 +65,13 @@ int sumVec(const vector<int> &v){
 }
 
 
-struct SatSolutionAndKernel{
+struct SolutionAndKernel{
   vector<int> solution;
   vector<vector<int>> kernel;
 };
 
 
-optional<SatSolutionAndKernel>
+optional<SolutionAndKernel>
 solve(vector<vector<int>> mat, vector<int> target, const vector<vector<int>> &inversions){
   // partial pivoting gaussian elimination mod 2
   int m = mat.size();
@@ -161,7 +161,7 @@ solve(vector<vector<int>> mat, vector<int> target, const vector<vector<int>> &in
     assert(sumVec(repr) == 0);
   }
 
-  cout <<"kernelBasis: " << endl;
+  cout <<"kernelBasis (dim "<<kernelBasis.size()<<"): " << endl;
   printMat(kernelBasis);
   cout <<endl;
 
@@ -182,7 +182,7 @@ solve(vector<vector<int>> mat, vector<int> target, const vector<vector<int>> &in
       }
     }
   }
-  SatSolutionAndKernel ret;
+  SolutionAndKernel ret;
   ret.solution = best;
   ret.kernel = kernelBasis;
 
@@ -213,6 +213,7 @@ int main() {
       }
     }
   }
+  cout<<"Number of inversions: "<<inversions.size()<<endl;
   vector<vector<int>> mat(n*m, vector<int>(inversions.size()));
   int j=0;
   for (auto inv: inversions){

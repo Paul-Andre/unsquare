@@ -4,25 +4,26 @@ typedef long long ll;
 typedef unsigned long long ull;
 
 
-void printMat(const vector<vector<int>> &mat){
+void printMat(const vector<vector<int>> &mat, ostream& out=cerr){
   for(int i=0; i<mat.size(); i++) {
     for(int j=0; j<mat[i].size(); j++){
-      cout<<mat[i][j];
+      out<<mat[i][j];
     }
-    cout<<endl;
+    out<<endl;
   }
 }
 
-void printPuzzle(int m, int n, vector<int> puzzle){
+void printPuzzle(int m, int n, vector<int> puzzle, ostream& out=cerr){
   for(int i=0; i<m; i++) {
     for(int j=0; j<n; j++) {
-      cout<<puzzle[i*n + j];
+      out<<puzzle[i*n + j];
     }
-    cout<<endl;
+    out<<endl;
   }
 }
 
 void operator^=(vector<int> &lhs, const vector<int> &rhs){
+  assert(lhs.size() == rhs.size());
   for(int i=0; i<lhs.size() && i<rhs.size(); i++) {
     lhs[i]^=rhs[i];
   }
@@ -125,7 +126,7 @@ optional<SatSolutionAndKernel> solve(vector<vector<int>> mat, vector<int> target
   }
   /*
   if(kernelBasis.size() == 0){
-    cout<<"no kernel\n";
+    cerr<<"no kernel\n";
     return solution;
   }
   */
@@ -151,14 +152,14 @@ vector<int> randomlyImprove(const vector<int> &solution, const vector<vector<int
 
   vector<int> best = solution;
   //int best_val = sumVec(repr);
-  for(int l=0; l<10000; l++) {
+  for(int l=0; l<3000; l++) {
     vector<int> repr ;
     if(rand()%2){
       repr = best;
     }else{
       repr = solution;
     }
-    for(int k=0; k<100; k++) {
+    for(int k=0; k<300; k++) {
       repr ^= kernel[rand()%kernel.size()];
       if(sumVec(repr) < sumVec(best)){
         best = repr;
@@ -166,6 +167,46 @@ vector<int> randomlyImprove(const vector<int> &solution, const vector<vector<int
     }
   }
   return best;
+}
+
+vector<int> randomlyImproveAnnealing(const vector<int> &solution, const vector<vector<int>> &kernel) {
+
+  vector<int> best = solution;
+  //int best_val = sumVec(repr);
+  for(int l=0; l<30; l++) {
+    vector<int> repr ;
+    if(rand()%2){
+      repr = best;
+    }else{
+      repr = solution;
+    }
+    for(int k=0; k<30000; k++) {
+      vector<int> newRepr = repr;
+      newRepr ^= kernel[rand()%kernel.size()];
+
+      if(sumVec(newRepr) < sumVec(best)){
+        cerr << "===== Found "<<sumVec(newRepr)<<endl;
+        best = newRepr;
+      }
+      int diff = sumVec(newRepr) - sumVec(repr);
+      double T = 0.01;
+      if(diff < 0 || ((double)rand()/RAND_MAX)< exp(-diff/T)){
+        repr = newRepr;
+        //cerr << "Found "<<sumVec(newRepr)<<endl;
+      }
+    }
+  }
+  return best;
+}
+
+vector<int> randomInKernel(const vector<vector<int>> &kernel) {
+  vector<int> ret(kernel[0].size(), 0);
+  for (int i=0; i<kernel.size(); i++) {
+    if (!(rand()%10)) {
+      ret ^= kernel[i];
+    }
+  }
+  return ret;
 }
 
 vector<vector<int>> reorderKernelGreedy(vector<vector<int>> oldKernel) {
@@ -213,7 +254,7 @@ vector<vector<int>> reorderKernelGreedy(vector<vector<int>> oldKernel) {
   return newKernel;
 }
 
-// Greedily make the kerel vectors shorter
+// Greedily make the kernel vectors shorter
 vector<vector<int>> reduceKernelGreedy(vector<vector<int>> oldKernel) {
   if (oldKernel.size() == 0) {
     return oldKernel;
@@ -403,18 +444,137 @@ void printKernel(const vector<vector<int>> &kernel) {
 }
 
 /*
-void printSquareSequence(int m, int n, const vector<int> &solution) {
+void printSquareSequence(int m, int n, const vector<int> &solution, ostream& out=cerr) {
   vector<int> repr = ;
-  cout<<endl;
+  cerr<<endl;
   for(int i=0; i<solution.size(); i++) {
     if ((solution)[i]) {
       repr^=inversions[i];
       printPuzzle(m,n,repr);
-      cout<<endl;
+      out<<endl;
     }
   }
 }
 */
+
+optional<SatSolutionAndKernel>
+solve2(vector<vector<int>> mat, vector<int> target, const vector<vector<int>> &inversions){
+  // partial pivoting gaussian elimination mod 2
+  int m = mat.size();
+  int n = mat[0].size();
+  assert(target.size() == m);
+  int r = 0;
+  int c = 0;
+  while(r<m && c<n){
+    int rr = -1;
+    for (int i=r; i<m; i++) {
+      if (mat[i][c]==1) {
+        rr = i;
+        break;
+      }
+    }
+    if (rr == -1) {
+      c++;
+      continue;
+    }
+    for(int j=0; j<n; j++) {
+      int tmp = mat[rr][j];
+      mat[rr][j] = mat[r][j];
+      mat[r][j] = tmp;
+    }
+    {
+      int tmp = target[rr];
+      target[rr] = target[r];
+      target[r] = tmp;
+    }
+
+    for (int i=0; i<m; i++){
+      if (i!=r && mat[i][c]) {
+        for (int j=0; j<n; j++) {
+          mat[i][j] ^= mat[r][j];
+        }
+        target[i] ^= target[r];
+      }
+    }
+    r++;
+    c++;
+  }
+  vector<int> solution(n,0);
+  vector<int> c2r(n,-1);
+  vector<int> r2c(m,-1);
+  for(int i=0; i<m; i++){
+    int cc = -1;
+    for(int j=0; j<n; j++){
+      if(mat[i][j]==1){
+        cc = j;
+        break;
+      }
+    }
+    if (cc!=-1) {
+      c2r[cc] = i;
+      r2c[i] = cc;
+    }
+    if (cc==-1 && target[i]!=0){
+      return nullopt;
+    }
+    solution[cc] = target[i];
+  }
+
+  vector<vector<int>> kernelBasis;
+  for(int j=0; j<n; j++){
+    if(c2r[j] == -1) {
+      vector<int> repr(n,0);
+      repr[j] = 1;
+      for(int i=0; i<m; i++) {
+        if(mat[i][j]==1){
+          repr[r2c[i]] = 1;
+        }
+      }
+      kernelBasis.push_back(repr);
+    }
+  }
+  if(kernelBasis.size() == 0){
+    cerr<<"no kernel\n";
+    //return solution;
+  }
+  for(const vector<int> &kernel: kernelBasis){
+    vector<int> repr(m, 0);
+    for(int i=0; i<n; i++) {
+      if(kernel[i]){
+        repr^=inversions[i];
+      }
+    }
+    assert(sumVec(repr) == 0);
+  }
+
+  cerr <<"kernelBasis (dim "<<kernelBasis.size()<<"): " << endl;
+  printMat(kernelBasis);
+  cerr <<endl;
+
+  cerr<<solution.size()<<endl;
+  vector<int> best = solution;
+
+  /* //int best_val = sumVec(repr); */
+  /* for(int l=0; l<10000; l++) { */
+  /*   vector<int> repr ; */
+  /*   if(rand()%2){ */
+  /*     repr = best; */
+  /*   }else{ */
+  /*     repr = solution; */
+  /*   } */
+  /*   for(int k=0; k<100; k++) { */
+  /*     repr ^= kernelBasis[rand()%kernelBasis.size()]; */
+  /*     if(sumVec(repr) < sumVec(best)){ */
+  /*       best = repr; */
+  /*     } */
+  /*   } */
+  /* } */
+  SatSolutionAndKernel ret;
+  ret.solution = best;
+  ret.kernel = kernelBasis;
+
+  return ret;
+}
 
 
 int main() {
@@ -496,19 +656,18 @@ int main() {
     }
   }
 
-  if(auto solution_ = solve(mat, target, inversions)){
+  if(auto solution_ = solve2(mat, target, inversions)){
 
     vector<vector<int>> kernel = solution_->kernel;
+    vector<vector<int>> original_kernel = solution_->kernel;
 
     printKernel(kernel);
 
     cerr <<endl;
-    cerr << "asdfasdfa" << kernel.size() <<endl;
-    //kernel = reduceKernelGreedy(kernel);
-    //
+    cerr << "Kernel size " << kernel.size() <<endl;
+    
     kernel = reduceKernelGreedy(kernel);
     cerr <<"simplified:"<< endl;
-
     printKernel(kernel);
 
     kernel = reorderKernelGreedy(kernel);
@@ -519,15 +678,24 @@ int main() {
     cerr << "initial solution " << sumVec(solution) << endl;
 
     if (kernel.size()) {
-      solution = randomlyImprove(solution, kernel);
-      cerr << "after randomly improving " << sumVec(solution) << endl;
 
-    solution = branchAndBound(solution, kernel);
-    cerr << "after branch and bound " << sumVec(solution) << endl;
+      if (true) {
+        solution = randomlyImprove(solution, original_kernel);
+        cerr << "after randomly improving " << sumVec(solution) << endl;
+        solution = randomlyImprove(solution, kernel);
+        cerr << "after randomly improving " << sumVec(solution) << endl;
+
+        solution = randomlyImproveAnnealing(solution, kernel);
+        //solution = randomlyImprove(solution, kernel);
+        cerr << "after randomly improving " << sumVec(solution) << endl;
+      }
+
+      /* solution = branchAndBound(solution, kernel); */
+      /* cerr << "after branch and bound " << sumVec(solution) << endl; */
 
 
-    for(int a:solution) {
-      cerr<<a;
+      for(int a:solution) {
+        cerr<<a;
     }
     cerr<<endl;
 
@@ -535,7 +703,7 @@ int main() {
 
 
     int W = solution.size();
-    int H = kernel.size();
+    int H = original_kernel.size();
 
     cout << "W = 1.." << W << ";\n";
     cout << "H = 1.." << H << ";\n";
@@ -544,7 +712,8 @@ int main() {
     cout << "a = [|\n";
     for (int j=0; j<W; j++) {
       for (int i=0; i<H; i++) {
-        cout << kernel[i][j] << ", ";
+        /* cout << kernel[i][j] << ", "; */
+        cout << original_kernel[i][j] << ", ";
       }
       if (j<W-1) {
         cout << "|\n";
@@ -559,11 +728,11 @@ int main() {
     }
     cout << "];\n";
 
-    cout << "costs = [";
-    for (int i=0; i<areas.size(); i++) {
-      cout << areas[i] << ", ";
-    }
-    cout << "];\n";
+    /* cout << "costs = ["; */
+    /* for (int i=0; i<areas.size(); i++) { */
+    /*   cout << areas[i] << ", "; */
+    /* } */
+    /* cout << "];\n"; */
 
     int totCost = 0;
     for (int i=0; i<solution.size(); i++) {

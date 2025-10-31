@@ -6,8 +6,8 @@ typedef unsigned long long ull;
 int main() {
   int n,m;
   cin>>n>>m;
-  char c;
-  cin >>c;
+  char c = 's';
+  //cin >>c;
 
   vector<ll> inversions;
   for (int i=0; i<n; i++) {
