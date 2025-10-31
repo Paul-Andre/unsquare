@@ -3,7 +3,7 @@
 import { LevelMenuComponent } from './LevelMenuComponent.js';
 import Sortable from './Sortable.js';
 
-export var editorLevelMenu = new LevelMenuComponent("editorLevelMenu", true);
+export const editorLevelMenu = new LevelMenuComponent("editorLevelMenu", true);
 console.log("editorLevelMenu", editorLevelMenu);
 
 // Enable drag-and-drop sorting in the editor level menu

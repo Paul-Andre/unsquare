@@ -1,20 +1,11 @@
 // Main entry point for the application
 import { Game } from './modules/game/Game.js';
-import { Editor, editor } from './modules/game/Editor.js';
-import { ScreenManager, screenManager } from './modules/ui/ScreenManager.js';
-import { BookMenu, bookMenu } from './modules/ui/BookMenu.js';
-import { GameLevelMenu, gameLevelMenu } from './modules/ui/GameLevelMenu.js';
-import { LevelMenuComponent } from './modules/ui/LevelMenuComponent.js';
+import { editor } from './modules/game/Editor.js';
+import { screenManager } from './modules/ui/ScreenManager.js';
+import { bookMenu } from './modules/ui/BookMenu.js';
+import { gameLevelMenu } from './modules/ui/GameLevelMenu.js';
 import { editorLevelMenu } from './modules/ui/editorLevelMenu.js';
-import { calculateStates } from './modules/ui/LevelMenuComponent.js';
-import { save_editor_book } from './modules/ui/BookMenu.js';
-import { tileShapes } from './modules/core/tileShapes.js';
-import { squareTileShape } from './modules/core/SquareTileShape.js';
-import { trackLevelStart, trackLevelEnd } from './modules/utils/analytics.js';
-import { vector_sum, vector_add, vector_simplify_arithmetic, level_get_arithmetic } from './modules/core/algo.js';
-import Sortable from './modules/ui/Sortable.js';
 import { parseCustomLevel } from './modules/utils/customParse.js';
-import { displaySaveStr, importSave } from './modules/utils/exportSave.js';
 import { Level } from './modules/core/Level.js';
 import * as config from './modules/utils/config.js';
 
@@ -33,20 +24,7 @@ window.editorLevelMenu = editorLevelMenu;
 window.screenManager.additionalFunctions.editorLevelMenu = editorLevelMenu;
 window.screenManager.additionalFunctions.bookMenu = bookMenu;
 window.screenManager.additionalFunctions.editor = editor;
-
-// Set up tileShapes
-tileShapes.square = squareTileShape;
-
-// Make functions globally available for backward compatibility
-window.calculateStates = calculateStates;
-window.save_editor_book = save_editor_book;
-window.Sortable = Sortable;
-window.trackLevelStart = trackLevelStart;
-window.trackLevelEnd = trackLevelEnd;
-window.vector_sum = vector_sum;
-window.vector_add = vector_add;
-window.vector_simplify_arithmetic = vector_simplify_arithmetic;
-window.level_get_arithmetic = level_get_arithmetic;
+window.screenManager.additionalFunctions.game = window.game;
 
 // Make nextLevel and prevLevel globally available for HTML onclick handlers
 window.nextLevel = function() {
@@ -56,10 +34,6 @@ window.nextLevel = function() {
 window.prevLevel = function() {
   window.game.prevLevel();
 };
-
-// Make other functions globally available for HTML onclick handlers
-window.displaySaveStr = displaySaveStr;
-window.importSave = importSave;
 
 window.openEditor = function() {
   window.screenManager.switchTo("bookMenu");
@@ -75,17 +49,11 @@ window.openPlayerEditor = function() {
   window.screenManager.switchTo("editor");
 };
 
-// Set up screen manager additional functions
-window.screenManager.additionalFunctions.game = window.game;
-
 // Parse custom level if present in URL
 parseCustomLevel(window.game);
 
-console.log("Application initialized with modules");
-
 // Onboarding flow (first-run instructions)
 (function setupOnboarding() {
-  const ONBOARDING_LS_KEY = 'unflip.onboarding.seen';
   const slidesContainer = document.getElementById('onboardingSlides');
   const openingSection = document.getElementById('opening_instructions');
   const prevBtn = document.getElementById('onboardingPrevBtn');
@@ -115,13 +83,13 @@ console.log("Application initialized with modules");
 
   window.onboardingNext = function() {
     if (currentSlideIndex === slides.length - 1) {
-      //try { localStorage.setItem(ONBOARDING_LS_KEY, '1'); } catch (e) {}
       if (has_already_went_to_first_level) {
         screenManager.switchTo('gameLevelMenu');
       } else {
         // Switch to gameLevelMenu and then right after to game in order to have is
         // in the history stack.
         screenManager.switchTo('gameLevelMenu');
+
         let book = gameLevelMenu.levelMenu.book;
         window.game.openLevel(book.levels[0], book);
         screenManager.switchTo("game");
@@ -143,11 +111,19 @@ console.log("Application initialized with modules");
 
   showSlide(0);
 
-  // Show on first run only
-  // let hasSeen = false;
-  // try { hasSeen = !!localStorage.getItem(ONBOARDING_LS_KEY); } catch (e) {}
-  // if (!hasSeen) {
-  //   // Start on the onboarding screen
-  //   screenManager.switchTo('opening_instructions');
-  // }
+  let num_levels_done = 0;
+  for (var key in localStorage) {
+    if (key.startsWith("level_") && key.endsWith("bestNumMoves")) {
+      num_levels_done += 1;
+    }
+  }
+
+  let skip_instructions = num_levels_done >= 5;
+
+  if (skip_instructions) {
+    has_already_went_to_first_level = true;
+    screenManager.switchTo('gameLevelMenu');
+  } else {
+    screenManager.switchTo('opening_instructions');
+  }
 })();

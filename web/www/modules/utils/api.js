@@ -1,4 +1,5 @@
-// Modern class-based API and Storage
+// This appears to have been a polyfill after I migrated from clay.io
+
 export class Api {
   static ready(fn) {
     fn();
