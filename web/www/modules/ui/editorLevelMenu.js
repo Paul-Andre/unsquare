@@ -11,8 +11,19 @@ if (editorLevelMenu && editorLevelMenu.container) {
   Sortable.create(editorLevelMenu.container, {
     animation: 150,
     draggable: '.level_icon',
+    group: "editor",
     onEnd: function () {
       editorLevelMenu.saveIconOrder();
     }
   });
+
+  Sortable.create(document.querySelector("#editorLevelMenu #iconContainer2"), {
+    animation: 150,
+    draggable: '.level_icon',
+    group: "editor",
+    onEnd: function () {
+      editorLevelMenu.saveIconOrder();
+    }
+  });
+
 }
