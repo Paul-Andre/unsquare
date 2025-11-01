@@ -82,4 +82,12 @@ Instructions in og:description
 0.6.5
 qr.html: Play Game with proper utm
 0.6.6
-colors of the tiles
+"colors of the tiles"
+
+31 Oct 2025
+0.6.7
+Don't display instructions on reopen
++ cleaning/refactoring
++ solver work (Found minizinc minimum on all levels!)
+
+
