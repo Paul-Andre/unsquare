@@ -1,11 +1,11 @@
 "use strict";
 
-import { Level } from '../core/Level.js';
 import { generate_id } from '../utils/helpers.js';
 import { htmlStringToElement } from '../utils/helpers.js';
 import { createLevelIcon } from './icon.js';
 import { editorLevelMenu } from './editorLevelMenu.js';
 import { screenManager } from './ScreenManager.js';
+import { book_reviver, create_empty_book, save_editor_book } from '../core/bookUtils.js';
 
 export function load_static_books() {
   let books = [];
@@ -59,49 +59,6 @@ export function load_editor_books() {
       editor_books.push(book);
     }
   }
-}
-
-// For use with JSON.stringify
-export function book_replacer(key, value) {
-  if (value instanceof Level) {
-    return value.toJsonObject();
-  }
-  return value;
-}
-
-// For use with JSON.parse
-export function book_reviver(key, value) {
-  if (typeof value === "object" && value !== null) {
-    if (value.__type__ == "Level") {
-      return Level.fromJsonObject(value);
-    }
-    if (value.tileShape == "square") {
-      return Level.fromJsonObject(value);
-    }
-    if (value.tiles) {
-      return Level.fromJsonObject(value);
-    }
-    if (value.levels) {
-      for (var i = 0; i < value.levels.length; i++) {
-        value.levels[i].index = i;
-      }
-    }
-  }
-  return value;
-}
-
-export function save_editor_book(book) {
-  let key = "editor_" + book.id;
-  localStorage.setItem(key, JSON.stringify(book, book_replacer));
-}
-
-export function create_empty_book() {
-  let book = {
-    id: generate_id("book"),
-    title: "New Book",
-    levels: [],
-  };
-  return book;
 }
 
 export class BookMenu {

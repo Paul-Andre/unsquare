@@ -4,7 +4,7 @@ import { GameBase } from './GameBase.js';
 import { GameState } from '../core/GameState.js';
 import { Grid } from '../core/Grid.js';
 import { compute_operations_for_level, vector_sum, level_check_solution, get_level_compact_solution } from '../core/algo.js';
-import { save_editor_book } from '../ui/BookMenu.js';
+import { save_editor_book } from '../core/bookUtils.js';
 import { screenManager } from '../ui/ScreenManager.js';
 
 export class Editor extends GameBase {

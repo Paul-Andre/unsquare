@@ -2,7 +2,10 @@
 
 import { Grid } from './Grid.js';
 
+//import { tileShapes } from '../core/tileShapes.js';
+
 export class SquareTileShape {
+
   constructor() {
     this.name = "square";
   }
@@ -374,5 +377,4 @@ export class SquareTileShape {
   }
 }
 
-// Create global instance for backward compatibility
 export const squareTileShape = new SquareTileShape();
