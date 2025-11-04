@@ -12,6 +12,10 @@ export class Game extends GameBase {
     super(canvasId, divId);
     // Bind the action method to preserve 'this' context when passed as callback
     this.action = this.action.bind(this);
+
+
+    this.numSolvedThisSession = 0;
+    this.showedDiscordOverlay = false;
   }
 
   // this specifies what happens when you activate squares
@@ -106,6 +110,8 @@ export class Game extends GameBase {
     // TODO: make sure this isn't sent excessively for some reason.
     trackLevelEnd(this.level, this.book);
 
+    this.numSolvedThisSession += 1;
+
     this.displayLevelGui(this.level);
     this.updateGui();
   }
@@ -179,19 +185,46 @@ export class Game extends GameBase {
     this.startAnimationLoopIfNeeded();
   }
 
+  checkShowOverlay() {
+    // TODO: when multiple books, rethink this.
+    let levels = this.book.levels;
+    let totSolved = 0;
+    for (let i = 0; i<levels.length; i++) {
+      let level = levels[i];
+      if (getBestNumMoves(level)) {
+        totSolved += 1;
+      }
+    }
+
+    if (totSolved >= 20 && this.numSolvedThisSession >=5 && !this.showedDiscordOverlay) {
+      return true;
+    }
+    return false;
+  }
+
   nextLevel() {
     let level = this.level;
     let index = level.index;
     let levels = this.book.levels;
 
-    if (index + 1 < levels.length) {
-      index += 1;
-      var nextLevel = levels[index];
+    if (this.checkShowOverlay()) {
+      // TODO: cache this once when the object is created?
+      let el = document.getElementById("discord_overlay_message");
+      el.hidden = false;
+      this.showedDiscordOverlay = true;
+    } else {
+      let el = document.getElementById("discord_overlay_message");
+      el.hidden = true;
 
-      this.openLevel(nextLevel, this.book);
-      this.onShow();
-      // Force redraw to ensure canvas updates
-      this.forceRedraw();
+      if (index + 1 < levels.length) {
+        index += 1;
+        var nextLevel = levels[index];
+
+        this.openLevel(nextLevel, this.book);
+        this.onShow();
+        // Force redraw to ensure canvas updates
+        this.forceRedraw();
+      }
     }
   }
 
