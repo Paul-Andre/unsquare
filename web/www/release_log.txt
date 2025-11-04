@@ -90,4 +90,7 @@ Don't display instructions on reopen
 + cleaning/refactoring
 + solver work (Found minizinc minimum on all levels!)
 
+04 Nov 2025
+0.6.8
+Join our Discord
 
