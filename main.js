@@ -52,6 +52,21 @@ window.openPlayerEditor = function() {
 // Parse custom level if present in URL
 parseCustomLevel(window.game);
 
+// Remove utm parameters from the url
+window.addEventListener('load',
+  function () {
+    setTimeout(function () {
+      const url = new URL(window.location.href);
+      url.searchParams.forEach((value, key) => {
+        if (key.startsWith('utm_')) {
+          url.searchParams.delete(key);
+        }
+      });
+      window.history.replaceState({}, '', url.toString());
+    }, 5000);
+  });
+
+
 // Onboarding flow (first-run instructions)
 (function setupOnboarding() {
   const slidesContainer = document.getElementById('onboardingSlides');
@@ -127,3 +142,4 @@ parseCustomLevel(window.game);
     screenManager.switchTo('opening_instructions');
   }
 })();
+

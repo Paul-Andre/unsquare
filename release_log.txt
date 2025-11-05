@@ -93,4 +93,6 @@ Don't display instructions on reopen
 04 Nov 2025
 0.6.8
 Join our Discord
+0.6.9
+remove utm parameters. Also yet smaller onboarding image
 
