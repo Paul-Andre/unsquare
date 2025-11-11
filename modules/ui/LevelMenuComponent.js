@@ -6,6 +6,7 @@ import { vector_sum } from '../core/algo.js';
 import { screenManager } from './ScreenManager.js';
 import { Level } from '../core/Level.js';
 import { save_editor_book } from '../core/bookUtils.js';
+import { book_replacer } from '../core/bookUtils.js';
 
 
 // Level state constants to replace magic numbers
@@ -255,6 +256,11 @@ export class LevelMenuComponent {
   }
 
   displayIcons() {
+    if (!this.book) {
+      this.container.innerHTML = "Loading levels...";
+      return;
+    }
+
     this.container.innerHTML = "";
 
     let states;

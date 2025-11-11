@@ -96,3 +96,9 @@ Join our Discord
 0.6.9
 remove utm parameters. Also yet smaller onboarding image
 
+11 Nov 2025
+0.7.0
+Add extra info to join discord button.
+Change level order.
+Fix some bugs.
+Ready to repost on hacker news.

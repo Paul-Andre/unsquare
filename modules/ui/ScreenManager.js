@@ -39,6 +39,7 @@ export class ScreenManager {
    * @param {boolean} keepAsIs - Whether to keep the current screen state
    */
   switchTo(screenName, keepAsIs) {
+    console.log("Switching to", screenName);
     if (this.currentScreen) {
       this.currentScreen.classList.remove("variant_shown");
     } else {
