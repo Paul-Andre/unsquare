@@ -492,3 +492,8 @@ button.discord_button_simple {
   padding: 20px 30px;
   border: solid var(--black);
 }
+
+.center_text {
+  text-align: center;
+
+}
