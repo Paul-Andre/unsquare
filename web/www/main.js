@@ -5,7 +5,7 @@ import { screenManager } from './modules/ui/ScreenManager.js';
 import { bookMenu } from './modules/ui/BookMenu.js';
 import { gameLevelMenu } from './modules/ui/GameLevelMenu.js';
 import { editorLevelMenu } from './modules/ui/editorLevelMenu.js';
-import { parseCustomLevel } from './modules/utils/customParse.js';
+import { checkAndOpenCustomLevel } from './modules/utils/customParse.js';
 import { Level } from './modules/core/Level.js';
 import * as config from './modules/utils/config.js';
 
@@ -19,6 +19,7 @@ window.screenManager = screenManager;
 window.bookMenu = bookMenu;
 window.gameLevelMenu = gameLevelMenu;
 window.editorLevelMenu = editorLevelMenu;
+window.parseCustomLevel = checkAndOpenCustomLevel;
 
 // Set up screen manager additional functions
 window.screenManager.additionalFunctions.editorLevelMenu = editorLevelMenu;
@@ -50,7 +51,7 @@ window.openPlayerEditor = function() {
 };
 
 // Parse custom level if present in URL
-parseCustomLevel(window.game);
+let openedCustom = checkAndOpenCustomLevel(window.game);
 
 // Remove utm parameters from the url
 window.addEventListener('load',
@@ -133,9 +134,11 @@ window.addEventListener('load',
     }
   }
 
-  let skip_instructions = num_levels_done >= 5;
+  let had_experience = num_levels_done >= 5;
 
-  if (skip_instructions) {
+  if (openedCustom) {
+    // pass; It was already opened by the checkAndOpenCustomLevel function.
+  } else if (had_experience) {
     has_already_went_to_first_level = true;
     screenManager.switchTo('gameLevelMenu');
   } else {
