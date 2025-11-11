@@ -102,3 +102,5 @@ Add extra info to join discord button.
 Change level order.
 Fix some bugs.
 Ready to repost on hacker news.
+0.7.1
+OG image
