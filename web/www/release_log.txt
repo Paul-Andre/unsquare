@@ -106,3 +106,5 @@ Ready to repost on hacker news.
 OG image
 0.7.2
 change discord overlay message and now appears after 35 levels
+0.7.3
+fix rage-quitting level
