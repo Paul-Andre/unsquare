@@ -6,7 +6,7 @@ import { book_reviver } from '../core/bookUtils.js';
 
 export class GameLevelMenu {
   constructor() {
-    this.bookUrl = "data/2025_nov_11_reordered_solved.json";
+    this.bookUrl = "data/2025_nov_11_reordered_solved_fixed.json";
     // this.bookUrl = "data/tiny_for_testing.json";
 
     // Delay the creation of level menu until after game is ready
