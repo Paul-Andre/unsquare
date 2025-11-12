@@ -196,7 +196,8 @@ export class Game extends GameBase {
       }
     }
 
-    if (totSolved >= 20 && this.numSolvedThisSession >=5 && !this.showedDiscordOverlay) {
+    // Todo: make this be a parameter on posthog
+    if (totSolved >= 35 && this.numSolvedThisSession >=10 && !this.showedDiscordOverlay) {
       return true;
     }
     return false;
