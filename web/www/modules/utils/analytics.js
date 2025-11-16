@@ -20,6 +20,12 @@ export function trackLevelStart(level, book) {
         level_name: name,
       });
     }
+    if (posthog && typeof posthog.capture === 'function') {
+      let name = getGtagLevelName(level, book);
+      posthog.capture('level_start', {
+        level_name: name,
+      });
+    }
   }, 0);
 }
 export function trackLevelEnd(level, book) {
@@ -28,6 +34,13 @@ export function trackLevelEnd(level, book) {
     if (gtag) {
       let name = getGtagLevelName(level, book);
       gtag("event", "level_end", {
+        level_name: name,
+        success: true,
+      });
+    }
+    if (posthog && typeof posthog.capture === 'function') {
+      let name = getGtagLevelName(level, book);
+      posthog.capture('level_end', {
         level_name: name,
         success: true,
       });

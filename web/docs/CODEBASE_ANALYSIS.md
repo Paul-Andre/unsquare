@@ -448,6 +448,7 @@ class GameAnalytics {
       book_name: book.name,
       level_index: level.index
     });
+    
   }
 
   static trackLevelComplete(level, moves, time) {
