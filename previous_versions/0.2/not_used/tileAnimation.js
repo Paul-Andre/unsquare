@@ -1,1 +1,0 @@
-function drawAnimatedTile(ctx, tile,
