@@ -1,40 +1,41 @@
 {
-    "name": "Unflip",
-    "short_name": "Unflip",
-    "description": "Unflip - The puzzle game about flipping square areas to clear the pattern.",
-    "start_url": "/",
-    "scope": "/",
-    "display": "standalone",
-    "icons": [
-        {
-            "src": "icons/favicon256.png",
-            "sizes": "256x256",
-            "type": "image/png",
-            "purpose": "any"
-        },
-        {
-            "src": "icons/favicon192.png",
-            "sizes": "192x192",
-            "type": "image/png",
-            "purpose": "any"
-        },
-        {
-            "src": "icons/favicon512.png",
-            "sizes": "512x512",
-            "type": "image/png",
-            "purpose": "any"
-        },
-        {
-            "src": "icons/icon_maskable_192.png",
-            "sizes": "192x192",
-            "type": "image/png",
-            "purpose": "maskable"
-        },
-        {
-            "src": "icons/icon_maskable_512.png",
-            "sizes": "512x512",
-            "type": "image/png",
-            "purpose": "maskable"
-        }
-    ]
+  "name": "Unflip",
+  "short_name": "Unflip",
+  "description": "Unflip - The puzzle game about flipping square areas to clear the pattern.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "icons": [
+    {
+      "src": "icons/favicon256.png",
+      "sizes": "256x256",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/favicon192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/favicon512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon_maskable_192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "icons/icon_maskable_512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "version": "0.7.5"
 }

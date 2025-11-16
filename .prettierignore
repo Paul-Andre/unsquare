@@ -1,0 +1,21 @@
+# Third-party libraries
+Sortable.js
+
+# Generated files
+*.min.js
+*.bundle.js
+
+# Data files
+data/
+*.json
+
+# Font files
+ss3/
+
+# Other
+*.py
+*.txt
+*.md
+*.ico
+*.svg
+*.gif
