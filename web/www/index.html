@@ -208,30 +208,34 @@
         </header>
         <div class="content">
           <div class="finishedLevel" style="display: none; ">
-            <!-- <button onclick="game.restart();" >⟳ Restart</button> -->
-
             <!-- TODO: Check if this workds properly on different devices -->
             <div class="finishedLevelInside">
             <h1> Solved! </h1>
             <h2 class="finishedLevelMoves"> 40/3 moves</h2>
-            <button id="finishedLevelNextButton" onclick="nextLevel();" ontouchend="nextLevel();"
-              style="touch-action: none">
-              Next &#62;
-            </button>
+            <div class="finishedLevelButtons">
+              <button class="finishedLevelRestartButton" onclick="game.restart();" ontouchend="game.restart();"
+                style="touch-action: none">
+                ⟳ Redo
+              </button>
+              <button class="finishedLevelNextButton" onclick="nextLevel();" ontouchend="nextLevel();"
+                style="touch-action: none">
+                Next &#62;
+              </button>
+            </div>
             </div>
           </div>
 
           <div class="finishedLevelPerfect" style="display: none">
-            <!-- <button onclick="game.restart();" >⟳ Restart</button> -->
-
             <!-- TODO: Check if this workds properly on different devices -->
             <div class="finishedLevelInside">
             <h1> Perfect! </h1>
             <h2 class="finishedLevelMoves"> 40/3 moves</h2>
-            <button id="finishedLevelNextButton" onclick="nextLevel();" ontouchend="nextLevel();"
-              style="touch-action: none">
-              Next &#62;
-            </button>
+            <div class="finishedLevelButtons">
+              <button class="finishedLevelNextButton" onclick="nextLevel();" ontouchend="nextLevel();"
+                style="touch-action: none">
+                Next &#62;
+              </button>
+            </div>
             </div>
           </div>
 
