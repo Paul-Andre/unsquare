@@ -433,8 +433,23 @@ export class GameBase {
           const a = this.div.getElementsByClassName("finishedGame")[0];
           a.style.display = "block";
         } else {
-          const a = this.div.getElementsByClassName("finishedLevel")[0];
+          let a;
+          if (this.gameState.numMoves <= this.level.par) {
+            a = this.div.getElementsByClassName("finishedLevelPerfect")[0];
+          } else {
+            a = this.div.getElementsByClassName("finishedLevel")[0];
+          }
           a.style.display = "block";
+          a.style.opacity = ""; // Remove inline opacity to let CSS handle it
+          // Update moves display
+          const movesDisplay = a.querySelector(".finishedLevelMoves");
+          if (movesDisplay) {
+            movesDisplay.innerText = `${this.gameState.numMoves}/${this.level.par} moves`;
+          }
+          // Trigger fade-in animation after element is rendered
+          requestAnimationFrame(() => {
+            a.classList.add("showing");
+          });
         }
       }
     }
