@@ -7,7 +7,20 @@
 // }
 
 export function createLevelIcon(level) {
-  return createLevelIconCanvas(level);
+  // Create a temporary canvas to draw the icon
+  const canvas = createLevelIconCanvas(level);
+  
+  // Convert canvas to data URL
+  const dataURL = canvas.toDataURL();
+  
+  // Create img element with data URL
+  const img = document.createElement("img");
+  img.src = dataURL;
+  img.style.width = "55px";
+  img.style.height = "55px";
+  img.className = "level_icon_image";
+  
+  return img;
 }
 
 export function createLevelIconCanvas(level) {

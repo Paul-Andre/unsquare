@@ -18,21 +18,6 @@ export const LEVEL_STATES = {
   OPTIMAL: 4, // solved in optimal moves
 };
 
-// TODO: move these to a different file
-export function createLevelIcon(level) {
-  return createLevelIconCanvas(level);
-}
-
-export function createLevelIconCanvas(level) {
-  const icon = document.createElement("canvas");
-  icon.style.width = "55px";
-  icon.style.height = "55px";
-  icon.width = 55 * window.devicePixelRatio;
-  icon.height = 55 * window.devicePixelRatio;
-  drawIcon(level, icon);
-  return icon;
-}
-
 /**
  * Calculates the state of each level in the book for the level menu, using fixed parameters for how many unsolved and locked levels are allowed to be visible.
  *
@@ -162,17 +147,25 @@ export class LevelMenuComponent {
   // TODO: rename; this creates an html node
   createLevelInfo(level, state, glow) {
     let element = htmlStringToElement(`<div class="level_icon">
-    <canvas class="level_icon_image"> </canvas>
+    <img class="level_icon_image"> </img>
     <div class="level_icon_par"> </div>
     </div>
     `);
 
+    // TODO: this is duplicate code from icon.js
+
+    // Create a temporary canvas to draw the icon
+    const canvas = document.createElement("canvas");
+    canvas.width = 55 * window.devicePixelRatio;
+    canvas.height = 55 * window.devicePixelRatio;
+    drawIcon(level, canvas);
+    
+    // Convert canvas to data URL and set as img src
+    const dataURL = canvas.toDataURL();
     let icon = element.querySelector(".level_icon_image");
+    icon.src = dataURL;
     icon.style.width = "55px";
     icon.style.height = "55px";
-    icon.width = 55 * window.devicePixelRatio;
-    icon.height = 55 * window.devicePixelRatio;
-    drawIcon(level, icon);
 
     element.level = level;
 
