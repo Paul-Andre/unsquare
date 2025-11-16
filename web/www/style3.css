@@ -344,7 +344,7 @@ button[disabled] {
 }
 
 .finishedLevel.showing {
-  animation: fadeIn 0.5s ease-out forwards;
+  animation: fadeIn 1.0s ease-out forwards;
 }
 
 .finishedLevelPerfect.showing {

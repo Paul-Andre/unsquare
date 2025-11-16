@@ -30,13 +30,11 @@ export class Game extends GameBase {
     if (a) {
       a.style.display = "none";
       a.classList.remove("showing");
-      a.style.opacity = "0";
     }
     const b = this.div.getElementsByClassName("finishedLevelPerfect")[0];
     if (b) {
       b.style.display = "none";
       b.classList.remove("showing");
-      b.style.opacity = "0";
     }
   }
 
@@ -137,13 +135,11 @@ export class Game extends GameBase {
       var a = this.div.getElementsByClassName("finishedLevel")[0];
       a.style.display = "none";
       a.classList.remove("showing");
-      a.style.opacity = "0";
     }
     {
       var a = this.div.getElementsByClassName("finishedLevelPerfect")[0];
       a.style.display = "none";
       a.classList.remove("showing");
-      a.style.opacity = "0";
     }
     {
       var a = this.div.getElementsByClassName("finishedGame")[0];

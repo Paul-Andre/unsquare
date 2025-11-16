@@ -440,7 +440,6 @@ export class GameBase {
             a = this.div.getElementsByClassName("finishedLevel")[0];
           }
           a.style.display = "block";
-          a.style.opacity = ""; // Remove inline opacity to let CSS handle it
           // Update moves display
           const movesDisplay = a.querySelector(".finishedLevelMoves");
           if (movesDisplay) {
