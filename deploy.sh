@@ -107,8 +107,8 @@ with open('$SOURCE_DIR/manifest.json', 'w') as f:
 EOF
 fi
 
-# Copy files to deploy directory (exclude .git)
-rsync -av --exclude='.git' "$SOURCE_DIR/" "$DEPLOY_DIR/"
+# Copy files to deploy directory (exclude .git, delete files not in source)
+rsync -av --delete --exclude='.git' "$SOURCE_DIR/" "$DEPLOY_DIR/"
 
 # Update manifest.json in deploy repo
 if command -v jq > /dev/null 2>&1; then
