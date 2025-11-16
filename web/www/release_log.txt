@@ -136,3 +136,7 @@ Update twitter card to use correct OG image
 16 Nov 2025
 0.8.2
 img instead of canvas, potentially better for posthog
+
+16 Nov 2025
+0.8.3
+disable golden glow when finish level
