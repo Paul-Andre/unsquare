@@ -25,10 +25,16 @@ export class Game extends GameBase {
 
   // Game-specific logic for mouse down
   onMouseDown() {
-    // Hide the finished level element
+    // Hide the finished level elements
     const a = this.div.getElementsByClassName("finishedLevel")[0];
     if (a) {
       a.style.display = "none";
+      a.classList.remove("showing");
+    }
+    const b = this.div.getElementsByClassName("finishedLevelPerfect")[0];
+    if (b) {
+      b.style.display = "none";
+      b.classList.remove("showing");
     }
   }
 
@@ -128,6 +134,12 @@ export class Game extends GameBase {
     {
       var a = this.div.getElementsByClassName("finishedLevel")[0];
       a.style.display = "none";
+      a.classList.remove("showing");
+    }
+    {
+      var a = this.div.getElementsByClassName("finishedLevelPerfect")[0];
+      a.style.display = "none";
+      a.classList.remove("showing");
     }
     {
       var a = this.div.getElementsByClassName("finishedGame")[0];
