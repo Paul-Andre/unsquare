@@ -436,6 +436,12 @@ export class GameBase {
           let a;
           if (this.gameState.numMoves <= this.level.par) {
             a = this.div.getElementsByClassName("finishedLevelPerfect")[0];
+            // Add golden glow class if feature flag is enabled
+            if (config.PERFECT_SCREEN_GOLDEN_GLOW) {
+              a.classList.add("withGoldenGlow");
+            } else {
+              a.classList.remove("withGoldenGlow");
+            }
           } else {
             a = this.div.getElementsByClassName("finishedLevel")[0];
           }

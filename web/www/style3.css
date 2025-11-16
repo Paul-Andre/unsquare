@@ -348,6 +348,10 @@ button[disabled] {
 }
 
 .finishedLevelPerfect.showing {
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+.finishedLevelPerfect.withGoldenGlow.showing {
   animation: fadeInWithGoldenGlow 0.5s ease-out forwards;
 }
 
