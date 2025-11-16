@@ -128,3 +128,7 @@ test deploy.sh again (now deletes)
 16 Nov 2025
 0.8.0
 Solved/Perfect screen
+
+16 Nov 2025
+0.8.1
+Update twitter card to use correct OG image
