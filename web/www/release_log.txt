@@ -112,3 +112,7 @@ fix rage-quitting level
 16 Nov 2025
 0.7.4
 Add manifest
+
+16 Nov 2025
+0.7.5
+Testing deploy script
