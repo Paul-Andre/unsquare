@@ -116,3 +116,7 @@ Add manifest
 16 Nov 2025
 0.7.5
 Testing deploy script
+
+16 Nov 2025
+0.7.6
+Test release.sh again
