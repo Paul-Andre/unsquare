@@ -140,3 +140,7 @@ img instead of canvas, potentially better for posthog
 16 Nov 2025
 0.8.3
 disable golden glow when finish level
+
+16 Nov 2025
+0.8.4
+monochrome icons and "daily and weekly"
