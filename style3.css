@@ -245,7 +245,7 @@ div#iconContainer.selectingIcon .level_icon:before {
 
 .gameCanvas {
   /* background-color: red; */
-
+  display: block;
   touch-action: none;
 }
 
