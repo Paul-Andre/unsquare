@@ -437,10 +437,18 @@ export class GameBase {
           if (this.gameState.numMoves <= this.level.par) {
             a = this.div.getElementsByClassName("finishedLevelPerfect")[0];
             // Add golden glow class if feature flag is enabled
-            if (config.PERFECT_SCREEN_GOLDEN_GLOW) {
-              a.classList.add("withGoldenGlow");
+            if (posthog && typeof posthog.getFeatureFlag === 'function') {
+              if (posthog.getFeatureFlag('perfect_screen_golden_glow') == "glow") {
+                a.classList.add("withGoldenGlow");
+              } else {
+                a.classList.remove("withGoldenGlow");
+              }
             } else {
-              a.classList.remove("withGoldenGlow");
+              if (config.PERFECT_SCREEN_GOLDEN_GLOW) {
+                a.classList.add("withGoldenGlow");
+              } else {
+                a.classList.remove("withGoldenGlow");
+              }
             }
           } else {
             a = this.div.getElementsByClassName("finishedLevel")[0];
