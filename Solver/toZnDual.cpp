@@ -644,11 +644,14 @@ int main() {
 
   vector<int> target;
   for (int i=0;i<m; i++){
-    string s;
-    cin>>s;
-    assert(s.size()==n);
-    for (char c: s){
-      if(c=='1'){
+    //string s;
+    //cin>>s;
+    //assert(s.size()==n);
+    //for (char c: s){
+    for (int j=0; j<n; j++) {
+      char c; 
+      cin>>c;
+      if(c=='#'){
         target.push_back(1);
       }else{
         target.push_back(0);
