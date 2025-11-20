@@ -203,7 +203,7 @@ export class Game extends GameBase {
 
   updateBestDisplay() {
     const best = this.getCurrentBest();
-    this.getElement("bestContent").innerText = best ?? "-";
+    this.getElement("bestContent").innerText = best !== null ? best : "-";
   }
 
   getElement(className) {
