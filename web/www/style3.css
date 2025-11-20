@@ -305,6 +305,18 @@ button[disabled] {
   color: var(--inactive_text);
 }
 
+button.drawModeActive {
+  background: #4CAF50;
+  border-color: #45a049;
+  color: white;
+}
+
+button.drawModeActive:hover {
+  background: #45a049;
+  border-color: #3d8b40;
+  color: white;
+}
+
 
 @keyframes pulse-animation {
   0% {

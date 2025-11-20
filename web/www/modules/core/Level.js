@@ -194,7 +194,4 @@ export function compute_gaussian_solution(level) {
     level.solutionVector = null;
     level.solutionType = "impossible";
   }
-  if (vector_sum(level.solutionVector) <= 3) {
-    level.solutionType = "confirmed";
-  }
 }
