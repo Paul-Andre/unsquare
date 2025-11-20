@@ -128,7 +128,7 @@ window.addEventListener('load',
   showSlide(0);
 
   let num_levels_done = 0;
-  for (var key in localStorage) {
+  for (let key in localStorage) {
     if (key.startsWith("level_") && key.endsWith("bestNumMoves")) {
       num_levels_done += 1;
     }

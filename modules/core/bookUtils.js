@@ -23,7 +23,7 @@ export function book_reviver(key, value) {
       return Level.fromJsonObject(value);
     }
     if (value.levels) {
-      for (var i = 0; i < value.levels.length; i++) {
+      for (let i = 0; i < value.levels.length; i++) {
         value.levels[i].index = i;
       }
     }

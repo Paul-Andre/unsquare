@@ -75,11 +75,11 @@ export class BookMenu {
   }
 
   showBooks() {
-    var container = document.getElementById("bookContainer");
+    let container = document.getElementById("bookContainer");
 
     container.innerHTML = "";
 
-    for (var i = 0; i < this.books.length; i++) {
+    for (let i = 0; i < this.books.length; i++) {
       container.append(this.prepareBook(this.books[i]));
     }
   }
@@ -91,7 +91,7 @@ export class BookMenu {
 
   newBook() {
 
-    var book = create_empty_book();
+    let book = create_empty_book();
     save_editor_book(book);
 
     this.books.push(book);
@@ -106,7 +106,7 @@ export class BookMenu {
   }
 
   addFromJson() {
-    var saveStr = prompt("Paste JSON");
+    let saveStr = prompt("Paste JSON");
     if (saveStr) {
       let book = JSON.parse(saveStr, book_reviver);
       book.id = generate_id("book");

@@ -41,10 +41,10 @@ export function drawIcon(level, canvas) {
 
     let tiles = level.tiles;
 
-    var cellWidth = canvas.width / tiles.width;
-    var cellHeight = canvas.height / tiles.height;
+    let cellWidth = canvas.width / tiles.width;
+    let cellHeight = canvas.height / tiles.height;
 
-    var ctx = canvas.getContext("2d");
+    let ctx = canvas.getContext("2d");
 
     tiles.forEach(function (v, x, y) {
       let f = colorScheme.cells[v].fill;
