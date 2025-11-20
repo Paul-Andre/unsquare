@@ -78,6 +78,18 @@ export class BoundedGrid extends Grid {
     return false;
   }
 
+  every(f) {
+    // f(v,x,y,grid) - returns true if all elements match the predicate
+    for (let i = 0; i < this.width; i++) {
+      for (let j = 0; j < this.height; j++) {
+        if (!f(this.get(i, j), i, j, this)) {
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+
   forEachSet(f) {
     // f(v,x,y,grid)
     for (let i = 0; i < this.width; i++) {
