@@ -6,6 +6,7 @@ import { vector_sum, vector_add, vector_simplify_arithmetic, level_get_arithmeti
 import { save_editor_book } from '../core/bookUtils.js';
 import { trackLevelEnd } from '../utils/analytics.js';
 import { getBestNumMoves, setBestNumMoves, clearBestNumMoves } from '../core/levelUtils.js';
+import * as config from '../utils/config.js';
 
 export class Game extends GameBase {
   constructor(canvasId, divId) {
@@ -16,6 +17,14 @@ export class Game extends GameBase {
 
     this.numSolvedThisSession = 0;
     this.showedDiscordOverlay = false;
+
+    // Tutorial hint system properties
+    this.demoDrag = null;
+    this.demoDragTime = 0;
+    this.firstDemoDrag = {
+      start: { x: 0.33, y: 0.33 },
+      end: { x: 0.67, y: 0.67 },
+    };
   }
 
   // this specifies what happens when you activate squares
@@ -126,6 +135,117 @@ export class Game extends GameBase {
       return getBestNumMoves(this.level);
     }
     return null;
+  }
+
+  isInBasicBook() {
+    // TODO: add some kind of flag to the book object for this.
+    return this.book.source.endsWith(".json");
+  }
+
+  updateGui() {
+    // Return early if no level is loaded yet
+    if (!this.level || !this.gameState) {
+      return;
+    }
+
+    if (config.ONBOARDING_HINTS) {
+      if (
+        this.level.id == "level_1693531796434" &&
+        this.gameState.numMoves == 0
+      ) {
+        this.demoDrag = this.firstDemoDrag;
+      } else {
+        this.demoDrag = null;
+      }
+      // The logic would be something like:
+      // Check if needs to provide hint according to level json
+      // Run a basic hint system to get the next move to be hinted, or otherwise to undo
+      // If a move to be hinted, calculate the drag based on that move, and set it as this.demoDrag
+
+      let suggestsRestart = false;
+      if (
+        this.level.id == "level_1693531796434" &&
+        this.gameState.numMoves >= 1 &&
+        !this.isFinished()
+      ) {
+        suggestsRestart = true;
+      }
+      if (
+        this.isInBasicBook() &&
+        this.level.index < 10 &&
+        this.gameState.numMoves > this.level.par * 3 &&
+        !this.isFinished()
+      ) {
+        suggestsRestart = true;
+      }
+
+      let restartButton = this.div.getElementsByClassName("restart_button")[0];
+      if (suggestsRestart) {
+        restartButton.classList.add("in_yo_face");
+      } else {
+        restartButton.classList.remove("in_yo_face");
+      }
+    }
+    if (this.isFinished()) {
+      if (this.isInBasicBook()) {
+        if (this.level.index >= this.book.levels.length - 1) {
+          // TODO: won game.
+          const a = this.div.getElementsByClassName("finishedGame")[0];
+          a.style.display = "block";
+        } else {
+          let a;
+          if (this.gameState.numMoves <= this.level.par) {
+            a = this.div.getElementsByClassName("finishedLevelPerfect")[0];
+            if (config.PERFECT_SCREEN_GOLDEN_GLOW) {
+              a.classList.add("withGoldenGlow");
+            } else {
+              a.classList.remove("withGoldenGlow");
+            }
+          } else {
+            a = this.div.getElementsByClassName("finishedLevel")[0];
+          }
+          a.style.display = "block";
+          // Update moves display
+          const movesDisplay = a.querySelector(".finishedLevelMoves");
+          if (movesDisplay) {
+            movesDisplay.innerText = `${this.gameState.numMoves}/${this.level.par} moves`;
+          }
+          // Trigger fade-in animation after element is rendered
+          requestAnimationFrame(() => {
+            a.classList.add("showing");
+          });
+        }
+      }
+    } else {
+      {
+        let a = this.div.getElementsByClassName("finishedLevel")[0];
+        a.style.display = "none";
+        a.classList.remove("showing");
+      }
+      {
+        let a = this.div.getElementsByClassName("finishedLevelPerfect")[0];
+        a.style.display = "none";
+        a.classList.remove("showing");
+      }
+      {
+        let a = this.div.getElementsByClassName("finishedGame")[0];
+        a.style.display = "none";
+      }
+    }
+
+    if (this.gameState) {
+      const a = this.div.getElementsByClassName("movesContent")[0];
+      a.innerText = this.gameState.numMoves;
+    }
+
+    const a = this.div.getElementsByClassName("bestContent")[0];
+    const b = this.getCurrentBest();
+
+    if (b === null || b === undefined) {
+      a.innerText = "-";
+    } else {
+      a.innerText = b;
+    }
   }
 
   displayLevelGui(level) {
@@ -253,6 +373,95 @@ export class Game extends GameBase {
       this.onShow();
       // Force redraw to ensure canvas updates
       this.forceRedraw();
+    }
+  }
+
+  // Animation utility methods
+  interpolate(a, b, t) {
+    return a + (b - a) * t;
+  }
+
+  // [0,1] -> [0,1]
+  // https://stackoverflow.com/a/25730573/2356347
+  bezierBlend(t) {
+    return t * t * (3.0 - 2.0 * t);
+  }
+
+  clamp(x) {
+    return Math.min(1, Math.max(0, x));
+  }
+
+  easeOut(x) {
+    return this.interpolate(this.interpolate(x, 1, x), 1, x);
+  }
+
+  dragBlend(x) {
+    return this.interpolate(
+      this.interpolate(this.interpolate(this.bezierBlend(x), 1, x), 1, x),
+      1,
+      x
+    );
+  }
+
+  // Tutorial hint overlay drawing
+  overlayDemoDrag() {
+    if (!this.demoDrag) {
+      return;
+    }
+    let width = this.canvas.width;
+    let height = this.canvas.height;
+
+    // TODO: maybe include this in the demoDrag object?
+    let relativeDragSize = 40 / config.MAX_WIDTH;
+    let relativeLineSize = relativeDragSize * 0.75;
+
+    // TODO: figure out whether to use width or height. Only issue when rectangles
+    this.ctx.lineWidth = relativeLineSize * width;
+    this.ctx.lineCap = "round";
+    this.ctx.strokeStyle = "#4fb6ff55";
+    this.ctx.beginPath();
+    this.ctx.moveTo(
+      this.demoDrag.start.x * width,
+      this.demoDrag.start.y * height
+    );
+    this.ctx.lineTo(this.demoDrag.end.x * width, this.demoDrag.end.y * height);
+    this.ctx.stroke();
+
+    // TODO: the ease-out should actually be related to the size of the grid ideally
+    let animTime = this.demoDragTime;
+    let easedTime = this.dragBlend(animTime);
+    let bubbleX =
+      this.interpolate(this.demoDrag.start.x, this.demoDrag.end.x, easedTime) *
+      width;
+    let bubbleY =
+      this.interpolate(this.demoDrag.start.y, this.demoDrag.end.y, easedTime) *
+      height;
+
+    let bubbleSize = relativeDragSize * width;
+    this.ctx.fillStyle = "#4fb6ff55";
+    this.ctx.beginPath();
+    this.ctx.arc(bubbleX, bubbleY, bubbleSize, 0, 2 * Math.PI);
+    this.ctx.fill();
+  }
+
+  // Hook methods for animation and drawing
+  hasAdditionalAnimations() {
+    return this.demoDrag !== null;
+  }
+
+  updateAdditionalAnimations(timestamp) {
+    if (this.demoDrag) {
+      this.demoDragTime +=
+        (timestamp - this.gameState.lastUpdateTimestamp) / 1500;
+      this.demoDragTime %= 1;
+      return true;
+    }
+    return false;
+  }
+
+  drawOverlays() {
+    if (this.demoDrag) {
+      this.overlayDemoDrag();
     }
   }
 }

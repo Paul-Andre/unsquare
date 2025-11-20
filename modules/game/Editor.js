@@ -226,6 +226,7 @@ export class Editor extends GameBase {
       }
       ret += "\n";
     }
+    // Print a flat representation of the level to the console
     console.log(ret);
   }
 
