@@ -24,6 +24,9 @@ export class Editor extends GameBase {
 
     // Bind the action method to preserve 'this' context when passed as callback
     this.action = this.action.bind(this);
+
+    // Set up keyboard event listeners
+    this.setupKeyboardListeners();
   }
 
   editorOpenLevel(level, book) {
@@ -306,6 +309,25 @@ export class Editor extends GameBase {
         button.classList.remove("drawModeActive");
       }
     }
+  }
+
+  setupKeyboardListeners() {
+    // TODO: note that the event listener never gets removed
+    // It is okay for the time being since I only initialize this "component" once,
+    // but will need to figure out a better way to do once I do differently.
+    window.addEventListener("keydown", (e) => {
+      // Only handle if editor screen is active and not typing in an input
+      if (
+        screenManager.currentScreenName === "editor" &&
+        e.target.tagName !== "INPUT" &&
+        e.target.tagName !== "TEXTAREA"
+      ) {
+        if (e.key === "d" || e.key === "D") {
+          e.preventDefault();
+          this.toggleDrawMode();
+        }
+      }
+    });
   }
 
   // Override mouse handlers for draw mode
