@@ -54,12 +54,16 @@ export class Level {
       hasValidSolution = level_check_solution(level);
     }
     if (!hasValidSolution) {
+      // A lot of code relies on the solution vector being set,
+      // so I compute it here, even if it is suboptimal.
+      // However if it's not optimal.
       compute_gaussian_solution(level);
+      level.par = null;
+    } else {
+      level.par = vector_sum(level.solutionVector);
     }
     // Sanity check, that solution makes sense
     assert(level_check_solution(level));
-    let par = vector_sum(level.solutionVector);
-    level.par = par;
 
     return level;
   }

@@ -152,7 +152,7 @@ export class Game extends GameBase {
   updateRestartButton() {
     const suggestsRestart = 
       (this.level.id == "level_1693531796434" && this.gameState.numMoves >= 1 && !this.isFinished()) ||
-      (this.isInBasicBook() && this.level.index < 10 && this.gameState.numMoves > this.level.par * 3 && !this.isFinished());
+      (this.isInBasicBook() && this.level.index < 10 && this.level.par !== null && this.gameState.numMoves > this.level.par * 3 && !this.isFinished());
 
     const restartButton = this.div.getElementsByClassName("restart_button")[0];
     restartButton.classList.toggle("in_yo_face", suggestsRestart);
@@ -168,7 +168,7 @@ export class Game extends GameBase {
       return;
     }
 
-    const isPerfect = this.gameState.numMoves <= this.level.par;
+    const isPerfect = this.level.par !== null && this.gameState.numMoves <= this.level.par;
     const element = this.getElement(isPerfect ? "finishedLevelPerfect" : "finishedLevel");
     
     if (isPerfect) {
@@ -178,7 +178,8 @@ export class Game extends GameBase {
     element.style.display = "block";
     const movesDisplay = element.querySelector(".finishedLevelMoves");
     if (movesDisplay) {
-      movesDisplay.innerText = `${this.gameState.numMoves}/${this.level.par} moves`;
+      const parDisplay = this.level.par === null ? "?" : this.level.par;
+      movesDisplay.innerText = `${this.gameState.numMoves}/${parDisplay} moves`;
     }
     requestAnimationFrame(() => element.classList.add("showing"));
   }
@@ -214,9 +215,10 @@ export class Game extends GameBase {
     this.hideFinishedLevelElements();
 
     document.getElementById("TextShower").innerText = level.text;
-    const par = vector_sum(level.solutionVector);
+    const par = level.par;
+    const parDisplay = par === null ? "?" : par;
     this.getElement("parContentInclusive").innerText = 
-      level.custom ? `creator par: ${par}` : `par: ${par}`;
+      level.custom ? `creator par: ${parDisplay}` : `par: ${parDisplay}`;
 
     const index = level.index;
     document.getElementById("LevelIndicator").innerText = 
