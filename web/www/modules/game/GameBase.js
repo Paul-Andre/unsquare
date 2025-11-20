@@ -27,9 +27,6 @@ export class GameBase {
     this.hoveredTile = null; // Track which tile is being hovered
 
     this.gameState = null;
-    // TODO: encapsulate these in an object
-    this.demoDrag = null;
-    this.demoDragTime = 0;
 
     this.canvasVirtualSize = 0;
     this.canvasSize = 0;
@@ -38,17 +35,6 @@ export class GameBase {
     this.hidden = true;
     // to make sure we don't requestAnimationFrame if it's already been requested
     // Animation system properties
-
-    this.firstDemoDrag = {
-      start: {
-        x: 0.33,
-        y: 0.33,
-      },
-      end: {
-        x: 0.67,
-        y: 0.67,
-      },
-    };
 
     this.animationRunning = false;
 
@@ -69,8 +55,6 @@ export class GameBase {
       this.canvasVirtualSize + "px";
     this.draw();
   }
-
-  displayLevelGui() {}
 
   openLevel(level, book) {
     this.gameState = new GameState(level);
@@ -325,102 +309,8 @@ export class GameBase {
     );
   }
 
-  isInBasicBook() {
-    // TODO: add some kind of flag to the book object for this.
-    return this.book.source.endsWith(".json");
-  }
-
   updateGui() {
-    // Return early if no level is loaded yet
-    if (!this.level || !this.gameState) {
-      return;
-    }
-
-    if (config.ONBOARDING_HINTS) {
-      // TODO: this should probably not be in the base
-      if (
-        this.level.id == "level_1693531796434" &&
-        this.gameState.numMoves == 0
-      ) {
-        this.demoDrag = this.firstDemoDrag;
-      } else {
-        this.demoDrag = null;
-      }
-      // The logic would be something like:
-      // Check if needs to provide hint according to level json
-      // Run a basic hint system to get the next move to be hinted, or otherwise to undo
-      // If a move to be hinted, calculate the drag based on that move, and set it as this.demoDrag
-
-      let suggestsRestart = false;
-      if (
-        this.level.id == "level_1693531796434" &&
-        this.gameState.numMoves >= 1 &&
-        !this.isFinished()
-      ) {
-        suggestsRestart = true;
-      }
-      if (
-        this.isInBasicBook() &&
-        this.level.index < 10 &&
-        this.gameState.numMoves > this.level.par * 3 &&
-        !this.isFinished()
-      ) {
-        suggestsRestart = true;
-      }
-
-      let restartButton = this.div.getElementsByClassName("restart_button")[0];
-      if (suggestsRestart) {
-        restartButton.classList.add("in_yo_face");
-      } else {
-        restartButton.classList.remove("in_yo_face");
-      }
-
-    }
-    if (this.isFinished()) {
-      if (this.isInBasicBook()) {
-        if (this.level.index >= this.book.levels.length - 1) {
-          // TODO: won game.
-          const a = this.div.getElementsByClassName("finishedGame")[0];
-          a.style.display = "block";
-        } else {
-          let a;
-          if (this.gameState.numMoves <= this.level.par) {
-            a = this.div.getElementsByClassName("finishedLevelPerfect")[0];
-            if (config.PERFECT_SCREEN_GOLDEN_GLOW) {
-              a.classList.add("withGoldenGlow");
-            } else {
-              a.classList.remove("withGoldenGlow");
-            }
-          } else {
-            a = this.div.getElementsByClassName("finishedLevel")[0];
-          }
-          a.style.display = "block";
-          // Update moves display
-          const movesDisplay = a.querySelector(".finishedLevelMoves");
-          if (movesDisplay) {
-            movesDisplay.innerText = `${this.gameState.numMoves}/${this.level.par} moves`;
-          }
-          // Trigger fade-in animation after element is rendered
-          requestAnimationFrame(() => {
-            a.classList.add("showing");
-          });
-        }
-      }
-    }
-
-    if (this.gameState) {
-      const a = this.div.getElementsByClassName("movesContent")[0];
-      a.innerText = this.gameState.numMoves;
-    }
-
-    const a = this.div.getElementsByClassName("bestContent")[0];
-    const b = this.getCurrentBest();
-
-    if (b === null || b === undefined) {
-      a.innerText = "-";
-    } else {
-      a.innerText = b;
-    }
+    // Override in subclasses
   }
 
   draw() {
@@ -443,7 +333,6 @@ export class GameBase {
     }
   }
 
-  // TODO: This is probably an intermediate step in refactor
   actuallyDrawCanvas() {
     this.level.tileShape.draw(
       this.ctx,
@@ -452,9 +341,8 @@ export class GameBase {
       this.hoveredTile
     );
 
-    if (this.demoDrag) {
-      this.overlayDemoDrag();
-    }
+    // Hook for subclasses to draw overlays
+    this.drawOverlays();
   }
 
 
@@ -473,8 +361,8 @@ export class GameBase {
       return false;
     }
 
-    // Check demo drag animation
-    if (this.demoDrag) {
+    // Check for additional animations from subclasses
+    if (this.hasAdditionalAnimations()) {
       return true;
     }
 
@@ -497,12 +385,9 @@ export class GameBase {
   updateCanvasAnimations(timestamp) {
     let hasAnimations = false;
 
-    // Update demo drag animation
-    if (this.demoDrag) {
+    // Update additional animations from subclasses
+    if (this.updateAdditionalAnimations(timestamp)) {
       hasAnimations = true;
-      this.demoDragTime +=
-        (timestamp - this.gameState.lastUpdateTimestamp) / 1500;
-      this.demoDragTime %= 1;
     }
 
     // Update tile animations
@@ -551,75 +436,6 @@ export class GameBase {
     }
   }
 
-  // TODO put these in a better file
-  interpolate(a, b, t) {
-    return a + (b - a) * t;
-  }
-
-  // [0,1] -> [0,1]
-  // https://stackoverflow.com/a/25730573/2356347
-  bezierBlend(t) {
-    return t * t * (3.0 - 2.0 * t);
-  }
-
-  clamp(x) {
-    return Math.min(1, Math.max(0, x));
-  }
-
-  easeOut(x) {
-    return this.interpolate(this.interpolate(x, 1, x), 1, x);
-  }
-
-  dragBlend(x) {
-    return this.interpolate(
-      this.interpolate(this.interpolate(this.bezierBlend(x), 1, x), 1, x),
-      1,
-      x
-    );
-  }
-
-  // TODO: overlay this on a separate canvas for efficiency?  eh...
-  overlayDemoDrag() {
-    if (!this.demoDrag) {
-      return;
-    }
-    let width = this.canvas.width;
-    let height = this.canvas.height;
-
-    // TODO: maybe include this in the demoDrag object?
-    let relativeDragSize = 40 / config.MAX_WIDTH;
-    let relativeLineSize = relativeDragSize * 0.75;
-
-    // TODO: figure out whether to use width or height. Only issue when rectangles
-    this.ctx.lineWidth = relativeLineSize * width;
-    this.ctx.lineCap = "round";
-    this.ctx.strokeStyle = "#4fb6ff55";
-    this.ctx.beginPath();
-    this.ctx.moveTo(
-      this.demoDrag.start.x * width,
-      this.demoDrag.start.y * height
-    );
-    this.ctx.lineTo(this.demoDrag.end.x * width, this.demoDrag.end.y * height);
-    this.ctx.stroke();
-
-    // TODO: the ease-out should actually be related to the size of the grid ideally
-    let animTime = this.demoDragTime;
-    //let easedTime = animTime; //bezierBlend(animTime);
-    let easedTime = this.dragBlend(animTime);
-    let bubbleX =
-      this.interpolate(this.demoDrag.start.x, this.demoDrag.end.x, easedTime) *
-      width;
-    let bubbleY =
-      this.interpolate(this.demoDrag.start.y, this.demoDrag.end.y, easedTime) *
-      height;
-
-    let bubbleSize = relativeDragSize * width;
-    this.ctx.fillStyle = "#4fb6ff55";
-    this.ctx.beginPath();
-    this.ctx.arc(bubbleX, bubbleY, bubbleSize, 0, 2 * Math.PI);
-    this.ctx.fill();
-  }
-
   onShow() {
     this.hidden = false;
     document.body.style.zoom = "100%";
@@ -651,6 +467,26 @@ export class GameBase {
 
   // Hook for subclasses to save state before a move is applied
   preMove(move) {
+    // Override in subclasses
+  }
+
+  // Hook for subclasses to check for additional animations beyond tile animations
+  hasAdditionalAnimations() {
+    return false;
+  }
+
+  // Hook for subclasses to update additional animations
+  updateAdditionalAnimations(timestamp) {
+    return false;
+  }
+
+  // Hook for subclasses to draw overlays after base canvas drawing
+  drawOverlays() {
+    // Override in subclasses
+  }
+
+  // Hook for subclasses to display level-specific GUI
+  displayLevelGui(level) {
     // Override in subclasses
   }
 }
