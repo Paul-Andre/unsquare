@@ -1,6 +1,6 @@
 // This isn't currently used, moreover, this probably isn't the style I would
 // want.
-export var drawCheck = function (ctx, scaleValue, fillStyle) {
+export let drawCheck = function (ctx, scaleValue, fillStyle) {
   scaleValue = scaleValue || 1;
 
   fillStyle = fillStyle || "#333333";

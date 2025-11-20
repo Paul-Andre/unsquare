@@ -169,10 +169,10 @@ export class Editor extends GameBase {
   }
 
   promptSize() {
-    var size = window.prompt();
-    if (size !== null) {
+    let promptedSize = window.prompt();
+    if (promptedSize !== null) {
       // TODO make sure it doesn't break the Grid abstraction here.
-      var size = new Number(size);
+      let size = new Number(promptedSize);
       if (!isNaN(size)) {
         // Save current state for undo
         this.undoList.push({
@@ -180,7 +180,7 @@ export class Editor extends GameBase {
           gameState: new GameState(this.level), // Create a fresh game state clone
         });
 
-        var grid = Grid.empty(size, size);
+        let grid = Grid.empty(size, size);
 
         grid.setAll(1);
 
@@ -214,14 +214,14 @@ export class Editor extends GameBase {
   }
 
   printFlat() {
-    var ret = "";
+    let ret = "";
     ret += this.gameState.tiles.width;
     ret += " ";
     ret += this.gameState.tiles.height;
     ret += "\n";
-    var tiles = this.gameState.tiles;
-    for (var j = 0; j < tiles.height; j++) {
-      for (var i = 0; i < tiles.width; i++) {
+    let tiles = this.gameState.tiles;
+    for (let j = 0; j < tiles.height; j++) {
+      for (let i = 0; i < tiles.width; i++) {
         ret += "" + (tiles.get(i, j) - 1);
       }
       ret += "\n";

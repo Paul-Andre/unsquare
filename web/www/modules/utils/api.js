@@ -23,5 +23,5 @@ export class Storage {
 }
 
 // Backward compatibility
-export var api = Api;
-export var storage = Storage;
+export let api = Api;
+export let storage = Storage;
