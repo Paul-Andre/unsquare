@@ -21,6 +21,7 @@ export class Level {
     level.text = "";
     level.index = -1;
     level.isIcon = false;
+    level.mode = "normal";
     level.id = generate_id("level");
 
     let operations = compute_operations_for_level(level);
@@ -41,6 +42,7 @@ export class Level {
     level.text = json.text || "";
     level.index = json.index;
     level.isIcon = !!json.isIcon;
+    level.mode = json.mode || "normal";
     if (json.id) {
       level.id = json.id;
     } else {
@@ -95,6 +97,7 @@ export class Level {
     level.text = "";
     level.index = -1;
     level.isIcon = false;
+    level.mode = "normal";
     // TODO: does it make sense to not add any numbers or anything?
     level.id = "custom";
 
@@ -137,6 +140,9 @@ export class Level {
     if (this.isIcon) {
       json.isIcon = this.isIcon;
     }
+    if (this.mode && this.mode !== "normal") {
+      json.mode = this.mode;
+    }
     json.index = this.index;
     json.id = this.id;
 
@@ -162,6 +168,7 @@ export class Level {
     this.index = otherLevel.index;
     this.id = otherLevel.id;
     this.isIcon = otherLevel.isIcon;
+    this.mode = otherLevel.mode || "normal";
     if (otherLevel.solutionVector) {
       this.solutionVector = otherLevel.solutionVector.slice();
     } else {
