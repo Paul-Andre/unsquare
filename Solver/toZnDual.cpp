@@ -643,15 +643,27 @@ int main() {
 
 
   vector<int> target;
+  /* for (int i=0;i<m; i++){ */
+  /*   //string s; */
+  /*   //cin>>s; */
+  /*   //assert(s.size()==n); */
+  /*   //for (char c: s){ */
+  /*   for (int j=0; j<n; j++) { */
+  /*     char c; */ 
+  /*     cin>>c; */
+  /*     if(c=='#'){ */
+  /*       target.push_back(1); */
+  /*     }else{ */
+  /*       target.push_back(0); */
+  /*     } */
+  /*   } */
+  /* } */
   for (int i=0;i<m; i++){
-    //string s;
-    //cin>>s;
-    //assert(s.size()==n);
-    //for (char c: s){
-    for (int j=0; j<n; j++) {
-      char c; 
-      cin>>c;
-      if(c=='#'){
+    string s;
+    cin>>s;
+    assert(s.size()==n);
+    for (char c: s){
+      if(c=='1'){
         target.push_back(1);
       }else{
         target.push_back(0);
@@ -682,7 +694,8 @@ int main() {
 
     if (kernel.size()) {
 
-      if (true) {
+      bool doRandomlyImprove = true;
+      if (doRandomlyImprove) {
         solution = randomlyImprove(solution, original_kernel);
         cerr << "after randomly improving " << sumVec(solution) << endl;
         solution = randomlyImprove(solution, kernel);

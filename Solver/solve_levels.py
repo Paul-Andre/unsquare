@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # This script was written mostly by cursor
 """
-Solver script for Unsquared levels.
+Solver script for Unflip levels.
 
 This script:
 1. Reads a JSON file containing levels
@@ -19,6 +19,7 @@ import sys
 import os
 import tempfile
 import re
+import time
 from pathlib import Path
 
 
@@ -358,7 +359,14 @@ def solve_json_file(input_path, output_path, solver_dir):
         old_solution = level.get('solutionVector')
         old_ops = sum(old_solution) if old_solution else None
         
+        # Measure solving time
+        start_time = time.perf_counter()
         result = solve_level(level, solver_dir)
+        elapsed_time = time.perf_counter() - start_time
+        
+        # Display elapsed time in milliseconds
+        time_ms = elapsed_time * 1000
+        print(f"    Time: {time_ms:.1f}ms")
         
         if len(result) == 3:
             solution_vector, status, improved = result
