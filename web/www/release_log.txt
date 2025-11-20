@@ -152,3 +152,7 @@ golden glow with posthog feature flag
 19 Nov 2025
 0.8.6
 Option to leave emails
+
+19 Nov 2025
+0.8.7
+improve demoDrag ...
