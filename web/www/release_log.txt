@@ -156,3 +156,7 @@ Option to leave emails
 19 Nov 2025
 0.8.7
 improve demoDrag ...
+
+19 Nov 2025
+0.8.8
+refactor + fix undo after finish
