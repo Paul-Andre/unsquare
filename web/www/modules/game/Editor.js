@@ -7,6 +7,7 @@ import { compute_operations_for_level, vector_sum, level_check_solution, get_lev
 import { save_editor_book } from '../core/bookUtils.js';
 import { screenManager } from '../ui/ScreenManager.js';
 import { Level, compute_gaussian_solution } from '../core/Level.js';
+import { generate_id } from '../utils/helpers.js';
 
 export class Editor extends GameBase {
   constructor(canvasId, divId) {
@@ -213,6 +214,16 @@ export class Editor extends GameBase {
   saveAndReturn() {
     this.saveLevel();
     screenManager.goBack();
+  }
+
+  saveAs() {
+    this.updateLevelInfo();
+    const newLevel = this.level.clone();
+    newLevel.id = generate_id("level");
+    newLevel.index = this.book.levels.length;
+    this.book.levels.push(newLevel);
+    save_editor_book(this.book);
+    this.editorOpenLevel(newLevel, this.book);
   }
 
   setText(text) {
