@@ -216,7 +216,7 @@ def verify_solution(tiles, solution_vector):
 
 
 
-def solve_level(level, solver_dir):
+def solve_level(level, solver_dir, force=False):
     """Solve a single level"""
     level_id = level.get('id', 'unknown')
     m = len(level.get('tiles', []))
@@ -236,6 +236,11 @@ def solve_level(level, solver_dir):
     if not tiles:
         print(f"    Skipping: No tiles")
         return None, "No tiles", False
+    
+    # Skip if already solved with minizinc and force is not set
+    if not force and level.get('solutionType') == 'minizinc':
+        print(f"    Skipping: Already solved (minizinc)")
+        return None, "Already solved (minizinc)", False
     
     # If there's already a solution, verify it first to test the sanity check
     existing_solution = level.get('solutionVector')
@@ -334,7 +339,7 @@ def solve_level(level, solver_dir):
         os.unlink(input_file)
 
 
-def solve_json_file(input_path, output_path, solver_dir):
+def solve_json_file(input_path, output_path, solver_dir, force=False):
     """Process all levels in a JSON file"""
     with open(input_path, 'r') as f:
         data = json.load(f)
@@ -361,7 +366,7 @@ def solve_json_file(input_path, output_path, solver_dir):
         
         # Measure solving time
         start_time = time.perf_counter()
-        result = solve_level(level, solver_dir)
+        result = solve_level(level, solver_dir, force)
         elapsed_time = time.perf_counter() - start_time
         
         # Display elapsed time in milliseconds
@@ -420,11 +425,21 @@ def solve_json_file(input_path, output_path, solver_dir):
 
 def main():
     if len(sys.argv) < 2:
-        print("Usage: python solve_levels.py <input.json> [output.json]")
+        print("Usage: python solve_levels.py <input.json> [output.json] [--force]")
         sys.exit(1)
     
-    input_path = sys.argv[1]
-    output_path = sys.argv[2] if len(sys.argv) > 2 else input_path.replace('.json', '_solved.json')
+    # Parse --force flag
+    force = '--force' in sys.argv
+    
+    # Filter out --force from arguments when parsing paths
+    args = [arg for arg in sys.argv[1:] if arg != '--force']
+    
+    if len(args) < 1:
+        print("Usage: python solve_levels.py <input.json> [output.json] [--force]")
+        sys.exit(1)
+    
+    input_path = args[0]
+    output_path = args[1] if len(args) > 1 else input_path.replace('.json', '_solved.json')
     
     # Get solver directory (where this script is located)
     solver_dir = os.path.dirname(os.path.abspath(__file__))
@@ -433,7 +448,7 @@ def main():
         print(f"Error: Input file not found: {input_path}")
         sys.exit(1)
     
-    solve_json_file(input_path, output_path, solver_dir)
+    solve_json_file(input_path, output_path, solver_dir, force)
 
 
 if __name__ == '__main__':
