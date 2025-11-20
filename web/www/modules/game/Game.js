@@ -88,7 +88,6 @@ export class Game extends GameBase {
   finishedLevel() {
     let oldSum = vector_sum(this.level.solutionVector);
 
-    console.log(this.gameState.runningSolution);
 
     //TODO (not sure if it's an add or a subtract) (but it's the same thing mod 2)
     let newSolution = vector_add(

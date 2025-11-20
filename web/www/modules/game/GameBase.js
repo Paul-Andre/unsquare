@@ -50,7 +50,6 @@ export class GameBase {
       },
     };
 
-    this.wasPaused = true;
     this.animationRunning = false;
 
     this.setupEventListeners();
@@ -281,90 +280,41 @@ export class GameBase {
   }
 
   setupEventListeners() {
-    if (false) {
-      const createTouchListener = fn => {
-        return event => {
-          if (event.changedTouches) {
-            const coords = this.getCoordinates(event.changedTouches[0]);
-            fn(coords.x, coords.y);
-          }
-          //return cancelEvent(event);
-        };
-      };
+    const beginSliding = e => {
+      const coords = this.getCoordinates(e);
+      this.doMouseDown(coords.x, coords.y);
+      return cancelEvent(e);
+    };
 
-      this.canvas.addEventListener(
-        "touchstart",
-        createTouchListener(this.doMouseDown.bind(this))
-      );
-      this.canvas.addEventListener(
-        "touchmove",
-        createTouchListener(this.doMouseMove.bind(this))
-      );
-      this.canvas.addEventListener(
-        "touchend",
-        createTouchListener(this.doMouseUp.bind(this))
-      );
+    const slide = e => {
+      const coords = this.getCoordinates(e);
+      this.doMouseMove(coords.x, coords.y);
+      return cancelEvent(e);
+    };
 
-      const createMouseListener = fn => {
-        return event => {
-          const coords = this.getCoordinates(event);
-          fn(coords.x, coords.y);
-          return cancelEvent(event);
-        };
-      };
+    const stopSliding = e => {
+      const coords = this.getCoordinates(e);
+      this.doMouseUp(coords.x, coords.y);
+      return cancelEvent(e);
+    };
 
-      this.canvas.addEventListener(
-        "mousedown",
-        createMouseListener(this.doMouseDown.bind(this))
-      );
-      this.canvas.addEventListener(
-        "mousemove",
-        createMouseListener(this.doMouseMove.bind(this))
-      );
-      this.canvas.addEventListener(
-        "mouseup",
-        createMouseListener(this.doMouseUp.bind(this))
-      );
-    } else {
-      const beginSliding = e => {
-        console.log("begin", e);
-        const coords = this.getCoordinates(e);
-        this.doMouseDown(coords.x, coords.y);
-        return cancelEvent(event);
-      };
+    this.canvas.addEventListener("pointerdown", beginSliding);
+    this.canvas.addEventListener("pointermove", slide);
+    this.canvas.addEventListener("pointerup", stopSliding);
 
-      const slide = e => {
-        // console.log("slide", e)
-        const coords = this.getCoordinates(e);
-        this.doMouseMove(coords.x, coords.y);
-        return cancelEvent(event);
-      };
-
-      const stopSliding = e => {
-        console.log("asdfasd");
-        const coords = this.getCoordinates(e);
-        this.doMouseUp(coords.x, coords.y);
-        return cancelEvent(event);
-      };
-
-      this.canvas.addEventListener("pointerdown", beginSliding);
-      this.canvas.addEventListener("pointermove", slide);
-      this.canvas.addEventListener("pointerup", stopSliding);
-
-      // Add mouse hover events
-      this.canvas.addEventListener(
-        "mouseenter",
-        this.handleMouseEnter.bind(this)
-      );
-      this.canvas.addEventListener(
-        "mouseleave",
-        this.handleMouseLeave.bind(this)
-      );
-      this.canvas.addEventListener(
-        "mousemove",
-        this.handleMouseMove.bind(this)
-      );
-    }
+    // Add mouse hover events
+    this.canvas.addEventListener(
+      "mouseenter",
+      this.handleMouseEnter.bind(this)
+    );
+    this.canvas.addEventListener(
+      "mouseleave",
+      this.handleMouseLeave.bind(this)
+    );
+    this.canvas.addEventListener(
+      "mousemove",
+      this.handleMouseMove.bind(this)
+    );
 
     window.addEventListener(
       "resize",
@@ -516,20 +466,6 @@ export class GameBase {
     }
   }
 
-  // Force a single redraw without starting animation loop
-  forceRedraw() {
-    if (!this.hidden && this.gameState && this.level) {
-      // Update inset states before drawing
-      this.gameState.tileStates.forEach(tileState => {
-        if (tileState.selected) {
-          tileState.insetState = 1;
-        } else {
-          tileState.insetState = 0;
-        }
-      });
-      this.actuallyDrawCanvas();
-    }
-  }
 
   // Start animation loop if there are animations
   startAnimationLoopIfNeeded() {

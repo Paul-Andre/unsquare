@@ -3,7 +3,7 @@
 import { GameBase } from './GameBase.js';
 import { GameState } from '../core/GameState.js';
 import { Grid } from '../core/Grid.js';
-import { compute_operations_for_level, vector_sum, level_check_solution, get_level_compact_solution } from '../core/algo.js';
+import { compute_operations_for_level, vector_sum, level_check_solution, get_level_compact_solution, vector_equal } from '../core/algo.js';
 import { save_editor_book } from '../core/bookUtils.js';
 import { screenManager } from '../ui/ScreenManager.js';
 import { Level } from '../core/Level.js';
@@ -62,20 +62,6 @@ export class Editor extends GameBase {
     save_editor_book(this.book);
   }
 
-  restoreUndoState(undo) {
-    // Create a new game state from the undo level
-    this.gameState = new GameState(undo.level);
-    this.level = undo.level;
-    this.numMoves -= 1;
-  }
-
-  createUndoState(move) {
-    return {
-      level: this.level.clone(),
-      move: move,
-    };
-  }
-
   undo() {
     if (this.undoList.length > 0) {
       const undo = this.undoList.pop();
@@ -91,7 +77,6 @@ export class Editor extends GameBase {
   submitSolution() {
     let sol_string = window.prompt("Solution in 01010101010 format");
     let sol = Array.from(sol_string).map(x => Number(x));
-    console.log(sol);
 
     this.updateLevelInfo();
     let check = level_check_solution(this.level, sol);
@@ -199,8 +184,6 @@ export class Editor extends GameBase {
 
         grid.setAll(1);
 
-        console.log(grid);
-
         if (size >= this.gameState.tiles.width) {
           // this.gameState.tiles.forEach(function (v, x, y) {
           //   grid.set(x, y, v);
@@ -260,6 +243,7 @@ export class Editor extends GameBase {
       this.div.getElementsByClassName("editorBest")[0].innerText =
         sum + " " + type;
     } else {
+      let type = this.level.solutionType || "unknown";
       this.div.getElementsByClassName("editorBest")[0].innerText = "? " + type;
     }
   }
