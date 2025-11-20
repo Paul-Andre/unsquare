@@ -346,9 +346,7 @@ export class LevelMenuComponent {
     this.displayIcons();
   }
 
-  get onShow() {
-    return this.displayIcons.bind(this);
+  onShow() {
+    this.displayIcons();
   }
 }
-
-// Factory function for backward compatibility
