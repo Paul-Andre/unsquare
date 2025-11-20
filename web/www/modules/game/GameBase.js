@@ -41,12 +41,12 @@ export class GameBase {
 
     this.firstDemoDrag = {
       start: {
-        x: 0.3,
-        y: 0.3,
+        x: 0.33,
+        y: 0.33,
       },
       end: {
-        x: 0.7,
-        y: 0.7,
+        x: 0.67,
+        y: 0.67,
       },
     };
 
@@ -501,7 +501,7 @@ export class GameBase {
     if (this.demoDrag) {
       hasAnimations = true;
       this.demoDragTime +=
-        (timestamp - this.gameState.lastUpdateTimestamp) / 1000; // 1 second cycle
+        (timestamp - this.gameState.lastUpdateTimestamp) / 1500;
       this.demoDragTime %= 1;
     }
 
