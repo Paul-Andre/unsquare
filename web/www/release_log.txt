@@ -160,3 +160,7 @@ improve demoDrag ...
 19 Nov 2025
 0.8.8
 refactor + fix undo after finish
+
+20 Nov 2025
+0.8.9
+refactor, also change description
