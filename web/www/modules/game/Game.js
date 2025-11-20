@@ -5,7 +5,7 @@ import { calculateStates } from '../ui/LevelMenuComponent.js';
 import { vector_sum, vector_add, vector_simplify_arithmetic, level_get_arithmetic } from '../core/algo.js';
 import { save_editor_book } from '../core/bookUtils.js';
 import { trackLevelEnd } from '../utils/analytics.js';
-import { getBestNumMoves, setBestNumMoves, clearBestNumMoves } from '../core/levelUtils.js';
+import { getBestNumMoves, setBestNumMoves } from '../core/levelUtils.js';
 import * as config from '../utils/config.js';
 
 export class Game extends GameBase {
@@ -34,17 +34,7 @@ export class Game extends GameBase {
 
   // Game-specific logic for mouse down
   onMouseDown() {
-    // Hide the finished level elements
-    const a = this.div.getElementsByClassName("finishedLevel")[0];
-    if (a) {
-      a.style.display = "none";
-      a.classList.remove("showing");
-    }
-    const b = this.div.getElementsByClassName("finishedLevelPerfect")[0];
-    if (b) {
-      b.style.display = "none";
-      b.classList.remove("showing");
-    }
+    this.hideFinishedLevelElements();
   }
 
   // Game-specific logic after a move
@@ -82,16 +72,7 @@ export class Game extends GameBase {
   }
 
   isFinished() {
-    if (this.gameState) {
-      var finished = true;
-      this.gameState.tiles.forEach(function (v) {
-        if (v != 1) {
-          finished = false;
-        }
-      });
-      return finished;
-    }
-    return false;
+    return this.gameState && !this.gameState.tiles.some(v => v != 1);
   }
 
   finishedLevel() {
@@ -143,170 +124,116 @@ export class Game extends GameBase {
   }
 
   updateGui() {
-    // Return early if no level is loaded yet
     if (!this.level || !this.gameState) {
       return;
     }
 
     if (config.ONBOARDING_HINTS) {
-      if (
-        this.level.id == "level_1693531796434" &&
-        this.gameState.numMoves == 0
-      ) {
-        this.demoDrag = this.firstDemoDrag;
-      } else {
-        this.demoDrag = null;
-      }
-      // The logic would be something like:
-      // Check if needs to provide hint according to level json
-      // Run a basic hint system to get the next move to be hinted, or otherwise to undo
-      // If a move to be hinted, calculate the drag based on that move, and set it as this.demoDrag
-
-      let suggestsRestart = false;
-      if (
-        this.level.id == "level_1693531796434" &&
-        this.gameState.numMoves >= 1 &&
-        !this.isFinished()
-      ) {
-        suggestsRestart = true;
-      }
-      if (
-        this.isInBasicBook() &&
-        this.level.index < 10 &&
-        this.gameState.numMoves > this.level.par * 3 &&
-        !this.isFinished()
-      ) {
-        suggestsRestart = true;
-      }
-
-      let restartButton = this.div.getElementsByClassName("restart_button")[0];
-      if (suggestsRestart) {
-        restartButton.classList.add("in_yo_face");
-      } else {
-        restartButton.classList.remove("in_yo_face");
-      }
+      this.updateDemoDrag();
+      this.updateRestartButton();
     }
+
     if (this.isFinished()) {
-      if (this.isInBasicBook()) {
-        if (this.level.index >= this.book.levels.length - 1) {
-          // TODO: won game.
-          const a = this.div.getElementsByClassName("finishedGame")[0];
-          a.style.display = "block";
-        } else {
-          let a;
-          if (this.gameState.numMoves <= this.level.par) {
-            a = this.div.getElementsByClassName("finishedLevelPerfect")[0];
-            if (config.PERFECT_SCREEN_GOLDEN_GLOW) {
-              a.classList.add("withGoldenGlow");
-            } else {
-              a.classList.remove("withGoldenGlow");
-            }
-          } else {
-            a = this.div.getElementsByClassName("finishedLevel")[0];
-          }
-          a.style.display = "block";
-          // Update moves display
-          const movesDisplay = a.querySelector(".finishedLevelMoves");
-          if (movesDisplay) {
-            movesDisplay.innerText = `${this.gameState.numMoves}/${this.level.par} moves`;
-          }
-          // Trigger fade-in animation after element is rendered
-          requestAnimationFrame(() => {
-            a.classList.add("showing");
-          });
-        }
-      }
+      this.showFinishedLevel();
     } else {
-      {
-        let a = this.div.getElementsByClassName("finishedLevel")[0];
-        a.style.display = "none";
-        a.classList.remove("showing");
-      }
-      {
-        let a = this.div.getElementsByClassName("finishedLevelPerfect")[0];
-        a.style.display = "none";
-        a.classList.remove("showing");
-      }
-      {
-        let a = this.div.getElementsByClassName("finishedGame")[0];
-        a.style.display = "none";
-      }
+      this.hideFinishedLevelElements();
     }
 
+    this.updateMovesDisplay();
+    this.updateBestDisplay();
+  }
+
+  updateDemoDrag() {
+    this.demoDrag = (this.level.id == "level_1693531796434" && this.gameState.numMoves == 0)
+      ? this.firstDemoDrag
+      : null;
+  }
+
+  updateRestartButton() {
+    const suggestsRestart = 
+      (this.level.id == "level_1693531796434" && this.gameState.numMoves >= 1 && !this.isFinished()) ||
+      (this.isInBasicBook() && this.level.index < 10 && this.gameState.numMoves > this.level.par * 3 && !this.isFinished());
+
+    const restartButton = this.div.getElementsByClassName("restart_button")[0];
+    restartButton.classList.toggle("in_yo_face", suggestsRestart);
+  }
+
+  showFinishedLevel() {
+    if (!this.isInBasicBook()) {
+      return;
+    }
+
+    if (this.level.index >= this.book.levels.length - 1) {
+      this.getElement("finishedGame").style.display = "block";
+      return;
+    }
+
+    const isPerfect = this.gameState.numMoves <= this.level.par;
+    const element = this.getElement(isPerfect ? "finishedLevelPerfect" : "finishedLevel");
+    
+    if (isPerfect) {
+      element.classList.toggle("withGoldenGlow", config.PERFECT_SCREEN_GOLDEN_GLOW);
+    }
+
+    element.style.display = "block";
+    const movesDisplay = element.querySelector(".finishedLevelMoves");
+    if (movesDisplay) {
+      movesDisplay.innerText = `${this.gameState.numMoves}/${this.level.par} moves`;
+    }
+    requestAnimationFrame(() => element.classList.add("showing"));
+  }
+
+  hideFinishedLevelElements() {
+    const finishedLevel = this.getElement("finishedLevel");
+    finishedLevel.style.display = "none";
+    finishedLevel.classList.remove("showing");
+
+    const finishedLevelPerfect = this.getElement("finishedLevelPerfect");
+    finishedLevelPerfect.style.display = "none";
+    finishedLevelPerfect.classList.remove("showing");
+
+    this.getElement("finishedGame").style.display = "none";
+  }
+
+  updateMovesDisplay() {
     if (this.gameState) {
-      const a = this.div.getElementsByClassName("movesContent")[0];
-      a.innerText = this.gameState.numMoves;
-    }
-
-    const a = this.div.getElementsByClassName("bestContent")[0];
-    const b = this.getCurrentBest();
-
-    if (b === null || b === undefined) {
-      a.innerText = "-";
-    } else {
-      a.innerText = b;
+      this.getElement("movesContent").innerText = this.gameState.numMoves;
     }
   }
 
+  updateBestDisplay() {
+    const best = this.getCurrentBest();
+    this.getElement("bestContent").innerText = best ?? "-";
+  }
+
+  getElement(className) {
+    return this.div.getElementsByClassName(className)[0];
+  }
+
   displayLevelGui(level) {
-    // TODO: really ugly hack
-    {
-      var a = this.div.getElementsByClassName("finishedLevel")[0];
-      a.style.display = "none";
-      a.classList.remove("showing");
-    }
-    {
-      var a = this.div.getElementsByClassName("finishedLevelPerfect")[0];
-      a.style.display = "none";
-      a.classList.remove("showing");
-    }
-    {
-      var a = this.div.getElementsByClassName("finishedGame")[0];
-      a.style.display = "none";
-    }
+    this.hideFinishedLevelElements();
 
     document.getElementById("TextShower").innerText = level.text;
-    let par = vector_sum(level.solutionVector);
-    //if (level.solutionType == "gaussian" || level.solutionType == "mixed")
+    const par = vector_sum(level.solutionVector);
+    this.getElement("parContentInclusive").innerText = 
+      level.custom ? `creator par: ${par}` : `par: ${par}`;
 
-    if (level.custom) {
-      this.div.getElementsByClassName("parContentInclusive")[0].innerText =
-        "creator par: " + par;
-    } else {
-      this.div.getElementsByClassName("parContentInclusive")[0].innerText =
-        "par: " + par;
-    }
+    const index = level.index;
+    document.getElementById("LevelIndicator").innerText = 
+      level.custom ? "Custom Level" : `Level ${1 + index}`;
 
-    let index = level.index;
+    const states = calculateStates(this.book);
+    this.updateNavigationButtons(index, states);
+  }
 
-    if (level.custom) {
-      document.getElementById("LevelIndicator").innerText = "Custom Level";
-    } else {
-      document.getElementById("LevelIndicator").innerText =
-        "Level " + (1 + index);
-    }
+  updateNavigationButtons(index, states) {
+    const prevButton = this.div.querySelector("#prevButton");
+    const prevIndex = index - 1;
+    prevButton.toggleAttribute("disabled", prevIndex < 0 || states[prevIndex] < 2);
 
-    let states = calculateStates(this.book);
-
-    {
-      let prevButton = this.div.querySelector("#prevButton");
-      let prevIndex = index - 1;
-      if (prevIndex < 0 || states[prevIndex] < 2) {
-        prevButton.setAttribute("disabled", "disabled");
-      } else {
-        prevButton.removeAttribute("disabled");
-      }
-    }
-
-    {
-      let nextButton = this.div.querySelector("#nextButton");
-      let nextIndex = index + 1;
-      if (nextIndex >= states.length || states[nextIndex] < 2) {
-        nextButton.setAttribute("disabled", "disabled");
-      } else {
-        nextButton.removeAttribute("disabled");
-      }
-    }
+    const nextButton = this.div.querySelector("#nextButton");
+    const nextIndex = index + 1;
+    nextButton.toggleAttribute("disabled", nextIndex >= states.length || states[nextIndex] < 2);
   }
 
   undo() {
@@ -318,62 +245,37 @@ export class Game extends GameBase {
 
   checkShowOverlay() {
     // TODO: when multiple books, rethink this.
-    let levels = this.book.levels;
-    let totSolved = 0;
-    for (let i = 0; i<levels.length; i++) {
-      let level = levels[i];
-      if (getBestNumMoves(level)) {
-        totSolved += 1;
-      }
-    }
-
+    const totSolved = this.book.levels.filter(level => getBestNumMoves(level)).length;
     // Todo: make this be a parameter on posthog
-    if (totSolved >= 35 && this.numSolvedThisSession >=10 && !this.showedDiscordOverlay) {
-      return true;
-    }
-    return false;
+    return totSolved >= 35 && this.numSolvedThisSession >= 10 && !this.showedDiscordOverlay;
   }
 
   nextLevel() {
-    let level = this.level;
-    let index = level.index;
-    let levels = this.book.levels;
-
+    const discordEl = document.getElementById("discord_overlay_message");
     if (this.checkShowOverlay()) {
-      // TODO: cache this once when the object is created?
-      let el = document.getElementById("discord_overlay_message");
-      el.hidden = false;
+      discordEl.hidden = false;
       this.showedDiscordOverlay = true;
-    } else {
-      let el = document.getElementById("discord_overlay_message");
-      el.hidden = true;
+      return;
+    }
 
-      if (index + 1 < levels.length) {
-        index += 1;
-        var nextLevel = levels[index];
-
-        this.openLevel(nextLevel, this.book);
-        this.onShow();
-        // Force redraw to ensure canvas updates
-        this.forceRedraw();
-      }
+    discordEl.hidden = true;
+    const nextIndex = this.level.index + 1;
+    if (nextIndex < this.book.levels.length) {
+      this.navigateToLevel(this.book.levels[nextIndex]);
     }
   }
 
   prevLevel() {
-    let level = this.level;
-    let index = level.index;
-    let levels = this.book.levels;
-
-    if (index - 1 >= 0) {
-      index -= 1;
-      var nextLevel = levels[index];
-
-      this.openLevel(nextLevel, this.book);
-      this.onShow();
-      // Force redraw to ensure canvas updates
-      this.forceRedraw();
+    const prevIndex = this.level.index - 1;
+    if (prevIndex >= 0) {
+      this.navigateToLevel(this.book.levels[prevIndex]);
     }
+  }
+
+  navigateToLevel(level) {
+    this.openLevel(level, this.book);
+    this.onShow();
+    this.forceRedraw();
   }
 
   // Animation utility methods
@@ -387,20 +289,9 @@ export class Game extends GameBase {
     return t * t * (3.0 - 2.0 * t);
   }
 
-  clamp(x) {
-    return Math.min(1, Math.max(0, x));
-  }
-
-  easeOut(x) {
-    return this.interpolate(this.interpolate(x, 1, x), 1, x);
-  }
-
   dragBlend(x) {
-    return this.interpolate(
-      this.interpolate(this.interpolate(this.bezierBlend(x), 1, x), 1, x),
-      1,
-      x
-    );
+    const bezier = this.bezierBlend(x);
+    return this.interpolate(this.interpolate(this.interpolate(bezier, 1, x), 1, x), 1, x);
   }
 
   // Tutorial hint overlay drawing
@@ -408,36 +299,27 @@ export class Game extends GameBase {
     if (!this.demoDrag) {
       return;
     }
-    let width = this.canvas.width;
-    let height = this.canvas.height;
 
-    // TODO: maybe include this in the demoDrag object?
-    let relativeDragSize = 40 / config.MAX_WIDTH;
-    let relativeLineSize = relativeDragSize * 0.75;
+    const width = this.canvas.width;
+    const height = this.canvas.height;
+    const relativeDragSize = 40 / config.MAX_WIDTH;
+    const relativeLineSize = relativeDragSize * 0.75;
 
-    // TODO: figure out whether to use width or height. Only issue when rectangles
+    // Draw line
     this.ctx.lineWidth = relativeLineSize * width;
     this.ctx.lineCap = "round";
     this.ctx.strokeStyle = "#4fb6ff55";
     this.ctx.beginPath();
-    this.ctx.moveTo(
-      this.demoDrag.start.x * width,
-      this.demoDrag.start.y * height
-    );
+    this.ctx.moveTo(this.demoDrag.start.x * width, this.demoDrag.start.y * height);
     this.ctx.lineTo(this.demoDrag.end.x * width, this.demoDrag.end.y * height);
     this.ctx.stroke();
 
-    // TODO: the ease-out should actually be related to the size of the grid ideally
-    let animTime = this.demoDragTime;
-    let easedTime = this.dragBlend(animTime);
-    let bubbleX =
-      this.interpolate(this.demoDrag.start.x, this.demoDrag.end.x, easedTime) *
-      width;
-    let bubbleY =
-      this.interpolate(this.demoDrag.start.y, this.demoDrag.end.y, easedTime) *
-      height;
+    // Draw animated bubble
+    const easedTime = this.dragBlend(this.demoDragTime);
+    const bubbleX = this.interpolate(this.demoDrag.start.x, this.demoDrag.end.x, easedTime) * width;
+    const bubbleY = this.interpolate(this.demoDrag.start.y, this.demoDrag.end.y, easedTime) * height;
+    const bubbleSize = relativeDragSize * width;
 
-    let bubbleSize = relativeDragSize * width;
     this.ctx.fillStyle = "#4fb6ff55";
     this.ctx.beginPath();
     this.ctx.arc(bubbleX, bubbleY, bubbleSize, 0, 2 * Math.PI);
