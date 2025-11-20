@@ -41,16 +41,15 @@ export class GameBase {
 
     this.firstDemoDrag = {
       start: {
-        x: 0.3,
-        y: 0.3,
+        x: 0.33,
+        y: 0.33,
       },
       end: {
-        x: 0.7,
-        y: 0.7,
+        x: 0.67,
+        y: 0.67,
       },
     };
 
-    this.wasPaused = true;
     this.animationRunning = false;
 
     this.setupEventListeners();
@@ -281,90 +280,41 @@ export class GameBase {
   }
 
   setupEventListeners() {
-    if (false) {
-      const createTouchListener = fn => {
-        return event => {
-          if (event.changedTouches) {
-            const coords = this.getCoordinates(event.changedTouches[0]);
-            fn(coords.x, coords.y);
-          }
-          //return cancelEvent(event);
-        };
-      };
+    const beginSliding = e => {
+      const coords = this.getCoordinates(e);
+      this.doMouseDown(coords.x, coords.y);
+      return cancelEvent(e);
+    };
 
-      this.canvas.addEventListener(
-        "touchstart",
-        createTouchListener(this.doMouseDown.bind(this))
-      );
-      this.canvas.addEventListener(
-        "touchmove",
-        createTouchListener(this.doMouseMove.bind(this))
-      );
-      this.canvas.addEventListener(
-        "touchend",
-        createTouchListener(this.doMouseUp.bind(this))
-      );
+    const slide = e => {
+      const coords = this.getCoordinates(e);
+      this.doMouseMove(coords.x, coords.y);
+      return cancelEvent(e);
+    };
 
-      const createMouseListener = fn => {
-        return event => {
-          const coords = this.getCoordinates(event);
-          fn(coords.x, coords.y);
-          return cancelEvent(event);
-        };
-      };
+    const stopSliding = e => {
+      const coords = this.getCoordinates(e);
+      this.doMouseUp(coords.x, coords.y);
+      return cancelEvent(e);
+    };
 
-      this.canvas.addEventListener(
-        "mousedown",
-        createMouseListener(this.doMouseDown.bind(this))
-      );
-      this.canvas.addEventListener(
-        "mousemove",
-        createMouseListener(this.doMouseMove.bind(this))
-      );
-      this.canvas.addEventListener(
-        "mouseup",
-        createMouseListener(this.doMouseUp.bind(this))
-      );
-    } else {
-      const beginSliding = e => {
-        console.log("begin", e);
-        const coords = this.getCoordinates(e);
-        this.doMouseDown(coords.x, coords.y);
-        return cancelEvent(event);
-      };
+    this.canvas.addEventListener("pointerdown", beginSliding);
+    this.canvas.addEventListener("pointermove", slide);
+    this.canvas.addEventListener("pointerup", stopSliding);
 
-      const slide = e => {
-        // console.log("slide", e)
-        const coords = this.getCoordinates(e);
-        this.doMouseMove(coords.x, coords.y);
-        return cancelEvent(event);
-      };
-
-      const stopSliding = e => {
-        console.log("asdfasd");
-        const coords = this.getCoordinates(e);
-        this.doMouseUp(coords.x, coords.y);
-        return cancelEvent(event);
-      };
-
-      this.canvas.addEventListener("pointerdown", beginSliding);
-      this.canvas.addEventListener("pointermove", slide);
-      this.canvas.addEventListener("pointerup", stopSliding);
-
-      // Add mouse hover events
-      this.canvas.addEventListener(
-        "mouseenter",
-        this.handleMouseEnter.bind(this)
-      );
-      this.canvas.addEventListener(
-        "mouseleave",
-        this.handleMouseLeave.bind(this)
-      );
-      this.canvas.addEventListener(
-        "mousemove",
-        this.handleMouseMove.bind(this)
-      );
-    }
+    // Add mouse hover events
+    this.canvas.addEventListener(
+      "mouseenter",
+      this.handleMouseEnter.bind(this)
+    );
+    this.canvas.addEventListener(
+      "mouseleave",
+      this.handleMouseLeave.bind(this)
+    );
+    this.canvas.addEventListener(
+      "mousemove",
+      this.handleMouseMove.bind(this)
+    );
 
     window.addEventListener(
       "resize",
@@ -436,19 +386,10 @@ export class GameBase {
           let a;
           if (this.gameState.numMoves <= this.level.par) {
             a = this.div.getElementsByClassName("finishedLevelPerfect")[0];
-            // Add golden glow class if feature flag is enabled
-            if (posthog && typeof posthog.getFeatureFlag === 'function') {
-              if (posthog.getFeatureFlag('perfect_screen_golden_glow') == "glow") {
-                a.classList.add("withGoldenGlow");
-              } else {
-                a.classList.remove("withGoldenGlow");
-              }
+            if (config.PERFECT_SCREEN_GOLDEN_GLOW) {
+              a.classList.add("withGoldenGlow");
             } else {
-              if (config.PERFECT_SCREEN_GOLDEN_GLOW) {
-                a.classList.add("withGoldenGlow");
-              } else {
-                a.classList.remove("withGoldenGlow");
-              }
+              a.classList.remove("withGoldenGlow");
             }
           } else {
             a = this.div.getElementsByClassName("finishedLevel")[0];
@@ -516,20 +457,6 @@ export class GameBase {
     }
   }
 
-  // Force a single redraw without starting animation loop
-  forceRedraw() {
-    if (!this.hidden && this.gameState && this.level) {
-      // Update inset states before drawing
-      this.gameState.tileStates.forEach(tileState => {
-        if (tileState.selected) {
-          tileState.insetState = 1;
-        } else {
-          tileState.insetState = 0;
-        }
-      });
-      this.actuallyDrawCanvas();
-    }
-  }
 
   // Start animation loop if there are animations
   startAnimationLoopIfNeeded() {
@@ -574,7 +501,7 @@ export class GameBase {
     if (this.demoDrag) {
       hasAnimations = true;
       this.demoDragTime +=
-        (timestamp - this.gameState.lastUpdateTimestamp) / 1000; // 1 second cycle
+        (timestamp - this.gameState.lastUpdateTimestamp) / 1500;
       this.demoDragTime %= 1;
     }
 
