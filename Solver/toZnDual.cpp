@@ -690,13 +690,15 @@ int main() {
     printKernel(kernel);
 
     vector<int> solution = solution_->solution;
+    vector<int> originalSolution = solution_->solution;
+    vector<int> bestSolution = solution_->solution;
     cerr << "initial solution " << sumVec(solution) << endl;
 
     if (kernel.size()) {
 
-      bool doRandomlyImprove = true;
-      if (doRandomlyImprove) {
-        solution = randomlyImprove(solution, original_kernel);
+      int doRandomlyImproveTimes = 10;
+      while(doRandomlyImproveTimes--) {
+        solution = randomlyImprove(originalSolution, original_kernel);
         cerr << "after randomly improving " << sumVec(solution) << endl;
         solution = randomlyImprove(solution, kernel);
         cerr << "after randomly improving " << sumVec(solution) << endl;
@@ -704,13 +706,17 @@ int main() {
         solution = randomlyImproveAnnealing(solution, kernel);
         //solution = randomlyImprove(solution, kernel);
         cerr << "after randomly improving " << sumVec(solution) << endl;
+
+        if (sumVec(solution) < sumVec(bestSolution)) {
+          bestSolution = solution;
+        }
       }
 
       /* solution = branchAndBound(solution, kernel); */
       /* cerr << "after branch and bound " << sumVec(solution) << endl; */
 
 
-      for(int a:solution) {
+      for(int a:bestSolution) {
         cerr<<a;
     }
     cerr<<endl;
@@ -718,7 +724,7 @@ int main() {
     }
 
 
-    int W = solution.size();
+    int W = bestSolution.size();
     int H = original_kernel.size();
 
     cout << "W = 1.." << W << ";\n";
@@ -739,8 +745,8 @@ int main() {
     }
 
     cout << "target = [";
-    for (int i=0; i<solution.size(); i++) {
-      cout << solution[i] << ", ";
+    for (int i=0; i<bestSolution.size(); i++) {
+      cout << bestSolution[i] << ", ";
     }
     cout << "];\n";
 
@@ -750,11 +756,7 @@ int main() {
     /* } */
     /* cout << "];\n"; */
 
-    int totCost = 0;
-    for (int i=0; i<solution.size(); i++) {
-      totCost += //areas[i]*
-        solution[i];
-    }
+    int totCost = sumVec(bestSolution);
 
     cout << "at_most = " << totCost << ";\n";
   } else {
