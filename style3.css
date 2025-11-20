@@ -65,6 +65,8 @@ img {
   /*--bronze: #cf6c26;*/
   --bronze: #db9e0f;
 
+  --selection: #4fb6ff;
+
   --inactive_border: #a9a49b;
   --inactive_background: #c5c1b9;
   --inactive_overlay: #d9d6cfa8;
@@ -200,7 +202,7 @@ section#resetScreen .header {
 }
 
 .icon_glow {
-  border-color: #4fb6ff;
+  border-color: var(--selection);
   animation: pulse-animation 2s infinite;
 }
 .icon_glow:before {
@@ -282,7 +284,7 @@ button.action {
 }
 
 button.action:enabled {
-  border-color: #4fb6ff;
+  border-color: var(--selection);
   animation: pulse-animation 2s infinite;
 }
 
@@ -291,7 +293,7 @@ button.action:enabled:hover {
 }
 
 button.in_yo_face {
-  border-color: #4fb6ff;
+  border-color: var(--selection);
   animation: huge-pulse-animation 2s infinite;
 }
 
@@ -565,6 +567,10 @@ section header {
 footer a {
   font: 75%;
   color: var(--black);
+}
+
+a {
+  color: #4f7af9;
 }
 
 button.discord_button {
