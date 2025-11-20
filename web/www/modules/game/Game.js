@@ -216,6 +216,21 @@ export class Game extends GameBase {
           });
         }
       }
+    } else {
+      {
+        let a = this.div.getElementsByClassName("finishedLevel")[0];
+        a.style.display = "none";
+        a.classList.remove("showing");
+      }
+      {
+        let a = this.div.getElementsByClassName("finishedLevelPerfect")[0];
+        a.style.display = "none";
+        a.classList.remove("showing");
+      }
+      {
+        let a = this.div.getElementsByClassName("finishedGame")[0];
+        a.style.display = "none";
+      }
     }
 
     if (this.gameState) {
