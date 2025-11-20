@@ -1,7 +1,7 @@
 "use strict";
 
 import { GameBase } from './GameBase.js';
-import { calculateStates } from '../ui/LevelMenuComponent.js';
+import { calculateStates, LEVEL_STATES } from '../ui/LevelMenuComponent.js';
 import { vector_sum, vector_add, vector_simplify_arithmetic, level_get_arithmetic } from '../core/algo.js';
 import { save_editor_book } from '../core/bookUtils.js';
 import { trackLevelEnd } from '../utils/analytics.js';
@@ -229,11 +229,11 @@ export class Game extends GameBase {
   updateNavigationButtons(index, states) {
     const prevButton = this.div.querySelector("#prevButton");
     const prevIndex = index - 1;
-    prevButton.toggleAttribute("disabled", prevIndex < 0 || states[prevIndex] < 2);
+    prevButton.toggleAttribute("disabled", prevIndex < 0 || states[prevIndex] <= LEVEL_STATES.UNSOLVED);
 
     const nextButton = this.div.querySelector("#nextButton");
     const nextIndex = index + 1;
-    nextButton.toggleAttribute("disabled", nextIndex >= states.length || states[nextIndex] < 2);
+    nextButton.toggleAttribute("disabled", nextIndex >= states.length || states[nextIndex] <= LEVEL_STATES.LOCKED);
   }
 
   undo() {
