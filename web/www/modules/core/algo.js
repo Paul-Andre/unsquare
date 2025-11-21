@@ -102,6 +102,15 @@ export function vector_add(a, b) {
   return c;
 }
 
+export function vector_sub(a, b) {
+  assert(a.length == b.length);
+  let c = new Array(a.length).fill(0);
+  for (let i = 0; i < a.length; i++) {
+    c[i] = a[i] - b[i];
+  }
+  return c;
+}
+
 export function vector_self_add(self, other) {
   assert(self.length == other.length);
   for (let i = 0; i < self.length; i++) {

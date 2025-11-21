@@ -2,16 +2,13 @@
 
 import { GameBase } from './GameBase.js';
 import { calculateStates, LEVEL_STATES } from '../ui/LevelMenuComponent.js';
-import { vector_sum, vector_add, vector_simplify_arithmetic, level_get_arithmetic } from '../core/algo.js';
+import { vector_sum, vector_simplify_arithmetic, level_get_arithmetic, vector_sub } from '../core/algo.js';
 import { save_editor_book } from '../core/bookUtils.js';
 import { trackLevelEnd } from '../utils/analytics.js';
 import { getBestNumMoves, setBestNumMoves } from '../core/levelUtils.js';
 import * as config from '../utils/config.js';
 import { renderHistogram, generateDummyHistogramData } from '../ui/ChallengeHistogram.js';
 
-// Generate this once, since it's the easiest way to not have it re-generate every time the UI is re-rendered.
-// It's dummy data anyway, so it's okay if it's here for now.
-let dummyHistogramData = generateDummyHistogramData(6);
 
 export class Game extends GameBase {
   constructor(canvasId, divId) {
@@ -80,15 +77,23 @@ export class Game extends GameBase {
     return this.gameState && !this.gameState.tiles.some(v => v != 1);
   }
 
+  postSolutionToServer(level_id, solution, player_id, callback) {
+    setTimeout(() => {
+      let data = generateDummyHistogramData(10);
+      callback(data);
+    }, 1000);
+  }
+
+  getPlayerSolution() {
+    return vector_sub(
+      this.gameState.runningSolution,
+      this.level.solutionVector,
+    );
+  }
+
   finishedLevel() {
     let oldSum = vector_sum(this.level.solutionVector);
-
-
-    //TODO (not sure if it's an add or a subtract) (but it's the same thing mod 2)
-    let newSolution = vector_add(
-      this.level.solutionVector,
-      this.gameState.runningSolution
-    );
+    let newSolution = this.getPlayerSolution();
     vector_simplify_arithmetic(newSolution, level_get_arithmetic(this.level));
     let newSum = vector_sum(newSolution);
 
@@ -109,6 +114,7 @@ export class Game extends GameBase {
 
     // TODO: make sure this isn't sent excessively for some reason.
     trackLevelEnd(this.level, this.book);
+    // TODO: perhaps more clear to send data to histogram server here?
 
     this.numSolvedThisSession += 1;
 
@@ -124,24 +130,33 @@ export class Game extends GameBase {
       movesDisplay.innerText = `${numMoves} moves`;
     }
 
-    const histogramData = dummyHistogramData;
     const container = element.querySelector("#histogramBars");
-    const select = element.querySelector("#histogramTypeSelect");
+    container.innerHTML = "loading...";
 
-    renderHistogram(container, histogramData.allSolutions, numMoves);
+    this.postSolutionToServer(
+      this.level.getFullIdentifier(),
+      this.getPlayerSolution(),
+      "adsfadsfas",
+      (histogramData)=>{
 
-    if (select) {
-      if (this.histogramChangeHandler) {
-        select.removeEventListener("change", this.histogramChangeHandler);
+      const container = element.querySelector("#histogramBars");
+      const select = element.querySelector("#histogramTypeSelect");
+
+      renderHistogram(container, histogramData.allSolutions, numMoves);
+
+      if (select) {
+        if (this.histogramChangeHandler) {
+          select.removeEventListener("change", this.histogramChangeHandler);
+        }
+        
+        this.histogramChangeHandler = (e) => {
+          const type = e.target.value;
+          renderHistogram(container, histogramData[type], numMoves);
+        };
+        
+        select.addEventListener("change", this.histogramChangeHandler);
       }
-      
-      this.histogramChangeHandler = (e) => {
-        const type = e.target.value;
-        renderHistogram(container, histogramData[type], numMoves);
-      };
-      
-      select.addEventListener("change", this.histogramChangeHandler);
-    }
+    });
 
     element.style.display = "block";
     requestAnimationFrame(() => element.classList.add("showing"));
