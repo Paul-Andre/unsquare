@@ -455,6 +455,28 @@ export class GameBase {
     }
   }
 
+  printFlat() {
+    let ret = "";
+    ret += this.gameState.tiles.width;
+    ret += " ";
+    ret += this.gameState.tiles.height;
+    ret += "\n";
+    let tiles = this.gameState.tiles;
+    for (let j = 0; j < tiles.height; j++) {
+      for (let i = 0; i < tiles.width; i++) {
+        ret += "" + (tiles.get(i, j) - 1);
+      }
+      ret += "\n";
+    }
+    // Print a textual representation of the level to the console
+    console.log(ret);
+  }
+
+  printJson() {
+    const json = this.level.toJsonObject();
+    console.log(JSON.stringify(json));
+  }
+
   // Hook for subclasses to implement game-specific logic after a move
   postMove() {
     // Override in subclasses
