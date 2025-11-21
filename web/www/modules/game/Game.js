@@ -77,7 +77,8 @@ export class Game extends GameBase {
     return this.gameState && !this.gameState.tiles.some(v => v != 1);
   }
 
-  postSolutionToServer(level_id, solution, player_id, callback) {
+  postSolutionToServer(level, solution, player_id, callback) {
+    console.log("solution to be posted", JSON.stringify(solution));
     setTimeout(() => {
       let data = generateDummyHistogramData(10);
       callback(data);
@@ -134,7 +135,7 @@ export class Game extends GameBase {
     container.innerHTML = "loading...";
 
     this.postSolutionToServer(
-      this.level.getFullIdentifier(),
+      this.level,
       this.getPlayerSolution(),
       localStorage.player_id,
       (histogramData)=>{
