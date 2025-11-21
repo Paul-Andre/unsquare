@@ -27,6 +27,7 @@ export class Game extends GameBase {
       start: { x: 0.33, y: 0.33 },
       end: { x: 0.67, y: 0.67 },
     };
+    this.allHistogramData = null;
   }
 
   // this specifies what happens when you activate squares
@@ -77,14 +78,17 @@ export class Game extends GameBase {
     return this.gameState && !this.gameState.tiles.some(v => v != 1);
   }
 
-  postSolutionToServer(level, solution, player_id, callback) {
+  postSolutionToServer(callback) {
+    const level = this.level;
+    const solution = this.getPlayerSolution();
+    const player_id = localStorage.player_id;
     console.log("solution to be posted", JSON.stringify(solution));
 
     const supabaseUrl = "https://vatpvuolfdnkcgdwgsxm.supabase.co";
     const anonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZhdHB2dW9sZmRua2NnZHdnc3htIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM2MTc3OTMsImV4cCI6MjA3OTE5Mzc5M30.XEJsuWMrWzo1l2otg36z9uZ1Vm3BbItfnhb0r-Ne1NA";
     
     (async () => {
-const response = await fetch(`${supabaseUrl}/functions/v1/validate-and-save-solution`, {
+      const response = await fetch(`${supabaseUrl}/functions/v1/validate-and-save-solution`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${anonKey}`,
@@ -116,8 +120,9 @@ const response = await fetch(`${supabaseUrl}/functions/v1/validate-and-save-solu
     console.log("data", data);
 
     let dummyData = generateDummyHistogramData(10);
+    this.allHistogramData = dummyData;
 
-    callback(dummyData);
+    callback();
   })();
 
   }
@@ -150,9 +155,12 @@ const response = await fetch(`${supabaseUrl}/functions/v1/validate-and-save-solu
       setBestNumMoves(this.level, numMoves);
     }
 
-    // TODO: make sure this isn't sent excessively for some reason.
     trackLevelEnd(this.level, this.book);
-    // TODO: perhaps more clear to send data to histogram server here?
+    if (this.level.mode === "challenge") {
+      this.postSolutionToServer(
+        ()=>this.renderHistogram()
+      );
+    }
 
     this.numSolvedThisSession += 1;
 
@@ -160,7 +168,20 @@ const response = await fetch(`${supabaseUrl}/functions/v1/validate-and-save-solu
     this.updateGui();
   }
 
-  showChallengeHistogram() {
+  renderHistogram() {
+    const element = this.getElement("finishedChallengeHistogram");
+    const container = element.querySelector("#histogramBars");
+    if (this.allHistogramData === null) {
+      container.innerHTML = "loading...";
+      return;
+    }
+    
+    const select = element.querySelector("#histogramTypeSelect");
+    renderHistogram(container, this.allHistogramData[select.value], this.gameState.numMoves);
+  }
+
+
+  showFinishedLevelChallenge() {
     const element = this.getElement("finishedChallengeHistogram");
     const numMoves = this.gameState.numMoves;
     const movesDisplay = element.querySelector(".finishedLevelMoves");
@@ -168,39 +189,25 @@ const response = await fetch(`${supabaseUrl}/functions/v1/validate-and-save-solu
       movesDisplay.innerText = `${numMoves} moves`;
     }
 
-    const container = element.querySelector("#histogramBars");
-    container.innerHTML = "loading...";
+    const select = element.querySelector("#histogramTypeSelect");
 
-    this.postSolutionToServer(
-      this.level,
-      this.getPlayerSolution(),
-      localStorage.player_id,
-      (histogramData)=>{
+    if (this.histogramChangeHandler) {
+      select.removeEventListener("change", this.histogramChangeHandler);
+    }
+    
+    this.histogramChangeHandler = (e) => {
+      this.renderHistogram();
+    };
+    
+    select.addEventListener("change", this.histogramChangeHandler);
 
-      const container = element.querySelector("#histogramBars");
-      const select = element.querySelector("#histogramTypeSelect");
-
-      renderHistogram(container, histogramData.allSolutions, numMoves);
-
-      if (select) {
-        if (this.histogramChangeHandler) {
-          select.removeEventListener("change", this.histogramChangeHandler);
-        }
-        
-        this.histogramChangeHandler = (e) => {
-          const type = e.target.value;
-          renderHistogram(container, histogramData[type], numMoves);
-        };
-        
-        select.addEventListener("change", this.histogramChangeHandler);
-      }
-    });
+    this.renderHistogram();
 
     element.style.display = "block";
     requestAnimationFrame(() => element.classList.add("showing"));
   }
 
-  hideChallengeHistogram() {
+  hideFinishedLevelChallenge() {
     const element = this.getElement("finishedChallengeHistogram");
     element.style.display = "none";
     element.classList.remove("showing");
@@ -230,7 +237,7 @@ const response = await fetch(`${supabaseUrl}/functions/v1/validate-and-save-solu
 
     if (this.isFinished()) {
       if (this.level.mode === "challenge") {
-        this.showChallengeHistogram();
+        this.showFinishedLevelChallenge();
       } else {
         this.showFinishedLevel();
       }
@@ -294,7 +301,7 @@ const response = await fetch(`${supabaseUrl}/functions/v1/validate-and-save-solu
 
     this.getElement("finishedGame").style.display = "none";
     
-    this.hideChallengeHistogram();
+    this.hideFinishedLevelChallenge();
   }
 
   updateMovesDisplay() {
@@ -332,7 +339,7 @@ const response = await fetch(`${supabaseUrl}/functions/v1/validate-and-save-solu
   updateNavigationButtons(index, states) {
     const prevButton = this.div.querySelector("#prevButton");
     const prevIndex = index - 1;
-    prevButton.toggleAttribute("disabled", prevIndex < 0 || states[prevIndex] <= LEVEL_STATES.UNSOLVED);
+    prevButton.toggleAttribute("disabled", prevIndex < 0 || states[prevIndex] <= LEVEL_STATES.LOCKED);
 
     const nextButton = this.div.querySelector("#nextButton");
     const nextIndex = index + 1;
