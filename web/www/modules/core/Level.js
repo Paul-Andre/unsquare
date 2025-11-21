@@ -171,6 +171,7 @@ export class Level {
     this.tiles = otherLevel.tiles.clone();
     this.par = otherLevel.par;
     this.text = otherLevel.text;
+    // TODO: does it make sense to copy the index?
     this.index = otherLevel.index;
     this.id = otherLevel.id;
     this.isIcon = otherLevel.isIcon;

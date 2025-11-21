@@ -474,6 +474,7 @@ export class GameBase {
 
   printJson() {
     const json = this.level.toJsonObject();
+    delete json.index;
     console.log(JSON.stringify(json));
   }
 
@@ -481,6 +482,8 @@ export class GameBase {
     const json = this.level.toJsonObject();
     delete json.solutionVector;
     delete json.solutionType;
+    delete json.par;
+    delete json.index;
     console.log(JSON.stringify(json));
   }
 
