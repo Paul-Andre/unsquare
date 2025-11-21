@@ -35,6 +35,7 @@ export class Editor extends GameBase {
     this.referenceToOriginalLevel = level;
     super.openLevel(level.clone(), book);
     this.updateDrawModeButton();
+    this.updateModeDropdown();
   }
 
   // this specifies what happens when you activate squares
@@ -176,6 +177,7 @@ export class Editor extends GameBase {
       this.gameState = new GameState(this.level);
     }
     this.updateDrawModeButton();
+    this.updateModeDropdown();
   }
 
   promptSize() {
@@ -231,6 +233,10 @@ export class Editor extends GameBase {
 
   setText(text) {
     this.level.text = text;
+  }
+
+  setMode(mode) {
+    this.level.mode = mode;
   }
 
   printFlat() {
@@ -308,6 +314,13 @@ export class Editor extends GameBase {
       } else {
         button.classList.remove("drawModeActive");
       }
+    }
+  }
+
+  updateModeDropdown() {
+    const select = document.getElementById("levelModeSelect");
+    if (select) {
+      select.value = this.level.mode || "normal";
     }
   }
 
