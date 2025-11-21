@@ -117,6 +117,14 @@ function level_check_solution(level: { tiles: { array: number[]; width: number; 
   return vector_equal(target, reach);
 }
 
+function vector_sum(v: number[]): number {
+  let sum = 0;
+  for (let i = 0; i < v.length; i++) {
+    sum += v[i];
+  }
+  return sum;
+}
+
 // ============================================================================
 // Level object builder from JSON
 // ============================================================================
@@ -335,7 +343,8 @@ Deno.serve(async (req) => {
       body: JSON.stringify({
         player_id: body.player_id,
         level_id: body.level_id,
-        solution: solutionArray
+        solution: solutionArray,
+        num_moves: vector_sum(solutionArray)
       })
     });
 
