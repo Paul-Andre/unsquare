@@ -229,7 +229,7 @@ export class Game extends GameBase {
   updateNavigationButtons(index, states) {
     const prevButton = this.div.querySelector("#prevButton");
     const prevIndex = index - 1;
-    prevButton.toggleAttribute("disabled", prevIndex < 0 || states[prevIndex] <= LEVEL_STATES.UNSOLVED);
+    prevButton.toggleAttribute("disabled", prevIndex < 0 || states[prevIndex] <= LEVEL_STATES.LOCKED);
 
     const nextButton = this.div.querySelector("#nextButton");
     const nextIndex = index + 1;
