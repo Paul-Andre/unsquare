@@ -172,3 +172,7 @@ Challenge mode!
 21 Nov 2025
 0.9.1
 remove double onclick/ontouchend
+
+21 Nov 2025
+0.9.2
+"Weekly Challenge"
