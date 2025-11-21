@@ -353,7 +353,23 @@ Deno.serve(async (req) => {
       return errorResponse("Insert failed", insertResp.status || 500, result);
     }
 
-    return jsonResponse({ valid: true, saved: true, result }, 201);
+    // Get histogram for this level
+    const histogramResp = await supabaseFetch("/rpc/get_level_histograms", {
+      method: "POST",
+      body: JSON.stringify({ p_level_id: body.level_id })
+    });
+
+    let allHistogramData = null;
+    if (histogramResp.ok) {
+      allHistogramData = await histogramResp.json().catch(() => null);
+    }
+
+    return jsonResponse({ 
+      valid: true, 
+      saved: true, 
+      result,
+      allHistogramData
+    }, 201);
 
   } catch (err) {
     console.error("Unhandled error in validate-and-save-solution:", err);

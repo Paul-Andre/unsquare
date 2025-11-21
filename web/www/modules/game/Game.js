@@ -119,8 +119,7 @@ export class Game extends GameBase {
     }
     console.log("data", data);
 
-    let dummyData = generateDummyHistogramData(10);
-    this.allHistogramData = dummyData;
+    this.allHistogramData = data.allHistogramData;
 
     callback();
   })();

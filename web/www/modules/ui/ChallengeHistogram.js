@@ -39,7 +39,7 @@ export function renderHistogram(container, histogramData, playerMoves) {
 
     let percentage;
     if (isPlayerBar && count === 0) {
-      percentage = maxCount > 0 ? Math.max(3, (1 / maxCount) * 100) : 5;
+      percentage = 0;
     } else if (!hasData) {
       percentage = 0;
     } else {

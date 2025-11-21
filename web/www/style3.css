@@ -570,7 +570,7 @@ button.drawModeActive:hover {
 .histogramBar {
   width: 100%;
   background-color: #2da6fd;
-  min-height: 4px;
+  /* min-height: 4px; */
   transition: background-color 0.2s ease;
   position: relative;
   flex-shrink: 0;
