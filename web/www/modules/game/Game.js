@@ -42,8 +42,24 @@ export class Game extends GameBase {
 
   // Game-specific logic after a move
   postMove() {
+    this.sanityCheck();
     if (this.isFinished()) {
       this.finishedLevel();
+    }
+  }
+
+  sanityCheck() {
+    if (this.gameState === null) {
+      return;
+    }
+    if (this.gameState.numMoves  != vector_sum(this.getPlayerSolution())) {
+      console.error("numMoves", this.gameState.numMoves, "does not match solution", vector_sum(this.getPlayerSolution()), this.getPlayerSolution());
+      console.error("this.gameState.tiles", this.gameState.tiles);
+      console.error("this.gameState.runningSolution", this.gameState.runningSolution, vector_sum(this.gameState.runningSolution));
+      console.error("this.level.solutionVector", this.level.solutionVector, vector_sum(this.level.solutionVector));
+      console.error("this.level.solutionType", this.level.solutionType);
+      console.error("this.level.solution", this.level.solution, vector_sum(this.level.solution));
+
     }
   }
 
@@ -127,6 +143,7 @@ export class Game extends GameBase {
   }
 
   getPlayerSolution() {
+    // TODO: this stops working if the level.solutionVector is changed. So to use this I stop changing level.solutionVector.
     return vector_sub(
       this.gameState.runningSolution,
       this.level.solutionVector,
@@ -140,11 +157,11 @@ export class Game extends GameBase {
     let newSum = vector_sum(newSolution);
 
     // TODO: this is some somewhat fragile code that tries to integrate with the editor...
-    if (newSum < oldSum) {
-      this.level.solutionVector = newSolution;
-      this.level.solutionType = "manual";
-      save_editor_book(this.book);
-    }
+    // if (newSum < oldSum) {
+    //   this.level.solutionVector = newSolution;
+    //   this.level.solutionType = "manual";
+    //   save_editor_book(this.book);
+    // }
 
     let prevBest = getBestNumMoves(this.level);
 
