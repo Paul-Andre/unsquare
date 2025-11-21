@@ -615,6 +615,41 @@ button.drawModeActive:hover {
   border-bottom: 16px solid #ff0000;
 }
 
+.histogramTooltip {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-bottom: 8px;
+  padding: 6px 10px;
+  background-color: rgba(0, 0, 0, 0.85);
+  color: white;
+  font-size: 0.85em;
+  white-space: nowrap;
+  border-radius: 4px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  z-index: 1000;
+}
+
+.histogramTooltip.visible {
+  opacity: 1;
+}
+
+.histogramTooltip::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 6px solid rgba(0, 0, 0, 0.85);
+}
+
 .challengeFinishedButtons {
   font-size: 0.8em;
 }
