@@ -239,6 +239,38 @@
             </div>
           </div>
 
+          <div class="finishedChallengeHistogram" style="display: none">
+            <div class="finishedLevelInside">
+            <h1> Solved! </h1>
+
+
+
+            <div class="histogramContainer" >
+ 
+              <div class="histogramBars" id="histogramBars"></div>
+              <div class="histogramControls">
+                <select id="histogramTypeSelect" class="histogramTypeSelect">
+                  <option value="allSolutions">All Solutions</option>
+                  <option value="bestPerPlayer">Best Per Player</option>
+                  <option value="uniqueSolutions">Unique Solutions</option>
+                </select>
+              </div>
+            </div>
+
+            <h2 class="finishedLevelMoves"> 3 moves</h2>
+            <div class="finishedLevelButtons challengeFinishedButtons">
+              <button class="finishedLevelRestartButton" onclick="game.restart();" ontouchend="game.restart();"
+                style="touch-action: none">
+                ⟳ Redo
+              </button>
+              <button class="finishedLevelNextButton" onclick="nextLevel();" ontouchend="nextLevel();"
+                style="touch-action: none">
+                Next →
+              </button>
+            </div>
+            </div>
+          </div>
+
           <div class="finishedGame" style="display: none">
             <!-- <button onclick="game.restart();" >⟳ Restart</button> -->
             <h2>Congratulations! You finished the game!</h2>
@@ -279,6 +311,9 @@
             <button onclick="editor.saveAndReturn();" style="float: left">
               Done
             </button>
+            <button onclick="editor.saveAs();" style="float: left">
+              Save As
+            </button>
             <button onclick="screenManager.goBack();" style="float: left">
               Cancel
             </button>
@@ -288,6 +323,9 @@
             </button>
             <button onclick="editor.clear();" style="float: right">
               Clear
+            </button>
+            <button id="drawModeButton" onclick="editor.toggleDrawMode();" style="float: right">
+              Draw Mode: OFF
             </button>
             <!-- <button onclick="editor.saveLevel();" style="float:right;">Save</button> -->
             <button onclick="editor.promptSize();" style="float: right">
@@ -306,6 +344,11 @@
             <button onclick="editor.play();" style="float: right">
               Play
             </button>
+
+            <select id="levelModeSelect" onchange="editor.setMode(this.value);">
+              <option value="normal">normal</option>
+              <option value="challenge">challenge</option>
+            </select>
 
             best: <span class="editorBest"> </span>
           </div>
@@ -365,8 +408,10 @@
         </div>
         <!-- <h2>Weekly:</h2>
         <div id="weeklyIconContainer" class="content"></div> -->
+        <h2>Challenge:</h2>
+        <div id="challengeIconContainer"></div>
 
-          <h2>All Levels:</h2>
+          <h2>Main Levels:</h2>
         <div id="iconContainer" class="content"></div>
         <footer>
           <!-- <a href="previous_versions"> -->
@@ -426,9 +471,6 @@
       </section>
     </div>
   </div>
-
-
-
 </body>
 
 </html>

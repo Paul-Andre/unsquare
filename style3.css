@@ -305,6 +305,18 @@ button[disabled] {
   color: var(--inactive_text);
 }
 
+button.drawModeActive {
+  background: #4CAF50;
+  border-color: #45a049;
+  color: white;
+}
+
+button.drawModeActive:hover {
+  background: #45a049;
+  border-color: #3d8b40;
+  color: white;
+}
+
 
 @keyframes pulse-animation {
   0% {
@@ -330,7 +342,8 @@ button[disabled] {
 }
 
 .finishedLevel,
-.finishedLevelPerfect {
+.finishedLevelPerfect,
+.finishedChallengeHistogram {
   width: 100%;
   height: 100%;
   position: absolute;
@@ -355,6 +368,10 @@ button[disabled] {
 
 .finishedLevelPerfect.withGoldenGlow.showing {
   animation: fadeInWithGoldenGlow 0.5s ease-out forwards;
+}
+
+.finishedChallengeHistogram.showing {
+  animation: fadeIn 1.0s ease-out forwards;
 }
 
 @keyframes fadeIn {
@@ -388,6 +405,15 @@ button[disabled] {
   padding: 20px;
 }
 
+.finishedChallengeHistogram .finishedLevelInside {
+  width: 95%;
+  background-color: #fdfdfd;
+  border: solid;
+  border-color: #bdbcbc;
+  border-width: 3px;
+  border-radius: 3px;
+}
+
 .finishedLevelInside h1 {
   font-size: 3em;
   font-weight: 600;
@@ -412,7 +438,8 @@ button[disabled] {
 }
 
 .finishedLevel button,
-.finishedLevelPerfect button {
+.finishedLevelPerfect button,
+.finishedChallengeHistogram button {
   font-size: 1.6em;
   padding: 0.3em 0.8em;
   /* min-width: 120px; */
@@ -424,7 +451,8 @@ button[disabled] {
   border-color: #aeaba5;
 }
 .finishedLevel button:hover,
-.finishedLevelPerfect button:hover {
+.finishedLevelPerfect button:hover,
+.finishedChallengeHistogram button:hover {
   border-color: #444241;
 }
 
@@ -451,7 +479,8 @@ button[disabled] {
 
 
 .finishedLevel .finishedLevelNextButton:hover,
-.finishedLevelPerfect .finishedLevelNextButton:hover {
+.finishedLevelPerfect .finishedLevelNextButton:hover,
+.finishedChallengeHistogram .finishedLevelNextButton:hover {
   /* background-color: #b8e8ff; */
   background-color: #d3f2ff;
   box-shadow: inset 0 0 10px 5px #bdfcff;
@@ -460,10 +489,145 @@ button[disabled] {
   /* transform: scale(1.05); */
 }
 
+.finishedChallengeHistogram .finishedLevelNextButton {
+  font-weight: 600;
+  color: #333333;
+  background-color: #edfcfd;
+  border-color: #2da6fd;
+  border-radius: 10px;
+  transition: border-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
+  box-shadow: inset 0 0 10px 3px #bdfcff;
+}
+
+.histogramControls {
+  display: flex;
+  position: absolute;
+  top: -1px;
+  right: -1px;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.5em;
+}
+
+.histogramControls label {
+  font-size: 1.1em;
+  font-weight: 500;
+}
+
+.histogramTypeSelect {
+  font-size: 0.85em;
+  border: 1px solid #c1c1c1;
+  cursor: pointer;
+  color: #202020;
+  padding: 0 0.2em;
+  text-align: center;
+  background: #e9e9edb5;
+}
+
+.histogramTypeSelect:hover {
+  border-color: #444241;
+}
+
+#editor select {
+  font-size: 0.8em;
+}
+
+.histogramContainer {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  position: relative;
+  background-color: rgb(240, 240, 240);
+  padding: 10px;
+  border: solid 2px #d3cfc8;
+}
+
+.histogramBars {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 0;
+  width: 100%;
+  max-width: 600px;
+  height: 150px;
+  border-bottom: 2px solid #ccc;
+  position: relative;
+  bottom: -2px;
+}
+
+.histogramBarContainer {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  height: 100%;
+  min-width: 0;
+  max-width: 60px;
+  gap: 0.2em;
+}
+
+
+.histogramBar {
+  width: 100%;
+  background-color: #2da6fd;
+  /* min-height: 4px; */
+  transition: background-color 0.2s ease;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.histogramBar.playerBar {
+  background-color: red;
+}
+
+.histogramBarCount {
+  font-size: 0.85em;
+  color: #666;
+  flex-shrink: 0;
+  min-height: 1.2em;
+}
+
+.histogramBarLabel {
+  font-size: 0.9em;
+  font-weight: 500;
+  color: #333;
+  flex-shrink: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.histogramBarContainer {
+  position: relative;
+}
+
+.playerTriangle {
+  position: absolute;
+  bottom: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 12px solid transparent;
+  border-right: 12px solid transparent;
+  border-bottom: 16px solid #ff0000;
+}
+
+.challengeFinishedButtons {
+  font-size: 0.8em;
+}
+
 .content {
   position: relative;
   clear: both;
   /* background: red */
+}
+
+#challengeIconContainer {
+  position: relative;
+  clear: both;
 }
 
 .title {

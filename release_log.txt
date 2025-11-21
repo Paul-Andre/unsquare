@@ -164,3 +164,7 @@ refactor + fix undo after finish
 20 Nov 2025
 0.8.9
 refactor, also change description
+
+21 Nov 2025
+0.9.0
+Challenge mode!

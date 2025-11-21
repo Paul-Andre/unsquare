@@ -8,6 +8,7 @@ import { editorLevelMenu } from './modules/ui/editorLevelMenu.js';
 import { checkAndOpenCustomLevel } from './modules/utils/customParse.js';
 import { Level } from './modules/core/Level.js';
 import * as config from './modules/utils/config.js';
+import { generate_id } from './modules/utils/helpers.js';
 
 // Global configuration
 window.config = config;
@@ -146,3 +147,7 @@ window.addEventListener('load',
   }
 })();
 
+if (localStorage.getItem("player_id") === null) {
+  let player_id = generate_id("anon");
+  localStorage.setItem("player_id", player_id);
+}

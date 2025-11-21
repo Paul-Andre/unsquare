@@ -2,11 +2,13 @@
 
 import { GameBase } from './GameBase.js';
 import { calculateStates, LEVEL_STATES } from '../ui/LevelMenuComponent.js';
-import { vector_sum, vector_add, vector_simplify_arithmetic, level_get_arithmetic } from '../core/algo.js';
+import { vector_sum, vector_simplify_arithmetic, level_get_arithmetic, vector_sub } from '../core/algo.js';
 import { save_editor_book } from '../core/bookUtils.js';
 import { trackLevelEnd } from '../utils/analytics.js';
 import { getBestNumMoves, setBestNumMoves } from '../core/levelUtils.js';
 import * as config from '../utils/config.js';
+import { renderHistogram, generateDummyHistogramData } from '../ui/ChallengeHistogram.js';
+
 
 export class Game extends GameBase {
   constructor(canvasId, divId) {
@@ -25,6 +27,7 @@ export class Game extends GameBase {
       start: { x: 0.33, y: 0.33 },
       end: { x: 0.67, y: 0.67 },
     };
+    this.allHistogramData = null;
   }
 
   // this specifies what happens when you activate squares
@@ -39,8 +42,24 @@ export class Game extends GameBase {
 
   // Game-specific logic after a move
   postMove() {
+    this.sanityCheck();
     if (this.isFinished()) {
       this.finishedLevel();
+    }
+  }
+
+  sanityCheck() {
+    if (this.gameState === null) {
+      return;
+    }
+    if (this.gameState.numMoves  != vector_sum(this.getPlayerSolution())) {
+      console.error("numMoves", this.gameState.numMoves, "does not match solution", vector_sum(this.getPlayerSolution()), this.getPlayerSolution());
+      console.error("this.gameState.tiles", this.gameState.tiles);
+      console.error("this.gameState.runningSolution", this.gameState.runningSolution, vector_sum(this.gameState.runningSolution));
+      console.error("this.level.solutionVector", this.level.solutionVector, vector_sum(this.level.solutionVector));
+      console.error("this.level.solutionType", this.level.solutionType);
+      console.error("this.level.solution", this.level.solution, vector_sum(this.level.solution));
+
     }
   }
 
@@ -75,24 +94,74 @@ export class Game extends GameBase {
     return this.gameState && !this.gameState.tiles.some(v => v != 1);
   }
 
+  postSolutionToServer(callback) {
+    const level = this.level;
+    const solution = this.getPlayerSolution();
+    const player_id = localStorage.player_id;
+    console.log("solution to be posted", JSON.stringify(solution));
+
+    const supabaseUrl = "https://vatpvuolfdnkcgdwgsxm.supabase.co";
+    const anonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZhdHB2dW9sZmRua2NnZHdnc3htIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM2MTc3OTMsImV4cCI6MjA3OTE5Mzc5M30.XEJsuWMrWzo1l2otg36z9uZ1Vm3BbItfnhb0r-Ne1NA";
+    
+    (async () => {
+      const response = await fetch(`${supabaseUrl}/functions/v1/validate-and-save-solution`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${anonKey}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        level_id: level.id,
+        solution: solution,
+        player_id: player_id,
+        level_full_identifier: level.getFullIdentifier(),
+      })
+    });
+    
+    let data = null;
+    
+    try {
+      if (response.ok) {
+        data = await response.json();
+      } else {
+        console.error(`HTTP error! status: ${response.status}`, await response.text());
+      }
+    } catch (e) {
+      if (response.ok) {
+        console.error("Failed to parse response as JSON", e);
+      } else {
+        console.error(`HTTP error! status: ${response.status}`);
+      }
+    }
+    console.log("data", data);
+
+    this.allHistogramData = data.allHistogramData;
+
+    callback();
+  })();
+
+  }
+
+  getPlayerSolution() {
+    // TODO: this stops working if the level.solutionVector is changed. So to use this I stop changing level.solutionVector.
+    return vector_sub(
+      this.gameState.runningSolution,
+      this.level.solutionVector,
+    );
+  }
+
   finishedLevel() {
     let oldSum = vector_sum(this.level.solutionVector);
-
-
-    //TODO (not sure if it's an add or a subtract) (but it's the same thing mod 2)
-    let newSolution = vector_add(
-      this.level.solutionVector,
-      this.gameState.runningSolution
-    );
+    let newSolution = this.getPlayerSolution();
     vector_simplify_arithmetic(newSolution, level_get_arithmetic(this.level));
     let newSum = vector_sum(newSolution);
 
     // TODO: this is some somewhat fragile code that tries to integrate with the editor...
-    if (newSum < oldSum) {
-      this.level.solutionVector = newSolution;
-      this.level.solutionType = "manual";
-      save_editor_book(this.book);
-    }
+    // if (newSum < oldSum) {
+    //   this.level.solutionVector = newSolution;
+    //   this.level.solutionType = "manual";
+    //   save_editor_book(this.book);
+    // }
 
     let prevBest = getBestNumMoves(this.level);
 
@@ -102,13 +171,63 @@ export class Game extends GameBase {
       setBestNumMoves(this.level, numMoves);
     }
 
-    // TODO: make sure this isn't sent excessively for some reason.
     trackLevelEnd(this.level, this.book);
+    if (this.level.mode === "challenge") {
+      this.postSolutionToServer(
+        ()=>this.renderHistogram()
+      );
+    }
 
     this.numSolvedThisSession += 1;
 
     this.displayLevelGui(this.level);
     this.updateGui();
+  }
+
+  renderHistogram() {
+    const element = this.getElement("finishedChallengeHistogram");
+    const container = element.querySelector("#histogramBars");
+    if (this.allHistogramData === null) {
+      container.innerHTML = "loading...";
+      return;
+    }
+    
+    const select = element.querySelector("#histogramTypeSelect");
+    renderHistogram(container, this.allHistogramData[select.value], this.gameState.numMoves);
+  }
+
+
+  showFinishedLevelChallenge() {
+    const element = this.getElement("finishedChallengeHistogram");
+    const numMoves = this.gameState.numMoves;
+    const movesDisplay = element.querySelector(".finishedLevelMoves");
+    if (movesDisplay) {
+      movesDisplay.innerText = `${numMoves} moves`;
+    }
+
+    const select = element.querySelector("#histogramTypeSelect");
+
+    if (this.histogramChangeHandler) {
+      select.removeEventListener("change", this.histogramChangeHandler);
+    }
+    
+    this.histogramChangeHandler = (e) => {
+      this.renderHistogram();
+    };
+    
+    select.addEventListener("change", this.histogramChangeHandler);
+
+    this.renderHistogram();
+
+    element.style.display = "block";
+    this.updateFinishedLevelNextButton(element);
+    requestAnimationFrame(() => element.classList.add("showing"));
+  }
+
+  hideFinishedLevelChallenge() {
+    const element = this.getElement("finishedChallengeHistogram");
+    element.style.display = "none";
+    element.classList.remove("showing");
   }
 
   getCurrentBest() {
@@ -134,7 +253,11 @@ export class Game extends GameBase {
     }
 
     if (this.isFinished()) {
-      this.showFinishedLevel();
+      if (this.level.mode === "challenge") {
+        this.showFinishedLevelChallenge();
+      } else {
+        this.showFinishedLevel();
+      }
     } else {
       this.hideFinishedLevelElements();
     }
@@ -152,23 +275,39 @@ export class Game extends GameBase {
   updateRestartButton() {
     const suggestsRestart = 
       (this.level.id == "level_1693531796434" && this.gameState.numMoves >= 1 && !this.isFinished()) ||
-      (this.isInBasicBook() && this.level.index < 10 && this.gameState.numMoves > this.level.par * 3 && !this.isFinished());
+      (this.isInBasicBook() && this.level.index < 10 && this.level.par !== null && this.gameState.numMoves > this.level.par * 3 && !this.isFinished());
 
     const restartButton = this.div.getElementsByClassName("restart_button")[0];
     restartButton.classList.toggle("in_yo_face", suggestsRestart);
   }
 
+  updateFinishedLevelNextButton(element) {
+    const nextButton = element.querySelector(".finishedLevelNextButton");
+    if (!nextButton) {
+      return;
+    }
+
+    const hasNextLevel = this.level.index + 1 < this.book.levels.length;
+    
+    if (hasNextLevel) {
+      // TODO: do I need both onclick and ontouchend?
+      nextButton.textContent = "Next →";
+      nextButton.onclick = () => window.nextLevel();
+      nextButton.ontouchend = () => window.nextLevel();
+    } else {
+      nextButton.textContent = "Return";
+      nextButton.onclick = () => window.screenManager.goBack();
+      nextButton.ontouchend = () => window.screenManager.goBack();
+    }
+  }
+
   showFinishedLevel() {
-    if (!this.isInBasicBook()) {
-      return;
-    }
 
-    if (this.level.index >= this.book.levels.length - 1) {
+    if (this.book.id === "book_1762877873556" && this.level.index >= this.book.levels.length - 1) {
       this.getElement("finishedGame").style.display = "block";
-      return;
     }
 
-    const isPerfect = this.gameState.numMoves <= this.level.par;
+    const isPerfect = this.level.par !== null && this.gameState.numMoves <= this.level.par;
     const element = this.getElement(isPerfect ? "finishedLevelPerfect" : "finishedLevel");
     
     if (isPerfect) {
@@ -178,8 +317,10 @@ export class Game extends GameBase {
     element.style.display = "block";
     const movesDisplay = element.querySelector(".finishedLevelMoves");
     if (movesDisplay) {
-      movesDisplay.innerText = `${this.gameState.numMoves}/${this.level.par} moves`;
+      const parDisplay = this.level.par === null ? "?" : this.level.par;
+      movesDisplay.innerText = `${this.gameState.numMoves}/${parDisplay} moves`;
     }
+    this.updateFinishedLevelNextButton(element);
     requestAnimationFrame(() => element.classList.add("showing"));
   }
 
@@ -193,6 +334,8 @@ export class Game extends GameBase {
     finishedLevelPerfect.classList.remove("showing");
 
     this.getElement("finishedGame").style.display = "none";
+    
+    this.hideFinishedLevelChallenge();
   }
 
   updateMovesDisplay() {
@@ -214,9 +357,10 @@ export class Game extends GameBase {
     this.hideFinishedLevelElements();
 
     document.getElementById("TextShower").innerText = level.text;
-    const par = vector_sum(level.solutionVector);
+    const par = level.par;
+    const parDisplay = par === null ? "?" : par;
     this.getElement("parContentInclusive").innerText = 
-      level.custom ? `creator par: ${par}` : `par: ${par}`;
+      level.custom ? `creator par: ${parDisplay}` : `par: ${parDisplay}`;
 
     const index = level.index;
     document.getElementById("LevelIndicator").innerText = 
@@ -243,7 +387,7 @@ export class Game extends GameBase {
     this.startAnimationLoopIfNeeded();
   }
 
-  checkShowOverlay() {
+  checkShowOverlayMessage() {
     // TODO: when multiple books, rethink this.
     const totSolved = this.book.levels.filter(level => getBestNumMoves(level)).length;
     // Todo: make this be a parameter on posthog
@@ -252,7 +396,7 @@ export class Game extends GameBase {
 
   nextLevel() {
     const discordEl = document.getElementById("discord_overlay_message");
-    if (this.checkShowOverlay()) {
+    if (this.checkShowOverlayMessage()) {
       discordEl.hidden = false;
       this.showedDiscordOverlay = true;
       return;

@@ -21,6 +21,7 @@ export class Level {
     level.text = "";
     level.index = -1;
     level.isIcon = false;
+    level.mode = "normal";
     level.id = generate_id("level");
 
     let operations = compute_operations_for_level(level);
@@ -41,6 +42,7 @@ export class Level {
     level.text = json.text || "";
     level.index = json.index;
     level.isIcon = !!json.isIcon;
+    level.mode = json.mode || "normal";
     if (json.id) {
       level.id = json.id;
     } else {
@@ -54,12 +56,22 @@ export class Level {
       hasValidSolution = level_check_solution(level);
     }
     if (!hasValidSolution) {
+      // A lot of code relies on the solution vector being set,
+      // so I compute it here, even if it is suboptimal.
+      // However if it's not optimal.
       compute_gaussian_solution(level);
+
+      // Sanity check, that the computed solution makes sense
+      assert(level_check_solution(level));
+
+      level.par = null;
+    } else {
+      if (level.mode == "challenge") {
+        level.par = null;
+      } else {
+        level.par = vector_sum(level.solutionVector);
+      }
     }
-    // Sanity check, that solution makes sense
-    assert(level_check_solution(level));
-    let par = vector_sum(level.solutionVector);
-    level.par = par;
 
     return level;
   }
@@ -91,6 +103,7 @@ export class Level {
     level.text = "";
     level.index = -1;
     level.isIcon = false;
+    level.mode = "normal";
     // TODO: does it make sense to not add any numbers or anything?
     level.id = "custom";
 
@@ -133,6 +146,9 @@ export class Level {
     if (this.isIcon) {
       json.isIcon = this.isIcon;
     }
+    if (this.mode && this.mode !== "normal") {
+      json.mode = this.mode;
+    }
     json.index = this.index;
     json.id = this.id;
 
@@ -155,9 +171,11 @@ export class Level {
     this.tiles = otherLevel.tiles.clone();
     this.par = otherLevel.par;
     this.text = otherLevel.text;
+    // TODO: does it make sense to copy the index?
     this.index = otherLevel.index;
     this.id = otherLevel.id;
     this.isIcon = otherLevel.isIcon;
+    this.mode = otherLevel.mode || "normal";
     if (otherLevel.solutionVector) {
       this.solutionVector = otherLevel.solutionVector.slice();
     } else {
@@ -193,8 +211,5 @@ export function compute_gaussian_solution(level) {
   } else {
     level.solutionVector = null;
     level.solutionType = "impossible";
-  }
-  if (vector_sum(level.solutionVector) <= 3) {
-    level.solutionType = "confirmed";
   }
 }

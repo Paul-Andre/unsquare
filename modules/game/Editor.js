@@ -6,19 +6,27 @@ import { Grid } from '../core/Grid.js';
 import { compute_operations_for_level, vector_sum, level_check_solution, get_level_compact_solution, vector_equal } from '../core/algo.js';
 import { save_editor_book } from '../core/bookUtils.js';
 import { screenManager } from '../ui/ScreenManager.js';
-import { Level } from '../core/Level.js';
+import { Level, compute_gaussian_solution } from '../core/Level.js';
+import { generate_id } from '../utils/helpers.js';
 
 export class Editor extends GameBase {
   constructor(canvasId, divId) {
     super(canvasId, divId);
     this.referenceToOriginalLevel = null;
     this.undoList = [];
+    this.drawMode = false;
+    this.drawPaintValue = null; // The value to paint when dragging in draw mode
+    this.drawUndoSaved = false; // Track if we've saved undo state for current draw operation
+    this.pendingSolvabilityCheck = null; // Timeout ID for deferred solvability checking
 
     // Override openLevel to handle editor-specific behavior
     this.openLevel = this.editorOpenLevel.bind(this);
 
     // Bind the action method to preserve 'this' context when passed as callback
     this.action = this.action.bind(this);
+
+    // Set up keyboard event listeners
+    this.setupKeyboardListeners();
   }
 
   editorOpenLevel(level, book) {
@@ -26,6 +34,8 @@ export class Editor extends GameBase {
     // The reason I don't just put it in the base is that at some point the game might need to modify the level
     this.referenceToOriginalLevel = level;
     super.openLevel(level.clone(), book);
+    this.updateDrawModeButton();
+    this.updateModeDropdown();
   }
 
   // this specifies what happens when you activate squares
@@ -166,6 +176,8 @@ export class Editor extends GameBase {
     ) {
       this.gameState = new GameState(this.level);
     }
+    this.updateDrawModeButton();
+    this.updateModeDropdown();
   }
 
   promptSize() {
@@ -209,25 +221,22 @@ export class Editor extends GameBase {
     screenManager.goBack();
   }
 
+  saveAs() {
+    this.updateLevelInfo();
+    const newLevel = this.level.clone();
+    newLevel.id = generate_id("level");
+    newLevel.index = this.book.levels.length;
+    this.book.levels.push(newLevel);
+    save_editor_book(this.book);
+    this.editorOpenLevel(newLevel, this.book);
+  }
+
   setText(text) {
     this.level.text = text;
   }
 
-  printFlat() {
-    let ret = "";
-    ret += this.gameState.tiles.width;
-    ret += " ";
-    ret += this.gameState.tiles.height;
-    ret += "\n";
-    let tiles = this.gameState.tiles;
-    for (let j = 0; j < tiles.height; j++) {
-      for (let i = 0; i < tiles.width; i++) {
-        ret += "" + (tiles.get(i, j) - 1);
-      }
-      ret += "\n";
-    }
-    // Print a flat representation of the level to the console
-    console.log(ret);
+  setMode(mode) {
+    this.level.mode = mode;
   }
 
   updateGui() {
@@ -238,6 +247,20 @@ export class Editor extends GameBase {
       return;
     }
 
+    // In draw mode, show solvability status
+    // if (this.drawMode) {
+    //   if (this.level.solutionType === "impossible") {
+    //     this.div.getElementsByClassName("editorBest")[0].innerText = "unsolvable";
+    //   } else if (this.level.solutionVector) {
+    //     const sum = vector_sum(this.level.solutionVector);
+    //     this.div.getElementsByClassName("editorBest")[0].innerText = sum + " solvable";
+    //   } else {
+    //     this.div.getElementsByClassName("editorBest")[0].innerText = "? unknown";
+    //   }
+    //   return;
+    // }
+
+    // Normal mode - existing behavior
     if (this.gameState.runningSolution) {
       let sum = vector_sum(this.level.solutionVector);
       let type = this.level.solutionType;
@@ -258,6 +281,184 @@ export class Editor extends GameBase {
 
   displayShare() {
     let sol_string = window.prompt("URL for sharing", this.getCustomUrl());
+  }
+
+  toggleDrawMode() {
+    this.drawMode = !this.drawMode;
+    this.updateDrawModeButton();
+  }
+
+  updateDrawModeButton() {
+    const button = document.getElementById("drawModeButton");
+    if (button) {
+      button.textContent = this.drawMode ? "Draw Mode: ON" : "Draw Mode: OFF";
+      if (this.drawMode) {
+        button.classList.add("drawModeActive");
+      } else {
+        button.classList.remove("drawModeActive");
+      }
+    }
+  }
+
+  updateModeDropdown() {
+    const select = document.getElementById("levelModeSelect");
+    if (select) {
+      select.value = this.level.mode || "normal";
+    }
+  }
+
+  setupKeyboardListeners() {
+    // TODO: note that the event listener never gets removed
+    // It is okay for the time being since I only initialize this "component" once,
+    // but will need to figure out a better way to do once I do differently.
+    window.addEventListener("keydown", (e) => {
+      // Only handle if editor screen is active and not typing in an input
+      if (
+        screenManager.currentScreenName === "editor" &&
+        e.target.tagName !== "INPUT" &&
+        e.target.tagName !== "TEXTAREA"
+      ) {
+        if (e.key === "d" || e.key === "D") {
+          e.preventDefault();
+          this.toggleDrawMode();
+        }
+      }
+    });
+  }
+
+  // Override mouse handlers for draw mode
+  doMouseDown(x, y) {
+    if (this.drawMode) {
+      this.mouseStart.x = x / this.canvasSize;
+      this.mouseStart.y = y / this.canvasSize;
+      this.mouseStart.pressed = true;
+      this.drawUndoSaved = false;
+
+      const coords = this.level.tileShape.coordinatesFromMousePosition(
+        this.mouseStart.x,
+        this.mouseStart.y,
+        this.gameState.tiles
+      );
+
+      // Check bounds
+      if (
+        coords.x >= 0 &&
+        coords.x < this.gameState.tiles.width &&
+        coords.y >= 0 &&
+        coords.y < this.gameState.tiles.height
+      ) {
+        // Save state for undo (only once per mouse down)
+        this.undoList.push({
+          level: this.level.clone(),
+          gameState: new GameState(this.level),
+        });
+        this.drawUndoSaved = true;
+
+        // Toggle the clicked tile
+        const currentValue = this.gameState.tiles.get(coords.x, coords.y);
+        const newValue = this.level.colorScheme.resquare(currentValue);
+        this.drawPaintValue = newValue;
+
+        // Update both level and gameState tiles
+        this.gameState.tiles.set(coords.x, coords.y, newValue);
+        this.level.tiles.set(coords.x, coords.y, newValue);
+
+        // Update solution and redraw
+        this.updateSolutionAfterDraw();
+        this.draw();
+      }
+      return;
+    }
+
+    // Normal mode - call parent implementation
+    super.doMouseDown(x, y);
+  }
+
+  doMouseMove(x, y) {
+    if (this.drawMode && this.mouseStart.pressed && this.drawPaintValue !== null) {
+      const coords = this.level.tileShape.coordinatesFromMousePosition(
+        x / this.canvasSize,
+        y / this.canvasSize,
+        this.gameState.tiles
+      );
+
+      // Check bounds
+      if (
+        coords.x >= 0 &&
+        coords.x < this.gameState.tiles.width &&
+        coords.y >= 0 &&
+        coords.y < this.gameState.tiles.height
+      ) {
+        // Only paint if the tile value is different (avoid redundant updates)
+        const currentValue = this.gameState.tiles.get(coords.x, coords.y);
+        if (currentValue !== this.drawPaintValue) {
+          // Paint with the stored value
+          this.gameState.tiles.set(coords.x, coords.y, this.drawPaintValue);
+          this.level.tiles.set(coords.x, coords.y, this.drawPaintValue);
+
+          // Update solution and redraw
+          this.updateSolutionAfterDraw();
+          this.draw();
+        }
+      }
+      return;
+    }
+
+    // Normal mode - call parent implementation
+    super.doMouseMove(x, y);
+  }
+
+  doMouseUp(x, y) {
+    if (this.drawMode) {
+      // Final solvability check on mouse up (in case we missed any during drag)
+      if (this.gameState && this.level) {
+        this.updateSolutionAfterDraw();
+      }
+      this.mouseStart.pressed = false;
+      this.drawPaintValue = null;
+      this.drawUndoSaved = false;
+      return;
+    }
+
+    // Normal mode - call parent implementation
+    super.doMouseUp(x, y);
+  }
+
+  updateSolutionAfterDraw() {
+    // Clear any pending solvability check
+    if (this.pendingSolvabilityCheck !== null) {
+      clearTimeout(this.pendingSolvabilityCheck);
+      this.pendingSolvabilityCheck = null;
+    }
+
+    // Defer solvability checking to the next frame using setTimeout zero trick
+    this.pendingSolvabilityCheck = setTimeout(() => {
+      this.pendingSolvabilityCheck = null;
+
+      // Recompute operations and solution
+      const operations = compute_operations_for_level(this.level);
+      const m = operations.length;
+
+      // Check solvability using gaussian elimination
+      compute_gaussian_solution(this.level);
+
+      // Update gameState operations
+      this.gameState.operations = operations;
+      this.gameState.inverseOperations = new Map();
+      for (let i = 0; i < operations.length; i++) {
+        this.gameState.inverseOperations.set(operations[i].join(""), i);
+      }
+
+      // Update running solution
+      if (this.level.solutionVector) {
+        this.gameState.runningSolution = this.level.solutionVector.slice();
+      } else {
+        this.gameState.runningSolution = new Array(m).fill(0);
+      }
+
+      // Update GUI
+      this.updateGui();
+    }, 0);
   }
 }
 

@@ -3,6 +3,9 @@
 import { LevelMenuComponent } from './LevelMenuComponent.js';
 import { screenManager } from './ScreenManager.js';
 import { book_reviver } from '../core/bookUtils.js';
+import { Level } from '../core/Level.js';
+import { createLevelIcon } from './icon.js';
+import { htmlStringToElement } from '../utils/helpers.js';
 
 export class GameLevelMenu {
   constructor() {
@@ -49,6 +52,7 @@ export class GameLevelMenu {
           this.levelMenu.clearAllBests();
         }
         this.levelMenu.displayIcons();
+        this.displayChallengeIcon();
       }
     };
 
@@ -57,6 +61,52 @@ export class GameLevelMenu {
     };
 
     request.send();
+  }
+
+  displayChallengeIcon() {
+    const challengeLevelJson = {
+      "colorScheme": "BW",
+      "tileShape": "square",
+      "tiles": [[1,2,2,1,2,2,1,2,2,1],[2,1,1,2,1,1,2,1,1,2],[2,1,1,2,1,1,2,1,1,2],[1,2,2,1,2,2,1,2,2,1],[2,1,1,2,1,1,2,1,1,2],[2,1,1,2,1,1,2,1,1,2],[1,2,2,1,2,2,1,2,2,1],[2,1,1,2,1,1,2,1,1,2],[2,1,1,2,1,1,2,1,1,2],[1,2,2,1,2,2,1,2,2,1]],
+      "mode": "challenge",
+      "id": "level_1763668451541",
+      "__type__": "Level"
+    };
+
+    const challengeLevel = Level.fromJsonObject(challengeLevelJson);
+    const container = document.getElementById("challengeIconContainer");
+
+
+    if (!container) {
+      return;
+    }
+
+    container.innerHTML = "";
+
+    let element = htmlStringToElement(`<div class="level_icon">
+    <img class="level_icon_image"> </img>
+    <div class="level_icon_par"> </div>
+    </div>
+    `);
+
+    const icon = createLevelIcon(challengeLevel);
+    const iconImg = element.querySelector(".level_icon_image");
+    iconImg.src = icon.src;
+    iconImg.style.width = "55px";
+    iconImg.style.height = "55px";
+
+    element.level = challengeLevel;
+    element.onclick = () => {
+      if (window.game && window.game.openLevel) {
+        window.game.openLevel(challengeLevel, {
+          levels: [challengeLevel],
+          source: "challenge",
+        });
+        screenManager.switchTo("game");
+      }
+    };
+
+    container.appendChild(element);
   }
 }
 
