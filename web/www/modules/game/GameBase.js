@@ -477,6 +477,13 @@ export class GameBase {
     console.log(JSON.stringify(json));
   }
 
+  printJsonWithoutSolution() {
+    const json = this.level.toJsonObject();
+    delete json.solutionVector;
+    delete json.solutionType;
+    console.log(JSON.stringify(json));
+  }
+
   // Hook for subclasses to implement game-specific logic after a move
   postMove() {
     // Override in subclasses
