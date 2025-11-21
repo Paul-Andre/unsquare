@@ -38,6 +38,11 @@ export function cyrb53(str, seed) {
   return 4294967296 * (2097151 & h2) + (h1 >>> 0);
 }
 
+function largeNumber() {
+  // very suspect... see if something else can be done
+  return Math.floor(Math.random()*10000000000000000);
+}
+
 export function generate_id(prefix = "id") {
-  return prefix + "_" + Date.now();
+  return prefix + "_" + largeNumber();
 }

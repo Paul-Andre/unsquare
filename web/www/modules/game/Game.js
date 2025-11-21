@@ -136,7 +136,7 @@ export class Game extends GameBase {
     this.postSolutionToServer(
       this.level.getFullIdentifier(),
       this.getPlayerSolution(),
-      "adsfadsfas",
+      localStorage.player_id,
       (histogramData)=>{
 
       const container = element.querySelector("#histogramBars");
