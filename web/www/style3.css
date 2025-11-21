@@ -500,7 +500,6 @@ button.drawModeActive:hover {
 }
 
 .histogramControls {
-  /* margin: 1.5em 0; */
   display: flex;
   position: absolute;
   top: -1px;
@@ -517,10 +516,7 @@ button.drawModeActive:hover {
 
 .histogramTypeSelect {
   font-size: 0.85em;
-  /* padding: 0.3em 0.6em; */
   border: 1px solid #c1c1c1;
-  /* border-radius: 6px; */
-  /* background-color: white; */
   cursor: pointer;
   color: #202020;
   padding: 0 0.2em;
@@ -532,8 +528,6 @@ button.drawModeActive:hover {
 }
 
 .histogramContainer {
-  /* margin: 1.5em 0; */
-  /* min-height: 200px; */
   display: flex;
   align-items: flex-end;
   justify-content: center;
@@ -551,7 +545,6 @@ button.drawModeActive:hover {
   width: 100%;
   max-width: 600px;
   height: 150px;
-  /* padding: 0 1em; */
   border-bottom: 2px solid #ccc;
   position: relative;
   bottom: -2px;
@@ -570,10 +563,6 @@ button.drawModeActive:hover {
 }
 
 
-.histogramBarContainer.playerBar {
-  /* background-color: #ffd700; */
-}
-
 .histogramBar {
   width: 100%;
   background-color: #2da6fd;
@@ -584,9 +573,7 @@ button.drawModeActive:hover {
 }
 
 .histogramBar.playerBar {
-  background-color: #ffd700;
   background-color: red;
-  /* background-color: #2da6fd; */
 }
 
 .histogramBarCount {

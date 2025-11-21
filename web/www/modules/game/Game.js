@@ -118,34 +118,26 @@ export class Game extends GameBase {
 
   showChallengeHistogram() {
     const element = this.getElement("finishedChallengeHistogram");
-    const numMoves = this.gameState.numMoves; 
+    const numMoves = this.gameState.numMoves;
     const movesDisplay = element.querySelector(".finishedLevelMoves");
     if (movesDisplay) {
       movesDisplay.innerText = `${numMoves} moves`;
     }
 
-    // Generate dummy histogram data
     const histogramData = dummyHistogramData;
-    this.currentHistogramData = histogramData;
-    this.currentPlayerMoves = numMoves;
+    const container = element.querySelector("#histogramBars");
+    const select = element.querySelector("#histogramTypeSelect");
 
-    // Render initial histogram (allSolutions)
-    const container = document.getElementById("histogramContainer");
     renderHistogram(container, histogramData.allSolutions, numMoves);
 
-    // Set up dropdown change handler
-    const select = document.getElementById("histogramTypeSelect");
     if (select) {
-      // Remove old handler if it exists
       if (this.histogramChangeHandler) {
         select.removeEventListener("change", this.histogramChangeHandler);
       }
       
-      // Create new handler that uses current data
       this.histogramChangeHandler = (e) => {
         const type = e.target.value;
-        const data = this.currentHistogramData[type];
-        renderHistogram(container, data, this.currentPlayerMoves);
+        renderHistogram(container, histogramData[type], numMoves);
       };
       
       select.addEventListener("change", this.histogramChangeHandler);
