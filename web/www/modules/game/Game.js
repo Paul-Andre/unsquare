@@ -79,10 +79,47 @@ export class Game extends GameBase {
 
   postSolutionToServer(level, solution, player_id, callback) {
     console.log("solution to be posted", JSON.stringify(solution));
-    setTimeout(() => {
-      let data = generateDummyHistogramData(10);
-      callback(data);
-    }, 1000);
+
+    const supabaseUrl = "https://vatpvuolfdnkcgdwgsxm.supabase.co";
+    const anonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZhdHB2dW9sZmRua2NnZHdnc3htIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM2MTc3OTMsImV4cCI6MjA3OTE5Mzc5M30.XEJsuWMrWzo1l2otg36z9uZ1Vm3BbItfnhb0r-Ne1NA";
+    
+    (async () => {
+const response = await fetch(`${supabaseUrl}/functions/v1/validate-and-save-solution`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${anonKey}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        level_id: level.id,
+        solution: solution,
+        player_id: player_id,
+        level_full_identifier: level.getFullIdentifier(),
+      })
+    });
+    
+    let data = null;
+    
+    try {
+      if (response.ok) {
+        data = await response.json();
+      } else {
+        console.error(`HTTP error! status: ${response.status}`, await response.text());
+      }
+    } catch (e) {
+      if (response.ok) {
+        console.error("Failed to parse response as JSON", e);
+      } else {
+        console.error(`HTTP error! status: ${response.status}`);
+      }
+    }
+    console.log("data", data);
+
+    let dummyData = generateDummyHistogramData(10);
+
+    callback(dummyData);
+  })();
+
   }
 
   getPlayerSolution() {
