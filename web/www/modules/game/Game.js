@@ -290,6 +290,7 @@ export class Game extends GameBase {
     const hasNextLevel = this.level.index + 1 < this.book.levels.length;
     
     if (hasNextLevel) {
+      // TODO: do I need both onclick and ontouchend?
       nextButton.textContent = "Next →";
       nextButton.onclick = () => window.nextLevel();
       nextButton.ontouchend = () => window.nextLevel();

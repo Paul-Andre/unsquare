@@ -625,6 +625,11 @@ button.drawModeActive:hover {
   /* background: red */
 }
 
+#challengeIconContainer {
+  position: relative;
+  clear: both;
+}
+
 .title {
   font-size: 1.2em;
   font-weight: 500;
