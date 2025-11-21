@@ -521,6 +521,7 @@ button.drawModeActive:hover {
   color: #202020;
   padding: 0 0.2em;
   text-align: center;
+  background: #e9e9edb5;
 }
 
 .histogramTypeSelect:hover {
