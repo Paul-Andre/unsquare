@@ -180,3 +180,7 @@ remove double onclick/ontouchend
 21 Nov 2025
 0.9.3
 Histogram tooltips
+
+21 Nov 2025
+0.9.4
+histogram tooltip directly over bar
