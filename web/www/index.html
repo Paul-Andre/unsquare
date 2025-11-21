@@ -470,8 +470,51 @@
     </div>
   </div>
 
-
-
+  <!-- <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script> -->
+  <script type="module">
+    import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+  
+    /// I want to access the function endpoint at "https://vatpvuolfdnkcgdwgsxm.supabase.co/functions/v1/smooth-responder"
+    const supabase = createClient("https://vatpvuolfdnkcgdwgsxm.supabase.co",
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZhdHB2dW9sZmRua2NnZHdnc3htIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM2MTc3OTMsImV4cCI6MjA3OTE5Mzc5M30.XEJsuWMrWzo1l2otg36z9uZ1Vm3BbItfnhb0r-Ne1NA");
+    // const { data, error } = await supabase.functions.invoke("hello", {
+    //   body: {
+    //     name: "John Doe"
+    //   }
+    // });
+    // console.log("Hooray, Supabase is working! data:", data, "error:", error);
+    const { data, error } = await supabase.functions.invoke("validate-and-save-solution", {
+        
+      body: {
+        level_id: "level_1763668451541$s_10_10$m_2$t$1_2_2_1_2_2_1_2_2_1_2_1_1_2_1_1_2_1_1_2_2_1_1_2_1_1_2_1_1_2_1_2_2_1_2_2_1_2_2_1_2_1_1_2_1_1_2_1_1_2_2_1_1_2_1_1_2_1_1_2_1_2_2_1_2_2_1_2_2_1_2_1_1_2_1_1_2_1_1_2_2_1_1_2_1_1_2_1_1_2_1_2_2_1_2_2_1_2_2_1",
+        solution: "[1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1,]",
+        player_tag: "player_1763668451541"
+      }
+    });
+    console.log("Hooray, Supabase is working! data:", data, "error:", error);
+  </script>
+  <script>
+//     async function testSupabase() {
+//     const res = await fetch('https://vatpvuolfdnkcgdwgsxm.supabase.co/functions/v1/smooth-responder', {
+//   method: 'POST',
+//   mode: 'no-cors',
+//   headers: {
+//     'Content-Type': 'application/json',
+//     // Don't send service_role key from the browser
+//     // If your function requires auth, send the user's access token:
+//     // Authorization: `Bearer ${session.access_token}`
+//   },
+//   body: JSON.stringify({ name: 'John Doe' })
+// });
+// //handle error
+// if (!res.ok) { 
+//   throw new Error(`HTTP error! status: ${res.status}`);
+// } else {    
+//     const data = await res.json();
+//     console.log("Hooray, Supabase is working! data:", data);
+//   }}
+//   testSupabase();
+</script>
 </body>
 
 </html>
