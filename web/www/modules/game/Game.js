@@ -220,6 +220,7 @@ export class Game extends GameBase {
     this.renderHistogram();
 
     element.style.display = "block";
+    this.updateFinishedLevelNextButton(element);
     requestAnimationFrame(() => element.classList.add("showing"));
   }
 
@@ -280,14 +281,29 @@ export class Game extends GameBase {
     restartButton.classList.toggle("in_yo_face", suggestsRestart);
   }
 
-  showFinishedLevel() {
-    if (!this.isInBasicBook()) {
+  updateFinishedLevelNextButton(element) {
+    const nextButton = element.querySelector(".finishedLevelNextButton");
+    if (!nextButton) {
       return;
     }
 
-    if (this.level.index >= this.book.levels.length - 1) {
+    const hasNextLevel = this.level.index + 1 < this.book.levels.length;
+    
+    if (hasNextLevel) {
+      nextButton.textContent = "Next →";
+      nextButton.onclick = () => window.nextLevel();
+      nextButton.ontouchend = () => window.nextLevel();
+    } else {
+      nextButton.textContent = "Return";
+      nextButton.onclick = () => window.screenManager.goBack();
+      nextButton.ontouchend = () => window.screenManager.goBack();
+    }
+  }
+
+  showFinishedLevel() {
+
+    if (this.book.id === "book_1762877873556" && this.level.index >= this.book.levels.length - 1) {
       this.getElement("finishedGame").style.display = "block";
-      return;
     }
 
     const isPerfect = this.level.par !== null && this.gameState.numMoves <= this.level.par;
@@ -303,6 +319,7 @@ export class Game extends GameBase {
       const parDisplay = this.level.par === null ? "?" : this.level.par;
       movesDisplay.innerText = `${this.gameState.numMoves}/${parDisplay} moves`;
     }
+    this.updateFinishedLevelNextButton(element);
     requestAnimationFrame(() => element.classList.add("showing"));
   }
 
@@ -369,7 +386,7 @@ export class Game extends GameBase {
     this.startAnimationLoopIfNeeded();
   }
 
-  checkShowOverlay() {
+  checkShowOverlayMessage() {
     // TODO: when multiple books, rethink this.
     const totSolved = this.book.levels.filter(level => getBestNumMoves(level)).length;
     // Todo: make this be a parameter on posthog
@@ -378,7 +395,7 @@ export class Game extends GameBase {
 
   nextLevel() {
     const discordEl = document.getElementById("discord_overlay_message");
-    if (this.checkShowOverlay()) {
+    if (this.checkShowOverlayMessage()) {
       discordEl.hidden = false;
       this.showedDiscordOverlay = true;
       return;
