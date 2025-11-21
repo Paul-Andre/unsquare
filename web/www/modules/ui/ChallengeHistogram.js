@@ -60,6 +60,23 @@ export function renderHistogram(container, histogramData, playerMoves) {
       bar.style.visibility = "hidden";
     }
 
+    // Create tooltip for bars with data
+    if (hasData || isPlayerBar) {
+      const tooltip = document.createElement("div");
+      tooltip.className = "histogramTooltip";
+      const solutionText = count === 1 ? "solution" : "solutions";
+      tooltip.textContent = `${moveCount} moves: ${count} ${solutionText}`;
+      barContainer.appendChild(tooltip);
+
+      barContainer.addEventListener("mouseenter", () => {
+        tooltip.classList.add("visible");
+      });
+
+      barContainer.addEventListener("mouseleave", () => {
+        tooltip.classList.remove("visible");
+      });
+    }
+
     barContainer.appendChild(bar);
 
     if (isPlayerBar) {
