@@ -336,39 +336,32 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Insert solution into database
-    const insertResp = await supabaseFetch("/solutions", {
+    // Insert solution and get histogram in one call
+    const insertResp = await supabaseFetch("/rpc/insert_solution_and_get_histogram", {
       method: "POST",
-      headers: { "Prefer": "return=representation" },
       body: JSON.stringify({
-        player_id: body.player_id,
-        level_id: body.level_id,
-        solution: solutionArray,
-        num_moves: vector_sum(solutionArray)
+        p_player_id: body.player_id,
+        p_level_id: body.level_id,
+        p_solution: solutionArray,
+        p_num_moves: vector_sum(solutionArray)
       })
     });
 
-    const result = await insertResp.json().catch(() => ({}));
     if (!insertResp.ok) {
-      return errorResponse("Insert failed", insertResp.status || 500, result);
+      const errorResult = await insertResp.json().catch(() => ({}));
+      return errorResponse("Insert failed", insertResp.status || 500, errorResult);
     }
 
-    // Get histogram for this level
-    const histogramResp = await supabaseFetch("/rpc/get_level_histograms", {
-      method: "POST",
-      body: JSON.stringify({ p_level_id: body.level_id })
-    });
-
-    let allHistogramData = null;
-    if (histogramResp.ok) {
-      allHistogramData = await histogramResp.json().catch(() => null);
+    const responseData = await insertResp.json().catch(() => null);
+    if (!responseData) {
+      return errorResponse("Failed to parse response", 500);
     }
 
     return jsonResponse({ 
       valid: true, 
       saved: true, 
-      result,
-      allHistogramData
+      result: responseData.solution,
+      allHistogramData: responseData.histogram
     }, 201);
 
   } catch (err) {

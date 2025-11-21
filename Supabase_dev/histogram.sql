@@ -46,3 +46,32 @@ AS $$
     )
   );
 $$;
+
+CREATE OR REPLACE FUNCTION insert_solution_and_get_histogram(
+  p_player_id text,
+  p_level_id text,
+  p_solution jsonb,
+  p_num_moves integer
+)
+RETURNS jsonb
+LANGUAGE plpgsql
+AS $$
+DECLARE
+  v_inserted_row jsonb;
+  v_histogram jsonb;
+BEGIN
+  -- Insert the solution
+  INSERT INTO solutions (player_id, level_id, solution, num_moves)
+  VALUES (p_player_id, p_level_id, p_solution, p_num_moves)
+  RETURNING to_jsonb(solutions.*) INTO v_inserted_row;
+
+  -- Get histogram for this level
+  SELECT get_level_histograms(p_level_id) INTO v_histogram;
+
+  -- Return both the inserted row and the histogram
+  RETURN jsonb_build_object(
+    'solution', v_inserted_row,
+    'histogram', v_histogram
+  );
+END;
+$$;
