@@ -239,6 +239,38 @@
             </div>
           </div>
 
+          <div class="finishedChallengeHistogram" style="display: none">
+            <div class="finishedLevelInside">
+            <h1> Solved! </h1>
+
+
+
+            <div class="histogramContainer" >
+ 
+              <div class="histogramBars" id="histogramContainer"></div>
+              <div class="histogramControls">
+                <select id="histogramTypeSelect" class="histogramTypeSelect">
+                  <option value="allSolutions">All Solutions</option>
+                  <option value="bestPerPlayer">Best Per Player</option>
+                  <option value="uniqueSolutions">Unique Solutions</option>
+                </select>
+              </div>
+            </div>
+
+            <h2 class="finishedLevelMoves"> 3 moves</h2>
+            <div class="finishedLevelButtons challengeFinishedButtons">
+              <button class="finishedLevelRestartButton" onclick="game.restart();" ontouchend="game.restart();"
+                style="touch-action: none">
+                ⟳ Redo
+              </button>
+              <button class="finishedLevelNextButton" onclick="nextLevel();" ontouchend="nextLevel();"
+                style="touch-action: none">
+                Next →
+              </button>
+            </div>
+            </div>
+          </div>
+
           <div class="finishedGame" style="display: none">
             <!-- <button onclick="game.restart();" >⟳ Restart</button> -->
             <h2>Congratulations! You finished the game!</h2>

@@ -7,6 +7,11 @@ import { save_editor_book } from '../core/bookUtils.js';
 import { trackLevelEnd } from '../utils/analytics.js';
 import { getBestNumMoves, setBestNumMoves } from '../core/levelUtils.js';
 import * as config from '../utils/config.js';
+import { renderHistogram, generateDummyHistogramData } from '../ui/ChallengeHistogram.js';
+
+// Generate this once, since it's the easiest way to not have it re-generate every time the UI is re-rendered.
+// It's dummy data anyway, so it's okay if it's here for now.
+let dummyHistogramData = generateDummyHistogramData(6);
 
 export class Game extends GameBase {
   constructor(canvasId, divId) {
@@ -111,6 +116,51 @@ export class Game extends GameBase {
     this.updateGui();
   }
 
+  showChallengeHistogram() {
+    const element = this.getElement("finishedChallengeHistogram");
+    const numMoves = this.gameState.numMoves; 
+    const movesDisplay = element.querySelector(".finishedLevelMoves");
+    if (movesDisplay) {
+      movesDisplay.innerText = `${numMoves} moves`;
+    }
+
+    // Generate dummy histogram data
+    const histogramData = dummyHistogramData;
+    this.currentHistogramData = histogramData;
+    this.currentPlayerMoves = numMoves;
+
+    // Render initial histogram (allSolutions)
+    const container = document.getElementById("histogramContainer");
+    renderHistogram(container, histogramData.allSolutions, numMoves);
+
+    // Set up dropdown change handler
+    const select = document.getElementById("histogramTypeSelect");
+    if (select) {
+      // Remove old handler if it exists
+      if (this.histogramChangeHandler) {
+        select.removeEventListener("change", this.histogramChangeHandler);
+      }
+      
+      // Create new handler that uses current data
+      this.histogramChangeHandler = (e) => {
+        const type = e.target.value;
+        const data = this.currentHistogramData[type];
+        renderHistogram(container, data, this.currentPlayerMoves);
+      };
+      
+      select.addEventListener("change", this.histogramChangeHandler);
+    }
+
+    element.style.display = "block";
+    requestAnimationFrame(() => element.classList.add("showing"));
+  }
+
+  hideChallengeHistogram() {
+    const element = this.getElement("finishedChallengeHistogram");
+    element.style.display = "none";
+    element.classList.remove("showing");
+  }
+
   getCurrentBest() {
     if (this.level) {
       return getBestNumMoves(this.level);
@@ -134,7 +184,11 @@ export class Game extends GameBase {
     }
 
     if (this.isFinished()) {
-      this.showFinishedLevel();
+      if (this.level.mode === "challenge") {
+        this.showChallengeHistogram();
+      } else {
+        this.showFinishedLevel();
+      }
     } else {
       this.hideFinishedLevelElements();
     }
@@ -194,6 +248,8 @@ export class Game extends GameBase {
     finishedLevelPerfect.classList.remove("showing");
 
     this.getElement("finishedGame").style.display = "none";
+    
+    this.hideChallengeHistogram();
   }
 
   updateMovesDisplay() {
