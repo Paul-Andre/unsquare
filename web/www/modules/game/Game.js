@@ -360,8 +360,8 @@ export class Game extends GameBase {
       level.custom ? `creator par: ${parDisplay}` : `par: ${parDisplay}`;
 
     const index = level.index;
-    document.getElementById("LevelIndicator").innerText = 
-      level.custom ? "Custom Level" : `Level ${1 + index}`;
+    const levelDisplay = level.custom ? "Custom Level" : (level.title || `Level ${1 + index}`);
+    document.getElementById("LevelIndicator").innerText = levelDisplay;
 
     const states = calculateStates(this.book);
     this.updateNavigationButtons(index, states);
