@@ -8,6 +8,7 @@ import { trackLevelEnd } from '../utils/analytics.js';
 import { getBestNumMoves, setBestNumMoves } from '../core/levelUtils.js';
 import * as config from '../utils/config.js';
 import { renderHistogram, generateDummyHistogramData } from '../ui/ChallengeHistogram.js';
+import { drawIcon } from '../ui/icon.js';
 
 
 export class Game extends GameBase {
@@ -203,6 +204,20 @@ export class Game extends GameBase {
     const movesDisplay = element.querySelector(".finishedLevelMoves");
     if (movesDisplay) {
       movesDisplay.innerText = `${numMoves} moves`;
+    }
+
+    // Generate level preview icon
+    const previewImg = element.querySelector(".finishedChallengeLevelPreview");
+    if (previewImg && this.level) {
+      const canvas = document.createElement("canvas");
+      const size = 55 * (window.devicePixelRatio || 1);
+      canvas.width = size;
+      canvas.height = size;
+      drawIcon(this.level, canvas);
+      const dataURL = canvas.toDataURL();
+      previewImg.src = dataURL;
+      previewImg.style.width = "55px";
+      previewImg.style.height = "55px";
     }
 
     const select = element.querySelector("#histogramTypeSelect");
