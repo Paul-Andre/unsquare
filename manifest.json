@@ -7,65 +7,65 @@
   "display": "standalone",
   "icons": [
     {
-      "src": "icons/favicon192.png",
+      "src": "/icons/favicon192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "icons/icon_monochrome_192.png",
+      "src": "/icons/icon_monochrome_192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "monochrome"
     },
     {
-      "src": "icons/icon_maskable_192.png",
+      "src": "/icons/icon_maskable_192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "maskable"
     },
     {
-      "src": "icons/favicon240.png",
+      "src": "/icons/favicon240.png",
       "sizes": "240x240",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "icons/icon_monochrome_240.png",
+      "src": "/icons/icon_monochrome_240.png",
       "sizes": "240x240",
       "type": "image/png",
       "purpose": "monochrome"
     },
     {
-      "src": "icons/favicon256.png",
+      "src": "/icons/favicon256.png",
       "sizes": "256x256",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "icons/icon_monochrome_256.png",
+      "src": "/icons/icon_monochrome_256.png",
       "sizes": "256x256",
       "type": "image/png",
       "purpose": "monochrome"
     },
     {
-      "src": "icons/favicon512.png",
+      "src": "/icons/favicon512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "icons/icon_monochrome_512.png",
+      "src": "/icons/icon_monochrome_512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "monochrome"
     },
     {
-      "src": "icons/icon_maskable_512.png",
+      "src": "/icons/icon_maskable_512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
     }
   ],
-  "version": "0.9.7"
+  "version": "0.10.0"
 }

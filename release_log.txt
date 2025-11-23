@@ -196,3 +196,7 @@ improve histogram tooltip
 22 Nov 2025
 0.9.7
 small fixes
+
+23 Nov 2025
+0.10.0
+Set up vite!

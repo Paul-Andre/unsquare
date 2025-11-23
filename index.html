@@ -29,7 +29,7 @@
   <link rel="canonical" href="https://unflipgame.com/" />
   <meta name="description" content="Flip square areas (2x2 or larger) to invert the colors. Make all tiles white to win." />
 
-  <link rel="stylesheet" type="text/css" href="style3.css" />
+  <link rel="stylesheet" type="text/css" href="/style3.css" />
 
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-GTG52YV9R0"></script>
@@ -52,20 +52,13 @@
     })
   </script>
 
-  <script type="module" src="main.js"></script>
 
-  <link rel="preload" href="ss3/SourceSans3-Italic-VariableFont_wght.ttf" as="font" crossorigin="anonymous" />
-  <link rel="preload" href="ss3/SourceSans3-VariableFont_wght.ttf" as="font" crossorigin="anonymous" />
+  <link rel="preload" href="/ss3/SourceSans3-Italic-VariableFont_wght.ttf" as="font" crossorigin="anonymous" />
+  <link rel="preload" href="/ss3/SourceSans3-VariableFont_wght.ttf" as="font" crossorigin="anonymous" />
 
-  <script>
-    if (location.hostname === "localhost") {
-      const script = document.createElement('script');
-      script.src = "https://livejs.com/live.js";
-      document.head.appendChild(script);
-    }
-  </script>
-  <link rel="manifest" href="manifest.json">
+  <link rel="manifest" href="/manifest.json">
 
+  <script type="module" crossorigin src="/assets/main-CmKfJNq_.js"></script>
 </head>
 
 <body>
@@ -82,7 +75,7 @@
           <div class="variant_container" id="onboardingSlides">
             <div class="variant_shown">
           <p> Instructions: </p> 
-              <img class="instruction_image" src="drag.gif" alt="Drag to flip" />
+              <img class="instruction_image" src="/drag.gif" alt="Drag to flip" />
               <p>Select <strong>square areas</strong> (2x2 or larger) to flip the tiles.</p>
               <div class="footer">
                 <!-- <button id="onboardingPrevBtn" onclick="onboardingPrev();">&#60; Previous</button> -->
@@ -92,7 +85,7 @@
             </div>
             <div>
           <p> Instructions: </p>
-              <img class="instruction_image" src="flip.gif" alt="Colors flip" />
+              <img class="instruction_image" src="/flip.gif" alt="Colors flip" />
               <p>White tiles flip to black. Black tiles flip to white.</p>
               <div class="footer">
                 <button id="onboardingPrevBtn" onclick="onboardingPrev();">&#60; Prev</button>
@@ -102,7 +95,7 @@
             </div>
             <div>
           <p> Instructions: </p>
-              <img class="instruction_image" src="to_win.png" alt="Make all white"
+              <img class="instruction_image" src="/to_win.png" alt="Make all white"
                 style="display: block; margin: 0 auto;" />
               <p>Make all tiles white to win!</p>
               <div class="footer">
@@ -139,7 +132,7 @@
           <button class="discord_button">Discord</button>
         </form>
 
-        <img src="demo_2_3.gif" alt="Demo gif" width="484" height="484" />
+        <img src="/demo_2_3.gif" alt="Demo gif" width="484" height="484" />
 
         <br />
         <footer>
