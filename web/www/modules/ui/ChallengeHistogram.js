@@ -33,6 +33,7 @@ export function renderHistogram(container, histogramData, playerMoves) {
 
   // Tooltip state management
   let activeTooltip = null;
+  const barContainers = []; // Store all bar containers with tooltips
 
   // Show tooltip and hide previous one
   function showTooltip(tooltip) {
@@ -85,6 +86,9 @@ export function renderHistogram(container, histogramData, playerMoves) {
       barContainer.addEventListener("mouseenter", () => {
         showTooltip(tooltip);
       });
+
+      // Store bar container with tooltip for closest-bar finding
+      barContainers.push({ container: barContainer, tooltip });
     }
 
     barContainer.appendChild(bar);
@@ -120,6 +124,30 @@ export function renderHistogram(container, histogramData, playerMoves) {
     return null;
   }
 
+  // Find the closest bar to a given point
+  function findClosestBarTooltip(x, y) {
+    if (barContainers.length === 0) return null;
+
+    const containerRect = container.getBoundingClientRect();
+    const relativeX = x - containerRect.left;
+
+    let closestBar = null;
+    let minDistance = Infinity;
+
+    for (const { container: barContainer, tooltip } of barContainers) {
+      const barRect = barContainer.getBoundingClientRect();
+      const barCenterX = barRect.left + barRect.width / 2 - containerRect.left;
+      const distance = Math.abs(relativeX - barCenterX);
+
+      if (distance < minDistance) {
+        minDistance = distance;
+        closestBar = tooltip;
+      }
+    }
+
+    return closestBar;
+  }
+
   // Check if point is within container bounds
   function isPointInContainer(x, y) {
     const rect = container.getBoundingClientRect();
@@ -136,7 +164,8 @@ export function renderHistogram(container, histogramData, playerMoves) {
 
   container.addEventListener("pointerdown", (e) => {
     isDragging = true;
-    const tooltip = findBarContainerUnderPoint(e.clientX, e.clientY);
+    // Find closest bar to show its tooltip
+    const tooltip = findClosestBarTooltip(e.clientX, e.clientY);
     if (tooltip) {
       showTooltip(tooltip);
     }
@@ -146,15 +175,11 @@ export function renderHistogram(container, histogramData, playerMoves) {
   container.addEventListener("pointermove", (e) => {
     if (!isDragging) return;
 
-    // Check if still in container, but don't hide tooltip if leaving
-    if (isPointInContainer(e.clientX, e.clientY)) {
-      const tooltip = findBarContainerUnderPoint(e.clientX, e.clientY);
-      if (tooltip) {
-        showTooltip(tooltip);
-      }
-      // If no bar found (empty space), keep current tooltip visible
+    // Always show the closest bar's tooltip while dragging
+    const tooltip = findClosestBarTooltip(e.clientX, e.clientY);
+    if (tooltip) {
+      showTooltip(tooltip);
     }
-    // If outside container, keep current tooltip visible
     e.preventDefault();
   });
 
