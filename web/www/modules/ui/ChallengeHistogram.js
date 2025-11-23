@@ -80,7 +80,7 @@ export function renderHistogram(container, histogramData, playerMoves) {
       const tooltip = document.createElement("div");
       tooltip.className = "histogramTooltip";
       const solutionText = count === 1 ? "solution" : "solutions";
-      tooltip.textContent = `${moveCount} moves: ${count} ${solutionText}`;
+      tooltip.textContent = `${moveCount}: ${count}`;
       bar.appendChild(tooltip);
 
       barContainer.addEventListener("mouseenter", () => {
