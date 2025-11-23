@@ -6,11 +6,12 @@ import { book_reviver } from '../core/bookUtils.js';
 import { Level } from '../core/Level.js';
 import { createLevelIcon } from './icon.js';
 import { htmlStringToElement } from '../utils/helpers.js';
+import mainBookData from '../../data/2025_nov_11_reordered_solved_fixed.json';
+// import mainBookData from '../../data/tiny_for_testing.json';
 
 export class GameLevelMenu {
   constructor() {
     this.bookUrl = "data/2025_nov_11_reordered_solved_fixed.json";
-    // this.bookUrl = "data/tiny_for_testing.json";
 
     // Delay the creation of level menu until after game is ready
     this.initializeLevelMenu();
@@ -31,36 +32,28 @@ export class GameLevelMenu {
 
 
   loadBook() {
-    // https://stackoverflow.com/a/35294675
-    let request = new XMLHttpRequest();
-    request.open("GET", this.bookUrl, true);
+    try {
+      // Convert imported JSON data using book_reviver
+      let data = JSON.parse(JSON.stringify(mainBookData), book_reviver);
+      data.source = this.bookUrl;
 
-    request.onload = () => {
-      if (request.status >= 200 && request.status < 400) {
-        let data = JSON.parse(request.responseText, book_reviver);
-        data.source = this.bookUrl;
+      this.levelMenu.openBook(data);
 
-        this.levelMenu.openBook(data);
+      let button = document.getElementById("homePlayButton");
+      button.removeAttribute("disabled");
+      button.innerText = "Start Game!";
 
-        let button = document.getElementById("homePlayButton");
-        button.removeAttribute("disabled");
-        button.innerText = "Start Game!";
-
-        // if ?reset added at the end of the url, reset the bests
-        let resetUrlParam = new URLSearchParams(location.search).get("reset");
-        if (resetUrlParam !== null) {
-          this.levelMenu.clearAllBests();
-        }
-        this.levelMenu.displayIcons();
-        this.displayChallengeIcon();
+      // if ?reset added at the end of the url, reset the bests
+      let resetUrlParam = new URLSearchParams(location.search).get("reset");
+      if (resetUrlParam !== null) {
+        this.levelMenu.clearAllBests();
       }
-    };
-
-    request.onerror = e => {
+      this.levelMenu.displayIcons();
+      this.displayChallengeIcon();
+    } catch (e) {
       alert("Error loading levels");
-    };
-
-    request.send();
+      console.error(e);
+    }
   }
 
   displayChallengeIcon() {

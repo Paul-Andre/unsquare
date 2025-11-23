@@ -22,7 +22,8 @@ if __name__ == '__main__':
         port = int(sys.argv[1]);
     # Start serving in /www directory
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    www_dir = os.path.join(script_dir, 'www')
+    www_dir = os.path.join(script_dir, 'dist')
+    # www_dir = os.path.join(script_dir, 'www')
     os.chdir(www_dir)
     
     server.test(HandlerClass=MyHTTPRequestHandler, port=port)

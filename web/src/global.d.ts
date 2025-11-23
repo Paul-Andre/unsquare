@@ -1,0 +1,33 @@
+// Global type declarations for properties added to window/globalThis
+// These are set in main.js and used from HTML onclick handlers and console
+
+import { Game } from './modules/game/Game.js';
+import { editor } from './modules/game/Editor.js';
+import { screenManager } from './modules/ui/ScreenManager.js';
+import { bookMenu } from './modules/ui/BookMenu.js';
+import { gameLevelMenu } from './modules/ui/GameLevelMenu.js';
+import { editorLevelMenu } from './modules/ui/editorLevelMenu.js';
+import { checkAndOpenCustomLevel } from './modules/utils/customParse.js';
+import * as config from './modules/utils/config.js';
+
+declare global {
+  interface Window {
+    config: typeof config;
+    game: Game;
+    editor: typeof editor;
+    screenManager: typeof screenManager;
+    bookMenu: typeof bookMenu;
+    gameLevelMenu: typeof gameLevelMenu;
+    editorLevelMenu: typeof editorLevelMenu;
+    parseCustomLevel: typeof checkAndOpenCustomLevel;
+    nextLevel: () => void;
+    prevLevel: () => void;
+    openEditor: () => void;
+    openPlayerEditor: () => void;
+    onboardingPrev: () => void;
+    onboardingNext: () => void;
+  }
+}
+
+export {};
+

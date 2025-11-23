@@ -4,8 +4,16 @@
  * @license MIT
  */
 
+// Store the Sortable instance for ES module export
+let sortableESMExport;
+
 (function (factory) {
   'use strict';
+
+  const sortableInstance = factory();
+  
+  // Store for ES module export
+  sortableESMExport = sortableInstance;
 
   if (typeof define === 'function' && define.amd) {
     define(factory);
@@ -13,12 +21,14 @@
     typeof module != 'undefined' &&
     typeof module.exports != 'undefined'
   ) {
-    module.exports = factory();
+    module.exports = sortableInstance;
   } else if (typeof Package !== 'undefined') {
-    Sortable = factory(); // export for Meteor.js
+    Sortable = sortableInstance; // export for Meteor.js
   } else {
     /* jshint sub:true */
-    window['Sortable'] = factory();
+    if (typeof window !== 'undefined') {
+      window['Sortable'] = sortableInstance;
+    }
   }
 })(function () {
   'use strict';
@@ -1347,4 +1357,5 @@
 });
 
 // Export for ES6 modules
-export default window.Sortable;
+// The UMD wrapper above executes immediately and stores the result in sortableESMExport
+export default sortableESMExport;

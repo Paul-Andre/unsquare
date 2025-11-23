@@ -11,3 +11,10 @@ npm-debug.log
 
 # res
 resources/signing
+
+# Build output
+/dist
+/.vite
+
+# TypeScript
+*.tsbuildinfo

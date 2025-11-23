@@ -6,40 +6,17 @@ import { createLevelIcon } from './icon.js';
 import { editorLevelMenu } from './editorLevelMenu.js';
 import { screenManager } from './ScreenManager.js';
 import { book_reviver, create_empty_book, save_editor_book } from '../core/bookUtils.js';
+import book1OldData from '../../data/book1Old.json';
+import basicBlackWhiteData from '../../data/basicBlackWhite.json';
+import niceLevelsData from '../../data/niceLevels.json';
 
 export function load_static_books() {
-  let books = [];
-
-  let bookUrls = [
-    "data/book1Old.json",
-    "data/basicBlackWhite.json",
-    "data/niceLevels.json",
+  // Convert imported JSON data using book_reviver
+  const books = [
+    JSON.parse(JSON.stringify(book1OldData), book_reviver),
+    JSON.parse(JSON.stringify(basicBlackWhiteData), book_reviver),
+    JSON.parse(JSON.stringify(niceLevelsData), book_reviver),
   ];
-
-  {
-    for (let i = 0; i < bookUrls.length; i++) {
-      let bookUrl = bookUrls[i];
-
-      //https://stackoverflow.com/a/35294675
-      let request = new XMLHttpRequest();
-      request.open("GET", bookUrl, true);
-
-      books.push({ name: "loading" }); //placeholder
-
-      request.onload = function () {
-        if (request.status >= 200 && request.status < 400) {
-          // Success!
-          let data = JSON.parse(request.responseText, book_reviver);
-          books[i] = data;
-        } else {
-        }
-      };
-
-      request.onerror = function () {};
-
-      request.send();
-    }
-  }
   return books;
 }
 

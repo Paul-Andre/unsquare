@@ -5,9 +5,10 @@ set -e
 # Handle Ctrl+C gracefully
 trap 'echo -e "\n\nDeployment cancelled."; exit 130' INT
 
-SOURCE_DIR="web/www"
+SOURCE_DIR="web/dist"
+SOURCE_WWW="web/www"
 DEPLOY_DIR="$HOME/Programming/unflip_deploy"
-RELEASE_LOG="$SOURCE_DIR/release_log.txt"
+RELEASE_LOG="$SOURCE_WWW/release_log.txt"
 
 # Check if deploy directory exists
 if [ ! -d "$DEPLOY_DIR" ]; then
@@ -91,21 +92,27 @@ echo "$DATE" >> "$RELEASE_LOG"
 echo "$NEW_VERSION" >> "$RELEASE_LOG"
 echo "$RELEASE_NOTES" >> "$RELEASE_LOG"
 
-# Update manifest.json in source repo
+# Update manifest.json in source repo (www directory, before build)
 if command -v jq > /dev/null 2>&1; then
-    jq ". + {version: \"$NEW_VERSION\"}" "$SOURCE_DIR/manifest.json" > "$SOURCE_DIR/manifest.json.tmp"
-    mv "$SOURCE_DIR/manifest.json.tmp" "$SOURCE_DIR/manifest.json"
+    jq ". + {version: \"$NEW_VERSION\"}" "$SOURCE_WWW/manifest.json" > "$SOURCE_WWW/manifest.json.tmp"
+    mv "$SOURCE_WWW/manifest.json.tmp" "$SOURCE_WWW/manifest.json"
 else
     # Fallback: use Python for JSON manipulation
     python3 << EOF
 import json
-with open('$SOURCE_DIR/manifest.json', 'r') as f:
+with open('$SOURCE_WWW/manifest.json', 'r') as f:
     data = json.load(f)
 data['version'] = '$NEW_VERSION'
-with open('$SOURCE_DIR/manifest.json', 'w') as f:
+with open('$SOURCE_WWW/manifest.json', 'w') as f:
     json.dump(data, f, indent=4)
 EOF
 fi
+
+# Build with Vite
+echo "Building with Vite..."
+cd web
+npm run build
+cd - > /dev/null
 
 # Copy files to deploy directory (exclude .git, delete files not in source)
 rsync -av --delete --exclude='.git' "$SOURCE_DIR/" "$DEPLOY_DIR/"
