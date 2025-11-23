@@ -142,14 +142,14 @@ git add -A
 git commit -m "Release v$NEW_VERSION: $RELEASE_NOTES"
 cd - > /dev/null
 
-# # Push both repos
-# echo "Pushing source repo..."
-# git push origin master
+# Push both repos
+echo "Pushing source repo..."
+git push origin master
 
-# echo "Pushing deploy repo..."
-# cd "$DEPLOY_DIR"
-# git push origin gh-pages
-# cd - > /dev/null
+echo "Pushing deploy repo..."
+cd "$DEPLOY_DIR"
+git push origin gh-pages
+cd - > /dev/null
 
-# echo "Deployment complete! Version $NEW_VERSION has been deployed."
+echo "Deployment complete! Version $NEW_VERSION has been deployed."
 
