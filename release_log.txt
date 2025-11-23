@@ -192,3 +192,7 @@ improve challenge solved screen
 22 Nov 2025
 0.9.6
 improve histogram tooltip
+
+22 Nov 2025
+0.9.7
+small fixes

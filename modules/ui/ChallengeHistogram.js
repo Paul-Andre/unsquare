@@ -79,7 +79,6 @@ export function renderHistogram(container, histogramData, playerMoves) {
     if (hasData || isPlayerBar) {
       const tooltip = document.createElement("div");
       tooltip.className = "histogramTooltip";
-      const solutionText = count === 1 ? "solution" : "solutions";
       tooltip.textContent = `${moveCount}: ${count}`;
       bar.appendChild(tooltip);
 
@@ -106,24 +105,6 @@ export function renderHistogram(container, histogramData, playerMoves) {
   // Pointer event handling for mobile drag support
   let isDragging = false;
 
-  // Helper function to find bar container and its tooltip under a point
-  function findBarContainerUnderPoint(x, y) {
-    const element = document.elementFromPoint(x, y);
-    if (!element) return null;
-
-    // Traverse up the DOM tree to find .histogramBarContainer
-    let current = element;
-    while (current && current !== container) {
-      if (current.classList && current.classList.contains("histogramBarContainer")) {
-        // Find the tooltip within this bar container
-        const tooltip = current.querySelector(".histogramTooltip");
-        return tooltip;
-      }
-      current = current.parentElement;
-    }
-    return null;
-  }
-
   // Find the closest bar to a given point
   function findClosestBarTooltip(x, y) {
     if (barContainers.length === 0) return null;
@@ -136,7 +117,7 @@ export function renderHistogram(container, histogramData, playerMoves) {
 
     for (const { container: barContainer, tooltip } of barContainers) {
       const barRect = barContainer.getBoundingClientRect();
-      const barCenterX = barRect.left + barRect.width / 2 - containerRect.left;
+      const barCenterX = (barRect.left - containerRect.left) + barRect.width / 2;
       const distance = Math.abs(relativeX - barCenterX);
 
       if (distance < minDistance) {
@@ -146,12 +127,6 @@ export function renderHistogram(container, histogramData, playerMoves) {
     }
 
     return closestBar;
-  }
-
-  // Check if point is within container bounds
-  function isPointInContainer(x, y) {
-    const rect = container.getBoundingClientRect();
-    return x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom;
   }
 
   // Hide active tooltip
