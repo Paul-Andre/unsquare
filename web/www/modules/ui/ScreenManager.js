@@ -60,7 +60,9 @@ export class ScreenManager {
     this.currentScreenName = screenName;
     this.currentScreen = document.getElementById(screenName);
     this.currentScreen.classList.add("variant_shown");
-    this.executeFunction(this.currentScreenName, "onShow");
+    setTimeout(() => {
+      this.executeFunction(this.currentScreenName, "onShow");
+    }, 0);
   }
 
   /**
@@ -76,7 +78,9 @@ export class ScreenManager {
     this.currentScreen.classList.add("variant_shown");
 
     if (!popped.keepAsIs) {
-      this.executeFunction(this.currentScreenName, "onShow");
+      setTimeout(() => {
+        this.executeFunction(this.currentScreenName, "onShow");
+      }, 0);
     }
   }
 }
