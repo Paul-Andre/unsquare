@@ -184,3 +184,7 @@ Histogram tooltips
 21 Nov 2025
 0.9.4
 histogram tooltip directly over bar
+
+22 Nov 2025
+0.9.5
+improve challenge solved screen
