@@ -414,6 +414,21 @@ button.drawModeActive:hover {
   border-radius: 3px;
 }
 
+.finishedChallengeHeader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1em;
+  margin-bottom: 0.1em;
+}
+
+.finishedChallengeLevelPreview {
+  flex-shrink: 0;
+  border: solid 2px var(--border_gray);
+  position: relative;
+  bottom: 0.3em;
+}
+
 .finishedLevelInside h1 {
   font-size: 3em;
   font-weight: 600;
@@ -540,6 +555,7 @@ button.drawModeActive:hover {
   background-color: rgb(240, 240, 240);
   padding: 10px;
   border: solid 2px #d3cfc8;
+  touch-action: none;
 }
 
 .histogramBars {

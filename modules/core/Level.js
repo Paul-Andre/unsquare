@@ -19,6 +19,7 @@ export class Level {
     level.tiles = grid;
     level.par = 0;
     level.text = "";
+    level.title = null;
     level.index = -1;
     level.isIcon = false;
     level.mode = "normal";
@@ -40,6 +41,7 @@ export class Level {
     level.tiles = level.tileShape.gridFromJsonObject(json.tiles);
     level.par = json.par;
     level.text = json.text || "";
+    level.title = json.title;
     level.index = json.index;
     level.isIcon = !!json.isIcon;
     level.mode = json.mode || "normal";
@@ -101,6 +103,7 @@ export class Level {
     level.colorScheme = colorSchemeByMod[mod];
     level.tileShape = tileShapes.square;
     level.text = "";
+    level.title = null;
     level.index = -1;
     level.isIcon = false;
     level.mode = "normal";
@@ -143,6 +146,9 @@ export class Level {
     if (this.text) {
       json.text = this.text;
     }
+    if (this.title) {
+      json.title = this.title;
+    }
     if (this.isIcon) {
       json.isIcon = this.isIcon;
     }
@@ -171,6 +177,7 @@ export class Level {
     this.tiles = otherLevel.tiles.clone();
     this.par = otherLevel.par;
     this.text = otherLevel.text;
+    this.title = otherLevel.title;
     // TODO: does it make sense to copy the index?
     this.index = otherLevel.index;
     this.id = otherLevel.id;
