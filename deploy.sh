@@ -6,7 +6,7 @@ set -e
 trap 'echo -e "\n\nDeployment cancelled."; exit 130' INT
 
 SOURCE_DIR="web/dist"
-SOURCE_WWW="web/www"
+SOURCE_WWW="web/public"
 DEPLOY_DIR="$HOME/Programming/unflip_deploy"
 RELEASE_LOG="$SOURCE_WWW/release_log.txt"
 
@@ -92,7 +92,7 @@ echo "$DATE" >> "$RELEASE_LOG"
 echo "$NEW_VERSION" >> "$RELEASE_LOG"
 echo "$RELEASE_NOTES" >> "$RELEASE_LOG"
 
-# Update manifest.json in source repo (www directory, before build)
+# Update manifest.json in source repo (public directory, before build)
 if command -v jq > /dev/null 2>&1; then
     jq ". + {version: \"$NEW_VERSION\"}" "$SOURCE_WWW/manifest.json" > "$SOURCE_WWW/manifest.json.tmp"
     mv "$SOURCE_WWW/manifest.json.tmp" "$SOURCE_WWW/manifest.json"
@@ -133,7 +133,7 @@ EOF
 fi
 
 # Commit in source repo
-git add "$RELEASE_LOG" "$SOURCE_DIR/manifest.json"
+git add "$RELEASE_LOG" "$SOURCE_WWW/manifest.json"
 git commit -m "Release v$NEW_VERSION: $RELEASE_NOTES"
 
 # Commit in deploy repo
@@ -142,14 +142,14 @@ git add -A
 git commit -m "Release v$NEW_VERSION: $RELEASE_NOTES"
 cd - > /dev/null
 
-# Push both repos
-echo "Pushing source repo..."
-git push origin master
+# # Push both repos
+# echo "Pushing source repo..."
+# git push origin master
 
-echo "Pushing deploy repo..."
-cd "$DEPLOY_DIR"
-git push origin gh-pages
-cd - > /dev/null
+# echo "Pushing deploy repo..."
+# cd "$DEPLOY_DIR"
+# git push origin gh-pages
+# cd - > /dev/null
 
-echo "Deployment complete! Version $NEW_VERSION has been deployed."
+# echo "Deployment complete! Version $NEW_VERSION has been deployed."
 
