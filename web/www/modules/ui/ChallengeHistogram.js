@@ -31,6 +31,20 @@ export function renderHistogram(container, histogramData, playerMoves) {
   const maxMove = Math.max(...moveCounts);
   const maxCount = Math.max(...Object.values(dataWithPlayer), 1);
 
+  // Tooltip state management
+  let activeTooltip = null;
+
+  // Show tooltip and hide previous one
+  function showTooltip(tooltip) {
+    if (activeTooltip && activeTooltip !== tooltip) {
+      activeTooltip.classList.remove("visible");
+    }
+    if (tooltip) {
+      tooltip.classList.add("visible");
+      activeTooltip = tooltip;
+    }
+  }
+
   // Render bars for all move counts in the range, including gaps
   for (let moveCount = minMove; moveCount <= maxMove; moveCount++) {
     const count = dataWithPlayer[moveCount] || 0;
@@ -69,11 +83,7 @@ export function renderHistogram(container, histogramData, playerMoves) {
       bar.appendChild(tooltip);
 
       barContainer.addEventListener("mouseenter", () => {
-        tooltip.classList.add("visible");
-      });
-
-      barContainer.addEventListener("mouseleave", () => {
-        tooltip.classList.remove("visible");
+        showTooltip(tooltip);
       });
     }
 
@@ -88,6 +98,75 @@ export function renderHistogram(container, histogramData, playerMoves) {
 
     container.appendChild(barContainer);
   }
+
+  // Pointer event handling for mobile drag support
+  let isDragging = false;
+
+  // Helper function to find bar container and its tooltip under a point
+  function findBarContainerUnderPoint(x, y) {
+    const element = document.elementFromPoint(x, y);
+    if (!element) return null;
+
+    // Traverse up the DOM tree to find .histogramBarContainer
+    let current = element;
+    while (current && current !== container) {
+      if (current.classList && current.classList.contains("histogramBarContainer")) {
+        // Find the tooltip within this bar container
+        const tooltip = current.querySelector(".histogramTooltip");
+        return tooltip;
+      }
+      current = current.parentElement;
+    }
+    return null;
+  }
+
+  // Check if point is within container bounds
+  function isPointInContainer(x, y) {
+    const rect = container.getBoundingClientRect();
+    return x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom;
+  }
+
+  // Hide active tooltip
+  function hideTooltip() {
+    if (activeTooltip) {
+      activeTooltip.classList.remove("visible");
+      activeTooltip = null;
+    }
+  }
+
+  container.addEventListener("pointerdown", (e) => {
+    isDragging = true;
+    const tooltip = findBarContainerUnderPoint(e.clientX, e.clientY);
+    if (tooltip) {
+      showTooltip(tooltip);
+    }
+    e.preventDefault();
+  });
+
+  container.addEventListener("pointermove", (e) => {
+    if (!isDragging) return;
+
+    // Check if still in container, but don't hide tooltip if leaving
+    if (isPointInContainer(e.clientX, e.clientY)) {
+      const tooltip = findBarContainerUnderPoint(e.clientX, e.clientY);
+      if (tooltip) {
+        showTooltip(tooltip);
+      }
+      // If no bar found (empty space), keep current tooltip visible
+    }
+    // If outside container, keep current tooltip visible
+    e.preventDefault();
+  });
+
+  container.addEventListener("pointerup", (e) => {
+    isDragging = false;
+    // Keep tooltip visible (don't hide it)
+  });
+
+  container.addEventListener("pointercancel", (e) => {
+    isDragging = false;
+    hideTooltip();
+  });
 
 }
 
