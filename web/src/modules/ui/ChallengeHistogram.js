@@ -26,10 +26,31 @@ export function renderHistogram(container, histogramData, playerMoves) {
     container.innerHTML = "<p>No data available</p>";
     return;
   }
+  moveCounts.sort((a, b) => a - b);
 
-  const minMove = 1;
-  const maxMove = Math.max(...moveCounts);
-  const maxCount = Math.max(...Object.values(dataWithPlayer), 1);
+  const totalSolutionCount = Object.values(dataWithPlayer).reduce((acc, count) => acc + count, 0);
+  let percentile99 = 0;
+  let cumulativeSolutionCount = 0;
+  for (const moveCount of moveCounts) {
+    cumulativeSolutionCount += moveCount;
+    if (cumulativeSolutionCount / totalSolutionCount >= 0.99) {
+      percentile99 = moveCount;
+      break;
+    }
+  }
+
+  const minMoveCount = moveCounts[0];
+  const maxMoveCount = moveCounts[moveCounts.length - 1];
+
+  const position95 = moveCounts[Math.floor(moveCounts.length*0.95)]
+
+  const rangeBegin = 1;
+  const rangeEnd = Math.max(Math.min(Math.ceil(percentile99*3), maxMoveCount), playerMoves);
+
+  //const rangeEnd = Math.max(Math.min(Math.ceil(position95*2), maxMoveCount), playerMoves);
+
+     
+  const maxSolutionCount = Math.max(...Object.values(dataWithPlayer), 1);
 
   // Tooltip state management
   let activeTooltip = null;
@@ -47,18 +68,18 @@ export function renderHistogram(container, histogramData, playerMoves) {
   }
 
   // Render bars for all move counts in the range, including gaps
-  for (let moveCount = minMove; moveCount <= maxMove; moveCount++) {
-    const count = dataWithPlayer[moveCount] || 0;
+  for (let moveCount = rangeBegin; moveCount <= rangeEnd; moveCount++) {
+    const solutionCount = dataWithPlayer[moveCount] || 0;
     const hasData = moveCount in dataWithPlayer;
     const isPlayerBar = moveCount === playerMoves;
 
     let percentage;
-    if (isPlayerBar && count === 0) {
+    if (isPlayerBar && solutionCount === 0) {
       percentage = 0;
     } else if (!hasData) {
       percentage = 0;
     } else {
-      percentage = (count / maxCount) * 100;
+      percentage = (solutionCount / maxSolutionCount) * 100;
     }
 
     const barContainer = document.createElement("div");
@@ -68,8 +89,8 @@ export function renderHistogram(container, histogramData, playerMoves) {
     bar.className = `histogramBar ${isPlayerBar ? "playerBar" : ""}`;
     if (hasData || isPlayerBar) {
       bar.style.height = `${percentage}%`;
-      bar.setAttribute("data-moves", moveCount);
-      bar.setAttribute("data-count", count);
+      bar.setAttribute("data-moves", moveCount.toString());
+      bar.setAttribute("data-count", solutionCount);
     } else {
       bar.style.height = "0%";
       bar.style.visibility = "hidden";
@@ -79,7 +100,7 @@ export function renderHistogram(container, histogramData, playerMoves) {
     if (hasData || isPlayerBar) {
       const tooltip = document.createElement("div");
       tooltip.className = "histogramTooltip";
-      tooltip.textContent = `${moveCount}: ${count}`;
+      tooltip.textContent = `${moveCount}: ${solutionCount}`;
       bar.appendChild(tooltip);
 
       barContainer.addEventListener("mouseenter", () => {
