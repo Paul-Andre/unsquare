@@ -9,6 +9,7 @@ import { getBestNumMoves, setBestNumMoves } from '../core/levelUtils.js';
 import * as config from '../utils/config.js';
 import { renderHistogram, generateDummyHistogramData } from '../ui/ChallengeHistogram.js';
 import { drawIcon } from '../ui/icon.js';
+import { SUPABASE_URL, SUPABASE_ANON_KEY } from '../utils/api.js';
 
 
 export class Game extends GameBase {
@@ -100,15 +101,12 @@ export class Game extends GameBase {
     const solution = this.getPlayerSolution();
     const player_id = localStorage.player_id;
     console.log("solution to be posted", JSON.stringify(solution));
-
-    const supabaseUrl = "https://vatpvuolfdnkcgdwgsxm.supabase.co";
-    const anonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZhdHB2dW9sZmRua2NnZHdnc3htIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM2MTc3OTMsImV4cCI6MjA3OTE5Mzc5M30.XEJsuWMrWzo1l2otg36z9uZ1Vm3BbItfnhb0r-Ne1NA";
     
     (async () => {
-      const response = await fetch(`${supabaseUrl}/functions/v1/validate-and-save-solution`, {
+      const response = await fetch(`${SUPABASE_URL}/functions/v1/validate-and-save-solution`, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${anonKey}`,
+        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({

@@ -6,14 +6,13 @@ import { book_reviver } from '../core/bookUtils.js';
 import { Level } from '../core/Level.js';
 import { createLevelIcon } from './icon.js';
 import { htmlStringToElement } from '../utils/helpers.js';
+import { SUPABASE_URL, SUPABASE_ANON_KEY } from '../utils/api.js';
 import mainBookData from '../../data/2025_nov_11_reordered_solved_fixed.json';
 // import mainBookData from '../../data/tiny_for_testing.json';
 
 export class GameLevelMenu {
   constructor() {
     this.bookUrl = "data/2025_nov_11_reordered_solved_fixed.json";
-
- 
 
     const challengeLevelJson = {
       "colorScheme": "BW",
@@ -79,9 +78,12 @@ export class GameLevelMenu {
     }
   }
 
+  getChallengeCacheKey() {
+    return `challenge_stats_${this.weeklyChallengeLevel.id}`;
+  }
+
   getCachedChallengeStatistics() {
-    const cacheKey = `challenge_stats_${this.weeklyChallengeLevel.id}`;
-    const cached = localStorage.getItem(cacheKey);
+    const cached = localStorage.getItem(this.getChallengeCacheKey());
     if (cached) {
       try {
         return JSON.parse(cached);
@@ -93,8 +95,7 @@ export class GameLevelMenu {
   }
 
   saveChallengeStatistics(stats) {
-    const cacheKey = `challenge_stats_${this.weeklyChallengeLevel.id}`;
-    localStorage.setItem(cacheKey, JSON.stringify(stats));
+    localStorage.setItem(this.getChallengeCacheKey(), JSON.stringify(stats));
   }
 
   async fetchChallengeStatistics() {
@@ -103,37 +104,26 @@ export class GameLevelMenu {
       return null;
     }
 
-    const supabaseUrl = "https://vatpvuolfdnkcgdwgsxm.supabase.co";
-    const anonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZhdHB2dW9sZmRua2NnZHdnc3htIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM2MTc3OTMsImV4cCI6MjA3OTE5Mzc5M30.XEJsuWMrWzo1l2otg36z9uZ1Vm3BbItfnhb0r-Ne1NA";
-
-    const body = {
-      p_player_id: player_id,
-      p_level_id: this.weeklyChallengeLevel.id
-    };
-
-    console.log("body", body);
-
     try {
-      const response = await fetch(`${supabaseUrl}/rest/v1/rpc/get_player_level_summary`, {
+      const response = await fetch(`${SUPABASE_URL}/rest/v1/rpc/get_player_level_summary`, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${anonKey}`,
+          'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
           'Content-Type': 'application/json',
-          'apikey': anonKey
+          'apikey': SUPABASE_ANON_KEY
         },
-        body: JSON.stringify(body)
+        body: JSON.stringify({
+          p_player_id: player_id,
+          p_level_id: this.weeklyChallengeLevel.id
+        })
       });
-
-      console.log("response", response);
 
       if (!response.ok) {
         console.error(`HTTP error! status: ${response.status}`);
         return null;
       }
 
-      const data = await response.json();
-      console.log("data", data);
-      return data;
+      return await response.json();
     } catch (e) {
       console.error("Failed to fetch challenge statistics", e);
       return null;
@@ -150,48 +140,32 @@ export class GameLevelMenu {
       return;
     }
 
-    // Remove existing state classes
     iconEl.classList.remove("icon_unsolved", "icon_suboptimal", "icon_optimal");
 
     if (!stats) {
-      // No data available - try to get total from cache for display
       const cached = this.getCachedChallengeStatistics();
-      const totalPlayers = cached && cached.total_players ? cached.total_players : 175;
+      const totalPlayers = cached?.total_players;
       youEl.textContent = "you: -";
       topEl.textContent = "top: ?";
-      rankEl.textContent = `rank: -/${totalPlayers}`;
+      rankEl.textContent = totalPlayers ? `rank: -/${totalPlayers}` : "rank: -/-";
       iconEl.classList.add("icon_unsolved");
       return;
     }
 
-    const playerBest = stats.player_best;
-    const topBest = stats.top_best;
-    const rank = stats.rank;
-    const totalPlayers = stats.total_players || 175;
+    const playerBest = stats.player_best ?? null;
+    const topBest = stats.top_best ?? null;
+    const rank = stats.rank ?? null;
+    const totalPlayers = stats.total_players ?? null;
 
-    // Update statistics display
-    if (playerBest !== null && playerBest !== undefined) {
-      youEl.textContent = `you: ${playerBest}`;
-    } else {
-      youEl.textContent = "you: -";
-    }
+    youEl.textContent = playerBest !== null ? `you: ${playerBest}` : "you: -";
+    topEl.textContent = topBest !== null ? `top: ${topBest}` : "top: ?";
+    rankEl.textContent = rank !== null && totalPlayers !== null 
+      ? `rank: ${rank}/${totalPlayers}` 
+      : `rank: -/${totalPlayers ?? "-"}`;
 
-    if (topBest !== null && topBest !== undefined) {
-      topEl.textContent = `top: ${topBest}`;
-    } else {
-      topEl.textContent = "top: ?";
-    }
-
-    if (rank !== null && rank !== undefined) {
-      rankEl.textContent = `rank: ${rank}/${totalPlayers}`;
-    } else {
-      rankEl.textContent = `rank: -/${totalPlayers}`;
-    }
-
-    // Apply state class based on player_best vs top_best
-    if (playerBest === null || playerBest === undefined) {
+    if (playerBest === null) {
       iconEl.classList.add("icon_unsolved");
-    } else if (topBest !== null && topBest !== undefined && playerBest === topBest) {
+    } else if (topBest !== null && playerBest === topBest) {
       iconEl.classList.add("icon_optimal");
     } else {
       iconEl.classList.add("icon_suboptimal");
@@ -214,35 +188,12 @@ export class GameLevelMenu {
   }
 
   displayChallengeIcon() {
-
     const container = document.getElementById("challengeIconContainer");
-
     if (!container) {
       return;
     }
 
-    // Find or create the icon element
     let element = /** @type {HTMLElement} */ (container.querySelector(".level_icon"));
-    if (!element) {
-      element = /** @type {HTMLElement} */ (htmlStringToElement(`<div class="level_icon">
-      <img class="level_icon_image"> </img>
-      <div class="level_icon_par"> </div>
-      </div>
-      `));
-      
-      const wrapper = container.querySelector(".challenge_icon_wrapper");
-      if (wrapper) {
-        const statsEl = wrapper.querySelector(".challenge_statistics");
-        if (statsEl) {
-          wrapper.insertBefore(element, statsEl);
-        } else {
-          wrapper.appendChild(element);
-        }
-      } else {
-        container.appendChild(element);
-      }
-    }
-    console.log("weeklyChallengeLevel", this.weeklyChallengeLevel);
     const icon = createLevelIcon(this.weeklyChallengeLevel);
     const iconImg = /** @type {HTMLImageElement} */ (element.querySelector(".level_icon_image"));
     if (iconImg) {
@@ -253,7 +204,7 @@ export class GameLevelMenu {
 
     /** @type {any} */ (element).level = this.weeklyChallengeLevel;
     element.onclick = () => {
-      if (window.game && window.game.openLevel) {
+      if (window.game?.openLevel) {
         window.game.openLevel(this.weeklyChallengeLevel, {
           levels: [this.weeklyChallengeLevel],
           source: "challenge",
@@ -262,7 +213,6 @@ export class GameLevelMenu {
       }
     };
 
-    // Update statistics display
     this.updateChallengeStatistics();
   }
 }
