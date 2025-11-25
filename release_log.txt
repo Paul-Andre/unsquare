@@ -200,3 +200,7 @@ small fixes
 23 Nov 2025
 0.10.0
 Set up vite!
+
+24 Nov 2025
+0.10.1
+weekly level: histogram outliers and stats on home screen
