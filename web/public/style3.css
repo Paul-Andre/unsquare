@@ -681,6 +681,24 @@ button.drawModeActive:hover {
   clear: both;
 }
 
+.challenge_icon_wrapper {
+  display: flex;
+  align-items: center;
+  gap: 1em;
+  /* justify-content: center; */
+}
+
+.challenge_statistics {
+  display: flex;
+  flex-direction: column;
+  /* line-height: 1.4; */
+  font-size: 0.9em;
+}
+
+.challenge_stat_line {
+  white-space: nowrap;
+}
+
 .title {
   font-size: 1.2em;
   font-weight: 500;
