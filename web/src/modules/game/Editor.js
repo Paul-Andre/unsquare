@@ -9,6 +9,7 @@ import { screenManager } from '../ui/ScreenManager.js';
 import { Level, compute_gaussian_solution } from '../core/Level.js';
 import { generate_id } from '../utils/helpers.js';
 
+
 export class Editor extends GameBase {
   constructor(canvasId, divId) {
     super(canvasId, divId);
@@ -16,7 +17,6 @@ export class Editor extends GameBase {
     this.undoList = [];
     this.drawMode = false;
     this.drawPaintValue = null; // The value to paint when dragging in draw mode
-    this.drawUndoSaved = false; // Track if we've saved undo state for current draw operation
     this.pendingSolvabilityCheck = null; // Timeout ID for deferred solvability checking
 
     // Override openLevel to handle editor-specific behavior
@@ -44,13 +44,16 @@ export class Editor extends GameBase {
     return this.level.colorScheme.resquare(v);
   }
 
-  // Save state before a move is applied (for undo)
-  preMove(move) {
-    // Save current state for undo
+  // Save current state for undo
+  saveUndoState() {
     this.undoList.push({
       level: this.level.clone(),
-      gameState: new GameState(this.level), // Create a fresh game state
+      gameState: new GameState(this.level),
     });
+  }
+
+  preMove(move) {
+    this.saveUndoState();
   }
 
   updateLevelInfo() {
@@ -77,7 +80,6 @@ export class Editor extends GameBase {
       const undo = this.undoList.pop();
       this.level = undo.level;
       this.gameState = undo.gameState;
-      this.numMoves -= 1;
       this.draw();
       // Start animation loop if animations were triggered
       this.startAnimationLoopIfNeeded();
@@ -91,11 +93,7 @@ export class Editor extends GameBase {
     this.updateLevelInfo();
     let check = level_check_solution(this.level, sol);
     if (check) {
-      // Save current state for undo
-      this.undoList.push({
-        level: this.level.clone(),
-        gameState: new GameState(this.level), // Create a fresh game state clone
-      });
+      this.saveUndoState();
 
       this.level.solutionVector = sol;
       this.level.solutionType = "submitted";
@@ -113,11 +111,7 @@ export class Editor extends GameBase {
     );
     let level = Level.fromCompact(string);
     if (level) {
-      // Save current state for undo
-      this.undoList.push({
-        level: this.level.clone(),
-        gameState: new GameState(this.level), // Create a fresh game state clone
-      });
+      this.saveUndoState();
 
       this.level = level;
       this.gameState = new GameState(this.level);
@@ -126,27 +120,8 @@ export class Editor extends GameBase {
     }
   }
 
-  postApplyMove() {
-    this.updateLevelInfo();
-    if (
-      this.level.solutionType == "reverse" ||
-      this.level.solutionType == "confirmed"
-    ) {
-      this.level.solutionType = "reverse";
-    } else {
-      this.level.solutionType = "mixed";
-    }
-    if (vector_sum(this.level.solutionVector) <= 3) {
-      this.level.solutionType = "confirmed";
-    }
-  }
-
   clear() {
-    // Save current state for undo
-    this.undoList.push({
-      level: this.level.clone(),
-      gameState: new GameState(this.level), // Create a fresh game state clone
-    });
+    this.saveUndoState();
 
     // Animate the clear by setting transition state to 0 for all tiles
     this.gameState.tileStates.forEach(function (tileState) {
@@ -166,7 +141,7 @@ export class Editor extends GameBase {
 
   play() {
     this.updateLevelInfo();
-    game.openLevel(this.level, this.book);
+    window.game.openLevel(this.level, this.book);
     screenManager.switchTo("game");
   }
 
@@ -184,24 +159,14 @@ export class Editor extends GameBase {
     let promptedSize = window.prompt();
     if (promptedSize !== null) {
       // TODO make sure it doesn't break the Grid abstraction here.
-      let size = new Number(promptedSize);
+      let size = Number(promptedSize);
       if (!isNaN(size)) {
-        // Save current state for undo
-        this.undoList.push({
-          level: this.level.clone(),
-          gameState: new GameState(this.level), // Create a fresh game state clone
-        });
+        this.saveUndoState();
 
         let grid = Grid.empty(size, size);
-
         grid.setAll(1);
 
-        if (size >= this.gameState.tiles.width) {
-          // this.gameState.tiles.forEach(function (v, x, y) {
-          //   grid.set(x, y, v);
-          // });
-        } else {
-        }
+        // TODO: when expanding the grid, possibly copy the old tiles.
         this.level.tiles = grid;
 
         let operations = compute_operations_for_level(this.level);
@@ -211,7 +176,6 @@ export class Editor extends GameBase {
         this.level.solutionType = "confirmed";
 
         this.gameState = new GameState(this.level);
-        //this.gameState.tiles = grid;
       }
     }
   }
@@ -242,25 +206,10 @@ export class Editor extends GameBase {
   updateGui() {
     this.updateLevelInfo();
 
-    // Return early if no game state is loaded yet
     if (!this.gameState || !this.level) {
       return;
     }
 
-    // In draw mode, show solvability status
-    // if (this.drawMode) {
-    //   if (this.level.solutionType === "impossible") {
-    //     this.div.getElementsByClassName("editorBest")[0].innerText = "unsolvable";
-    //   } else if (this.level.solutionVector) {
-    //     const sum = vector_sum(this.level.solutionVector);
-    //     this.div.getElementsByClassName("editorBest")[0].innerText = sum + " solvable";
-    //   } else {
-    //     this.div.getElementsByClassName("editorBest")[0].innerText = "? unknown";
-    //   }
-    //   return;
-    // }
-
-    // Normal mode - existing behavior
     if (this.gameState.runningSolution) {
       let sum = vector_sum(this.level.solutionVector);
       let type = this.level.solutionType;
@@ -326,33 +275,39 @@ export class Editor extends GameBase {
     });
   }
 
+  // Get valid tile coordinates from mouse position, or null if out of bounds
+  getValidTileCoords(mouseX, mouseY) {
+    const coords = this.level.tileShape.coordinatesFromMousePosition(
+      mouseX,
+      mouseY,
+      this.gameState.tiles
+    );
+
+    if (
+      coords.x >= 0 &&
+      coords.x < this.gameState.tiles.width &&
+      coords.y >= 0 &&
+      coords.y < this.gameState.tiles.height
+    ) {
+      return coords;
+    }
+    return null;
+  }
+
   // Override mouse handlers for draw mode
   doMouseDown(x, y) {
     if (this.drawMode) {
       this.mouseStart.x = x / this.canvasSize;
       this.mouseStart.y = y / this.canvasSize;
       this.mouseStart.pressed = true;
-      this.drawUndoSaved = false;
 
-      const coords = this.level.tileShape.coordinatesFromMousePosition(
+      const coords = this.getValidTileCoords(
         this.mouseStart.x,
-        this.mouseStart.y,
-        this.gameState.tiles
+        this.mouseStart.y
       );
 
-      // Check bounds
-      if (
-        coords.x >= 0 &&
-        coords.x < this.gameState.tiles.width &&
-        coords.y >= 0 &&
-        coords.y < this.gameState.tiles.height
-      ) {
-        // Save state for undo (only once per mouse down)
-        this.undoList.push({
-          level: this.level.clone(),
-          gameState: new GameState(this.level),
-        });
-        this.drawUndoSaved = true;
+      if (coords) {
+        this.saveUndoState();
 
         // Toggle the clicked tile
         const currentValue = this.gameState.tiles.get(coords.x, coords.y);
@@ -376,19 +331,12 @@ export class Editor extends GameBase {
 
   doMouseMove(x, y) {
     if (this.drawMode && this.mouseStart.pressed && this.drawPaintValue !== null) {
-      const coords = this.level.tileShape.coordinatesFromMousePosition(
+      const coords = this.getValidTileCoords(
         x / this.canvasSize,
-        y / this.canvasSize,
-        this.gameState.tiles
+        y / this.canvasSize
       );
 
-      // Check bounds
-      if (
-        coords.x >= 0 &&
-        coords.x < this.gameState.tiles.width &&
-        coords.y >= 0 &&
-        coords.y < this.gameState.tiles.height
-      ) {
+      if (coords) {
         // Only paint if the tile value is different (avoid redundant updates)
         const currentValue = this.gameState.tiles.get(coords.x, coords.y);
         if (currentValue !== this.drawPaintValue) {
@@ -416,7 +364,6 @@ export class Editor extends GameBase {
       }
       this.mouseStart.pressed = false;
       this.drawPaintValue = null;
-      this.drawUndoSaved = false;
       return;
     }
 
@@ -442,7 +389,7 @@ export class Editor extends GameBase {
       // Check solvability using gaussian elimination
       compute_gaussian_solution(this.level);
 
-      // Update gameState operations
+      // Update gameState operations and inverse operations
       this.gameState.operations = operations;
       this.gameState.inverseOperations = new Map();
       for (let i = 0; i < operations.length; i++) {
@@ -450,11 +397,9 @@ export class Editor extends GameBase {
       }
 
       // Update running solution
-      if (this.level.solutionVector) {
-        this.gameState.runningSolution = this.level.solutionVector.slice();
-      } else {
-        this.gameState.runningSolution = new Array(m).fill(0);
-      }
+      this.gameState.runningSolution = this.level.solutionVector
+        ? this.level.solutionVector.slice()
+        : new Array(m).fill(0);
 
       // Update GUI
       this.updateGui();
