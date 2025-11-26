@@ -120,18 +120,16 @@ export class Game extends GameBase {
 
   restart() {
     // Save current state for undo before restarting
-    // TODO: saving and restoring the undo list is a bit of a hack. We do it because the way way we restart the level is
-    // by simply reopening it, which resets the undoList. Ideally we would want to either split openLevel into two functions,
+    // TODO: We save and restore the undo list this waybecause the way we restart the level is
+    // by simply reopening it, which resets the undoList. Ideally we should either split openLevel into two functions,
     // or have dedicated restart logic.
     let savedUndoList = null;
     if (this.tiles && this.numMoves > 0) {
-      // Save undo state using unified system
       this.saveUndoState("restart");
-      // Save the undo list (including the restart state we just added)
       savedUndoList = [...this.undoList];
     }
-    const shouldShowHint = !!(this.hintState?.suggestRestart);
     
+    const shouldShowHint = !!(this.hintState?.suggestRestart);
     this.openLevel(this.level, this.book);
 
     // Restore the undo list after creating new game state
