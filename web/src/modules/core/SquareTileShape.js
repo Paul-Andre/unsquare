@@ -180,7 +180,7 @@ export class SquareTileShape {
   // TODO: standardize whether use context transforms or passing coordinates...
   draw_tile(
     ctx,
-    gameState,
+    colorScheme,
     changeFunction,
     x,
     y,
@@ -199,13 +199,13 @@ export class SquareTileShape {
 
     if (transitionState < 0.5) {
       mainColor =
-        gameState.level.colorScheme.cells[changeFunction(tileValue)].fill;
-      insetColor = gameState.level.colorScheme.cells[tileValue].fill;
+        colorScheme.cells[changeFunction(tileValue)].fill;
+      insetColor = colorScheme.cells[tileValue].fill;
       insetState = tileState.reverseInsetState;
     } else {
-      mainColor = gameState.level.colorScheme.cells[tileValue].fill;
+      mainColor = colorScheme.cells[tileValue].fill;
       insetColor =
-        gameState.level.colorScheme.cells[changeFunction(tileValue)].fill;
+        colorScheme.cells[changeFunction(tileValue)].fill;
       insetState = tileState.insetState;
     }
 
@@ -248,11 +248,11 @@ export class SquareTileShape {
   }
 
   // TODO: remove this from here
-  draw(ctx, gameState, changeFunction, hoveredTile = null) {
+  draw(ctx, tiles, tileAnimationState, level, changeFunction, hoveredTile = null) {
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
-    const width = ctx.canvas.width / (gameState.tiles.width + 0.1);
-    const height = ctx.canvas.height / (gameState.tiles.height + 0.1);
+    const width = ctx.canvas.width / (tiles.width + 0.1);
+    const height = ctx.canvas.height / (tiles.height + 0.1);
 
     const padding = width * 0.1;
 
@@ -266,22 +266,22 @@ export class SquareTileShape {
     let selectedCount = 0;
 
     // First pass: count selected tiles
-    gameState.tiles.forEach((value, x, y) => {
-      const tileState = gameState.tileStates.get(x, y);
+    tiles.forEach((value, x, y) => {
+      const tileState = tileAnimationState.get(x, y);
       if (tileState.selected) {
         selectedCount++;
       }
     });
 
     // Second pass: draw tiles and track bounds
-    gameState.tiles.forEach((value, x, y) => {
-      const tileState = gameState.tileStates.get(x, y);
+    tiles.forEach((value, x, y) => {
+      const tileState = tileAnimationState.get(x, y);
 
-      ctx.fillStyle = gameState.level.colorScheme.cells[value].fill;
+      ctx.fillStyle = level.colorScheme.cells[value].fill;
 
       this.draw_tile(
         ctx,
-        gameState,
+        level.colorScheme,
         changeFunction,
         x * width + padding,
         y * height + padding,

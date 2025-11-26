@@ -1,7 +1,7 @@
 "use strict";
 
 import { GameBase } from './GameBase.js';
-import { GameState } from '../core/GameState.js';
+import { TileAnimationState } from '../core/TileAnimationState.js';
 import { Grid } from '../core/Grid.js';
 import { compute_operations_for_level, vector_sum, level_check_solution, get_level_compact_solution, vector_equal } from '../core/algo.js';
 import { save_editor_book } from '../core/bookUtils.js';
@@ -14,9 +14,10 @@ export class Editor extends GameBase {
   constructor(canvasId, divId) {
     super(canvasId, divId);
     this.referenceToOriginalLevel = null;
-    this.undoList = [];
+    this.runningSolution = null; // Tracks cumulative solution (starts from level.solutionVector)
     this.drawMode = false;
     this.drawPaintValue = null; // The value to paint when dragging in draw mode
+    this.drawUndoSaved = false; // Track if we've saved undo state for current draw operation
     this.pendingSolvabilityCheck = null; // Timeout ID for deferred solvability checking
 
     // Override openLevel to handle editor-specific behavior
@@ -34,6 +35,8 @@ export class Editor extends GameBase {
     // The reason I don't just put it in the base is that at some point the game might need to modify the level
     this.referenceToOriginalLevel = level;
     super.openLevel(level.clone(), book);
+    // Initialize runningSolution from level's solutionVector
+    this.runningSolution = this.level.solutionVector ? this.level.solutionVector.slice() : new Array(this.operations.length).fill(0);
     this.updateDrawModeButton();
     this.updateModeDropdown();
   }
@@ -44,27 +47,51 @@ export class Editor extends GameBase {
     return this.level.colorScheme.resquare(v);
   }
 
-  // Save current state for undo
-  saveUndoState() {
-    this.undoList.push({
+  // Hook to add additional state to undo
+  getAdditionalState() {
+    return {
+      runningSolution: this.runningSolution ? this.runningSolution.slice() : null,
       level: this.level.clone(),
-      gameState: new GameState(this.level),
-    });
+    };
   }
 
+  // Hook to restore additional state from undo
+  restoreAdditionalState(undo) {
+    if (undo.runningSolution) {
+      this.runningSolution = undo.runningSolution.slice();
+    }
+    if (undo.level) {
+      this.level = undo.level;
+      // Recompute operations when level changes
+      this.operations = compute_operations_for_level(this.level);
+      this.inverseOperations = new Map();
+      for (let i = 0; i < this.operations.length; i++) {
+        this.inverseOperations.set(this.operations[i].join(""), i);
+      }
+    }
+  }
+
+  // Save state before a move is applied
   preMove(move) {
-    this.saveUndoState();
+    // Track the move in runningSolution
+    if (move != null && this.inverseOperations && this.runningSolution) {
+      let vector = this.level.tileShape.moveToVector(this.tiles, move);
+      let opIndex = this.inverseOperations.get(vector.join(""));
+      if (opIndex !== undefined) {
+        this.runningSolution[opIndex] += 1;
+      }
+    }
   }
 
   updateLevelInfo() {
-    // Return early if no game state is loaded yet
-    if (!this.gameState || !this.level) {
+    // Return early if no state is loaded yet
+    if (!this.tiles || !this.level) {
       return;
     }
 
     // Note that this modifies the copy of level, not the reference to the original level
-    this.level.tiles = this.gameState.tiles;
-    this.level.solutionVector = this.gameState.runningSolution;
+    this.level.tiles = this.tiles;
+    this.level.solutionVector = this.runningSolution;
     // TODO: ???
     this.level.par = null;
   }
@@ -76,14 +103,10 @@ export class Editor extends GameBase {
   }
 
   undo() {
-    if (this.undoList.length > 0) {
-      const undo = this.undoList.pop();
-      this.level = undo.level;
-      this.gameState = undo.gameState;
-      this.draw();
-      // Start animation loop if animations were triggered
-      this.startAnimationLoopIfNeeded();
-    }
+    super.undo();
+    this.draw();
+    // Start animation loop if animations were triggered
+    this.startAnimationLoopIfNeeded();
   }
 
   submitSolution() {
@@ -93,13 +116,22 @@ export class Editor extends GameBase {
     this.updateLevelInfo();
     let check = level_check_solution(this.level, sol);
     if (check) {
-      this.saveUndoState();
+      // Save undo state
+      const undo = {
+        tiles: this.tiles.clone(),
+        move: null,
+        numMoves: this.numMoves,
+        isRestart: false,
+      };
+      const additionalState = this.getAdditionalState();
+      Object.assign(undo, additionalState);
+      this.undoList.push(undo);
 
       this.level.solutionVector = sol;
       this.level.solutionType = "submitted";
 
-      // Create new game state
-      this.gameState = new GameState(this.level);
+      // Update runningSolution
+      this.runningSolution = sol.slice();
     } else {
       alert("Solution not satisfactory");
     }
@@ -111,28 +143,53 @@ export class Editor extends GameBase {
     );
     let level = Level.fromCompact(string);
     if (level) {
-      this.saveUndoState();
+      // Save undo state
+      const undo = {
+        tiles: this.tiles.clone(),
+        move: null,
+        numMoves: this.numMoves,
+        isRestart: false,
+      };
+      const additionalState = this.getAdditionalState();
+      Object.assign(undo, additionalState);
+      this.undoList.push(undo);
 
       this.level = level;
-      this.gameState = new GameState(this.level);
+      this.tiles = level.tiles.clone();
+      this.tileAnimationState = new TileAnimationState(this.tiles);
+      this.operations = compute_operations_for_level(this.level);
+      this.inverseOperations = new Map();
+      for (let i = 0; i < this.operations.length; i++) {
+        this.inverseOperations.set(this.operations[i].join(""), i);
+      }
+      this.runningSolution = level.solutionVector ? level.solutionVector.slice() : new Array(this.operations.length).fill(0);
     } else {
       alert("Could not parse string");
     }
   }
 
   clear() {
-    this.saveUndoState();
+    // Save undo state
+    const undo = {
+      tiles: this.tiles.clone(),
+      move: null,
+      numMoves: this.numMoves,
+      isRestart: false,
+    };
+    const additionalState = this.getAdditionalState();
+    Object.assign(undo, additionalState);
+    this.undoList.push(undo);
 
     // Animate the clear by setting transition state to 0 for all tiles
-    this.gameState.tileStates.forEach(function (tileState) {
+    this.tileAnimationState.forEach(function (tileState) {
       tileState.transitionState = 0;
     });
 
-    this.gameState.tiles.forEachSet(function () {
+    this.tiles.forEachSet(function () {
       return 1;
     });
-    let m = this.gameState.operations.length;
-    this.gameState.runningSolution = new Array(m).fill(0);
+    let m = this.operations.length;
+    this.runningSolution = new Array(m).fill(0);
     this.updateGui();
     this.draw();
     // Start animation loop if animations were triggered
@@ -147,9 +204,9 @@ export class Editor extends GameBase {
 
   specificOnShow() {
     if (
-      !vector_equal(this.level.solutionVector, this.gameState.runningSolution)
+      !vector_equal(this.level.solutionVector, this.runningSolution)
     ) {
-      this.gameState = new GameState(this.level);
+      this.runningSolution = this.level.solutionVector ? this.level.solutionVector.slice() : new Array(this.operations.length).fill(0);
     }
     this.updateDrawModeButton();
     this.updateModeDropdown();
@@ -161,21 +218,36 @@ export class Editor extends GameBase {
       // TODO make sure it doesn't break the Grid abstraction here.
       let size = Number(promptedSize);
       if (!isNaN(size)) {
-        this.saveUndoState();
+        // Save undo state
+        const undo = {
+          tiles: this.tiles.clone(),
+          move: null,
+          numMoves: this.numMoves,
+          isRestart: false,
+        };
+        const additionalState = this.getAdditionalState();
+        Object.assign(undo, additionalState);
+        this.undoList.push(undo);
 
         let grid = Grid.empty(size, size);
         grid.setAll(1);
 
         // TODO: when expanding the grid, possibly copy the old tiles.
         this.level.tiles = grid;
+        this.tiles = grid.clone();
+        this.tileAnimationState = new TileAnimationState(this.tiles);
 
         let operations = compute_operations_for_level(this.level);
         let m = operations.length;
+        this.operations = operations;
+        this.inverseOperations = new Map();
+        for (let i = 0; i < operations.length; i++) {
+          this.inverseOperations.set(operations[i].join(""), i);
+        }
 
         this.level.solutionVector = new Array(m).fill(0);
         this.level.solutionType = "confirmed";
-
-        this.gameState = new GameState(this.level);
+        this.runningSolution = new Array(m).fill(0);
       }
     }
   }
@@ -206,11 +278,11 @@ export class Editor extends GameBase {
   updateGui() {
     this.updateLevelInfo();
 
-    if (!this.gameState || !this.level) {
+    if (!this.tiles || !this.level) {
       return;
     }
 
-    if (this.gameState.runningSolution) {
+    if (this.runningSolution) {
       let sum = vector_sum(this.level.solutionVector);
       let type = this.level.solutionType;
       this.div.getElementsByClassName("editorBest")[0].innerText =
@@ -280,14 +352,14 @@ export class Editor extends GameBase {
     const coords = this.level.tileShape.coordinatesFromMousePosition(
       mouseX,
       mouseY,
-      this.gameState.tiles
+      this.tiles
     );
 
     if (
       coords.x >= 0 &&
-      coords.x < this.gameState.tiles.width &&
+      coords.x < this.tiles.width &&
       coords.y >= 0 &&
-      coords.y < this.gameState.tiles.height
+      coords.y < this.tiles.height
     ) {
       return coords;
     }
@@ -307,15 +379,27 @@ export class Editor extends GameBase {
       );
 
       if (coords) {
-        this.saveUndoState();
+        // Save state for undo (only once per mouse down)
+        if (!this.drawUndoSaved) {
+          const undo = {
+            tiles: this.tiles.clone(),
+            move: null,
+            numMoves: this.numMoves,
+            isRestart: false,
+          };
+          const additionalState = this.getAdditionalState();
+          Object.assign(undo, additionalState);
+          this.undoList.push(undo);
+          this.drawUndoSaved = true;
+        }
 
         // Toggle the clicked tile
-        const currentValue = this.gameState.tiles.get(coords.x, coords.y);
+        const currentValue = this.tiles.get(coords.x, coords.y);
         const newValue = this.level.colorScheme.resquare(currentValue);
         this.drawPaintValue = newValue;
 
-        // Update both level and gameState tiles
-        this.gameState.tiles.set(coords.x, coords.y, newValue);
+        // Update both level and tiles
+        this.tiles.set(coords.x, coords.y, newValue);
         this.level.tiles.set(coords.x, coords.y, newValue);
 
         // Update solution and redraw
@@ -338,10 +422,10 @@ export class Editor extends GameBase {
 
       if (coords) {
         // Only paint if the tile value is different (avoid redundant updates)
-        const currentValue = this.gameState.tiles.get(coords.x, coords.y);
+        const currentValue = this.tiles.get(coords.x, coords.y);
         if (currentValue !== this.drawPaintValue) {
           // Paint with the stored value
-          this.gameState.tiles.set(coords.x, coords.y, this.drawPaintValue);
+          this.tiles.set(coords.x, coords.y, this.drawPaintValue);
           this.level.tiles.set(coords.x, coords.y, this.drawPaintValue);
 
           // Update solution and redraw
@@ -359,11 +443,12 @@ export class Editor extends GameBase {
   doMouseUp(x, y) {
     if (this.drawMode) {
       // Final solvability check on mouse up (in case we missed any during drag)
-      if (this.gameState && this.level) {
+      if (this.tiles && this.level) {
         this.updateSolutionAfterDraw();
       }
       this.mouseStart.pressed = false;
       this.drawPaintValue = null;
+      this.drawUndoSaved = false;
       return;
     }
 
@@ -389,15 +474,15 @@ export class Editor extends GameBase {
       // Check solvability using gaussian elimination
       compute_gaussian_solution(this.level);
 
-      // Update gameState operations and inverse operations
-      this.gameState.operations = operations;
-      this.gameState.inverseOperations = new Map();
+      // Update operations and inverse operations
+      this.operations = operations;
+      this.inverseOperations = new Map();
       for (let i = 0; i < operations.length; i++) {
-        this.gameState.inverseOperations.set(operations[i].join(""), i);
+        this.inverseOperations.set(operations[i].join(""), i);
       }
 
       // Update running solution
-      this.gameState.runningSolution = this.level.solutionVector
+      this.runningSolution = this.level.solutionVector
         ? this.level.solutionVector.slice()
         : new Array(m).fill(0);
 

@@ -18,6 +18,7 @@ export class Game extends GameBase {
     // Bind the action method to preserve 'this' context when passed as callback
     this.action = this.action.bind(this);
 
+    this.playerSolution = null; // Solution vector starting from zero (player's moves only)
 
     this.numSolvedThisSession = 0;
     this.showedDiscordOverlay = false;
@@ -42,6 +43,39 @@ export class Game extends GameBase {
     this.hideFinishedLevelElements();
   }
 
+  // Override openLevel to initialize playerSolution
+  openLevel(level, book) {
+    super.openLevel(level, book);
+    // Initialize playerSolution to zero vector
+    this.playerSolution = new Array(this.operations.length).fill(0);
+  }
+
+  // Hook to add additional state to undo
+  getAdditionalState() {
+    return {
+      playerSolution: this.playerSolution.slice(),
+    };
+  }
+
+  // Hook to restore additional state from undo
+  restoreAdditionalState(additionalState) {
+    this.playerSolution = additionalState.playerSolution.slice();
+  }
+
+  // Save state before a move is applied
+  preMove(move) {
+    // Track the move in playerSolution
+    // We compute the vector from the move before applying it
+    if (move != null && this.inverseOperations && this.playerSolution) {
+      // Create a temporary grid to compute the vector
+      let vector = this.level.tileShape.moveToVector(this.tiles, move);
+      let opIndex = this.inverseOperations.get(vector.join(""));
+      if (opIndex !== undefined) {
+        this.playerSolution[opIndex] += 1;
+      }
+    }
+  }
+
   // Game-specific logic after a move
   postMove() {
     this.sanityCheck();
@@ -51,16 +85,15 @@ export class Game extends GameBase {
   }
 
   sanityCheck() {
-    if (this.gameState === null) {
+    if (this.tiles === null) {
       return;
     }
-    if (this.gameState.numMoves  != vector_sum(this.getPlayerSolution())) {
-      console.error("numMoves", this.gameState.numMoves, "does not match solution", vector_sum(this.getPlayerSolution()), this.getPlayerSolution());
-      console.error("this.gameState.tiles", this.gameState.tiles);
-      console.error("this.gameState.runningSolution", this.gameState.runningSolution, vector_sum(this.gameState.runningSolution));
+    if (this.numMoves != vector_sum(this.getPlayerSolution())) {
+      console.error("numMoves", this.numMoves, "does not match solution", vector_sum(this.getPlayerSolution()), this.getPlayerSolution());
+      console.error("this.tiles", this.tiles);
+      console.error("this.playerSolution", this.playerSolution, vector_sum(this.playerSolution));
       console.error("this.level.solutionVector", this.level.solutionVector, vector_sum(this.level.solutionVector));
       console.error("this.level.solutionType", this.level.solutionType);
-      console.error("this.level.solution", this.level.solution, vector_sum(this.level.solution));
 
     }
   }
@@ -69,13 +102,13 @@ export class Game extends GameBase {
     // Save current state for undo before restarting
     // TODO: this is a bit of a hack, but it works for now.
     let savedUndoList = null;
-    if (this.gameState && this.gameState.numMoves > 0) {
-      savedUndoList = [...this.gameState.undoList];
+    if (this.tiles && this.numMoves > 0) {
+      savedUndoList = [...this.undoList];
       savedUndoList.push({
-        tiles: this.gameState.tiles.clone(),
+        tiles: this.tiles.clone(),
         move: "restart",
-        runningSolution: this.gameState.runningSolution.slice(),
-        numMoves: this.gameState.numMoves,
+        playerSolution: this.playerSolution ? this.playerSolution.slice() : null,
+        numMoves: this.numMoves,
         isRestart: true,
       });
     }
@@ -84,7 +117,7 @@ export class Game extends GameBase {
 
     // Restore the undo list after creating new game state
     if (savedUndoList) {
-      this.gameState.undoList = savedUndoList;
+      this.undoList = savedUndoList;
     }
 
     this.draw();
@@ -93,7 +126,7 @@ export class Game extends GameBase {
   }
 
   isFinished() {
-    return this.gameState && !this.gameState.tiles.some(v => v != 1);
+    return this.tiles && !this.tiles.some(v => v != 1);
   }
 
   postSolutionToServer(callback) {
@@ -142,11 +175,7 @@ export class Game extends GameBase {
   }
 
   getPlayerSolution() {
-    // TODO: this stops working if the level.solutionVector is changed. So to use this I stop changing level.solutionVector.
-    return vector_sub(
-      this.gameState.runningSolution,
-      this.level.solutionVector,
-    );
+    return this.playerSolution.slice();
   }
 
   finishedLevel() {
@@ -164,7 +193,7 @@ export class Game extends GameBase {
 
     let prevBest = getBestNumMoves(this.level);
 
-    let numMoves = this.gameState.numMoves;
+    let numMoves = this.numMoves;
 
     if (prevBest === null || numMoves < prevBest) {
       setBestNumMoves(this.level, numMoves);
@@ -192,13 +221,13 @@ export class Game extends GameBase {
     }
     
     const select = element.querySelector("#histogramTypeSelect");
-    renderHistogram(container, this.allHistogramData[select.value], this.gameState.numMoves);
+    renderHistogram(container, this.allHistogramData[select.value], this.numMoves);
   }
 
 
   showFinishedLevelChallenge() {
     const element = this.getElement("finishedChallengeHistogram");
-    const numMoves = this.gameState.numMoves;
+    const numMoves = this.numMoves;
     const movesDisplay = element.querySelector(".finishedLevelMoves");
     if (movesDisplay) {
       movesDisplay.innerText = `${numMoves} moves`;
@@ -256,7 +285,7 @@ export class Game extends GameBase {
   }
 
   updateGui() {
-    if (!this.level || !this.gameState) {
+    if (!this.level || !this.tiles) {
       return;
     }
 
@@ -280,15 +309,15 @@ export class Game extends GameBase {
   }
 
   updateDemoDrag() {
-    this.demoDrag = (this.level.id == "level_1693531796434" && this.gameState.numMoves == 0)
+    this.demoDrag = (this.level.id == "level_1693531796434" && this.numMoves == 0)
       ? this.firstDemoDrag
       : null;
   }
 
   updateRestartButton() {
     const suggestsRestart = 
-      (this.level.id == "level_1693531796434" && this.gameState.numMoves >= 1 && !this.isFinished()) ||
-      (this.isInBasicBook() && this.level.index < 10 && this.level.par !== null && this.gameState.numMoves > this.level.par * 3 && !this.isFinished());
+      (this.level.id == "level_1693531796434" && this.numMoves >= 1 && !this.isFinished()) ||
+      (this.isInBasicBook() && this.level.index < 10 && this.level.par !== null && this.numMoves > this.level.par * 3 && !this.isFinished());
 
     const restartButton = this.div.getElementsByClassName("restart_button")[0];
     restartButton.classList.toggle("in_yo_face", suggestsRestart);
@@ -317,7 +346,7 @@ export class Game extends GameBase {
       this.getElement("finishedGame").style.display = "block";
     }
 
-    const isPerfect = this.level.par !== null && this.gameState.numMoves <= this.level.par;
+    const isPerfect = this.level.par !== null && this.numMoves <= this.level.par;
     const element = this.getElement(isPerfect ? "finishedLevelPerfect" : "finishedLevel");
     
     if (isPerfect) {
@@ -328,7 +357,7 @@ export class Game extends GameBase {
     const movesDisplay = element.querySelector(".finishedLevelMoves");
     if (movesDisplay) {
       const parDisplay = this.level.par === null ? "?" : this.level.par;
-      movesDisplay.innerText = `${this.gameState.numMoves}/${parDisplay} moves`;
+      movesDisplay.innerText = `${this.numMoves}/${parDisplay} moves`;
     }
     this.updateFinishedLevelNextButton(element);
     requestAnimationFrame(() => element.classList.add("showing"));
@@ -349,8 +378,8 @@ export class Game extends GameBase {
   }
 
   updateMovesDisplay() {
-    if (this.gameState) {
-      this.getElement("movesContent").innerText = this.gameState.numMoves;
+    if (this.tiles) {
+      this.getElement("movesContent").innerText = this.numMoves;
     }
   }
 
@@ -391,7 +420,7 @@ export class Game extends GameBase {
   }
 
   undo() {
-    this.gameState.undo();
+    super.undo();
     this.draw();
     // Start animation loop if animations were triggered
     this.startAnimationLoopIfNeeded();
@@ -488,7 +517,7 @@ export class Game extends GameBase {
   updateAdditionalAnimations(timestamp) {
     if (this.demoDrag) {
       this.demoDragTime +=
-        (timestamp - this.gameState.lastUpdateTimestamp) / 1500;
+        (timestamp - this.lastUpdateTimestamp) / 1500;
       this.demoDragTime %= 1;
       return true;
     }

@@ -1,6 +1,7 @@
 "use strict";
 
-import { GameState } from '../core/GameState.js';
+import { TileAnimationState } from '../core/TileAnimationState.js';
+import { compute_operations_for_level } from '../core/algo.js';
 import { trackLevelStart } from '../utils/analytics.js';
 import * as config from '../utils/config.js';
 import { cancelEvent } from '../utils/helpers.js';
@@ -26,7 +27,14 @@ export class GameBase {
 
     this.hoveredTile = null; // Track which tile is being hovered
 
-    this.gameState = null;
+    // Game state
+    this.tiles = null;
+    this.tileAnimationState = null;
+    this.undoList = [];
+    this.lastUpdateTimestamp = performance.now();
+    this.numMoves = 0;
+    this.operations = null;
+    this.inverseOperations = null;
 
     this.canvasVirtualSize = 0;
     this.canvasSize = 0;
@@ -57,9 +65,19 @@ export class GameBase {
   }
 
   openLevel(level, book) {
-    this.gameState = new GameState(level);
+    this.tiles = level.tiles.clone();
+    this.tileAnimationState = new TileAnimationState(this.tiles);
+    this.undoList = [];
+    this.lastUpdateTimestamp = performance.now();
+    this.numMoves = 0;
     this.level = level;
     this.book = book;
+
+    this.operations = compute_operations_for_level(this.level);
+    this.inverseOperations = new Map();
+    for (let i = 0; i < this.operations.length; i++) {
+      this.inverseOperations.set(this.operations[i].join(""), i);
+    }
 
     trackLevelStart(level, book);
 
@@ -80,11 +98,11 @@ export class GameBase {
       this.mouseStart.y,
       this.mouseStart.x,
       this.mouseStart.y,
-      this.gameState.tileStates
+      this.tileAnimationState
     );
 
     // Update inset states for immediate selection
-    this.gameState.tileStates.forEach(function (v) {
+    this.tileAnimationState.forEach(function (v) {
       if (v.selected) {
         v.insetState = 1;
       } else {
@@ -112,12 +130,12 @@ export class GameBase {
         this.mouseStart.y,
         x / this.canvasSize,
         y / this.canvasSize,
-        this.gameState.tileStates
+        this.tileAnimationState
       );
 
       // Check if selection changed and redraw if needed
       let different = false;
-      this.gameState.tileStates.forEach(function (v) {
+      this.tileAnimationState.forEach(function (v) {
         if (v.selected != v.oldSelected) {
           different = true;
         }
@@ -146,21 +164,21 @@ export class GameBase {
         this.mouseStart.y,
         x / this.canvasSize,
         y / this.canvasSize,
-        this.gameState.tileStates
+        this.tileAnimationState
       );
 
       if (move !== null) {
         // Hook for subclasses to save state before move
         this.preMove(move);
 
-        this.gameState.applyMove(move, this.action);
-        this.gameState.tileStates.forEach(function (v) {
+        this.applyMove(move, this.action);
+        this.tileAnimationState.forEach(function (v) {
           v.selected = false;
           v.insetState = 0;
           // v.transitionState = 0;
         });
         this.level.tileShape.forTilesInMove(
-          this.gameState.tileStates,
+          this.tileAnimationState,
           move,
           function (v) {
             v.transitionState = 0;
@@ -168,14 +186,14 @@ export class GameBase {
         );
 
         // Update timestamp when starting animations to prevent huge delta time
-        this.gameState.lastUpdateTimestamp = performance.now();
+        this.lastUpdateTimestamp = performance.now();
 
         if (navigator.vibrate) {
           navigator.vibrate(3);
         }
       } else {
         // Clear selection for invalid moves (like single tile selection)
-        this.gameState.tileStates.forEach(function (v) {
+        this.tileAnimationState.forEach(function (v) {
           v.selected = false;
         });
       }
@@ -206,15 +224,15 @@ export class GameBase {
       const y = coords.y / this.canvasSize;
 
       // Convert to tile coordinates
-      const tileX = Math.floor(x * this.gameState.tiles.width);
-      const tileY = Math.floor(y * this.gameState.tiles.height);
+      const tileX = Math.floor(x * this.tiles.width);
+      const tileY = Math.floor(y * this.tiles.height);
 
       // Check if coordinates are within bounds
       if (
         tileX >= 0 &&
-        tileX < this.gameState.tiles.width &&
+        tileX < this.tiles.width &&
         tileY >= 0 &&
-        tileY < this.gameState.tiles.height
+        tileY < this.tiles.height
       ) {
         const newHoveredTile = { x: tileX, y: tileY };
 
@@ -315,9 +333,9 @@ export class GameBase {
 
   draw() {
     this.updateGui();
-    if (this.level && this.gameState) {
+    if (this.level && this.tiles && this.tileAnimationState) {
       // Update inset states before drawing
-      this.gameState.tileStates.forEach(tileState => {
+      this.tileAnimationState.forEach(tileState => {
         if (tileState.selected) {
           tileState.insetState = 1;
         } else {
@@ -336,7 +354,9 @@ export class GameBase {
   actuallyDrawCanvas() {
     this.level.tileShape.draw(
       this.ctx,
-      this.gameState,
+      this.tiles,
+      this.tileAnimationState,
+      this.level,
       this.action,
       this.hoveredTile
     );
@@ -356,8 +376,8 @@ export class GameBase {
 
   // Check if there are any animations running (without updating them)
   hasAnimations() {
-    // Check if gameState exists
-    if (!this.gameState || !this.gameState.tileStates) {
+    // Check if state exists
+    if (!this.tileAnimationState) {
       return false;
     }
 
@@ -368,7 +388,7 @@ export class GameBase {
 
     // Check tile animations
     let hasTileAnimations = false;
-    this.gameState.tileStates.forEach(tileState => {
+    this.tileAnimationState.forEach(tileState => {
       if (tileState.transitionState < 1) {
         hasTileAnimations = true;
       }
@@ -391,7 +411,7 @@ export class GameBase {
     }
 
     // Update tile animations
-    this.gameState.tileStates.forEach(tileState => {
+    this.tileAnimationState.forEach(tileState => {
       // Update inset state (selection) - inset squares should appear when selected
       if (tileState.selected) {
         tileState.insetState = 1;
@@ -403,7 +423,7 @@ export class GameBase {
       if (tileState.transitionState < 1) {
         hasAnimations = true;
         // Animate over 300ms
-        const deltaTime = timestamp - this.gameState.lastUpdateTimestamp;
+        const deltaTime = timestamp - this.lastUpdateTimestamp;
         tileState.transitionState = Math.min(
           1,
           tileState.transitionState + deltaTime / 300
@@ -411,12 +431,12 @@ export class GameBase {
       }
     });
 
-    this.gameState.lastUpdateTimestamp = timestamp;
+    this.lastUpdateTimestamp = timestamp;
     return hasAnimations;
   }
 
   drawCanvas() {
-    if (!this.hidden && this.gameState && this.level) {
+    if (!this.hidden && this.tiles && this.tileAnimationState && this.level) {
       const timestamp = performance.now();
 
       // Update animations
@@ -450,21 +470,20 @@ export class GameBase {
 
   forceRedraw() {
     // Force an immediate redraw regardless of animation state
-    if (this.level && this.gameState) {
+    if (this.level && this.tiles && this.tileAnimationState) {
       this.actuallyDrawCanvas();
     }
   }
 
   printFlat() {
     let ret = "";
-    ret += this.gameState.tiles.width;
+    ret += this.tiles.width;
     ret += " ";
-    ret += this.gameState.tiles.height;
+    ret += this.tiles.height;
     ret += "\n";
-    let tiles = this.gameState.tiles;
-    for (let j = 0; j < tiles.height; j++) {
-      for (let i = 0; i < tiles.width; i++) {
-        ret += "" + (tiles.get(i, j) - 1);
+    for (let j = 0; j < this.tiles.height; j++) {
+      for (let i = 0; i < this.tiles.width; i++) {
+        ret += "" + (this.tiles.get(i, j) - 1);
       }
       ret += "\n";
     }
@@ -500,6 +519,77 @@ export class GameBase {
   // Hook for subclasses to save state before a move is applied
   preMove(move) {
     // Override in subclasses
+  }
+
+  // Hook for subclasses to add additional state to undo
+  getAdditionalState() {
+    // Override in subclasses to return object with additional state
+    return {};
+  }
+
+  // Hook for subclasses to restore additional state from undo
+  restoreAdditionalState(additionalState) {
+    // Override in subclasses to restore additional state
+  }
+
+  // Apply a move to the board
+  applyMove(move, action) {
+    if (move != null) {
+      // Save undo state
+      const undo = {
+        tiles: this.tiles.clone(),
+        move: move,
+        numMoves: this.numMoves,
+        additionalState: this.getAdditionalState(),
+      };
+      this.undoList.push(undo);
+
+      // Apply the move
+      this.level.tileShape.forTilesInMoveSet(this.tiles, move, action);
+      this.numMoves += 1;
+    }
+  }
+
+  // Undo the last move
+  undo() {
+    if (this.undoList.length > 0) {
+      const undo = this.undoList.pop();
+      const { tiles:previousTiles, move:undoMove, numMoves:previousNumMoves, additionalState:additionalState } = undo;
+      this.tiles = previousTiles;
+
+      const isRestart = undoMove === "restart";
+      // Handle restart operations differently
+      if (isRestart) {
+        // For restart, we just restore the state without animation
+        this.numMoves = previousNumMoves;
+        this.restoreAdditionalState(additionalState);
+      } else {
+        // For regular moves, animate the reverse
+        // Reset all tileStates to default state first
+        this.tileAnimationState.reset();
+        
+        // Debug: check if undo.move exists
+        if (undoMove) {
+          this.level.tileShape.forTilesInMove(
+            this.tileAnimationState,
+            undoMove,
+            function (ts) {
+              ts.transitionState = 0;
+            }
+          );
+        } else {
+          // If no move, just reset all tiles to trigger animation
+          this.tileAnimationState.forEach(function (ts) {
+            ts.transitionState = 0;
+          });
+        }
+        this.numMoves = previousNumMoves;
+        // Update timestamp for animation system
+        this.lastUpdateTimestamp = performance.now();
+        // Restore additional state from subclasses
+        this.restoreAdditionalState(undo.additionalState);
+      }
+    }
   }
 
   // Hook for subclasses to check for additional animations beyond tile animations
