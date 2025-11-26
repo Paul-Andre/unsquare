@@ -2,7 +2,7 @@
 
 import { GameBase } from './GameBase.js';
 import { TileAnimationState } from '../core/TileAnimationState.js';
-import { Grid } from '../core/Grid.js';
+import { Grid } from '../core/Grid';
 import { compute_operations_for_level, vector_sum, level_check_solution, get_level_compact_solution, vector_equal } from '../core/algo.js';
 import { save_editor_book } from '../core/bookUtils.js';
 import { screenManager } from '../ui/ScreenManager.js';

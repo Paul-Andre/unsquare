@@ -1,6 +1,6 @@
 "use strict";
 
-import { Grid } from './Grid.js';
+import { Grid } from './Grid';
 
 export class TileAnimationState {
   constructor(tiles) {
