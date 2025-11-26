@@ -1,6 +1,7 @@
 "use strict";
 
 import { compute_operations_for_level, vector_simplify_arithmetic } from './algo.js';
+import {Level} from './Level.js';
 
 export class GameState {
   constructor(level) {
@@ -49,7 +50,10 @@ export class GameState {
       // console.log(opIndex);
       if (this.runningSolution) {
         this.runningSolution[opIndex] += 1;
-        vector_simplify_arithmetic(this.runningSolution, this.arithmetic);
+        // We don't simplify the arithmetic because runningSolution is currently used to compute
+        // userSolution, where we include repeated moves.
+        // TODO: Ideally separate the two concepts, or treat it differently.
+        // vector_simplify_arithmetic(this.runningSolution, this.level.colorScheme.arithmetic);
       }
     }
     this.numMoves += 1;

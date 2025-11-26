@@ -153,7 +153,7 @@ export function get_arithmetic_compact(arithmetic) {
   if ((arithmetic.type = "modular")) {
     return `m_${arithmetic.modulus}`;
   }
-  throw new Error(`arithmetic ${JSON.stringify(geometry)} not supported`);
+  throw new Error(`arithmetic ${JSON.stringify(arithmetic)} not supported`);
 }
 
 export function get_level_compact_tiles(level) {
