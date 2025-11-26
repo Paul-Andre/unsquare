@@ -14,15 +14,15 @@ export function getGtagLevelName(level, book) {
 export function trackLevelStart(level, book) {
   // Wrapping in setTimeout to minimize issues if an error happens.
   setTimeout(function () {
-    if (gtag) {
+    if (window.gtag) {
       let name = getGtagLevelName(level, book);
-      gtag("event", "level_start", {
+      window.gtag("event", "level_start", {
         level_name: name,
       });
     }
-    if (posthog && typeof posthog.capture === 'function') {
+    if (window.posthog && typeof window.posthog.capture === 'function') {
       let name = getGtagLevelName(level, book);
-      posthog.capture('level_start', {
+      window.posthog.capture('level_start', {
         level_name: name,
       });
     }
@@ -31,16 +31,16 @@ export function trackLevelStart(level, book) {
 export function trackLevelEnd(level, book) {
   // Wrapping in setTimeout to minimize issues if an error happens.
   setTimeout(function () {
-    if (gtag) {
+    if (window.gtag) {
       let name = getGtagLevelName(level, book);
-      gtag("event", "level_end", {
+      window.gtag("event", "level_end", {
         level_name: name,
         success: true,
       });
     }
-    if (posthog && typeof posthog.capture === 'function') {
+    if (window.posthog && typeof window.posthog.capture === 'function') {
       let name = getGtagLevelName(level, book);
-      posthog.capture('level_end', {
+      window.posthog.capture('level_end', {
         level_name: name,
         success: true,
       });

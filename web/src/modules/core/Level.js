@@ -22,6 +22,7 @@ export class Level {
     level.title = null;
     level.index = -1;
     level.isIcon = false;
+    level.isCustom = false;
     level.mode = "normal";
     level.id = generate_id("level");
 
@@ -182,6 +183,7 @@ export class Level {
     this.index = otherLevel.index;
     this.id = otherLevel.id;
     this.isIcon = otherLevel.isIcon;
+    this.isCustom = otherLevel.isCustom || false;
     this.mode = otherLevel.mode || "normal";
     if (otherLevel.solutionVector) {
       this.solutionVector = otherLevel.solutionVector.slice();
@@ -189,6 +191,9 @@ export class Level {
       this.solutionVector = null;
     }
     this.solutionType = otherLevel.solutionType;
+    if (otherLevel.book !== undefined) {
+      this.book = otherLevel.book;
+    }
   }
 
   getFullIdentifier() {

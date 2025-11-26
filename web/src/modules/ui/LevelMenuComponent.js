@@ -7,7 +7,8 @@ import { screenManager } from './ScreenManager.js';
 import { Level } from '../core/Level.js';
 import { save_editor_book } from '../core/bookUtils.js';
 import { book_replacer } from '../core/bookUtils.js';
-
+import { clearBestNumMoves } from '../core/levelUtils.js';
+import { editor } from '../game/Editor.js';
 
 // Level state constants to replace magic numbers
 export const LEVEL_STATES = {
@@ -227,9 +228,9 @@ export class LevelMenuComponent {
         screenManager.switchTo("editor");
       } else {
         console.log("Attempting to open level:", iconElement.level);
-        console.log("Game object:", game);
+        console.log("Game object:", window.game);
         console.log("Window.game object:", window.game);
-        console.log("Game.openLevel method:", game?.openLevel);
+        console.log("Game.openLevel method:", window.game?.openLevel);
         console.log("Window.game.openLevel method:", window.game?.openLevel);
         if (window.game && window.game.openLevel) {
           window.game.openLevel(iconElement.level, this.book);

@@ -475,10 +475,10 @@ export class Game extends GameBase {
     const par = level.par;
     const parDisplay = par === null ? "?" : par;
     this.getElement("parContentInclusive").innerText = 
-      level.custom ? `creator par: ${parDisplay}` : `par: ${parDisplay}`;
+      level.isCustom ? `creator par: ${parDisplay}` : `par: ${parDisplay}`;
 
     const index = level.index;
-    const levelDisplay = level.custom ? "Custom Level" : (level.title || `Level ${1 + index}`);
+    const levelDisplay = level.isCustom ? "Custom Level" : (level.title || `Level ${1 + index}`);
     document.getElementById("LevelIndicator").innerText = levelDisplay;
 
     const states = calculateStates(this.book);

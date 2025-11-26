@@ -26,6 +26,10 @@ declare global {
     openPlayerEditor: () => void;
     onboardingPrev: () => void;
     onboardingNext: () => void;
+    gtag?: (...args: any[]) => void;
+    posthog?: {
+      capture: (event: string, properties?: Record<string, any>) => void;
+    };
   }
 }
 

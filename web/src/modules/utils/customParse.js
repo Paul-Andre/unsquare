@@ -7,7 +7,7 @@ export function checkAndOpenCustomLevel(game) {
     let customLevel = Level.fromCompact(customLevelString);
 
     
-    customLevel.custom = true;
+    customLevel.isCustom = true;
     game.openLevel(customLevel, {
       levels: [],
       source: customLevelString,

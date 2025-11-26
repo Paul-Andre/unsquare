@@ -510,6 +510,12 @@ export class GameBase {
     // Override in subclasses
   }
 
+  // Action method - must be implemented by subclasses
+  // This specifies what happens when you activate squares (e.g., do you unsquare or go the other way)
+  action(v) {
+    throw new Error("action method must be implemented by subclass");
+  }
+
   // Hook for subclasses to implement game-specific logic on mouse down
   onMouseDown() {
     // Override in subclasses
