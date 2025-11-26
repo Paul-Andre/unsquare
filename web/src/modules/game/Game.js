@@ -7,7 +7,7 @@ import { save_editor_book } from '../core/bookUtils.js';
 import { trackLevelEnd } from '../utils/analytics.js';
 import { getBestNumMoves, setBestNumMoves } from '../core/levelUtils.js';
 import * as config from '../utils/config.js';
-import { renderHistogram, generateDummyHistogramData } from '../ui/ChallengeHistogram.js';
+import { renderHistogram } from '../ui/ChallengeHistogram.js';
 import { drawIcon } from '../ui/icon.js';
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from '../utils/api.js';
 
@@ -130,7 +130,8 @@ export class Game extends GameBase {
       // Save the undo list (including the restart state we just added)
       savedUndoList = [...this.undoList];
     }
-
+    const shouldShowHint = !!(this.hintState?.suggestRestart);
+    
     this.openLevel(this.level, this.book);
 
     // Restore the undo list after creating new game state
@@ -138,8 +139,10 @@ export class Game extends GameBase {
       this.undoList = savedUndoList;
     }
 
-    // Automatically show hint after restart
-    this.showHint();
+    // Show hint after restart
+    if (shouldShowHint) {
+      this.showHint();
+    }
 
     this.draw();
     // Force an immediate redraw to ensure canvas updates
