@@ -36,9 +36,8 @@ export class ScreenManager {
   /**
    * Switches to a new screen
    * @param {string} screenName - The name of the screen to switch to
-   * @param {boolean} keepAsIs - Whether to keep the current screen state
    */
-  switchTo(screenName, keepAsIs) {
+  switchTo(screenName) {
     console.log("Switching to", screenName);
     if (this.currentScreen) {
       this.currentScreen.classList.remove("variant_shown");
@@ -50,12 +49,9 @@ export class ScreenManager {
 
     this.stack.push({
       name: this.currentScreenName,
-      keepAsIs: !!keepAsIs,
     });
 
-    if (!keepAsIs) {
-      this.executeFunction(this.currentScreenName, "onHide");
-    }
+    this.executeFunction(this.currentScreenName, "onHide");
 
     this.currentScreenName = screenName;
     this.currentScreen = document.getElementById(screenName);
@@ -77,11 +73,9 @@ export class ScreenManager {
     this.currentScreen = document.getElementById(this.currentScreenName);
     this.currentScreen.classList.add("variant_shown");
 
-    if (!popped.keepAsIs) {
-      setTimeout(() => {
-        this.executeFunction(this.currentScreenName, "onShow");
-      }, 0);
-    }
+    setTimeout(() => {
+      this.executeFunction(this.currentScreenName, "onShow");
+    }, 0);
   }
 }
 

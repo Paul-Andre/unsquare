@@ -209,7 +209,7 @@ export class GameLevelMenu {
           levels: [this.weeklyChallengeLevel],
           source: "challenge",
         });
-        screenManager.switchTo("game", false);
+        screenManager.switchTo("game");
       }
     };
 
