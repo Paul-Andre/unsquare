@@ -2,7 +2,7 @@
 
 import { GameBase } from './GameBase.js';
 import { calculateStates, LEVEL_STATES } from '../ui/LevelMenuComponent.js';
-import { vector_sum, vector_simplify_arithmetic, level_get_arithmetic, vector_sub } from '../core/algo.js';
+import { vector_sum, vector_simplify_arithmetic, level_get_arithmetic, vector_sub, operation_index_to_move, level_get_geometry } from '../core/algo.js';
 import { save_editor_book } from '../core/bookUtils.js';
 import { trackLevelEnd } from '../utils/analytics.js';
 import { getBestNumMoves, setBestNumMoves } from '../core/levelUtils.js';
@@ -34,11 +34,7 @@ export class Game extends GameBase {
     this.allHistogramData = null;
 
     // Hint system properties
-    this.hintState = {
-      showingHint: false,
-      hintSquare: null, // {x, y, size} or null
-      suggestRestart: false,
-    };
+    this.hintState = null; // null when no hint, or { hintSquare: {x, y, size} | null, suggestRestart: boolean }
   }
 
   // this specifies what happens when you activate squares
@@ -58,11 +54,7 @@ export class Game extends GameBase {
     // Initialize playerSolution to zero vector
     this.playerSolution = new Array(this.operations.length).fill(0);
     // Reset hint state
-    this.hintState = {
-      showingHint: false,
-      hintSquare: null,
-      suggestRestart: false,
-    };
+    this.hintState = null;
   }
 
   // Hook to add additional state to undo
@@ -70,11 +62,10 @@ export class Game extends GameBase {
     return {
       numMoves: this.numMoves,
       playerSolution: this.playerSolution.slice(),
-      hintState: {
-        showingHint: this.hintState.showingHint,
+      hintState: this.hintState ? {
         hintSquare: this.hintState.hintSquare ? {...this.hintState.hintSquare} : null,
         suggestRestart: this.hintState.suggestRestart,
-      },
+      } : null,
     };
   }
 
@@ -82,22 +73,16 @@ export class Game extends GameBase {
   restoreAdditionalState(additionalState) {
     this.numMoves = additionalState.numMoves;
     this.playerSolution = additionalState.playerSolution.slice();
-    this.hintState = {
-      showingHint: additionalState.hintState.showingHint,
+    this.hintState = additionalState.hintState ? {
       hintSquare: additionalState.hintState.hintSquare ? {...additionalState.hintState.hintSquare} : null,
       suggestRestart: additionalState.hintState.suggestRestart,
-    };
-    
+    } : null;
   }
 
   // Save state before a move is applied
   preMove(move) {
     // Clear hint state when a move is made
-    this.hintState = {
-      showingHint: false,
-      hintSquare: null,
-      suggestRestart: false,
-    };
+    this.hintState = null;
     // Track the move in playerSolution
     // We compute the vector from the move before applying it
     if (move != null && this.inverseOperations && this.playerSolution) {
@@ -330,6 +315,9 @@ export class Game extends GameBase {
       this.updateRestartButton();
     }
 
+    // Update hint button visibility
+    this.updateHintButtonVisibility();
+
     // Update hint UI
     this.updateHintUI();
 
@@ -347,49 +335,53 @@ export class Game extends GameBase {
     this.updateBestDisplay();
   }
 
+  updateHintButtonVisibility() {
+    const hintButton = this.div.querySelector(".hint_button");
+    if (hintButton) {
+      hintButton.style.display = this.level.par !== null ? "" : "none";
+    }
+  }
+
   updateHintUI() {
-    // Update blocking overlay
     const blockingOverlay = this.div.querySelector(".hint_blocking_overlay");
+    const restartButton = this.div.querySelector(".restart_button");
+    const arrowOverlay = this.div.querySelector(".hint_arrow_overlay");
+    const suggestRestart = this.hintState?.suggestRestart || false;
+
+    // Update blocking overlay and canvas pointer events
     if (blockingOverlay) {
-      if (this.hintState.suggestRestart) {
-        blockingOverlay.style.display = "block";
-        // Block pointer events on canvas
-        this.canvas.style.pointerEvents = "none";
-      } else {
-        blockingOverlay.style.display = "none";
-        // Restore pointer events on canvas
-        this.canvas.style.pointerEvents = "auto";
-      }
+      blockingOverlay.style.display = suggestRestart ? "block" : "none";
+      this.canvas.style.pointerEvents = suggestRestart ? "none" : "auto";
     }
 
     // Update restart button styling
-    const restartButton = this.div.querySelector(".restart_button");
     if (restartButton) {
-      restartButton.classList.toggle("hint_suggest_restart", this.hintState.suggestRestart);
+      restartButton.classList.toggle("hint_suggest_restart", suggestRestart);
     }
 
     // Update arrow overlay
-    const arrowOverlay = this.div.querySelector(".hint_arrow_overlay");
     if (arrowOverlay) {
-      if (this.hintState.suggestRestart) {
+      if (suggestRestart && restartButton) {
         arrowOverlay.style.display = "block";
-        // Position arrow to point at restart button
-        if (restartButton) {
-          const buttonRect = restartButton.getBoundingClientRect();
-          const contentRect = this.div.querySelector(".content").getBoundingClientRect();
-          const canvasRect = this.canvas.getBoundingClientRect();
-          
-          // Position arrow between canvas and restart button
-          const arrowX = canvasRect.right + 20;
-          const arrowY = buttonRect.top + buttonRect.height / 2 - 50;
-          
-          arrowOverlay.style.left = `${arrowX - contentRect.left}px`;
-          arrowOverlay.style.top = `${arrowY - contentRect.top}px`;
-        }
+        this.positionHintArrow(arrowOverlay, restartButton);
       } else {
         arrowOverlay.style.display = "none";
       }
     }
+  }
+
+  // Position hint arrow to point at restart button
+  positionHintArrow(arrowOverlay, restartButton) {
+    const buttonRect = restartButton.getBoundingClientRect();
+    const contentRect = this.div.querySelector(".content").getBoundingClientRect();
+    const canvasRect = this.canvas.getBoundingClientRect();
+    
+    // Position arrow between canvas and restart button
+    const arrowX = canvasRect.right + 20;
+    const arrowY = buttonRect.top + buttonRect.height / 2 - 50;
+    
+    arrowOverlay.style.left = `${arrowX - contentRect.left}px`;
+    arrowOverlay.style.top = `${arrowY - contentRect.top}px`;
   }
 
   updateDemoDrag() {
@@ -491,6 +483,9 @@ export class Game extends GameBase {
 
     const states = calculateStates(this.book);
     this.updateNavigationButtons(index, states);
+
+    // Update hint button visibility
+    this.updateHintButtonVisibility();
   }
 
   updateNavigationButtons(index, states) {
@@ -615,53 +610,6 @@ export class Game extends GameBase {
     this.drawHintOverlay();
   }
 
-  // Convert operation vector (flat array) back to move coordinates {x, y, size}
-  operationVectorToMove(operationVector) {
-    const width = this.tiles.width;
-    const height = this.tiles.height;
-    
-    // Find all tiles that are set to 1 in the operation vector
-    const affectedTiles = [];
-    for (let i = 0; i < operationVector.length; i++) {
-      if (operationVector[i] === 1) {
-        const x = i % width;
-        const y = Math.floor(i / width);
-        affectedTiles.push({ x, y });
-      }
-    }
-    
-    if (affectedTiles.length === 0) {
-      return null;
-    }
-    
-    // Find bounding box
-    let minX = Infinity, minY = Infinity;
-    let maxX = -Infinity, maxY = -Infinity;
-    for (const tile of affectedTiles) {
-      minX = Math.min(minX, tile.x);
-      minY = Math.min(minY, tile.y);
-      maxX = Math.max(maxX, tile.x);
-      maxY = Math.max(maxY, tile.y);
-    }
-    
-    // Check if it's a square
-    const size = maxX - minX + 1;
-    if (size !== maxY - minY + 1) {
-      return null; // Not a square
-    }
-    
-    // Verify all tiles in the square are affected
-    for (let x = minX; x <= maxX; x++) {
-      for (let y = minY; y <= maxY; y++) {
-        const idx = y * width + x;
-        if (operationVector[idx] !== 1) {
-          return null; // Not a complete square
-        }
-      }
-    }
-    
-    return { x: minX, y: minY, size };
-  }
 
   // Check if player solution aligns with level solution
   checkSolutionAlignment() {
@@ -674,13 +622,7 @@ export class Game extends GameBase {
     }
     
     // Check alignment: for each i, playerSolution[i] <= solutionVector[i]
-    for (let i = 0; i < this.playerSolution.length; i++) {
-      if (this.playerSolution[i] > this.level.solutionVector[i]) {
-        return false;
-      }
-    }
-    
-    return true;
+    return this.playerSolution.every((val, i) => val <= this.level.solutionVector[i]);
   }
 
   // Find the next move in the solution
@@ -690,15 +632,12 @@ export class Game extends GameBase {
     }
     
     // Find first operation index where playerSolution[i] < solutionVector[i]
-    for (let i = 0; i < this.playerSolution.length; i++) {
-      if (this.playerSolution[i] < this.level.solutionVector[i]) {
-        // Convert operation vector to move
-        const operationVector = this.operations[i];
-        return this.operationVectorToMove(operationVector);
-      }
+    const opIndex = this.playerSolution.findIndex((val, i) => val < this.level.solutionVector[i]);
+    if (opIndex === -1) {
+      return null; // No more moves needed
     }
     
-    return null; // No more moves needed
+    return operation_index_to_move(level_get_geometry(this.level), opIndex);
   }
 
   showHint() {
@@ -714,19 +653,11 @@ export class Game extends GameBase {
     
     if (!isAligned) {
       // Misaligned: suggest restart
-      this.hintState = {
-        showingHint: true,
-        hintSquare: null,
-        suggestRestart: true,
-      };
+      this.hintState = { suggestRestart: true, hintSquare: null };
     } else {
       // Aligned: find next hint square
       const hintSquare = this.findNextHintMove();
-      this.hintState = {
-        showingHint: true,
-        hintSquare: hintSquare,
-        suggestRestart: false,
-      };
+      this.hintState = hintSquare ? { hintSquare, suggestRestart: false } : null;
     }
     
     // Update UI and redraw
@@ -735,7 +666,7 @@ export class Game extends GameBase {
   }
 
   drawHintOverlay() {
-    if (!this.hintState.showingHint || !this.hintState.hintSquare) {
+    if (!this.hintState?.hintSquare) {
       return;
     }
     

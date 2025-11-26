@@ -31,6 +31,31 @@ export function compute_operations(geometry) {
   throw new Error(`geometry ${JSON.stringify(geometry)} not supported`);
 }
 
+// Convert operation index to move coordinates {x, y, size}
+// Operations are generated in compute_operations in order: for each x, for each y, for each size
+export function operation_index_to_move(geometry, opIndex) {
+  if (geometry.type !== "square") {
+    throw new Error(`geometry ${JSON.stringify(geometry)} not supported`);
+  }
+  
+  const width = geometry.width;
+  const height = geometry.height;
+  let index = 0;
+  
+  for (let x = 0; x < width; x++) {
+    for (let y = 0; y < height; y++) {
+      for (let size = 2; x + size <= width && y + size <= height; size++) {
+        if (index === opIndex) {
+          return { x, y, size };
+        }
+        index++;
+      }
+    }
+  }
+  
+  return null;
+}
+
 export function get_geometry_m(geometry) {
   return compute_operations(geometry).length;
 }

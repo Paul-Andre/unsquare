@@ -302,11 +302,6 @@ button.hint_suggest_restart {
   animation: red-pulse-animation 1s infinite;
 }
 
-button.hint_button {
-  /* Hint button styling */
-}
-
-
 button:disabled,
 button[disabled] {
   background: var(--inactive_background);
