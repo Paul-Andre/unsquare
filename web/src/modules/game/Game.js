@@ -32,6 +32,13 @@ export class Game extends GameBase {
       end: { x: 0.67, y: 0.67 },
     };
     this.allHistogramData = null;
+
+    // Hint system properties
+    this.hintState = {
+      showingHint: false,
+      hintSquare: null, // {x, y, size} or null
+      suggestRestart: false,
+    };
   }
 
   // this specifies what happens when you activate squares
@@ -50,6 +57,12 @@ export class Game extends GameBase {
     this.numMoves = 0;
     // Initialize playerSolution to zero vector
     this.playerSolution = new Array(this.operations.length).fill(0);
+    // Reset hint state
+    this.hintState = {
+      showingHint: false,
+      hintSquare: null,
+      suggestRestart: false,
+    };
   }
 
   // Hook to add additional state to undo
@@ -57,6 +70,11 @@ export class Game extends GameBase {
     return {
       numMoves: this.numMoves,
       playerSolution: this.playerSolution.slice(),
+      hintState: {
+        showingHint: this.hintState.showingHint,
+        hintSquare: this.hintState.hintSquare ? {...this.hintState.hintSquare} : null,
+        suggestRestart: this.hintState.suggestRestart,
+      },
     };
   }
 
@@ -64,10 +82,22 @@ export class Game extends GameBase {
   restoreAdditionalState(additionalState) {
     this.numMoves = additionalState.numMoves;
     this.playerSolution = additionalState.playerSolution.slice();
+    this.hintState = {
+      showingHint: additionalState.hintState.showingHint,
+      hintSquare: additionalState.hintState.hintSquare ? {...additionalState.hintState.hintSquare} : null,
+      suggestRestart: additionalState.hintState.suggestRestart,
+    };
+    
   }
 
   // Save state before a move is applied
   preMove(move) {
+    // Clear hint state when a move is made
+    this.hintState = {
+      showingHint: false,
+      hintSquare: null,
+      suggestRestart: false,
+    };
     // Track the move in playerSolution
     // We compute the vector from the move before applying it
     if (move != null && this.inverseOperations && this.playerSolution) {
@@ -122,6 +152,9 @@ export class Game extends GameBase {
     if (savedUndoList) {
       this.undoList = savedUndoList;
     }
+
+    // Automatically show hint after restart
+    this.showHint();
 
     this.draw();
     // Force an immediate redraw to ensure canvas updates
@@ -297,6 +330,9 @@ export class Game extends GameBase {
       this.updateRestartButton();
     }
 
+    // Update hint UI
+    this.updateHintUI();
+
     if (this.isFinished()) {
       if (this.level.mode === "challenge") {
         this.showFinishedLevelChallenge();
@@ -309,6 +345,51 @@ export class Game extends GameBase {
 
     this.updateMovesDisplay();
     this.updateBestDisplay();
+  }
+
+  updateHintUI() {
+    // Update blocking overlay
+    const blockingOverlay = this.div.querySelector(".hint_blocking_overlay");
+    if (blockingOverlay) {
+      if (this.hintState.suggestRestart) {
+        blockingOverlay.style.display = "block";
+        // Block pointer events on canvas
+        this.canvas.style.pointerEvents = "none";
+      } else {
+        blockingOverlay.style.display = "none";
+        // Restore pointer events on canvas
+        this.canvas.style.pointerEvents = "auto";
+      }
+    }
+
+    // Update restart button styling
+    const restartButton = this.div.querySelector(".restart_button");
+    if (restartButton) {
+      restartButton.classList.toggle("hint_suggest_restart", this.hintState.suggestRestart);
+    }
+
+    // Update arrow overlay
+    const arrowOverlay = this.div.querySelector(".hint_arrow_overlay");
+    if (arrowOverlay) {
+      if (this.hintState.suggestRestart) {
+        arrowOverlay.style.display = "block";
+        // Position arrow to point at restart button
+        if (restartButton) {
+          const buttonRect = restartButton.getBoundingClientRect();
+          const contentRect = this.div.querySelector(".content").getBoundingClientRect();
+          const canvasRect = this.canvas.getBoundingClientRect();
+          
+          // Position arrow between canvas and restart button
+          const arrowX = canvasRect.right + 20;
+          const arrowY = buttonRect.top + buttonRect.height / 2 - 50;
+          
+          arrowOverlay.style.left = `${arrowX - contentRect.left}px`;
+          arrowOverlay.style.top = `${arrowY - contentRect.top}px`;
+        }
+      } else {
+        arrowOverlay.style.display = "none";
+      }
+    }
   }
 
   updateDemoDrag() {
@@ -531,5 +612,150 @@ export class Game extends GameBase {
     if (this.demoDrag) {
       this.overlayDemoDrag();
     }
+    this.drawHintOverlay();
+  }
+
+  // Convert operation vector (flat array) back to move coordinates {x, y, size}
+  operationVectorToMove(operationVector) {
+    const width = this.tiles.width;
+    const height = this.tiles.height;
+    
+    // Find all tiles that are set to 1 in the operation vector
+    const affectedTiles = [];
+    for (let i = 0; i < operationVector.length; i++) {
+      if (operationVector[i] === 1) {
+        const x = i % width;
+        const y = Math.floor(i / width);
+        affectedTiles.push({ x, y });
+      }
+    }
+    
+    if (affectedTiles.length === 0) {
+      return null;
+    }
+    
+    // Find bounding box
+    let minX = Infinity, minY = Infinity;
+    let maxX = -Infinity, maxY = -Infinity;
+    for (const tile of affectedTiles) {
+      minX = Math.min(minX, tile.x);
+      minY = Math.min(minY, tile.y);
+      maxX = Math.max(maxX, tile.x);
+      maxY = Math.max(maxY, tile.y);
+    }
+    
+    // Check if it's a square
+    const size = maxX - minX + 1;
+    if (size !== maxY - minY + 1) {
+      return null; // Not a square
+    }
+    
+    // Verify all tiles in the square are affected
+    for (let x = minX; x <= maxX; x++) {
+      for (let y = minY; y <= maxY; y++) {
+        const idx = y * width + x;
+        if (operationVector[idx] !== 1) {
+          return null; // Not a complete square
+        }
+      }
+    }
+    
+    return { x: minX, y: minY, size };
+  }
+
+  // Check if player solution aligns with level solution
+  checkSolutionAlignment() {
+    if (!this.playerSolution || !this.level.solutionVector) {
+      return false;
+    }
+    
+    if (this.playerSolution.length !== this.level.solutionVector.length) {
+      return false;
+    }
+    
+    // Check alignment: for each i, playerSolution[i] <= solutionVector[i]
+    for (let i = 0; i < this.playerSolution.length; i++) {
+      if (this.playerSolution[i] > this.level.solutionVector[i]) {
+        return false;
+      }
+    }
+    
+    return true;
+  }
+
+  // Find the next move in the solution
+  findNextHintMove() {
+    if (!this.playerSolution || !this.level.solutionVector || !this.operations) {
+      return null;
+    }
+    
+    // Find first operation index where playerSolution[i] < solutionVector[i]
+    for (let i = 0; i < this.playerSolution.length; i++) {
+      if (this.playerSolution[i] < this.level.solutionVector[i]) {
+        // Convert operation vector to move
+        const operationVector = this.operations[i];
+        return this.operationVectorToMove(operationVector);
+      }
+    }
+    
+    return null; // No more moves needed
+  }
+
+  showHint() {
+    if (!this.level || !this.tiles || !this.level.solutionVector) {
+      return;
+    }
+    
+    // Save state to undo system
+    this.saveUndoState(null);
+    
+    // Check alignment
+    const isAligned = this.checkSolutionAlignment();
+    
+    if (!isAligned) {
+      // Misaligned: suggest restart
+      this.hintState = {
+        showingHint: true,
+        hintSquare: null,
+        suggestRestart: true,
+      };
+    } else {
+      // Aligned: find next hint square
+      const hintSquare = this.findNextHintMove();
+      this.hintState = {
+        showingHint: true,
+        hintSquare: hintSquare,
+        suggestRestart: false,
+      };
+    }
+    
+    // Update UI and redraw
+    this.updateGui();
+    this.draw();
+  }
+
+  drawHintOverlay() {
+    if (!this.hintState.showingHint || !this.hintState.hintSquare) {
+      return;
+    }
+    
+    const square = this.hintState.hintSquare;
+    const width = this.canvas.width / (this.tiles.width + 0.1);
+    const height = this.canvas.height / (this.tiles.height + 0.1);
+    const padding = width * 0.1;
+    
+    // Calculate square bounds
+    const squareX = square.x * width + padding;
+    const squareY = square.y * height + padding;
+    const squareWidth = width * square.size - padding;
+    const squareHeight = height * square.size - padding;
+    
+    // Draw hint outline
+    this.ctx.strokeStyle = "#ff6b6b"; // Red color for hint
+    const dpi = window.devicePixelRatio || 1;
+    this.ctx.lineWidth = 4 * dpi;
+    this.ctx.setLineDash([8 * dpi, 4 * dpi]); // Dashed line
+    this.ctx.strokeRect(squareX, squareY, squareWidth, squareHeight);
+    this.ctx.setLineDash([]); // Reset to solid line
   }
 }
