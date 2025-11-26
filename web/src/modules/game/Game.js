@@ -18,6 +18,7 @@ export class Game extends GameBase {
     // Bind the action method to preserve 'this' context when passed as callback
     this.action = this.action.bind(this);
 
+    this.numMoves = 0;
     this.playerSolution = null; // Solution vector starting from zero (player's moves only)
 
     this.numSolvedThisSession = 0;
@@ -46,6 +47,7 @@ export class Game extends GameBase {
   // Override openLevel to initialize playerSolution
   openLevel(level, book) {
     super.openLevel(level, book);
+    this.numMoves = 0;
     // Initialize playerSolution to zero vector
     this.playerSolution = new Array(this.operations.length).fill(0);
   }
@@ -53,12 +55,14 @@ export class Game extends GameBase {
   // Hook to add additional state to undo
   getAdditionalState() {
     return {
+      numMoves: this.numMoves,
       playerSolution: this.playerSolution.slice(),
     };
   }
 
   // Hook to restore additional state from undo
   restoreAdditionalState(additionalState) {
+    this.numMoves = additionalState.numMoves;
     this.playerSolution = additionalState.playerSolution.slice();
   }
 
@@ -74,6 +78,7 @@ export class Game extends GameBase {
         this.playerSolution[opIndex] += 1;
       }
     }
+    this.numMoves += 1;
   }
 
   // Game-specific logic after a move
@@ -100,17 +105,15 @@ export class Game extends GameBase {
 
   restart() {
     // Save current state for undo before restarting
-    // TODO: this is a bit of a hack, but it works for now.
+    // TODO: saving and restoring the undo list is a bit of a hack. We do it because the way way we restart the level is
+    // by simply reopening it, which resets the undoList. Ideally we would want to either split openLevel into two functions,
+    // or have dedicated restart logic.
     let savedUndoList = null;
     if (this.tiles && this.numMoves > 0) {
+      // Save undo state using unified system
+      this.saveUndoState("restart");
+      // Save the undo list (including the restart state we just added)
       savedUndoList = [...this.undoList];
-      savedUndoList.push({
-        tiles: this.tiles.clone(),
-        move: "restart",
-        playerSolution: this.playerSolution ? this.playerSolution.slice() : null,
-        numMoves: this.numMoves,
-        isRestart: true,
-      });
     }
 
     this.openLevel(this.level, this.book);

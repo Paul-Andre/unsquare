@@ -117,15 +117,7 @@ export class Editor extends GameBase {
     let check = level_check_solution(this.level, sol);
     if (check) {
       // Save undo state
-      const undo = {
-        tiles: this.tiles.clone(),
-        move: null,
-        numMoves: this.numMoves,
-        isRestart: false,
-      };
-      const additionalState = this.getAdditionalState();
-      Object.assign(undo, additionalState);
-      this.undoList.push(undo);
+      this.saveUndoState(null);
 
       this.level.solutionVector = sol;
       this.level.solutionType = "submitted";
@@ -144,15 +136,7 @@ export class Editor extends GameBase {
     let level = Level.fromCompact(string);
     if (level) {
       // Save undo state
-      const undo = {
-        tiles: this.tiles.clone(),
-        move: null,
-        numMoves: this.numMoves,
-        isRestart: false,
-      };
-      const additionalState = this.getAdditionalState();
-      Object.assign(undo, additionalState);
-      this.undoList.push(undo);
+      this.saveUndoState(null);
 
       this.level = level;
       this.tiles = level.tiles.clone();
@@ -170,15 +154,7 @@ export class Editor extends GameBase {
 
   clear() {
     // Save undo state
-    const undo = {
-      tiles: this.tiles.clone(),
-      move: null,
-      numMoves: this.numMoves,
-      isRestart: false,
-    };
-    const additionalState = this.getAdditionalState();
-    Object.assign(undo, additionalState);
-    this.undoList.push(undo);
+    this.saveUndoState(null);
 
     // Animate the clear by setting transition state to 0 for all tiles
     this.tileAnimationState.forEach(function (tileState) {
@@ -219,15 +195,7 @@ export class Editor extends GameBase {
       let size = Number(promptedSize);
       if (!isNaN(size)) {
         // Save undo state
-        const undo = {
-          tiles: this.tiles.clone(),
-          move: null,
-          numMoves: this.numMoves,
-          isRestart: false,
-        };
-        const additionalState = this.getAdditionalState();
-        Object.assign(undo, additionalState);
-        this.undoList.push(undo);
+        this.saveUndoState(null);
 
         let grid = Grid.empty(size, size);
         grid.setAll(1);
@@ -381,15 +349,7 @@ export class Editor extends GameBase {
       if (coords) {
         // Save state for undo (only once per mouse down)
         if (!this.drawUndoSaved) {
-          const undo = {
-            tiles: this.tiles.clone(),
-            move: null,
-            numMoves: this.numMoves,
-            isRestart: false,
-          };
-          const additionalState = this.getAdditionalState();
-          Object.assign(undo, additionalState);
-          this.undoList.push(undo);
+          this.saveUndoState(null);
           this.drawUndoSaved = true;
         }
 

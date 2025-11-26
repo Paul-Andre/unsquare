@@ -32,7 +32,6 @@ export class GameBase {
     this.tileAnimationState = null;
     this.undoList = [];
     this.lastUpdateTimestamp = performance.now();
-    this.numMoves = 0;
     this.operations = null;
     this.inverseOperations = null;
 
@@ -69,7 +68,6 @@ export class GameBase {
     this.tileAnimationState = new TileAnimationState(this.tiles);
     this.undoList = [];
     this.lastUpdateTimestamp = performance.now();
-    this.numMoves = 0;
     this.level = level;
     this.book = book;
 
@@ -169,8 +167,9 @@ export class GameBase {
 
       if (move !== null) {
         // Hook for subclasses to save state before move
+        this.saveUndoState(move);
+        
         this.preMove(move);
-
         this.applyMove(move, this.action);
         this.tileAnimationState.forEach(function (v) {
           v.selected = false;
@@ -191,6 +190,8 @@ export class GameBase {
         if (navigator.vibrate) {
           navigator.vibrate(3);
         }
+        // Game-specific logic moved to subclasses
+        this.postMove();
       } else {
         // Clear selection for invalid moves (like single tile selection)
         this.tileAnimationState.forEach(function (v) {
@@ -200,8 +201,6 @@ export class GameBase {
       this.draw();
       // Start animation loop if animations were triggered
       this.startAnimationLoopIfNeeded();
-      // Game-specific logic moved to subclasses
-      this.postMove();
     }
   }
 
@@ -532,21 +531,22 @@ export class GameBase {
     // Override in subclasses to restore additional state
   }
 
+  // Save state for undo. move can be a move object, null (for non-move operations),
+  // or "restart" (for restart operations). Additional state is saved via getAdditionalState() hook.
+  saveUndoState(move) {
+    const undo = {
+      tiles: this.tiles.clone(),
+      move: move,
+      additionalState: this.getAdditionalState(),
+    };
+    this.undoList.push(undo);
+  }
+
   // Apply a move to the board
   applyMove(move, action) {
     if (move != null) {
-      // Save undo state
-      const undo = {
-        tiles: this.tiles.clone(),
-        move: move,
-        numMoves: this.numMoves,
-        additionalState: this.getAdditionalState(),
-      };
-      this.undoList.push(undo);
-
       // Apply the move
       this.level.tileShape.forTilesInMoveSet(this.tiles, move, action);
-      this.numMoves += 1;
     }
   }
 
@@ -554,14 +554,13 @@ export class GameBase {
   undo() {
     if (this.undoList.length > 0) {
       const undo = this.undoList.pop();
-      const { tiles:previousTiles, move:undoMove, numMoves:previousNumMoves, additionalState:additionalState } = undo;
+      const { tiles:previousTiles, move:undoMove, additionalState:additionalState } = undo;
       this.tiles = previousTiles;
 
       const isRestart = undoMove === "restart";
       // Handle restart operations differently
       if (isRestart) {
         // For restart, we just restore the state without animation
-        this.numMoves = previousNumMoves;
         this.restoreAdditionalState(additionalState);
       } else {
         // For regular moves, animate the reverse
@@ -583,7 +582,6 @@ export class GameBase {
             ts.transitionState = 0;
           });
         }
-        this.numMoves = previousNumMoves;
         // Update timestamp for animation system
         this.lastUpdateTimestamp = performance.now();
         // Restore additional state from subclasses
