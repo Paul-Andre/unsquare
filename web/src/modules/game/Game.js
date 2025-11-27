@@ -203,15 +203,14 @@ export class Game extends GameBase {
   finishedLevel() {
     let oldSum = vector_sum(this.level.solutionVector);
     let newSolution = this.getPlayerSolution();
-    vector_simplify_arithmetic(newSolution, level_get_arithmetic(this.level));
+    //vector_simplify_arithmetic(newSolution, level_get_arithmetic(this.level));
     let newSum = vector_sum(newSolution);
 
-    // TODO: this is some somewhat fragile code that tries to integrate with the editor...
-    // if (newSum < oldSum) {
-    //   this.level.solutionVector = newSolution;
-    //   this.level.solutionType = "manual";
-    //   save_editor_book(this.book);
-    // }
+    //debugger;
+    if (newSum < oldSum) {
+      this.level.solutionVector = newSolution;
+      this.level.solutionType = "manual";
+    }
 
     let prevBest = getBestNumMoves(this.level);
 

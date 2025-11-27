@@ -455,11 +455,16 @@ export class GameBase {
     }
   }
 
+  specificOnShow() {
+    // Override in subclasses
+  }
+
   onShow() {
     this.hidden = false;
     document.body.style.zoom = "100%";
+
+    this.specificOnShow();
     this.onResize();
-    // Force a redraw after resize
     this.draw();
   }
 
