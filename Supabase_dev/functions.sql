@@ -1,3 +1,10 @@
+
+CREATE ROLE readonly_role;
+GRANT USAGE ON SCHEMA public TO readonly_role;
+GRANT SELECT ON ALL TABLES IN SCHEMA public TO readonly_role;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT ON TABLES TO readonly_role;
+
+
 CREATE OR REPLACE FUNCTION get_level_histograms(p_level_id text)
 RETURNS jsonb
 LANGUAGE sql
@@ -110,7 +117,7 @@ CREATE OR REPLACE FUNCTION get_player_level_summary(
 )
 RETURNS jsonb
 LANGUAGE sql
-STABLE
+STABLE SECURITY DEFINER
 AS $$
 WITH ranks AS (
   SELECT * FROM get_level_rankings(p_level_id)
@@ -142,3 +149,6 @@ END
 FROM meta
 LEFT JOIN player_row ON true;
 $$;
+
+-- TODO: figure out how to use the readonly_role
+ALTER FUNCTION get_player_level_summary(text,text) OWNER TO postgres;
