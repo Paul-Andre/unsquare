@@ -208,3 +208,7 @@ weekly level: histogram outliers and stats on home screen
 27 Nov 2025
 0.10.2
 Mostly refactor, most importantly GameState
+
+27 Nov 2025
+0.10.3
+Save better solutions from playing in editor
