@@ -3,7 +3,7 @@
 import { GameBase } from './GameBase.js';
 import { TileAnimationState } from '../core/TileAnimationState.js';
 import { Grid } from '../core/Grid';
-import { compute_operations_for_level, vector_sum, level_check_solution, get_level_compact_solution, vector_equal } from '../core/algo.js';
+import { compute_operations_for_level, vector_sum, level_check_solution, get_level_compact_solution, vector_equal, vector_simplify_arithmetic, level_get_arithmetic } from '../core/algo.js';
 import { save_editor_book } from '../core/bookUtils.js';
 import { screenManager } from '../ui/ScreenManager.js';
 import { Level, compute_gaussian_solution } from '../core/Level.js';
@@ -81,6 +81,7 @@ export class Editor extends GameBase {
         this.runningSolution[opIndex] += 1;
       }
     }
+    vector_simplify_arithmetic(this.runningSolution, level_get_arithmetic(this.level));
   }
 
   updateLevelInfo() {
