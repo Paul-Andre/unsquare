@@ -190,10 +190,28 @@ export class Game extends GameBase {
     console.log("data", data);
 
     this.allHistogramData = data.allHistogramData;
+    // Cache challenge statistics if available
+    if (data.player_summary && level.mode === "challenge") {
+      const cacheKey = `challenge_stats_${level.id}`;
+      localStorage.setItem(cacheKey, JSON.stringify(data.player_summary));
+    }
 
     callback();
   })();
 
+  }
+
+  getCachedChallengeStatistics(levelId) {
+    const cacheKey = `challenge_stats_${levelId}`;
+    const cached = localStorage.getItem(cacheKey);
+    if (cached) {
+      try {
+        return JSON.parse(cached);
+      } catch (e) {
+        return null;
+      }
+    }
+    return null;
   }
 
   getPlayerSolution() {
@@ -223,7 +241,11 @@ export class Game extends GameBase {
     trackLevelEnd(this.level, this.book);
     if (this.level.mode === "challenge") {
       this.postSolutionToServer(
-        ()=>this.renderHistogram()
+        ()=>{
+          this.renderHistogram();
+          this.displayLevelGui(this.level);
+          this.updateGui();
+        }
       );
     }
 
@@ -472,10 +494,25 @@ export class Game extends GameBase {
     this.hideFinishedLevelElements();
 
     document.getElementById("TextShower").innerText = level.text;
-    const par = level.par;
-    const parDisplay = par === null ? "?" : par;
-    this.getElement("parContentInclusive").innerText = 
-      level.isCustom ? `creator par: ${parDisplay}` : `par: ${parDisplay}`;
+    
+    // Handle par/top indicator
+    const parIndicator = this.getElement("parContentInclusive");
+    if (level.mode === "challenge") {
+      const hasSolved = getBestNumMoves(level) !== null;
+      if (hasSolved) {
+        const cachedStats = this.getCachedChallengeStatistics(level.id);
+        const topBest = cachedStats?.top_best ?? null;
+        const topDisplay = topBest !== null ? topBest : "?";
+        parIndicator.innerText = `top: ${topDisplay}`;
+      } else {
+        parIndicator.innerText = "top: ?";
+      }
+    } else {
+      const par = level.par;
+      const parDisplay = par === null ? "?" : par;
+      parIndicator.innerText = 
+        level.isCustom ? `creator par: ${parDisplay}` : `par: ${parDisplay}`;
+    }
 
     const index = level.index;
     const levelDisplay = level.isCustom ? "Custom Level" : (level.title || `Level ${1 + index}`);

@@ -361,7 +361,8 @@ Deno.serve(async (req) => {
       valid: true, 
       saved: true, 
       result: responseData.solution,
-      allHistogramData: responseData.histogram
+      allHistogramData: responseData.histogram,
+      player_summary: responseData.player_summary
     }, 201);
 
   } catch (err) {

@@ -54,6 +54,20 @@ AS $$
   );
 $$;
 
+CREATE OR REPLACE FUNCTION get_player_level_histograms_and_summary(
+  p_player_id text,
+  p_level_id text
+)
+RETURNS jsonb
+LANGUAGE sql
+STABLE
+AS $$
+  SELECT jsonb_build_object(
+    'histogram', get_level_histograms(p_level_id),
+    'player_summary', get_player_level_summary(p_player_id, p_level_id)
+  );
+$$;
+
 CREATE OR REPLACE FUNCTION insert_solution_and_get_histogram(
   p_player_id text,
   p_level_id text,
@@ -66,19 +80,24 @@ AS $$
 DECLARE
   v_inserted_row jsonb;
   v_histogram jsonb;
+  v_player_summary jsonb;
+  v_combined jsonb;
 BEGIN
   -- Insert the solution
   INSERT INTO solutions (player_id, level_id, solution, num_moves)
   VALUES (p_player_id, p_level_id, p_solution, p_num_moves)
   RETURNING to_jsonb(solutions.*) INTO v_inserted_row;
 
-  -- Get histogram for this level
-  SELECT get_level_histograms(p_level_id) INTO v_histogram;
+  -- Get histogram and player summary together
+  SELECT get_player_level_histograms_and_summary(p_player_id, p_level_id) INTO v_combined;
+  v_histogram := v_combined->'histogram';
+  v_player_summary := v_combined->'player_summary';
 
-  -- Return both the inserted row and the histogram
+  -- Return the inserted row, histogram, and player summary
   RETURN jsonb_build_object(
     'solution', v_inserted_row,
-    'histogram', v_histogram
+    'histogram', v_histogram,
+    'player_summary', v_player_summary
   );
 END;
 $$;
