@@ -20,3 +20,22 @@ export function setBestNumMoves(level, num) {
 export function clearBestNumMoves(level) {
   localStorage.removeItem(getLskForBestNumMoves(level));
 }
+
+// Challenge statistics storage methods
+export function getChallengeStatsCacheKey(levelId) {
+  return `challenge_stats_${levelId}`;
+}
+
+export function getCachedChallengeStatistics(levelId) {
+  const cached = localStorage.getItem(getChallengeStatsCacheKey(levelId));
+  if (!cached) return null;
+  try {
+    return JSON.parse(cached);
+  } catch (e) {
+    return null;
+  }
+}
+
+export function saveChallengeStatistics(levelId, stats) {
+  localStorage.setItem(getChallengeStatsCacheKey(levelId), JSON.stringify(stats));
+}

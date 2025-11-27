@@ -7,6 +7,7 @@ import { Level } from '../core/Level.js';
 import { createLevelIcon } from './icon.js';
 import { htmlStringToElement } from '../utils/helpers.js';
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from '../utils/api.js';
+import { getCachedChallengeStatistics, saveChallengeStatistics } from '../core/levelUtils.js';
 import mainBookData from '../../data/2025_nov_11_reordered_solved_fixed.json';
 // import mainBookData from '../../data/tiny_for_testing.json';
 
@@ -78,25 +79,6 @@ export class GameLevelMenu {
     }
   }
 
-  getChallengeCacheKey() {
-    return `challenge_stats_${this.weeklyChallengeLevel.id}`;
-  }
-
-  getCachedChallengeStatistics() {
-    const cached = localStorage.getItem(this.getChallengeCacheKey());
-    if (cached) {
-      try {
-        return JSON.parse(cached);
-      } catch (e) {
-        return null;
-      }
-    }
-    return null;
-  }
-
-  saveChallengeStatistics(stats) {
-    localStorage.setItem(this.getChallengeCacheKey(), JSON.stringify(stats));
-  }
 
   async fetchChallengeStatistics() {
     const player_id = localStorage.player_id;
@@ -143,7 +125,7 @@ export class GameLevelMenu {
     iconEl.classList.remove("icon_unsolved", "icon_suboptimal", "icon_optimal");
 
     if (!stats) {
-      const cached = this.getCachedChallengeStatistics();
+      const cached = getCachedChallengeStatistics(this.weeklyChallengeLevel.id);
       const totalPlayers = cached?.total_players;
       youEl.textContent = "you: -";
       topEl.textContent = "top: ?";
@@ -174,7 +156,7 @@ export class GameLevelMenu {
 
   async updateChallengeStatistics() {
     // Display cached statistics immediately
-    const cachedStats = this.getCachedChallengeStatistics();
+    const cachedStats = getCachedChallengeStatistics(this.weeklyChallengeLevel.id);
     if (cachedStats) {
       this.updateChallengeStatisticsDisplay(cachedStats);
     }
@@ -182,7 +164,7 @@ export class GameLevelMenu {
     // Fetch fresh statistics
     const stats = await this.fetchChallengeStatistics();
     if (stats) {
-      this.saveChallengeStatistics(stats);
+      saveChallengeStatistics(this.weeklyChallengeLevel.id, stats);
       this.updateChallengeStatisticsDisplay(stats);
     }
   }

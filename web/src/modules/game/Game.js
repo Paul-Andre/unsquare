@@ -5,7 +5,7 @@ import { calculateStates, LEVEL_STATES } from '../ui/LevelMenuComponent.js';
 import { vector_sum, vector_simplify_arithmetic, level_get_arithmetic, vector_sub, operation_index_to_move, level_get_geometry } from '../core/algo.js';
 import { save_editor_book } from '../core/bookUtils.js';
 import { trackLevelEnd } from '../utils/analytics.js';
-import { getBestNumMoves, setBestNumMoves } from '../core/levelUtils.js';
+import { getBestNumMoves, setBestNumMoves, getCachedChallengeStatistics, saveChallengeStatistics } from '../core/levelUtils.js';
 import * as config from '../utils/config.js';
 import { renderHistogram } from '../ui/ChallengeHistogram.js';
 import { drawIcon } from '../ui/icon.js';
@@ -192,8 +192,7 @@ export class Game extends GameBase {
     this.allHistogramData = data.allHistogramData;
     // Cache challenge statistics if available
     if (data.player_summary && level.mode === "challenge") {
-      const cacheKey = `challenge_stats_${level.id}`;
-      localStorage.setItem(cacheKey, JSON.stringify(data.player_summary));
+      saveChallengeStatistics(level.id, data.player_summary);
     }
 
     callback();
@@ -201,18 +200,6 @@ export class Game extends GameBase {
 
   }
 
-  getCachedChallengeStatistics(levelId) {
-    const cacheKey = `challenge_stats_${levelId}`;
-    const cached = localStorage.getItem(cacheKey);
-    if (cached) {
-      try {
-        return JSON.parse(cached);
-      } catch (e) {
-        return null;
-      }
-    }
-    return null;
-  }
 
   getPlayerSolution() {
     return this.playerSolution.slice();
@@ -498,15 +485,11 @@ export class Game extends GameBase {
     // Handle par/top indicator
     const parIndicator = this.getElement("parContentInclusive");
     if (level.mode === "challenge") {
-      const hasSolved = getBestNumMoves(level) !== null;
-      if (hasSolved) {
-        const cachedStats = this.getCachedChallengeStatistics(level.id);
-        const topBest = cachedStats?.top_best ?? null;
-        const topDisplay = topBest !== null ? topBest : "?";
-        parIndicator.innerText = `top: ${topDisplay}`;
-      } else {
-        parIndicator.innerText = "top: ?";
-      }
+      const cachedStats = getBestNumMoves(level) !== null 
+        ? getCachedChallengeStatistics(level.id) 
+        : null;
+      const topBest = cachedStats?.top_best ?? null;
+      parIndicator.innerText = `top: ${topBest !== null ? topBest : "?"}`;
     } else {
       const par = level.par;
       const parDisplay = par === null ? "?" : par;
