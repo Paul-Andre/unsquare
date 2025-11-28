@@ -492,7 +492,8 @@ export class Game extends GameBase {
       parIndicator.innerText = `top: ${topBest !== null ? topBest : "?"}`;
     } else {
       const par = level.par;
-      const parDisplay = par === null ? "?" : par;
+      const hasBeenSolved = getBestNumMoves(level) !== null;
+      const parDisplay = (par === null || !hasBeenSolved) ? "?" : par;
       parIndicator.innerText = 
         level.isCustom ? `creator par: ${parDisplay}` : `par: ${parDisplay}`;
     }
