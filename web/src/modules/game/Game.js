@@ -2,7 +2,7 @@
 
 import { GameBase } from './GameBase.js';
 import { calculateStates, LEVEL_STATES } from '../ui/LevelMenuComponent.js';
-import { vector_sum, vector_simplify_arithmetic, level_get_arithmetic, vector_sub, operation_index_to_move, level_get_geometry } from '../core/algo.js';
+import { vector_sum, vector_simplify_arithmetic, level_get_arithmetic, vector_sub, operation_index_to_move, level_get_geometry, eric_partition_number, assert } from '../core/algo.js';
 import { save_editor_book } from '../core/bookUtils.js';
 import { trackLevelEnd } from '../utils/analytics.js';
 import { getBestNumMoves, setBestNumMoves, getCachedChallengeStatistics, saveChallengeStatistics } from '../core/levelUtils.js';
@@ -651,13 +651,37 @@ export class Game extends GameBase {
       return null;
     }
     
-    // Find first operation index where playerSolution[i] < solutionVector[i]
-    const opIndex = this.playerSolution.findIndex((val, i) => val < this.level.solutionVector[i]);
-    if (opIndex === -1) {
-      return null; // No more moves needed
+    // For each possible operation remaining to be done in the solution, create a new solution vector.
+    // Then check its Eric partition number, and return the one with the smallest number.
+    let bestPartition = Infinity;
+    let bestMoveIndex = -1;
+    let remainingSolution = vector_sub(this.level.solutionVector, this.playerSolution);
+    for (let i = 0; i < this.operations.length; i++) {
+      if (remainingSolution[i] == 0) continue;
+      assert(remainingSolution[i] > 0);
+      const newSolution = remainingSolution.slice();
+      newSolution[i] -= 1;
+      const partition = eric_partition_number(this.level, newSolution);
+      if (partition < bestPartition) {
+        bestPartition = partition;
+        bestMoveIndex =  i;
+      }
     }
-    
-    return operation_index_to_move(level_get_geometry(this.level), opIndex);
+    return operation_index_to_move(level_get_geometry(this.level), bestMoveIndex);
+  }
+
+  getHint() {
+    // Check alignment
+    const isAligned = this.checkSolutionAlignment();
+        
+    if (!isAligned) {
+      // Misaligned: suggest restart
+      return { suggestRestart: true, hintSquare: null };
+    } else {
+      // Aligned: find next hint square
+      const hintSquare = this.findNextHintMove();
+      return hintSquare ? { hintSquare, suggestRestart: false } : null;
+    }
   }
 
   showHint() {
@@ -665,20 +689,7 @@ export class Game extends GameBase {
       return;
     }
     
-    // Save state to undo system
-    this.saveUndoState(null);
-    
-    // Check alignment
-    const isAligned = this.checkSolutionAlignment();
-    
-    if (!isAligned) {
-      // Misaligned: suggest restart
-      this.hintState = { suggestRestart: true, hintSquare: null };
-    } else {
-      // Aligned: find next hint square
-      const hintSquare = this.findNextHintMove();
-      this.hintState = hintSquare ? { hintSquare, suggestRestart: false } : null;
-    }
+    this.hintState = this.getHint();
     
     // Update UI and redraw
     this.updateGui();
