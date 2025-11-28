@@ -216,3 +216,7 @@ Save better solutions from playing in editor
 27 Nov 2025
 0.10.4
 Use top instead of par in challenge levels
+
+28 Nov 2025
+0.10.5
+Don't show par for unsolved level.
