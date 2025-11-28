@@ -474,3 +474,25 @@ export function get_gaussian_solution_for_level(level) {
   }
   return null;
 }
+
+export function eric_partition_number(level, solution=null) {
+  if (solution === null) {
+    solution = level.solutionVector;
+  }
+  let operations = compute_operations_for_level(level);
+  assert(operations.length == solution.length);
+  let m = new Set();
+  for (let j=0; j<operations[0].length; j++) {
+    let s = "";
+    for (let i=0; i<operations.length; i++) {
+      if (!solution[i]) continue;
+      if (operations[i][j] ) {
+        s+="1";
+      }else {
+        s+="0";
+      }
+    }
+    m.add(s);
+  }
+  return m.size;
+}

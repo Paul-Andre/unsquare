@@ -8,6 +8,7 @@ import { editorLevelMenu } from './modules/ui/editorLevelMenu.js';
 import { checkAndOpenCustomLevel } from './modules/utils/customParse.js';
 import { Level } from './modules/core/Level.js';
 import * as config from './modules/utils/config.js';
+import * as algo from './modules/core/algo.js';
 import { generate_id } from './modules/utils/helpers.js';
 
 // Global configuration
@@ -21,6 +22,8 @@ window.bookMenu = bookMenu;
 window.gameLevelMenu = gameLevelMenu;
 window.editorLevelMenu = editorLevelMenu;
 window.parseCustomLevel = checkAndOpenCustomLevel;
+
+window.algo = algo;
 
 // Set up screen manager additional functions
 window.screenManager.additionalFunctions.editorLevelMenu = editorLevelMenu;
