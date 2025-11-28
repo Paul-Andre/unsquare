@@ -492,8 +492,8 @@ export class Game extends GameBase {
       parIndicator.innerText = `top: ${topBest !== null ? topBest : "?"}`;
     } else {
       const par = level.par;
-      const hasBeenSolved = getBestNumMoves(level) !== null;
-      const parDisplay = (par === null || !hasBeenSolved) ? "?" : par;
+      const showPar = !config.DONT_SHOW_PAR_FOR_UNSOLVED_LEVELS || getBestNumMoves(level) !== null;
+      const parDisplay = (par === null || !showPar) ? "?" : par;
       parIndicator.innerText = 
         level.isCustom ? `creator par: ${parDisplay}` : `par: ${parDisplay}`;
     }
