@@ -196,6 +196,7 @@ export class LevelMenuComponent {
     // Recalculate indices to account for hidden levels
     if (this.isEditor) {
       this.reindexLevels();
+      this.updateLevelCounter();
     }
   }
 
@@ -270,6 +271,7 @@ export class LevelMenuComponent {
       iconElement.level.hidden = !iconElement.level.hidden;
       this.reindexLevels();
       this.displayIcons();
+      this.updateLevelCounter();
       this.saveBook();
     } else {
       //let levelObject = Level.fromJsonObject(iconElement.level);
@@ -303,6 +305,17 @@ export class LevelMenuComponent {
       if (!level.hidden) {
         level.index = displayIndex++;
       }
+    }
+  }
+
+  updateLevelCounter() {
+    if (!this.isEditor || !this.book) {
+      return;
+    }
+    const counter = document.getElementById("levelCounter");
+    if (counter) {
+      const nonHiddenCount = this.book.levels.filter(level => !level.hidden).length;
+      counter.innerText = `Levels: ${nonHiddenCount}`;
     }
   }
 
@@ -347,6 +360,10 @@ export class LevelMenuComponent {
         )
       );
     }
+    
+    if (this.isEditor) {
+      this.updateLevelCounter();
+    }
   }
 
   saveBook() {
@@ -364,6 +381,7 @@ export class LevelMenuComponent {
         }
       );
       this.reindexLevels();
+      this.updateLevelCounter();
       this.saveBook();
     }
   }
@@ -375,6 +393,7 @@ export class LevelMenuComponent {
       this.book.levels.push(level);
       this.displayIcons();
       this.reindexLevels();
+      this.updateLevelCounter();
       this.saveBook();
     }
   }
