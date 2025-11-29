@@ -9,11 +9,15 @@ import { htmlStringToElement } from '../utils/helpers.js';
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from '../utils/api.js';
 import { getCachedChallengeStatistics, saveChallengeStatistics } from '../core/levelUtils.js';
 import mainBookData from '../../data/2025_nov_11_reordered_solved_fixed.json';
-// import mainBookData from '../../data/tiny_for_testing.json';
+import dailyLevelsData from '../../data/dailyLevels.json';
+import { DAILY_UNLOCK_HOUR, DAILY_LEVELS_START_DATE } from '../utils/config.js';
 
 export class GameLevelMenu {
   constructor() {
     this.bookUrl = "data/2025_nov_11_reordered_solved_fixed.json";
+    
+    // Load daily levels
+    this.dailyLevels = JSON.parse(JSON.stringify(dailyLevelsData), book_reviver).levels || [];
 
     const challengeLevelJson =
     // {
@@ -83,6 +87,7 @@ export class GameLevelMenu {
         this.levelMenu.clearAllBests();
       }
       this.levelMenu.displayIcons();
+      this.displayDailyIcon();
       this.displayChallengeIcon();
     } catch (e) {
       //alert("Error loading levels");
@@ -210,6 +215,101 @@ export class GameLevelMenu {
     };
 
     this.updateChallengeStatistics();
+  }
+
+  /**
+   * Calculate which daily level index to show based on current date and unlock time
+   * Returns the index of the level to display (today's if unlocked, yesterday's if locked)
+   */
+  getDailyLevelIndex() {
+    if (this.dailyLevels.length === 0) {
+      return null;
+    }
+
+    const now = new Date();
+    const currentHour = now.getHours();
+    
+    // Set both dates to midnight for accurate day calculation
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const startDate = new Date(DAILY_LEVELS_START_DATE.getFullYear(), DAILY_LEVELS_START_DATE.getMonth(), DAILY_LEVELS_START_DATE.getDate());
+    const daysSinceStart = Math.floor((today.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
+    
+    // If current time is before unlock hour, show yesterday's level
+    // Otherwise show today's level
+    let daysOffset = daysSinceStart;
+    if (currentHour < DAILY_UNLOCK_HOUR) {
+      daysOffset = daysSinceStart - 1; // Show yesterday's level
+    }
+
+    // Calculate index: use modulo to wrap around if needed
+    let index = daysOffset;
+    if (index < 0) {
+      index = this.dailyLevels.length + (index % this.dailyLevels.length);
+    } else {
+      index = index % this.dailyLevels.length;
+    }
+
+    return index;
+  }
+
+  /**
+   * Get the current daily level to display
+   */
+  getCurrentDailyLevel() {
+    const index = this.getDailyLevelIndex();
+    if (index === null || index >= this.dailyLevels.length) {
+      return null;
+    }
+
+    const level = this.dailyLevels[index];
+    
+    // Set title to "Daily #X" where X is index + 1
+    level.title = `Daily #${index + 1}`;
+    level.index = index;
+    
+    return level;
+  }
+
+  displayDailyIcon() {
+    const container = document.getElementById("dailyIconContainer");
+    const heading = document.getElementById("dailyLevelHeading");
+    
+    if (!container || !heading) {
+      return;
+    }
+
+    const dailyLevel = this.getCurrentDailyLevel();
+    if (!dailyLevel) {
+      return;
+    }
+
+    // Update heading with level number (index + 1)
+    const levelNumber = dailyLevel.index + 1;
+    heading.textContent = `Daily Level #${levelNumber}:`;
+
+    let element = /** @type {HTMLElement} */ (container.querySelector(".level_icon"));
+    if (!element) {
+      return;
+    }
+
+    const icon = createLevelIcon(dailyLevel);
+    const iconImg = /** @type {HTMLImageElement} */ (element.querySelector(".level_icon_image"));
+    if (iconImg) {
+      iconImg.src = icon.src;
+      iconImg.style.width = "55px";
+      iconImg.style.height = "55px";
+    }
+
+    /** @type {any} */ (element).level = dailyLevel;
+    element.onclick = () => {
+      if (window.game?.openLevel) {
+        window.game.openLevel(dailyLevel, {
+          levels: [dailyLevel],
+          source: "daily",
+        });
+        screenManager.switchTo("game");
+      }
+    };
   }
 }
 
