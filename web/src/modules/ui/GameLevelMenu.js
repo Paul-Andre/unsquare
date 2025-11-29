@@ -15,15 +15,26 @@ export class GameLevelMenu {
   constructor() {
     this.bookUrl = "data/2025_nov_11_reordered_solved_fixed.json";
 
-    const challengeLevelJson = {
-      "colorScheme": "BW",
-      "tileShape": "square",
-      "tiles": [[1,2,2,1,2,2,1,2,2,1],[2,1,1,2,1,1,2,1,1,2],[2,1,1,2,1,1,2,1,1,2],[1,2,2,1,2,2,1,2,2,1],[2,1,1,2,1,1,2,1,1,2],[2,1,1,2,1,1,2,1,1,2],[1,2,2,1,2,2,1,2,2,1],[2,1,1,2,1,1,2,1,1,2],[2,1,1,2,1,1,2,1,1,2],[1,2,2,1,2,2,1,2,2,1]],
+    const challengeLevelJson =
+    // {
+    //   "colorScheme": "BW",
+    //   "tileShape": "square",
+    //   "tiles": [[1,2,2,1,2,2,1,2,2,1],[2,1,1,2,1,1,2,1,1,2],[2,1,1,2,1,1,2,1,1,2],[1,2,2,1,2,2,1,2,2,1],[2,1,1,2,1,1,2,1,1,2],[2,1,1,2,1,1,2,1,1,2],[1,2,2,1,2,2,1,2,2,1],[2,1,1,2,1,1,2,1,1,2],[2,1,1,2,1,1,2,1,1,2],[1,2,2,1,2,2,1,2,2,1]],
+    //   "mode": "challenge",
+    //   "title": "Weekly #1",
+    //   "index": 0,
+    //   "id": "level_1763668451541",
+    //   "__type__": "Level"
+    // };
+    {
+      "colorScheme":"BW",
+      "tileShape":"square",
+      "tiles":[[1,1,1,2,2,2,2,1,1,1],[1,1,2,2,2,2,2,2,1,1],[1,1,2,2,2,2,2,2,2,1],[1,2,2,2,2,2,2,1,2,2],[2,2,1,2,2,2,1,2,1,2],[2,1,2,1,2,2,2,1,2,2],[2,2,1,2,2,2,2,2,2,1],[1,2,2,2,2,2,2,2,1,1],[1,1,2,2,2,2,2,2,1,1],[1,1,1,2,2,2,2,1,1,1]],
+      "id":"level_1109238056389808",
       "mode": "challenge",
-      "title": "Weekly #1",
+      "title": "Weekly #2",
       "index": 0,
-      "id": "level_1763668451541",
-      "__type__": "Level"
+      "__type__":"Level"
     };
 
     this.weeklyChallengeLevel = Level.fromJsonObject(challengeLevelJson);
@@ -100,6 +111,8 @@ export class GameLevelMenu {
         })
       });
 
+      console.log("response", response);
+
       if (!response.ok) {
         console.error(`HTTP error! status: ${response.status}`);
         return null;
@@ -163,6 +176,7 @@ export class GameLevelMenu {
 
     // Fetch fresh statistics
     const stats = await this.fetchChallengeStatistics();
+    console.log("stats", stats);
     if (stats) {
       saveChallengeStatistics(this.weeklyChallengeLevel.id, stats);
       this.updateChallengeStatisticsDisplay(stats);
