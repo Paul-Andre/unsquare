@@ -192,7 +192,6 @@ vector<int> randomlyImproveAnnealing(const vector<int> &solution, const vector<v
       double T = 0.01;
       if(diff < 0 || ((double)rand()/RAND_MAX)< exp(-diff/T)){
         repr = newRepr;
-        //cerr << "Found "<<sumVec(newRepr)<<endl;
       }
     }
   }
@@ -237,7 +236,7 @@ vector<vector<int>> reorderKernelGreedy(vector<vector<int>> oldKernel) {
         bestI = i;
       }
     }
-    cerr<<smallestHuh<<endl;
+    //cerr<<smallestHuh<<endl;
     newKernel.push_back(oldKernel[bestI]);
     for (int j=0; j<oldKernel[bestI].size(); j++) {
       if (carpet[j] || oldKernel[bestI][j]) {
@@ -548,8 +547,8 @@ solve2(vector<vector<int>> mat, vector<int> target, const vector<vector<int>> &i
   }
 
   cerr <<"kernelBasis (dim "<<kernelBasis.size()<<"): " << endl;
-  printMat(kernelBasis);
-  cerr <<endl;
+  /* printMat(kernelBasis); */
+  /* cerr <<endl; */
 
   cerr<<solution.size()<<endl;
   vector<int> best = solution;
@@ -676,18 +675,18 @@ int main() {
     vector<vector<int>> kernel = solution_->kernel;
     vector<vector<int>> original_kernel = solution_->kernel;
 
-    printKernel(kernel);
+    //printKernel(kernel);
 
     cerr <<endl;
     cerr << "Kernel size " << kernel.size() <<endl;
     
     kernel = reduceKernelGreedy(kernel);
-    cerr <<"simplified:"<< endl;
-    printKernel(kernel);
+    /* cerr <<"simplified:"<< endl; */
+    /* printKernel(kernel); */
 
     kernel = reorderKernelGreedy(kernel);
-    cerr <<"reordered:"<< endl;
-    printKernel(kernel);
+    /* cerr <<"reordered:"<< endl; */
+    /* printKernel(kernel); */
 
     vector<int> solution = solution_->solution;
     vector<int> originalSolution = solution_->solution;
