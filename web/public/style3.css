@@ -198,6 +198,17 @@ section#resetScreen .header {
   /*box-shadow: inset 0px 0px 40px 10px #b7b3ac; */
 }
 
+.icon_hidden,
+.icon_hidden:hover {
+  opacity: 0.6;
+}
+.icon_hidden:before,
+.icon_hidden:hover:before {
+  box-sizing: border-box;
+  border: solid 1px var(--inactive_border);
+  background: rgba(217, 214, 207, 0.3);
+}
+
 .icon_unsolved {
 }
 

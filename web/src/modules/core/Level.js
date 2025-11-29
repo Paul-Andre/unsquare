@@ -23,6 +23,7 @@ export class Level {
     level.index = -1;
     level.isIcon = false;
     level.isCustom = false;
+    level.hidden = false;
     level.mode = "normal";
     level.id = generate_id("level");
 
@@ -45,6 +46,7 @@ export class Level {
     level.title = json.title;
     level.index = json.index;
     level.isIcon = !!json.isIcon;
+    level.hidden = !!json.hidden;
     level.mode = json.mode || "normal";
     if (json.id) {
       level.id = json.id;
@@ -153,6 +155,9 @@ export class Level {
     if (this.isIcon) {
       json.isIcon = this.isIcon;
     }
+    if (this.hidden) {
+      json.hidden = this.hidden;
+    }
     if (this.mode && this.mode !== "normal") {
       json.mode = this.mode;
     }
@@ -184,6 +189,7 @@ export class Level {
     this.id = otherLevel.id;
     this.isIcon = otherLevel.isIcon;
     this.isCustom = otherLevel.isCustom || false;
+    this.hidden = otherLevel.hidden || false;
     this.mode = otherLevel.mode || "normal";
     if (otherLevel.solutionVector) {
       this.solutionVector = otherLevel.solutionVector.slice();

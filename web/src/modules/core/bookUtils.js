@@ -23,9 +23,8 @@ export function book_reviver(key, value) {
       return Level.fromJsonObject(value);
     }
     if (value.levels) {
-      for (let i = 0; i < value.levels.length; i++) {
-        value.levels[i].index = i;
-      }
+      // Don't set indices here - let reindexLevels() handle it to account for hidden levels
+      // Indices will be set when the book is opened in the editor or when reindexLevels() is called
     }
   }
   return value;

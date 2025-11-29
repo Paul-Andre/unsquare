@@ -498,7 +498,15 @@ export class Game extends GameBase {
         level.isCustom ? `creator par: ${parDisplay}` : `par: ${parDisplay}`;
     }
 
-    const index = level.index;
+    // Calculate display index (excluding hidden levels)
+    let displayIndex = 0;
+    const currentArrayIndex = this.book.levels.indexOf(level);
+    for (let i = 0; i < currentArrayIndex; i++) {
+      if (!this.book.levels[i].hidden) {
+        displayIndex++;
+      }
+    }
+    const index = displayIndex;
     const levelDisplay = level.isCustom ? "Custom Level" : (level.title || `Level ${1 + index}`);
     document.getElementById("LevelIndicator").innerText = levelDisplay;
 
@@ -511,12 +519,28 @@ export class Game extends GameBase {
 
   updateNavigationButtons(index, states) {
     const prevButton = this.div.querySelector("#prevButton");
-    const prevIndex = index - 1;
-    prevButton.toggleAttribute("disabled", prevIndex < 0 || states[prevIndex] <= LEVEL_STATES.LOCKED);
+    const currentArrayIndex = this.book.levels.indexOf(this.level);
+    
+    // Find previous non-hidden level
+    let prevArrayIndex = -1;
+    for (let i = currentArrayIndex - 1; i >= 0; i--) {
+      if (!this.book.levels[i].hidden) {
+        prevArrayIndex = i;
+        break;
+      }
+    }
+    prevButton.toggleAttribute("disabled", prevArrayIndex < 0 || (prevArrayIndex >= 0 && states[prevArrayIndex] <= LEVEL_STATES.LOCKED));
 
     const nextButton = this.div.querySelector("#nextButton");
-    const nextIndex = index + 1;
-    nextButton.toggleAttribute("disabled", nextIndex >= states.length || states[nextIndex] <= LEVEL_STATES.LOCKED);
+    // Find next non-hidden level
+    let nextArrayIndex = -1;
+    for (let i = currentArrayIndex + 1; i < this.book.levels.length; i++) {
+      if (!this.book.levels[i].hidden) {
+        nextArrayIndex = i;
+        break;
+      }
+    }
+    nextButton.toggleAttribute("disabled", nextArrayIndex < 0 || (nextArrayIndex >= 0 && states[nextArrayIndex] <= LEVEL_STATES.LOCKED));
   }
 
   undo() {
@@ -542,16 +566,30 @@ export class Game extends GameBase {
     }
 
     discordEl.hidden = true;
-    const nextIndex = this.level.index + 1;
-    if (nextIndex < this.book.levels.length) {
-      this.navigateToLevel(this.book.levels[nextIndex]);
+    // Find current level's position in array
+    const currentArrayIndex = this.book.levels.indexOf(this.level);
+    if (currentArrayIndex === -1) return;
+    
+    // Find next non-hidden level
+    for (let i = currentArrayIndex + 1; i < this.book.levels.length; i++) {
+      if (!this.book.levels[i].hidden) {
+        this.navigateToLevel(this.book.levels[i]);
+        return;
+      }
     }
   }
 
   prevLevel() {
-    const prevIndex = this.level.index - 1;
-    if (prevIndex >= 0) {
-      this.navigateToLevel(this.book.levels[prevIndex]);
+    // Find current level's position in array
+    const currentArrayIndex = this.book.levels.indexOf(this.level);
+    if (currentArrayIndex === -1) return;
+    
+    // Find previous non-hidden level
+    for (let i = currentArrayIndex - 1; i >= 0; i--) {
+      if (!this.book.levels[i].hidden) {
+        this.navigateToLevel(this.book.levels[i]);
+        return;
+      }
     }
   }
 

@@ -192,6 +192,10 @@ export class LevelMenuComponent {
 
   openBook(book) {
     this.book = book;
+    // Recalculate indices to account for hidden levels
+    if (this.isEditor) {
+      this.reindexLevels();
+    }
   }
 
   // TODO: rename; this creates an html node
@@ -229,6 +233,9 @@ export class LevelMenuComponent {
 
       if (level.isIcon) {
         element.classList.add("bookIconRepresentative");
+      }
+      if (level.hidden) {
+        element.classList.add("icon_hidden");
       }
     } else {
       applyStateClass(element, state);
@@ -284,9 +291,12 @@ export class LevelMenuComponent {
   }
 
   reindexLevels() {
+    let displayIndex = 0;
     for (let i = 0; i < this.book.levels.length; i++) {
       let level = this.book.levels[i];
-      level.index = i;
+      if (!level.hidden) {
+        level.index = displayIndex++;
+      }
     }
   }
 
@@ -303,9 +313,25 @@ export class LevelMenuComponent {
       states = calculateStates(this.book);
     }
 
+    let firstVisibleIndex = -1;
+    if (!this.isEditor) {
+      for (let i = 0; i < this.book.levels.length; i++) {
+        if (!this.book.levels[i].hidden) {
+          firstVisibleIndex = i;
+          break;
+        }
+      }
+    }
+    
     for (let i = 0; i < this.book.levels.length; i++) {
       let level = this.book.levels[i];
-      let glow = !this.isEditor && i == 0 && states[i] == LEVEL_STATES.UNSOLVED;
+      
+      // Filter out hidden levels in normal menu
+      if (!this.isEditor && level.hidden) {
+        continue;
+      }
+      
+      let glow = !this.isEditor && firstVisibleIndex >= 0 && i == firstVisibleIndex && states[i] == LEVEL_STATES.UNSOLVED;
       // check par, and based on it figure out the restriction level.
       this.container.appendChild(
         this.createLevelInfo(
