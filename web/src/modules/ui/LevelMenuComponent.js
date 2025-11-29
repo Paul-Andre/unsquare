@@ -186,6 +186,7 @@ export class LevelMenuComponent {
     // TODO: turn it into a single state variable
     this.deleting = false;
     this.selectingIcon = false;
+    this.togglingHidden = false;
 
     this.onIconClick = this.onIconClick.bind(this);
   }
@@ -263,6 +264,11 @@ export class LevelMenuComponent {
       iconElement.level.isIcon = true;
 
       this.toggleSelectIcon();
+      this.displayIcons();
+      this.saveBook();
+    } else if (this.togglingHidden) {
+      iconElement.level.hidden = !iconElement.level.hidden;
+      this.reindexLevels();
       this.displayIcons();
       this.saveBook();
     } else {
@@ -394,6 +400,24 @@ export class LevelMenuComponent {
       // toggle the selecting icon state
       this.selectingIcon = this.selectingIcon == false;
       this.container.classList.toggle("selectingIcon");
+    }
+  }
+
+  toggleHidden() {
+    if (this.isEditor) {
+      // toggle the toggling hidden state
+      this.togglingHidden = this.togglingHidden == false;
+      this.container.classList.toggle("togglingHidden");
+      
+      // Update button highlight
+      const button = document.getElementById("toggleHiddenButton");
+      if (button) {
+        if (this.togglingHidden) {
+          button.classList.add("drawModeActive");
+        } else {
+          button.classList.remove("drawModeActive");
+        }
+      }
     }
   }
 

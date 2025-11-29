@@ -252,6 +252,10 @@ div#iconContainer.selectingIcon .level_icon:before {
   border: dashed 2px lime;
 }
 
+div#iconContainer.togglingHidden .level_icon:before {
+  border: dashed 2px orange;
+}
+
 .level_icon.bookIconRepresentative:before {
   border: solid lime;
 }
