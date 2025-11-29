@@ -220,3 +220,7 @@ Use top instead of par in challenge levels
 28 Nov 2025
 0.10.5
 Don't show par for unsolved level.
+
+28 Nov 2025
+0.10.6
+Weekly Challenge #2
