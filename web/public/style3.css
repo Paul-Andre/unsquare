@@ -172,12 +172,12 @@ section#resetScreen .header {
   height: 100%;
 }
 
-.icon_hidden,
-.icon_hidden:hover {
+.icon_concealed,
+.icon_concealed:hover {
   border: solid 2px var(--inactive_border);
 }
-.icon_hidden:before,
-.icon_hidden:hover:before {
+.icon_concealed:before,
+.icon_concealed:hover:before {
   border: solid 2px var(--inactive_border);
   background: var(--inactive_background);
 }

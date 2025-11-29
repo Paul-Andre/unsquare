@@ -12,7 +12,7 @@ import { editor } from '../game/Editor.js';
 
 // Level state constants to replace magic numbers
 export const LEVEL_STATES = {
-  HIDDEN: 0, // contents of level not visible
+  CONCEALED: 0, // contents of level not visible
   LOCKED: 1, // visible but not playable
   UNSOLVED: 2, // playable, not yet solved
   SUBOPTIMAL: 3, // solved, but not in optimal moves
@@ -23,7 +23,7 @@ export const LEVEL_STATES = {
  * Calculates the state of each level in the book for the level menu, using fixed parameters for how many unsolved and locked levels are allowed to be visible.
  *
  * States:
- *   LEVEL_STATES.HIDDEN (0) - hidden (not visible at all)
+ *   LEVEL_STATES.CONCEALED (0) - concealed (not visible at all)
  *   LEVEL_STATES.LOCKED (1) - locked (visible but not playable)
  *   LEVEL_STATES.UNSOLVED (2) - unsolved (playable, not yet solved)
  *   LEVEL_STATES.SUBOPTIMAL (3) - suboptimal (solved, but not in optimal moves)
@@ -37,7 +37,7 @@ export const LEVEL_STATES = {
  * The function iterates through each level and assigns a state based on the player's progress:
  *   - If the level is unsolved and allowedUnsolved > 0, it is marked as unsolved and allowedUnsolved is decremented.
  *   - If the level is unsolved but allowedUnsolved is 0 and allowedLocked > 0, it is marked as locked and allowedLocked is decremented.
- *   - If neither unsolved nor locked slots are available, the level is hidden.
+ *   - If neither unsolved nor locked slots are available, the level is concealed.
  *   - If the level is solved suboptimally, it is marked as suboptimal.
  *   - If the level is solved optimally, it is marked as optimal.
  *
@@ -57,7 +57,7 @@ export function calculateStatesWithParams(book, allowedUnsolved, allowedLocked) 
         states[i] = LEVEL_STATES.LOCKED;
         allowedLocked -= 1;
       } else {
-        states[i] = LEVEL_STATES.HIDDEN;
+        states[i] = LEVEL_STATES.CONCEALED;
       }
     } else if (best > par) {
       states[i] = LEVEL_STATES.SUBOPTIMAL;
@@ -72,7 +72,7 @@ export function calculateStatesWithParams(book, allowedUnsolved, allowedLocked) 
 // - Starts with a fixed number of unsolved levels allowed to be visible (allowedUnsolved = 3).
 // - As the player solves levels suboptimally or optimally, allowedUnsolved increases by a small amount (suboptimalIncrease or optimalIncrease).
 // - Levels are marked as:
-//   LEVEL_STATES.HIDDEN (0): hidden (not visible at all)
+//   LEVEL_STATES.CONCEALED (0): concealed (not visible at all)
 //   LEVEL_STATES.LOCKED (1): locked (visible but not playable)
 //   LEVEL_STATES.UNSOLVED (2): unsolved (playable, not yet solved)
 //   LEVEL_STATES.SUBOPTIMAL (3): suboptimal (solved, but not in optimal moves)
@@ -98,7 +98,7 @@ export function calculateStatesProportional(book) {
         states[i] = LEVEL_STATES.LOCKED; // locked but visible
         allowedLocked -= 1;
       } else {
-        states[i] = LEVEL_STATES.HIDDEN; // hidden
+        states[i] = LEVEL_STATES.CONCEALED; // concealed
       }
     } else if (best > par) {
       states[i] = LEVEL_STATES.SUBOPTIMAL; // solved suboptimally
@@ -128,7 +128,7 @@ export function calculateStates(book) {
 
 /**
  * Calculate the state of a single level based on whether it's been solved and how well.
- * Returns UNSOLVED, SUBOPTIMAL, or OPTIMAL (not HIDDEN or LOCKED, which require book context).
+ * Returns UNSOLVED, SUBOPTIMAL, or OPTIMAL (not CONCEALED or LOCKED, which require book context).
  * @param {Level} level - The level to calculate state for
  * @returns {number} One of LEVEL_STATES.UNSOLVED, LEVEL_STATES.SUBOPTIMAL, or LEVEL_STATES.OPTIMAL
  */
@@ -154,7 +154,7 @@ export function calculateLevelState(level) {
 export function applyStateClass(element, state) {
   // Remove all existing state classes
   element.classList.remove(
-    "icon_hidden",
+    "icon_concealed",
     "icon_locked",
     "icon_unsolved",
     "icon_suboptimal",
@@ -163,7 +163,7 @@ export function applyStateClass(element, state) {
 
   // Map state to CSS class
   const stateClass = {
-    [LEVEL_STATES.HIDDEN]: "icon_hidden",
+    [LEVEL_STATES.CONCEALED]: "icon_concealed",
     [LEVEL_STATES.LOCKED]: "icon_locked",
     [LEVEL_STATES.UNSOLVED]: "icon_unsolved",
     [LEVEL_STATES.SUBOPTIMAL]: "icon_suboptimal",
