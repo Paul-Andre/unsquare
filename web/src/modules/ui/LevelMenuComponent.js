@@ -390,7 +390,7 @@ export class LevelMenuComponent {
   toggleDelete() {
     if (this.isEditor) {
       // toggle the deleting state
-      this.deleting = this.deleting == false;
+      this.deleting = !this.deleting;
       this.container.classList.toggle("deleting");
     }
   }
@@ -398,7 +398,7 @@ export class LevelMenuComponent {
   toggleSelectIcon() {
     if (this.isEditor) {
       // toggle the selecting icon state
-      this.selectingIcon = this.selectingIcon == false;
+      this.selectingIcon = !this.selectingIcon;
       this.container.classList.toggle("selectingIcon");
     }
   }
@@ -406,7 +406,7 @@ export class LevelMenuComponent {
   toggleHidden() {
     if (this.isEditor) {
       // toggle the toggling hidden state
-      this.togglingHidden = this.togglingHidden == false;
+      this.togglingHidden = !this.togglingHidden;
       this.container.classList.toggle("togglingHidden");
       
       // Update button highlight

@@ -477,6 +477,38 @@ export class Game extends GameBase {
     return this.div.getElementsByClassName(className)[0];
   }
 
+  // Helper: Calculate display index for a level (excluding hidden levels)
+  getDisplayIndex(level) {
+    let displayIndex = 0;
+    const currentArrayIndex = this.book.levels.indexOf(level);
+    for (let i = 0; i < currentArrayIndex; i++) {
+      if (!this.book.levels[i].hidden) {
+        displayIndex++;
+      }
+    }
+    return displayIndex;
+  }
+
+  // Helper: Find next visible (non-hidden) level starting from startIndex
+  findNextVisibleLevel(startIndex) {
+    for (let i = startIndex + 1; i < this.book.levels.length; i++) {
+      if (!this.book.levels[i].hidden) {
+        return i;
+      }
+    }
+    return -1;
+  }
+
+  // Helper: Find previous visible (non-hidden) level starting from startIndex
+  findPrevVisibleLevel(startIndex) {
+    for (let i = startIndex - 1; i >= 0; i--) {
+      if (!this.book.levels[i].hidden) {
+        return i;
+      }
+    }
+    return -1;
+  }
+
   displayLevelGui(level) {
     this.hideFinishedLevelElements();
 
@@ -499,14 +531,7 @@ export class Game extends GameBase {
     }
 
     // Calculate display index (excluding hidden levels)
-    let displayIndex = 0;
-    const currentArrayIndex = this.book.levels.indexOf(level);
-    for (let i = 0; i < currentArrayIndex; i++) {
-      if (!this.book.levels[i].hidden) {
-        displayIndex++;
-      }
-    }
-    const index = displayIndex;
+    const index = this.getDisplayIndex(level);
     const levelDisplay = level.isCustom ? "Custom Level" : (level.title || `Level ${1 + index}`);
     document.getElementById("LevelIndicator").innerText = levelDisplay;
 
@@ -520,27 +545,12 @@ export class Game extends GameBase {
   updateNavigationButtons(index, states) {
     const prevButton = this.div.querySelector("#prevButton");
     const currentArrayIndex = this.book.levels.indexOf(this.level);
-    
-    // Find previous non-hidden level
-    let prevArrayIndex = -1;
-    for (let i = currentArrayIndex - 1; i >= 0; i--) {
-      if (!this.book.levels[i].hidden) {
-        prevArrayIndex = i;
-        break;
-      }
-    }
-    prevButton.toggleAttribute("disabled", prevArrayIndex < 0 || (prevArrayIndex >= 0 && states[prevArrayIndex] <= LEVEL_STATES.LOCKED));
+    const prevArrayIndex = this.findPrevVisibleLevel(currentArrayIndex);
+    prevButton.toggleAttribute("disabled", prevArrayIndex < 0 || states[prevArrayIndex] <= LEVEL_STATES.LOCKED);
 
     const nextButton = this.div.querySelector("#nextButton");
-    // Find next non-hidden level
-    let nextArrayIndex = -1;
-    for (let i = currentArrayIndex + 1; i < this.book.levels.length; i++) {
-      if (!this.book.levels[i].hidden) {
-        nextArrayIndex = i;
-        break;
-      }
-    }
-    nextButton.toggleAttribute("disabled", nextArrayIndex < 0 || (nextArrayIndex >= 0 && states[nextArrayIndex] <= LEVEL_STATES.LOCKED));
+    const nextArrayIndex = this.findNextVisibleLevel(currentArrayIndex);
+    nextButton.toggleAttribute("disabled", nextArrayIndex < 0 || states[nextArrayIndex] <= LEVEL_STATES.LOCKED);
   }
 
   undo() {
@@ -566,30 +576,22 @@ export class Game extends GameBase {
     }
 
     discordEl.hidden = true;
-    // Find current level's position in array
     const currentArrayIndex = this.book.levels.indexOf(this.level);
     if (currentArrayIndex === -1) return;
     
-    // Find next non-hidden level
-    for (let i = currentArrayIndex + 1; i < this.book.levels.length; i++) {
-      if (!this.book.levels[i].hidden) {
-        this.navigateToLevel(this.book.levels[i]);
-        return;
-      }
+    const nextArrayIndex = this.findNextVisibleLevel(currentArrayIndex);
+    if (nextArrayIndex >= 0) {
+      this.navigateToLevel(this.book.levels[nextArrayIndex]);
     }
   }
 
   prevLevel() {
-    // Find current level's position in array
     const currentArrayIndex = this.book.levels.indexOf(this.level);
     if (currentArrayIndex === -1) return;
     
-    // Find previous non-hidden level
-    for (let i = currentArrayIndex - 1; i >= 0; i--) {
-      if (!this.book.levels[i].hidden) {
-        this.navigateToLevel(this.book.levels[i]);
-        return;
-      }
+    const prevArrayIndex = this.findPrevVisibleLevel(currentArrayIndex);
+    if (prevArrayIndex >= 0) {
+      this.navigateToLevel(this.book.levels[prevArrayIndex]);
     }
   }
 
