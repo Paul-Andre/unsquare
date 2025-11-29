@@ -8,4 +8,4 @@ export const DAILY_UNLOCK_HOUR = 0;
 
 // Reference date: November 28, 2025 (first daily level starts on this date)
 // Month is 0-indexed, so 10 = November
-export const DAILY_LEVELS_START_DATE = new Date(2025, 10, 28);
+export const DAILY_LEVELS_START_DATE = new Date(2025, 10, 20);

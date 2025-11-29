@@ -126,6 +126,55 @@ export function calculateStates(book) {
   return calculateStatesWithParams(book, 100000, 50);
 }
 
+/**
+ * Calculate the state of a single level based on whether it's been solved and how well.
+ * Returns UNSOLVED, SUBOPTIMAL, or OPTIMAL (not HIDDEN or LOCKED, which require book context).
+ * @param {Level} level - The level to calculate state for
+ * @returns {number} One of LEVEL_STATES.UNSOLVED, LEVEL_STATES.SUBOPTIMAL, or LEVEL_STATES.OPTIMAL
+ */
+export function calculateLevelState(level) {
+  const best = level.getBestNumMoves();
+  const par = level.par;
+  
+  if (best === null) {
+    return LEVEL_STATES.UNSOLVED;
+  } else if (best > par) {
+    return LEVEL_STATES.SUBOPTIMAL;
+  } else {
+    return LEVEL_STATES.OPTIMAL;
+  }
+}
+
+/**
+ * Apply the appropriate CSS class to an element based on its level state.
+ * Removes all existing state classes before adding the new one.
+ * @param {HTMLElement} element - The DOM element to apply the class to
+ * @param {number} state - One of the LEVEL_STATES constants
+ */
+export function applyStateClass(element, state) {
+  // Remove all existing state classes
+  element.classList.remove(
+    "icon_hidden",
+    "icon_locked",
+    "icon_unsolved",
+    "icon_suboptimal",
+    "icon_optimal"
+  );
+
+  // Map state to CSS class
+  const stateClass = {
+    [LEVEL_STATES.HIDDEN]: "icon_hidden",
+    [LEVEL_STATES.LOCKED]: "icon_locked",
+    [LEVEL_STATES.UNSOLVED]: "icon_unsolved",
+    [LEVEL_STATES.SUBOPTIMAL]: "icon_suboptimal",
+    [LEVEL_STATES.OPTIMAL]: "icon_optimal",
+  }[state];
+
+  if (stateClass) {
+    element.classList.add(stateClass);
+  }
+}
+
 // This component manages a level menu DOM element, populating it with level data and handling user interactions.
 // It encapsulates the functionality for displaying and interacting with a collection of puzzle levels.
 export class LevelMenuComponent {
@@ -182,15 +231,7 @@ export class LevelMenuComponent {
         element.classList.add("bookIconRepresentative");
       }
     } else {
-      let stateClass = {
-        [LEVEL_STATES.HIDDEN]: "icon_hidden",
-        [LEVEL_STATES.LOCKED]: "icon_locked",
-        [LEVEL_STATES.UNSOLVED]: "icon_unsolved",
-        [LEVEL_STATES.SUBOPTIMAL]: "icon_suboptimal",
-        [LEVEL_STATES.OPTIMAL]: "icon_optimal",
-      }[state];
-
-      element.classList.add(stateClass);
+      applyStateClass(element, state);
       if (glow) {
         element.classList.add("icon_glow");
       }

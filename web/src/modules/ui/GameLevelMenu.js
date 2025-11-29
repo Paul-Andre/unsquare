@@ -1,6 +1,6 @@
 "use strict";
 
-import { LevelMenuComponent } from './LevelMenuComponent.js';
+import { LevelMenuComponent, calculateLevelState, applyStateClass } from './LevelMenuComponent.js';
 import { screenManager } from './ScreenManager.js';
 import { book_reviver } from '../core/bookUtils.js';
 import { Level } from '../core/Level.js';
@@ -9,7 +9,7 @@ import { htmlStringToElement } from '../utils/helpers.js';
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from '../utils/api.js';
 import { getCachedChallengeStatistics, saveChallengeStatistics } from '../core/levelUtils.js';
 import mainBookData from '../../data/2025_nov_11_reordered_solved_fixed.json';
-import dailyLevelsData from '../../data/dailyLevels.json';
+import dailyLevelsData from '../../data/tiny_for_testing.json';
 import { DAILY_UNLOCK_HOUR, DAILY_LEVELS_START_DATE } from '../utils/config.js';
 
 export class GameLevelMenu {
@@ -54,12 +54,13 @@ export class GameLevelMenu {
     if (window.game) {
       this.levelMenu = new LevelMenuComponent("gameLevelMenu", false);
       screenManager.additionalFunctions.gameLevelMenu = this.levelMenu;
-      // Add onShow callback to refresh challenge statistics
+      // Add onShow callback to refresh challenge statistics and daily icon
       const originalOnShow = this.levelMenu.onShow;
       this.levelMenu.onShow = () => {
         if (originalOnShow) {
           originalOnShow.call(this.levelMenu);
         }
+        this.displayDailyIcon();
         this.updateChallengeStatistics();
       };
     } else {
@@ -235,21 +236,11 @@ export class GameLevelMenu {
     const daysSinceStart = Math.floor((today.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
     
     // If current time is before unlock hour, show yesterday's level
-    // Otherwise show today's level
-    let daysOffset = daysSinceStart;
-    if (currentHour < DAILY_UNLOCK_HOUR) {
-      daysOffset = daysSinceStart - 1; // Show yesterday's level
-    }
-
-    // Calculate index: use modulo to wrap around if needed
-    let index = daysOffset;
-    if (index < 0) {
-      index = this.dailyLevels.length + (index % this.dailyLevels.length);
-    } else {
-      index = index % this.dailyLevels.length;
-    }
-
-    return index;
+    const daysOffset = daysSinceStart - (currentHour < DAILY_UNLOCK_HOUR ? 1 : 0);
+    
+    // Use modulo to wrap around if needed, and go back to day 1
+    const length = this.dailyLevels.length;
+    return ((daysOffset % length) + length) % length;
   }
 
   /**
@@ -310,6 +301,10 @@ export class GameLevelMenu {
         screenManager.switchTo("game");
       }
     };
+
+    // Apply state-based CSS class
+    const state = calculateLevelState(dailyLevel);
+    applyStateClass(element, state);
   }
 }
 
