@@ -110,8 +110,8 @@ void printNumsFromRepr(int n, int m, ull repr) {
 int main() {
   int n,m;
   //cin>>n>>m;
-  n=5;
-  m=5;
+  n=m=5;
+  int target_turn = 5;
 
   vector<ull> inversions;
   for (int i=0; i<n; i++) {
@@ -169,7 +169,11 @@ int main() {
       ull v = q.front();
       q.pop();
       //cerr << v <<" " << vis.size() <<endl;
-      //
+    
+          if (turns == target_turn && hasSymmetry(n,m,v) && !!(rand()%1000)) {
+            printAsciiFromRepr(n,m,v);
+            cout<<endl;
+          }
       for (ull inv : inversions){
         //if (!(v&inv)) continue;
         ull u = v^inv;
@@ -179,6 +183,7 @@ int main() {
             prev[symmetry_functions[i](n,m,u)] = u;
           }
           prev[u]=v;
+
         }
       }
     }

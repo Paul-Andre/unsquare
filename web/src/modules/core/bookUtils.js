@@ -25,6 +25,7 @@ export function book_reviver(key, value) {
     if (value.levels) {
       // Don't set indices here - let reindexLevels() handle it to account for hidden levels
       // Indices will be set when the book is opened in the editor or when reindexLevels() is called
+      // TODO: probably SHOULD set indices here, possibly even have two different types of indices.
     }
   }
   return value;
