@@ -6,7 +6,7 @@
 #include <vector>
 
 #ifndef N
-#define N 9
+#define N 10
 #endif
 
 int w,h;
