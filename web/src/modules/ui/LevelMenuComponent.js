@@ -401,9 +401,80 @@ export class LevelMenuComponent {
   async displayBookJson() {
     if (this.isEditor) {
       let s = JSON.stringify(this.book, book_replacer);
-      await navigator.clipboard.writeText(s);
-      alert("Saved to clipboard");
+      try {
+        await navigator.clipboard.writeText(s);
+        alert("Saved to clipboard");
+      } catch (error) {
+        // If clipboard copy fails, display a textarea with the JSON
+        this.showJsonTextarea(s);
+      }
     }
+  }
+
+  showJsonTextarea(jsonString) {
+    // Pure slop, creating dom objects in js...
+    
+    // Remove any existing JSON textarea
+    const existing = document.getElementById("jsonTextareaContainer");
+    if (existing) {
+      existing.remove();
+    }
+
+    // Create container
+    const container = document.createElement("div");
+    container.id = "jsonTextareaContainer";
+    container.style.cssText = `
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: var(--white, white);
+      border: 2px solid var(--border_gray, #c1bbaf);
+      padding: 20px;
+      z-index: 1000;
+      max-width: 90%;
+      max-height: 90vh;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    `;
+
+    // Create label
+    const label = document.createElement("p");
+    label.textContent = "Copy to clipboard failed. Please copy the JSON manually:";
+    label.style.marginBottom = "10px";
+    container.appendChild(label);
+
+    // Create textarea
+    const textarea = document.createElement("textarea");
+    textarea.value = jsonString;
+    textarea.readOnly = true;
+    textarea.style.cssText = `
+      width: 100%;
+      min-width: 400px;
+      min-height: 300px;
+      font-family: monospace;
+      font-size: 12px;
+      padding: 10px;
+      border: 1px solid var(--border_gray, #c1bbaf);
+      resize: both;
+    `;
+    container.appendChild(textarea);
+
+    // Create close button
+    const closeButton = document.createElement("button");
+    closeButton.textContent = "Close";
+    closeButton.onclick = () => container.remove();
+    closeButton.style.cssText = `
+      margin-top: 10px;
+      padding: 8px 16px;
+    `;
+    container.appendChild(closeButton);
+
+    // Add to document
+    document.body.appendChild(container);
+
+    // Select all text in textarea for easy copying
+    textarea.select();
+    textarea.focus();
   }
 
   appendJson() {
