@@ -154,3 +154,52 @@ if (localStorage.getItem("player_id") === null) {
   let player_id = generate_id("anon");
   localStorage.setItem("player_id", player_id);
 }
+
+// 10-click to get into editor mode.
+(function setupTitleEasterEgg() {
+  const titleElement = document.getElementById("homeTitle");
+  if (!titleElement) return;
+
+  let clickCount = 0;
+  let resetTimeout = null;
+  const REQUIRED_CLICKS = 10;
+  const RESET_DELAY = 2000; // 2 seconds
+
+  function resetCounter() {
+    clickCount = 0;
+    if (resetTimeout) {
+      clearTimeout(resetTimeout);
+      resetTimeout = null;
+    }
+  }
+
+  function handleClick() {
+    clickCount++;
+    
+    // Clear existing timeout
+    if (resetTimeout) {
+      clearTimeout(resetTimeout);
+    }
+    
+    // Set new timeout to reset counter
+    resetTimeout = setTimeout(resetCounter, RESET_DELAY);
+    
+    // Check if we've reached the required number of clicks
+    if (clickCount >= REQUIRED_CLICKS) {
+      resetCounter();
+      window.openEditor();
+    }
+  }
+
+  // Support both click and touch events
+  titleElement.addEventListener("click", handleClick);
+  titleElement.addEventListener("touchend", function(e) {
+    e.preventDefault();
+    handleClick();
+  });
+
+  // Reset counter when home screen is hidden
+  screenManager.additionalFunctions.home = {
+    onHide: resetCounter
+  };
+})();
