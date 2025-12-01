@@ -224,3 +224,7 @@ Don't show par for unsolved level.
 28 Nov 2025
 0.10.6
 Weekly Challenge #2
+
+30 Nov 2025
+0.11.0
+Daily levels!

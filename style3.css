@@ -172,12 +172,12 @@ section#resetScreen .header {
   height: 100%;
 }
 
-.icon_hidden,
-.icon_hidden:hover {
+.icon_concealed,
+.icon_concealed:hover {
   border: solid 2px var(--inactive_border);
 }
-.icon_hidden:before,
-.icon_hidden:hover:before {
+.icon_concealed:before,
+.icon_concealed:hover:before {
   border: solid 2px var(--inactive_border);
   background: var(--inactive_background);
 }
@@ -196,6 +196,17 @@ section#resetScreen .header {
 
   /*box-shadow: inset 0px 0px 40px 10px var(--inactive_background);*/
   /*box-shadow: inset 0px 0px 40px 10px #b7b3ac; */
+}
+
+.icon_hidden,
+.icon_hidden:hover {
+  opacity: 0.6;
+}
+.icon_hidden:before,
+.icon_hidden:hover:before {
+  box-sizing: border-box;
+  border: solid 1px var(--inactive_border);
+  background: rgba(217, 214, 207, 0.3);
 }
 
 .icon_unsolved {
@@ -239,6 +250,10 @@ div#iconContainer.deleting .level_icon:before {
 
 div#iconContainer.selectingIcon .level_icon:before {
   border: dashed 2px lime;
+}
+
+div#iconContainer.togglingHidden .level_icon:before {
+  /* border: dashed 2px rgb(177, 177, 177); */
 }
 
 .level_icon.bookIconRepresentative:before {
