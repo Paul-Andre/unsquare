@@ -5,7 +5,7 @@ import { htmlStringToElement } from '../utils/helpers.js';
 import { vector_sum } from '../core/algo.js';
 import { screenManager } from './ScreenManager.js';
 import { Level } from '../core/Level.js';
-import { save_editor_book } from '../core/bookUtils.js';
+import { save_editor_book, book_reviver } from '../core/bookUtils.js';
 import { book_replacer } from '../core/bookUtils.js';
 import { clearBestNumMoves } from '../core/levelUtils.js';
 import { editor } from '../game/Editor.js';
@@ -403,6 +403,48 @@ export class LevelMenuComponent {
       let s = JSON.stringify(this.book, book_replacer);
       await navigator.clipboard.writeText(s);
       alert("Saved to clipboard");
+    }
+  }
+
+  appendJson() {
+    if (this.isEditor) {
+      let jsonString = window.prompt("Paste JSON (book object or array of levels)");
+      if (!jsonString) {
+        return;
+      }
+
+      let parsed;
+      try {
+        parsed = JSON.parse(jsonString, book_reviver);
+      } catch (e) {
+        alert("Error parsing JSON: " + e.message);
+        return;
+      }
+
+      let levelsToAppend = [];
+
+      // Handle two input formats: book object or array of levels
+      if (Array.isArray(parsed)) {
+        levelsToAppend = parsed;
+      } else if (parsed && parsed.levels && Array.isArray(parsed.levels)) {
+        levelsToAppend = parsed.levels;
+      } else {
+        alert("Invalid format: expected a book object with 'levels' property or an array of levels");
+        return;
+      }
+
+      // Append levels to the book
+      for (let level of levelsToAppend) {
+        // Preserve original ID from JSON (Level.fromJsonObject handles ID generation if missing)
+        level.index = -1; // Will be set by reindexLevels()
+        this.book.levels.push(level);
+      }
+
+      // Update book state
+      this.reindexLevels();
+      this.displayIcons();
+      this.updateLevelCounter();
+      this.saveBook();
     }
   }
 
