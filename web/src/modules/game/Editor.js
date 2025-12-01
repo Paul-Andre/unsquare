@@ -323,6 +323,11 @@ export class Editor extends GameBase {
           e.preventDefault();
           this.toggleDrawMode();
         }
+        if (e.key === "z" || e.key === "Z") {
+          // Handle both "z" and "ctrl+z"/"meta+z" for undo
+          e.preventDefault();
+          this.undo();
+        }
       }
     });
   }
