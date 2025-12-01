@@ -238,9 +238,11 @@ export class GameLevelMenu {
     // If current time is before unlock hour, show yesterday's level
     const daysOffset = daysSinceStart - (currentHour < DAILY_UNLOCK_HOUR ? 1 : 0);
     
-    // Use modulo to wrap around if needed, and go back to day 1
-    const length = this.dailyLevels.length;
-    return ((daysOffset % length) + length) % length;
+    if (daysOffset < 0) {
+      return 0;
+    } else {
+      return daysOffset % this.dailyLevels.length;
+    }
   }
 
   /**
