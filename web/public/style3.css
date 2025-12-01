@@ -253,7 +253,7 @@ div#iconContainer.selectingIcon .level_icon:before {
 }
 
 div#iconContainer.togglingHidden .level_icon:before {
-  border: dashed 2px orange;
+  /* border: dashed 2px rgb(177, 177, 177); */
 }
 
 .level_icon.bookIconRepresentative:before {
