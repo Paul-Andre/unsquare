@@ -187,6 +187,7 @@ export class LevelMenuComponent {
     this.deleting = false;
     this.selectingIcon = false;
     this.togglingHidden = false;
+    this.defaultSize = 6;
 
     this.onIconClick = this.onIconClick.bind(this);
   }
@@ -388,13 +389,27 @@ export class LevelMenuComponent {
 
   newLevel() {
     if (this.isEditor) {
-      const level = Level.empty(6);
+      const level = Level.empty(this.defaultSize);
       level.book = this.book;
       this.book.levels.push(level);
       this.displayIcons();
       this.reindexLevels();
       this.updateLevelCounter();
       this.saveBook();
+    }
+  }
+
+  setDefaultSize() {
+    if (this.isEditor) {
+      const input = window.prompt("Enter default grid size:", String(this.defaultSize));
+      if (input !== null) {
+        const size = Number.parseInt(input, 10);
+        if (!isNaN(size) && size > 0) {
+          this.defaultSize = size;
+        } else {
+          alert("Please enter a valid positive integer");
+        }
+      }
     }
   }
 
