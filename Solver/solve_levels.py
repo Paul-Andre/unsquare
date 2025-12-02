@@ -189,12 +189,11 @@ def solve_level(level, solver_dir, force=False):
     model_file = solver_path / MODEL_FILE
     
     # Create temporary input file
-    with tempfile.NamedTemporaryFile(mode='w', suffix='.txt', delete=False) as input_file:
+    with tempfile.NamedTemporaryFile(mode='w', suffix='.txt') as input_file:
         input_path = Path(input_file.name)
         input_file.write(f"{m} {n}\n")
         input_file.writelines(row + "\n" for row in binary_rows)
-    
-    try:
+        input_file.flush()
         # Run toZnDual.cpp
         print("    Running toZnDual.cpp...")
         dzn_data, stderr_output = compile_and_run_toZnDual(str(input_path), solver_dir)
@@ -213,11 +212,11 @@ def solve_level(level, solver_dir, force=False):
             print(f"    Generated .dzn data: W={w_match.group(1)}, H={h_match.group(1)}")
         
         # Create temporary .dzn file
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.dzn', dir=solver_dir, delete=False) as dzn_file:
+        with tempfile.NamedTemporaryFile(mode='w', suffix='.dzn', dir=solver_dir) as dzn_file:
             dzn_path = Path(dzn_file.name)
             dzn_file.write(dzn_data)
+            dzn_file.flush()
         
-        try:
             # Solve with MiniZinc
             print("    Running MiniZinc solver...", end=' ', flush=True)
             solution_output = solve_with_minizinc(dzn_path, model_file)
@@ -258,10 +257,6 @@ def solve_level(level, solver_dir, force=False):
             
             return SolveResult(solution_vector, "Solved", improved)
             
-        finally:
-            dzn_path.unlink()
-    finally:
-        input_path.unlink()
 
 
 def solve_json_file(input_path, output_path, solver_dir, force=False):
