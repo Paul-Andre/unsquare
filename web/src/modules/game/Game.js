@@ -686,40 +686,40 @@ export class Game extends GameBase {
   }
 
 
-  // Check if player solution aligns with level solution
-  checkSolutionAlignment() {
-    if (!this.playerSolution || !this.level.solutions || this.level.solutions.length === 0) {
-      return false;
-    }
-    
-    // Check alignment against all solutions - player is aligned if aligned with ANY solution
-    return this.level.solutions.some(solution => {
-      if (this.playerSolution.length !== solution.length) {
-        return false;
-      }
-      // Check alignment: for each i, playerSolution[i] <= solution[i]
-      return this.playerSolution.every((val, i) => val <= solution[i]);
-    });
-  }
-
   // Find the next move in the solution
   findNextHintMove() {
     if (!this.playerSolution || !this.level.solutions || this.level.solutions.length === 0 || !this.operations) {
       return null;
     }
     
-    // For each possible operation remaining to be done, check across all solutions.
+    // Helper function to check if player is aligned with a solution
+    const isAlignedWithSolution = (solution) => {
+      if (this.playerSolution.length !== solution.length) {
+        return false;
+      }
+      // Check alignment: for each i, playerSolution[i] <= solution[i]
+      return this.playerSolution.every((val, i) => val <= solution[i]);
+    };
+    
+    // Filter to only solutions the player is aligned with
+    const alignedSolutions = this.level.solutions.filter(isAlignedWithSolution);
+    
+    if (alignedSolutions.length === 0) {
+      return null;
+    }
+    
+    // For each possible operation remaining to be done, check across all aligned solutions.
     // Take the minimum eric_partition_number across all solutions for each move.
     let bestPartition = Infinity;
     let bestMoveIndex = -1;
     
     // Try each possible move
     for (let i = 0; i < this.operations.length; i++) {
-      // Check if this move is valid for at least one solution
+      // Check if this move is valid for at least one aligned solution
       let isValidForAnySolution = false;
       let minPartitionForThisMove = Infinity;
       
-      for (let solution of this.level.solutions) {
+      for (let solution of alignedSolutions) {
         let remainingSolution = vector_sub(solution, this.playerSolution);
         if (remainingSolution[i] == 0) continue;
         assert(remainingSolution[i] > 0);
@@ -744,16 +744,17 @@ export class Game extends GameBase {
   }
 
   getHint() {
-    // Check alignment
-    const isAligned = this.checkSolutionAlignment();
+    if (!this.playerSolution || !this.level.solutions || this.level.solutions.length === 0) {
+      return { suggestRestart: true, hintSquare: null };
+    }
+    
+    const hintSquare = this.findNextHintMove();
         
-    if (!isAligned) {
+    if (hintSquare === null) {
       // Misaligned: suggest restart
       return { suggestRestart: true, hintSquare: null };
     } else {
-      // Aligned: find next hint square
-      const hintSquare = this.findNextHintMove();
-      return hintSquare ? { hintSquare, suggestRestart: false } : null;
+      return { hintSquare, suggestRestart: false };
     }
   }
 
