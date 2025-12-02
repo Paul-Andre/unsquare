@@ -14,7 +14,7 @@ export class Editor extends GameBase {
   constructor(canvasId, divId) {
     super(canvasId, divId);
     this.referenceToOriginalLevel = null;
-    this.runningSolution = null; // Tracks cumulative solution (starts from level.solutionVector)
+    this.runningSolution = null; // Tracks cumulative solution (starts from level.solutions[0])
     this.drawMode = false;
     this.drawPaintValue = null; // The value to paint when dragging in draw mode
     this.drawUndoSaved = false; // Track if we've saved undo state for current draw operation
@@ -35,8 +35,8 @@ export class Editor extends GameBase {
     // The reason I don't just put it in the base is that at some point the game might need to modify the level
     this.referenceToOriginalLevel = level;
     super.openLevel(level.clone(), book);
-    // Initialize runningSolution from level's solutionVector
-    this.runningSolution = this.level.solutionVector ? this.level.solutionVector.slice() : new Array(this.operations.length).fill(0);
+    // Initialize runningSolution from level's solutions
+    this.runningSolution = (this.level.solutions && this.level.solutions.length > 0) ? this.level.solutions[0].slice() : new Array(this.operations.length).fill(0);
     this.updateDrawModeButton();
     this.updateModeDropdown();
   }
@@ -82,6 +82,10 @@ export class Editor extends GameBase {
       }
     }
     vector_simplify_arithmetic(this.runningSolution, level_get_arithmetic(this.level));
+    // Update level.solutions whenever runningSolution changes
+    if (this.level) {
+      this.level.solutions = [this.runningSolution.slice()];
+    }
   }
 
   postMove() {
@@ -95,7 +99,7 @@ export class Editor extends GameBase {
 
     // Note that this modifies the copy of level, not the reference to the original level
     this.level.tiles = this.tiles;
-    this.level.solutionVector = this.runningSolution;
+    this.level.solutions = [this.runningSolution.slice()];
     // TODO: ???
     this.level.par = null;
   }
@@ -123,7 +127,7 @@ export class Editor extends GameBase {
       // Save undo state
       this.saveUndoState(null);
 
-      this.level.solutionVector = sol;
+      this.level.solutions = [sol.slice()];
       this.level.solutionType = "submitted";
 
       // Update runningSolution
@@ -150,7 +154,8 @@ export class Editor extends GameBase {
       for (let i = 0; i < this.operations.length; i++) {
         this.inverseOperations.set(this.operations[i].join(""), i);
       }
-      this.runningSolution = level.solutionVector ? level.solutionVector.slice() : new Array(this.operations.length).fill(0);
+      this.runningSolution = (level.solutions && level.solutions.length > 0) ? level.solutions[0].slice() : new Array(this.operations.length).fill(0);
+      this.level.solutions = [this.runningSolution.slice()];
     } else {
       alert("Could not parse string");
     }
@@ -170,6 +175,7 @@ export class Editor extends GameBase {
     });
     let m = this.operations.length;
     this.runningSolution = new Array(m).fill(0);
+    this.level.solutions = [this.runningSolution.slice()];
     this.updateGui();
     this.draw();
     // Start animation loop if animations were triggered
@@ -183,10 +189,11 @@ export class Editor extends GameBase {
   }
 
   specificOnShow() {
-    if (
-      !vector_equal(this.level.solutionVector, this.runningSolution)
-    ) {
-      this.runningSolution = this.level.solutionVector ? this.level.solutionVector.slice() : new Array(this.operations.length).fill(0);
+    let currentSolution = (this.level.solutions && this.level.solutions.length > 0) ? this.level.solutions[0] : null;
+    if (currentSolution && !vector_equal(currentSolution, this.runningSolution)) {
+      this.runningSolution = currentSolution.slice();
+    } else if (!currentSolution) {
+      this.runningSolution = new Array(this.operations.length).fill(0);
     }
     this.updateDrawModeButton();
     this.updateModeDropdown();
@@ -217,7 +224,7 @@ export class Editor extends GameBase {
           this.inverseOperations.set(operations[i].join(""), i);
         }
 
-        this.level.solutionVector = new Array(m).fill(0);
+        this.level.solutions = [new Array(m).fill(0)];
         this.level.solutionType = "confirmed";
         this.runningSolution = new Array(m).fill(0);
       }
@@ -254,19 +261,21 @@ export class Editor extends GameBase {
       return;
     }
 
-    if (this.level.solutionVector) {
-      let sum = vector_sum(this.level.solutionVector);
+    if (this.level.solutions && this.level.solutions.length > 0) {
+      let sum = vector_sum(this.level.solutions[0]);
       let type = this.level.solutionType;
-      let eric = eric_partition_number(this.level, this.level.solutionVector);
+      let numSolutions = this.level.solutions.length;
+      
+      // Calculate minimum eric partition number across all solutions
+      let minEric = Infinity;
+      for (let solution of this.level.solutions) {
+        let eric = eric_partition_number(this.level, solution);
+        minEric = Math.min(minEric, eric);
+      }
+      
+      let solutionsText = numSolutions > 1 ? ` (${numSolutions} solutions)` : "";
       this.div.getElementsByClassName("editorBest")[0].innerText =
-        type +" "+sum
-
-        + " " + eric
-
-      ;
-
-
-
+        type +" "+sum + solutionsText + " " + minEric;
     } else {
       let type = this.level.solutionType || "unknown";
       this.div.getElementsByClassName("editorBest")[0].innerText = "? " + type;
@@ -459,9 +468,12 @@ export class Editor extends GameBase {
       }
 
       // Update running solution
-      this.runningSolution = this.level.solutionVector
-        ? this.level.solutionVector.slice()
+      this.runningSolution = (this.level.solutions && this.level.solutions.length > 0)
+        ? this.level.solutions[0].slice()
         : new Array(m).fill(0);
+      
+      // Update level.solutions whenever runningSolution changes
+      this.level.solutions = [this.runningSolution.slice()];
 
       // Update GUI
       this.updateGui();

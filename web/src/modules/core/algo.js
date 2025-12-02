@@ -207,13 +207,14 @@ export function get_level_full_identifier(level) {
 // And it's not even the most compact representation...
 // small "s" is the compact version, big "S" is the version with underscores.
 export function get_level_compact_solution(level) {
+  let solution = (level.solutions && level.solutions.length > 0) ? level.solutions[0] : [];
   return (
     get_geometry_compact(level_get_geometry(level)) +
     "$" +
     get_arithmetic_compact(level_get_arithmetic(level)) +
     "$" +
     "v$" +
-    level.solutionVector.join("")
+    solution.join("")
   );
 }
 
@@ -449,7 +450,7 @@ export function level_get_arithmetic(level) {
 // TODO: do some kind of check more specific than try catch
 export function level_check_solution(level, solution = null) {
   if (solution === null) {
-    solution = level.solutionVector;
+    solution = level.solutions && level.solutions.length > 0 ? level.solutions[0] : null;
   }
   let target = get_level_tiles_vector(level);
   let operations = compute_operations_for_level(level);
@@ -477,7 +478,7 @@ export function get_gaussian_solution_for_level(level) {
 
 export function eric_partition_number(level, solution=null) {
   if (solution === null) {
-    solution = level.solutionVector;
+    solution = level.solutions && level.solutions.length > 0 ? level.solutions[0] : null;
   }
   let operations = compute_operations_for_level(level);
   assert(operations.length == solution.length);

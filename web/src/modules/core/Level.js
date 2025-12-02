@@ -30,7 +30,7 @@ export class Level {
     let operations = compute_operations_for_level(level);
     let m = operations.length;
 
-    level.solutionVector = new Array(m).fill(0);
+    level.solutions = [new Array(m).fill(0)];
     level.solutionType = "confirmed";
 
     return level;
@@ -54,11 +54,15 @@ export class Level {
       level.id = generate_id("level");
     }
     let hasValidSolution = false;
-    if (json.solutionVector) {
-      level.solutionVector = json.solutionVector;
+    if (json.solutions) {
+      level.solutions = json.solutions.map(sol => sol.slice());
       level.solutionType = json.solutionType;
-
-      hasValidSolution = level_check_solution(level);
+      hasValidSolution = level_check_solution(level, level.solutions[0]);
+    } else if (json.solutionVector) {
+      // Backward compatibility: convert old solutionVector to solutions array
+      level.solutions = [json.solutionVector.slice()];
+      level.solutionType = json.solutionType;
+      hasValidSolution = level_check_solution(level, level.solutions[0]);
     }
     if (!hasValidSolution) {
       // A lot of code relies on the solution vector being set,
@@ -67,14 +71,14 @@ export class Level {
       compute_gaussian_solution(level);
 
       // Sanity check, that the computed solution makes sense
-      assert(level_check_solution(level));
+      assert(level_check_solution(level, level.solutions[0]));
 
       level.par = null;
     } else {
       if (level.mode == "challenge") {
         level.par = null;
       } else {
-        level.par = vector_sum(level.solutionVector);
+        level.par = vector_sum(level.solutions[0]);
       }
     }
 
@@ -128,14 +132,14 @@ export class Level {
       reach = reach.map(a => a + 1);
       level.tiles = Grid.usingFlatArray(reach, w, h);
 
-      level.solutionVector = solution;
+      level.solutions = [solution];
       level.solutionType = "submitted";
     } else {
       return null;
     }
 
-    assert(level_check_solution(level));
-    level.par = vector_sum(level.solutionVector);
+    assert(level_check_solution(level, level.solutions[0]));
+    level.par = vector_sum(level.solutions[0]);
 
     return level;
   }
@@ -164,7 +168,7 @@ export class Level {
     json.index = this.index;
     json.id = this.id;
 
-    json.solutionVector = this.solutionVector;
+    json.solutions = this.solutions.map(sol => sol.slice());
     json.solutionType = this.solutionType;
 
     json.__type__ = "Level";
@@ -191,10 +195,10 @@ export class Level {
     this.isCustom = otherLevel.isCustom || false;
     this.hidden = otherLevel.hidden || false;
     this.mode = otherLevel.mode || "normal";
-    if (otherLevel.solutionVector) {
-      this.solutionVector = otherLevel.solutionVector.slice();
+    if (otherLevel.solutions) {
+      this.solutions = otherLevel.solutions.map(sol => sol.slice());
     } else {
-      this.solutionVector = null;
+      this.solutions = [];
     }
     this.solutionType = otherLevel.solutionType;
     if (otherLevel.book !== undefined) {
@@ -216,7 +220,10 @@ export class Level {
   }
 
   getPar() {
-    let par = vector_sum(this.solutionVector);
+    if (!this.solutions || this.solutions.length === 0) {
+      return null;
+    }
+    let par = vector_sum(this.solutions[0]);
     return par;
   }
 }
@@ -224,10 +231,10 @@ export class Level {
 export function compute_gaussian_solution(level) {
   let sol = get_gaussian_solution_for_level(level);
   if (sol) {
-    level.solutionVector = sol;
+    level.solutions = [sol];
     level.solutionType = "gaussian";
   } else {
-    level.solutionVector = null;
+    level.solutions = [];
     level.solutionType = "impossible";
   }
 }

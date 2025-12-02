@@ -232,7 +232,8 @@ export class LevelMenuComponent {
 
     if (this.isEditor) {
       let par_display = element.querySelector(".level_icon_par");
-      par_display.innerText = vector_sum(level.solutionVector);
+      let par = (level.solutions && level.solutions.length > 0) ? vector_sum(level.solutions[0]) : 0;
+      par_display.innerText = par;
 
       if (level.isIcon) {
         element.classList.add("bookIconRepresentative");

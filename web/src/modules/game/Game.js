@@ -2,7 +2,7 @@
 
 import { GameBase } from './GameBase.js';
 import { calculateStates, LEVEL_STATES } from '../ui/LevelMenuComponent.js';
-import { vector_sum, vector_simplify_arithmetic, level_get_arithmetic, vector_sub, operation_index_to_move, level_get_geometry, eric_partition_number, assert } from '../core/algo.js';
+import { vector_sum, vector_simplify_arithmetic, level_get_arithmetic, vector_sub, operation_index_to_move, level_get_geometry, eric_partition_number, assert, vector_equal } from '../core/algo.js';
 import { save_editor_book } from '../core/bookUtils.js';
 import { trackLevelEnd } from '../utils/analytics.js';
 import { getBestNumMoves, setBestNumMoves, getCachedChallengeStatistics, saveChallengeStatistics } from '../core/levelUtils.js';
@@ -112,7 +112,7 @@ export class Game extends GameBase {
       console.error("numMoves", this.numMoves, "does not match solution", vector_sum(this.getPlayerSolution()), this.getPlayerSolution());
       console.error("this.tiles", this.tiles);
       console.error("this.playerSolution", this.playerSolution, vector_sum(this.playerSolution));
-      console.error("this.level.solutionVector", this.level.solutionVector, vector_sum(this.level.solutionVector));
+      console.error("this.level.solutions", this.level.solutions, this.level.solutions && this.level.solutions.length > 0 ? vector_sum(this.level.solutions[0]) : null);
       console.error("this.level.solutionType", this.level.solutionType);
 
     }
@@ -206,15 +206,29 @@ export class Game extends GameBase {
   }
 
   finishedLevel() {
-    let oldSum = vector_sum(this.level.solutionVector);
-    let newSolution = this.getPlayerSolution();
-    //vector_simplify_arithmetic(newSolution, level_get_arithmetic(this.level));
-    let newSum = vector_sum(newSolution);
-
-    //debugger;
-    if (newSum < oldSum) {
-      this.level.solutionVector = newSolution;
+    if (!this.level.solutions || this.level.solutions.length === 0) {
+      // No existing solutions, just set the player solution
+      this.level.solutions = [this.getPlayerSolution()];
       this.level.solutionType = "manual";
+    } else {
+      let oldSum = vector_sum(this.level.solutions[0]);
+      let newSolution = this.getPlayerSolution();
+      //vector_simplify_arithmetic(newSolution, level_get_arithmetic(this.level));
+      let newSum = vector_sum(newSolution);
+
+      //debugger;
+      if (newSum < oldSum) {
+        // Player solution is better, replace entire array
+        this.level.solutions = [newSolution];
+        this.level.solutionType = "manual";
+      } else if (newSum === oldSum) {
+        // Player solution is equal, check if it's already in the array
+        let isAlreadyInArray = this.level.solutions.some(sol => vector_equal(sol, newSolution));
+        if (!isAlreadyInArray) {
+          // Add it to the array
+          this.level.solutions.push(newSolution);
+        }
+      }
     }
 
     let prevBest = getBestNumMoves(this.level);
@@ -674,39 +688,57 @@ export class Game extends GameBase {
 
   // Check if player solution aligns with level solution
   checkSolutionAlignment() {
-    if (!this.playerSolution || !this.level.solutionVector) {
+    if (!this.playerSolution || !this.level.solutions || this.level.solutions.length === 0) {
       return false;
     }
     
-    if (this.playerSolution.length !== this.level.solutionVector.length) {
-      return false;
-    }
-    
-    // Check alignment: for each i, playerSolution[i] <= solutionVector[i]
-    return this.playerSolution.every((val, i) => val <= this.level.solutionVector[i]);
+    // Check alignment against all solutions - player is aligned if aligned with ANY solution
+    return this.level.solutions.some(solution => {
+      if (this.playerSolution.length !== solution.length) {
+        return false;
+      }
+      // Check alignment: for each i, playerSolution[i] <= solution[i]
+      return this.playerSolution.every((val, i) => val <= solution[i]);
+    });
   }
 
   // Find the next move in the solution
   findNextHintMove() {
-    if (!this.playerSolution || !this.level.solutionVector || !this.operations) {
+    if (!this.playerSolution || !this.level.solutions || this.level.solutions.length === 0 || !this.operations) {
       return null;
     }
     
-    // For each possible operation remaining to be done in the solution, create a new solution vector.
-    // Then check its Eric partition number, and return the one with the smallest number.
+    // For each possible operation remaining to be done, check across all solutions.
+    // Take the minimum eric_partition_number across all solutions for each move.
     let bestPartition = Infinity;
     let bestMoveIndex = -1;
-    let remainingSolution = vector_sub(this.level.solutionVector, this.playerSolution);
+    
+    // Try each possible move
     for (let i = 0; i < this.operations.length; i++) {
-      if (remainingSolution[i] == 0) continue;
-      assert(remainingSolution[i] > 0);
-      const newSolution = remainingSolution.slice();
-      newSolution[i] -= 1;
-      const partition = eric_partition_number(this.level, newSolution);
-      if (partition < bestPartition) {
-        bestPartition = partition;
-        bestMoveIndex =  i;
+      // Check if this move is valid for at least one solution
+      let isValidForAnySolution = false;
+      let minPartitionForThisMove = Infinity;
+      
+      for (let solution of this.level.solutions) {
+        let remainingSolution = vector_sub(solution, this.playerSolution);
+        if (remainingSolution[i] == 0) continue;
+        assert(remainingSolution[i] > 0);
+        isValidForAnySolution = true;
+        
+        const newSolution = remainingSolution.slice();
+        newSolution[i] -= 1;
+        const partition = eric_partition_number(this.level, newSolution);
+        minPartitionForThisMove = Math.min(minPartitionForThisMove, partition);
       }
+      
+      if (isValidForAnySolution && minPartitionForThisMove < bestPartition) {
+        bestPartition = minPartitionForThisMove;
+        bestMoveIndex = i;
+      }
+    }
+    
+    if (bestMoveIndex === -1) {
+      return null;
     }
     return operation_index_to_move(level_get_geometry(this.level), bestMoveIndex);
   }
@@ -726,7 +758,7 @@ export class Game extends GameBase {
   }
 
   showHint() {
-    if (!this.level || !this.tiles || !this.level.solutionVector) {
+    if (!this.level || !this.tiles || !this.level.solutions || this.level.solutions.length === 0) {
       return;
     }
     

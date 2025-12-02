@@ -503,7 +503,7 @@ export class GameBase {
 
   printJsonWithoutSolution() {
     const json = this.level.toJsonObject();
-    delete json.solutionVector;
+    delete json.solutions;
     delete json.solutionType;
     delete json.par;
     delete json.index;
