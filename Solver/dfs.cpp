@@ -66,6 +66,15 @@ vector<int> runningSolution;
 int moves_target;
 bool found_solution = false;
 
+vector<int> reorder;
+
+void print_reordered(const vector<int> &v, ostream& out=cerr){
+  for (int i=0; i<v.size(); i++) {
+    out<<v[reorder[i]];
+  }
+  out<<endl;
+}
+
 
 void solve1(State &state, int move_ptr, int moves_done) {
   if (moves_done > moves_target) return;
@@ -74,7 +83,7 @@ void solve1(State &state, int move_ptr, int moves_done) {
   if (remainingOptions < remainingTarget) return;
   if (move_ptr >= moves.size()) {
     if (isEmpty(state)) {
-      print(runningSolution, cout);
+      print_reordered(runningSolution, cout);
       moves_target = min(moves_target, sumVec(runningSolution));
       cerr<<sumVec(runningSolution)<<endl;
       found_solution = true;
@@ -195,7 +204,9 @@ int main() {
     }
   }
 
+  vector<pair<State,int>> moves_i;
 
+  int index = 0;
   for(int i=0; i<n; i++) {
     for (int j=0; j<m; j++) {
       for (int s=2; i+s<=n && j+s<=m; s++) {
@@ -207,16 +218,24 @@ int main() {
             inv[x+m*y] = 1;
           }
         }
-        moves.emplace_back(move(inv));
+        moves_i.emplace_back(move(inv), index);
+        index+=1;
       }
     }
   }
-  sort(moves.begin(),moves.end(), [](const State &a, const State &b) {
-      for (int j=0; j<a.size(); j++) {
-      if (a[j] != b[j]) return b[j] < a[j];
+  sort(moves_i.begin(),moves_i.end(), [](const pair<State,int> &a, const pair<State,int> &b) {
+      for (int j=0; j<a.first.size(); j++) {
+      if (a.first[j] != b.first[j]) return b.first[j] < a.first[j];
       }
       return false;
       });
+
+  reorder.resize(moves_i.size());
+  for (int i=0; i<moves_i.size(); i++) {
+    auto a = moves_i[i];
+    moves.emplace_back(a.first);
+    reorder[a.second] = i;
+  }
 
   firstBitPosition = vector<int>(moves.size(), 0);
   gap = vector<int>(moves.size(), 0);
