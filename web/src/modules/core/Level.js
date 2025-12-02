@@ -55,9 +55,12 @@ export class Level {
     }
     let hasValidSolution = false;
     if (json.solutions) {
-      level.solutions = json.solutions.map(sol => sol.slice());
+      // Only include valid solutions from json.solutions
+      level.solutions = json.solutions
+        .map(sol => sol.slice())
+        .filter(sol => level_check_solution(level, sol));
       level.solutionType = json.solutionType;
-      hasValidSolution = level_check_solution(level, level.solutions[0]);
+      hasValidSolution = level.solutions.length > 0;
     } else if (json.solutionVector) {
       // Backward compatibility: convert old solutionVector to solutions array
       level.solutions = [json.solutionVector.slice()];
@@ -71,7 +74,7 @@ export class Level {
       compute_gaussian_solution(level);
 
       // Sanity check, that the computed solution makes sense
-      assert(level_check_solution(level, level.solutions[0]));
+      assert(check_all_solutions(level));
 
       level.par = null;
     } else {
@@ -138,7 +141,8 @@ export class Level {
       return null;
     }
 
-    assert(level_check_solution(level, level.solutions[0]));
+    // Sanity check: verify all solutions are valid
+    assert(check_all_solutions(level));
     level.par = vector_sum(level.solutions[0]);
 
     return level;
@@ -226,6 +230,13 @@ export class Level {
     let par = vector_sum(this.solutions[0]);
     return par;
   }
+}
+
+export function check_all_solutions(level) {
+  if (!level.solutions || level.solutions.length === 0) {
+    return false;
+  }
+  return level.solutions.every(sol => level_check_solution(level, sol));
 }
 
 export function compute_gaussian_solution(level) {
