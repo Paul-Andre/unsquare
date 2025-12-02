@@ -695,7 +695,7 @@ int main() {
 
     if (kernel.size()) {
 
-      int doRandomlyImproveTimes = 10;
+      int doRandomlyImproveTimes = 0;
       while(doRandomlyImproveTimes--) {
         solution = randomlyImprove(originalSolution, original_kernel);
         cerr << "after randomly improving " << sumVec(solution) << endl;
