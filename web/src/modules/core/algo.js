@@ -500,11 +500,11 @@ export function eric_partition_number(level, solution=null) {
   return m.size;
 }
 
-export function solution_obviousness(level, solution=null, operations=null) {
-  if (solution === null) {
-    solution = level.solutions && level.solutions.length > 0 ? level.solutions[0] : null;
-  }
-  operations = operations || compute_operations_for_level(level);
-  for ()
+// export function solution_obviousness(level, solution=null, operations=null) {
+//   if (solution === null) {
+//     solution = level.solutions && level.solutions.length > 0 ? level.solutions[0] : null;
+//   }
+//   operations = operations || compute_operations_for_level(level);
+//   //for ()
 
-}
+// }
