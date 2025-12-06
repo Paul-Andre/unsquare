@@ -134,12 +134,12 @@ fi
 
 # Commit in source repo
 git add "$RELEASE_LOG" "$SOURCE_WWW/manifest.json"
-git commit -m "Release v$NEW_VERSION: $RELEASE_NOTES"
+git commit -m "v$NEW_VERSION: $RELEASE_NOTES"
 
 # Commit in deploy repo
 cd "$DEPLOY_DIR"
 git add -A
-git commit -m "Release v$NEW_VERSION: $RELEASE_NOTES"
+git commit -m "v$NEW_VERSION: $RELEASE_NOTES"
 cd - > /dev/null
 
 # Push both repos
