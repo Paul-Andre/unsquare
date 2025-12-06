@@ -9,3 +9,6 @@ export const DAILY_UNLOCK_HOUR = 0;
 // Reference date: December 1, 2025 (first daily level starts on this date)
 // Month is 0-indexed, so 10 = November
 export const DAILY_LEVELS_START_DATE = new Date(2025, 11, 1);
+
+// Configuration: enable inset drawing in tile shapes
+export const ENABLE_INSET_DRAWING = false;
