@@ -23,34 +23,42 @@ export function getCachedLevelIconDataUrl(level) {
     return iconCache.get(fullIdentifier);
   }
   
-  // Generate icon and cache it
-  const canvas = createLevelIconCanvas(level);
-  const dataURL = canvas.toDataURL();
+  const dataURL = createLevelIconDataUrl(level, ICON_SIZE);
   iconCache.set(fullIdentifier, dataURL);
   
   return dataURL;
 }
 
-export function createLevelIcon(level) {
+/**
+ * Create icon dataURL for a level.
+ * @param {Level} level - The level
+ * @returns {string} The dataURL for the level icon
+ */
+export function createLevelIconDataUrl(level, size) {
+  const canvas = createLevelIconCanvas(level, size);
+  return canvas.toDataURL();
+}
+
+export function createLevelIconElement(level, size=ICON_SIZE) {
   // Get cached or generate dataURL
   const dataURL = getCachedLevelIconDataUrl(level);
   
   // Create img element with data URL
   const img = document.createElement("img");
   img.src = dataURL;
-  img.style.width = `${ICON_SIZE}px`;
-  img.style.height = `${ICON_SIZE}px`;
+  img.style.width = `${size}px`;
+  img.style.height = `${size}px`;
   img.className = "level_icon_image";
   
   return img;
 }
 
-export function createLevelIconCanvas(level) {
+export function createLevelIconCanvas(level, size) {
   const icon = document.createElement("canvas");
-  icon.style.width = `${ICON_SIZE}px`;
-  icon.style.height = `${ICON_SIZE}px`;
-  icon.width = ICON_SIZE * window.devicePixelRatio;
-  icon.height = ICON_SIZE * window.devicePixelRatio;
+  icon.style.width = `${size}px`;
+  icon.style.height = `${size}px`;
+  icon.width = size * window.devicePixelRatio;
+  icon.height = size * window.devicePixelRatio;
   drawIcon(level, icon);
   return icon;
 }

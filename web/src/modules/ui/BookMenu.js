@@ -2,7 +2,7 @@
 
 import { generate_id } from '../utils/helpers.js';
 import { htmlStringToElement } from '../utils/helpers.js';
-import { createLevelIcon } from './icon.js';
+import { createLevelIconElement } from './icon.js';
 import { editorLevelMenu } from './editorLevelMenu.js';
 import { screenManager } from './ScreenManager.js';
 import { book_reviver, create_empty_book, save_editor_book } from '../core/bookUtils.js';
@@ -112,7 +112,7 @@ export class BookMenu {
 
     let icon_level = select_book_icon_level(book);
     if (icon_level) {
-      let icon = createLevelIcon(icon_level);
+      let icon = createLevelIconElement(icon_level);
 
       let bic = node.getElementsByClassName("bookIconContainer")[0];
       bic.append(icon);
