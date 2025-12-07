@@ -240,3 +240,7 @@ Fix #3 html
 07 Dec 2025
 0.11.3
 Stats button, and cache icons
+
+07 Dec 2025
+0.11.4
+fix histogramViewIcon ontouchend
