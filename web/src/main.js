@@ -155,14 +155,14 @@ if (localStorage.getItem("player_id") === null) {
   localStorage.setItem("player_id", player_id);
 }
 
-// 10-click to get into editor mode.
+// 16-click to get into editor mode.
 (function setupTitleEasterEgg() {
   const titleElement = document.getElementById("homeTitle");
   if (!titleElement) return;
 
   let clickCount = 0;
   let resetTimeout = null;
-  const REQUIRED_CLICKS = 10;
+  const REQUIRED_CLICKS = 16;
   const RESET_DELAY = 2000; // 2 seconds
 
   function resetCounter() {
