@@ -236,3 +236,7 @@ Weekly Challenge #3
 07 Dec 2025
 0.11.2
 Fix #3 html
+
+07 Dec 2025
+0.11.3
+Stats button, and cache icons
