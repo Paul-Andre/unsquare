@@ -282,8 +282,8 @@ export class Game extends GameBase {
     if (previewImg && this.level) {
       const dataURL = getCachedLevelIconDataUrl(this.level);
       previewImg.src = dataURL;
-      previewImg.style.width = "55px";
-      previewImg.style.height = "55px";
+      previewImg.style.width = `${config.ICON_SIZE}px`;
+      previewImg.style.height = `${config.ICON_SIZE}px`;
     }
 
     const select = element.querySelector("#histogramTypeSelect");

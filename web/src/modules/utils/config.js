@@ -12,3 +12,6 @@ export const DAILY_LEVELS_START_DATE = new Date(2025, 11, 1);
 
 // Configuration: enable inset drawing in tile shapes
 export const ENABLE_INSET_DRAWING = false;
+
+// Configuration: icon size in pixels for level icons
+export const ICON_SIZE = 55;

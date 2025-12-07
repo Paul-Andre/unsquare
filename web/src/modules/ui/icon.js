@@ -6,6 +6,8 @@
 
 // }
 
+import { ICON_SIZE } from '../utils/config.js';
+
 // Cache for level icon dataURLs, keyed by level full identifier
 const iconCache = new Map();
 
@@ -36,8 +38,8 @@ export function createLevelIcon(level) {
   // Create img element with data URL
   const img = document.createElement("img");
   img.src = dataURL;
-  img.style.width = "55px";
-  img.style.height = "55px";
+  img.style.width = `${ICON_SIZE}px`;
+  img.style.height = `${ICON_SIZE}px`;
   img.className = "level_icon_image";
   
   return img;
@@ -45,10 +47,10 @@ export function createLevelIcon(level) {
 
 export function createLevelIconCanvas(level) {
   const icon = document.createElement("canvas");
-  icon.style.width = "55px";
-  icon.style.height = "55px";
-  icon.width = 55 * window.devicePixelRatio;
-  icon.height = 55 * window.devicePixelRatio;
+  icon.style.width = `${ICON_SIZE}px`;
+  icon.style.height = `${ICON_SIZE}px`;
+  icon.width = ICON_SIZE * window.devicePixelRatio;
+  icon.height = ICON_SIZE * window.devicePixelRatio;
   drawIcon(level, icon);
   return icon;
 }

@@ -2,6 +2,7 @@
 
 import { getCachedLevelIconDataUrl } from './icon.js';
 import { htmlStringToElement } from '../utils/helpers.js';
+import { ICON_SIZE } from '../utils/config.js';
 import { vector_sum } from '../core/algo.js';
 import { screenManager } from './ScreenManager.js';
 import { Level } from '../core/Level.js';
@@ -213,8 +214,8 @@ export class LevelMenuComponent {
     const dataURL = getCachedLevelIconDataUrl(level);
     let icon = element.querySelector(".level_icon_image");
     icon.src = dataURL;
-    icon.style.width = "55px";
-    icon.style.height = "55px";
+    icon.style.width = `${ICON_SIZE}px`;
+    icon.style.height = `${ICON_SIZE}px`;
 
     element.level = level;
 

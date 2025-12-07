@@ -4,13 +4,13 @@ import { LevelMenuComponent, calculateLevelState, applyStateClass } from './Leve
 import { screenManager } from './ScreenManager.js';
 import { book_reviver } from '../core/bookUtils.js';
 import { Level } from '../core/Level.js';
-import { createLevelIcon } from './icon.js';
+import { getCachedLevelIconDataUrl } from './icon.js';
 import { htmlStringToElement } from '../utils/helpers.js';
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from '../utils/api.js';
 import { getCachedChallengeStatistics, saveChallengeStatistics } from '../core/levelUtils.js';
 import mainBookData from '../../data/2025_nov_11_reordered_solved_fixed_all_solutions.json';
 import dailyLevelsData from '../../data/2025_nov_30_daily_solved_good_all_solutions.json';
-import { DAILY_UNLOCK_HOUR, DAILY_LEVELS_START_DATE } from '../utils/config.js';
+import { DAILY_UNLOCK_HOUR, DAILY_LEVELS_START_DATE, ICON_SIZE } from '../utils/config.js';
 
 export class GameLevelMenu {
   constructor() {
@@ -206,12 +206,12 @@ export class GameLevelMenu {
     }
 
     let element = /** @type {HTMLElement} */ (container.querySelector(".level_icon"));
-    const icon = createLevelIcon(this.weeklyChallengeLevel);
     const iconImg = /** @type {HTMLImageElement} */ (element.querySelector(".level_icon_image"));
     if (iconImg) {
-      iconImg.src = icon.src;
-      iconImg.style.width = "55px";
-      iconImg.style.height = "55px";
+      const dataURL = getCachedLevelIconDataUrl(this.weeklyChallengeLevel);
+      iconImg.src = dataURL;
+      iconImg.style.width = `${ICON_SIZE}px`;
+      iconImg.style.height = `${ICON_SIZE}px`;
     }
 
     /** @type {any} */ (element).level = this.weeklyChallengeLevel;
@@ -295,12 +295,12 @@ export class GameLevelMenu {
       return;
     }
 
-    const icon = createLevelIcon(dailyLevel);
     const iconImg = /** @type {HTMLImageElement} */ (element.querySelector(".level_icon_image"));
     if (iconImg) {
-      iconImg.src = icon.src;
-      iconImg.style.width = "55px";
-      iconImg.style.height = "55px";
+      const dataURL = getCachedLevelIconDataUrl(dailyLevel);
+      iconImg.src = dataURL;
+      iconImg.style.width = `${ICON_SIZE}px`;
+      iconImg.style.height = `${ICON_SIZE}px`;
     }
 
     /** @type {any} */ (element).level = dailyLevel;
