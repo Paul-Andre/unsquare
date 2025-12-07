@@ -200,6 +200,149 @@ export class Game extends GameBase {
 
   }
 
+  async fetchHistogramData() {
+    const level = this.level;
+    if (!level || level.mode !== "challenge") {
+      return null;
+    }
+
+    const player_id = localStorage.player_id;
+    if (!player_id) {
+      return null;
+    }
+
+    try {
+      const response = await fetch(`${SUPABASE_URL}/rest/v1/rpc/get_player_level_histograms_and_summary`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+          'Content-Type': 'application/json',
+          'apikey': SUPABASE_ANON_KEY
+        },
+        body: JSON.stringify({
+          p_player_id: player_id,
+          p_level_id: level.id
+        })
+      });
+
+      console.log(response);
+
+      if (!response.ok) {
+        console.error(`HTTP error! status: ${response.status}`, await response.text());
+        return null;
+      }
+
+      const data = await response.json();
+      console.log(data);
+      
+      // Cache challenge statistics if available
+      if (data.player_summary && level.mode === "challenge") {
+        saveChallengeStatistics(level.id, data.player_summary);
+      }
+
+      // Return the histogram data (same structure as before)
+      return data.histogram;
+    } catch (e) {
+      console.error("Failed to fetch histogram data", e);
+      return null;
+    }
+  }
+
+  async showHistogramView() {
+    if (!this.level || this.level.mode !== "challenge") {
+      return;
+    }
+
+    const element = this.getElement("viewHistogramOverlay");
+    if (!element) {
+      return;
+    }
+
+    // Check if overlay is already open - if so, close it
+    const isOpen = element.classList.contains("showing") || 
+                   (element instanceof HTMLElement && element.style.display === "block");
+    if (isOpen) {
+      this.hideHistogramView();
+      return;
+    }
+
+    // Generate level preview icon
+    const previewImg = element.querySelector(".challengeLevelPreview");
+    if (previewImg && this.level && previewImg instanceof HTMLImageElement) {
+      const dataURL = getCachedLevelIconDataUrl(this.level);
+      previewImg.src = dataURL;
+      previewImg.style.width = `${config.ICON_SIZE}px`;
+      previewImg.style.height = `${config.ICON_SIZE}px`;
+    }
+
+    // Set up dropdown change handler
+    const select = element.querySelector("#viewHistogramTypeSelect");
+    if (select && select instanceof HTMLSelectElement) {
+      if (this.viewHistogramChangeHandler) {
+        select.removeEventListener("change", this.viewHistogramChangeHandler);
+      }
+      
+      this.viewHistogramChangeHandler = (e) => {
+        this.renderViewHistogram();
+      };
+      
+      select.addEventListener("change", this.viewHistogramChangeHandler);
+    }
+
+    // Render the histogram with whatever data is available (or show loading)
+    this.renderViewHistogram();
+
+    // Show the overlay immediately
+    element.style.display = "block";
+    requestAnimationFrame(() => element.classList.add("showing"));
+
+    // Fetch histogram data asynchronously and update when it arrives
+    const histogramData = await this.fetchHistogramData();
+    if (histogramData) {
+      // Store the data
+      this.allHistogramData = histogramData;
+      // Update the histogram display
+      this.renderViewHistogram();
+    } else {
+      // Show error message if fetch failed
+      const container = element.querySelector("#viewHistogramBars");
+      if (container) {
+        container.innerHTML = "<p>No data available</p>";
+      }
+    }
+  }
+
+  renderViewHistogram() {
+    const element = this.getElement("viewHistogramOverlay");
+    if (!element) {
+      return;
+    }
+
+    const container = element.querySelector("#viewHistogramBars");
+    if (!container) {
+      return;
+    }
+
+    if (this.allHistogramData === null) {
+      container.innerHTML = "loading...";
+      return;
+    }
+    
+    const select = element.querySelector("#viewHistogramTypeSelect");
+    if (!select || !(select instanceof HTMLSelectElement)) {
+      return;
+    }
+    const playerMoves = getBestNumMoves(this.level);
+    renderHistogram(container, this.allHistogramData[select.value], playerMoves);
+  }
+
+  hideHistogramView() {
+    const element = this.getElement("viewHistogramOverlay");
+    if (element) {
+      element.style.display = "none";
+      element.classList.remove("showing");
+    }
+  }
 
   getPlayerSolution() {
     return this.playerSolution.slice();
@@ -278,7 +421,7 @@ export class Game extends GameBase {
     }
 
     // Generate level preview icon
-    const previewImg = element.querySelector(".finishedChallengeLevelPreview");
+    const previewImg = element.querySelector(".challengeLevelPreview");
     if (previewImg && this.level) {
       const dataURL = getCachedLevelIconDataUrl(this.level);
       previewImg.src = dataURL;
@@ -469,6 +612,7 @@ export class Game extends GameBase {
     this.getElement("finishedGame").style.display = "none";
     
     this.hideFinishedLevelChallenge();
+    this.hideHistogramView();
   }
 
   updateMovesDisplay() {
@@ -525,18 +669,39 @@ export class Game extends GameBase {
     
     // Handle par/top indicator
     const parIndicator = this.getElement("parContentInclusive");
+    const parTextSpan = parIndicator.querySelector(".parText");
     if (level.mode === "challenge") {
       const cachedStats = getBestNumMoves(level) !== null 
         ? getCachedChallengeStatistics(level.id) 
         : null;
       const topBest = cachedStats?.top_best ?? null;
-      parIndicator.innerText = `top: ${topBest !== null ? topBest : "?"}`;
+      if (parTextSpan) {
+        parTextSpan.innerText = `top: ${topBest !== null ? topBest : "?"}`;
+      } else {
+        parIndicator.innerText = `top: ${topBest !== null ? topBest : "?"}`;
+      }
+      
+      // Show histogram icon only if player has solved the challenge
+      const histogramIcon = document.getElementById("histogramViewIcon");
+      if (histogramIcon) {
+        histogramIcon.style.display = getBestNumMoves(level) !== null ? "inline" : "none";
+      }
     } else {
       const par = level.par;
       const showPar = !config.DONT_SHOW_PAR_FOR_UNSOLVED_LEVELS || getBestNumMoves(level) !== null;
       const parDisplay = (par === null || !showPar) ? "?" : par;
-      parIndicator.innerText = 
-        level.isCustom ? `creator par: ${parDisplay}` : `par: ${parDisplay}`;
+      const parText = level.isCustom ? `creator par: ${parDisplay}` : `par: ${parDisplay}`;
+      if (parTextSpan) {
+        parTextSpan.innerText = parText;
+      } else {
+        parIndicator.innerText = parText;
+      }
+      
+      // Hide histogram icon for non-challenge levels
+      const histogramIcon = document.getElementById("histogramViewIcon");
+      if (histogramIcon) {
+        histogramIcon.style.display = "none";
+      }
     }
 
     // Calculate display index (excluding hidden levels)

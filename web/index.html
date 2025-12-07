@@ -180,7 +180,16 @@
               best: <span class="bestContent"> </span>
             </div>
             <div class="indicator parContentInclusive" id="ParIndicator">
-              par:
+              <span class="parText">par:</span>
+              <span class="histogramViewIcon" id="histogramViewIcon" onclick="game.showHistogramView();" ontouchend="game.showHistogramView();" style="display: none; cursor: pointer; margin-left: 0.5em;" title="View histogram">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                  <rect x="1" y="12" width="2" height="3"/>
+                  <rect x="4" y="9" width="2" height="6"/>
+                  <rect x="7" y="6" width="2" height="9"/>
+                  <rect x="10" y="3" width="2" height="12"/>
+                  <rect x="13" y="8" width="2" height="7"/>
+                </svg>
+              </span>
             </div>
             <div class="indicator" id="MovesIndicator">
               moves: <span class="movesContent"> </span>
@@ -243,7 +252,7 @@
           <div class="finishedChallengeHistogram" style="display: none">
             <div class="finishedLevelInside">
             <div class="finishedChallengeHeader">
-              <img class="finishedChallengeLevelPreview level_icon_image"></img>
+              <img class="challengeLevelPreview level_icon_image"></img>
               <h1> Solved! </h1>
             </div>
 
@@ -270,6 +279,34 @@
               <button class="finishedLevelNextButton" onclick="nextLevel();" ontouchend="nextLevel();"
                 style="touch-action: none">
                 Next →
+              </button>
+            </div>
+            </div>
+          </div>
+
+          <div class="viewHistogramOverlay" style="display: none">
+            <div class="finishedLevelInside">
+            <div class="finishedChallengeHeader">
+              <img class="challengeLevelPreview level_icon_image"></img>
+              <h1> Stats </h1>
+            </div>
+
+            <div class="histogramContainer" >
+ 
+              <div class="histogramBars" id="viewHistogramBars"></div>
+              <div class="histogramControls">
+                <select id="viewHistogramTypeSelect" class="histogramTypeSelect">
+                  <option value="allSolutions">All Solutions</option>
+                  <option value="bestPerPlayer">Best Per Player</option>
+                  <option value="uniqueSolutions">Unique Solutions</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="finishedLevelButtons challengeFinishedButtons">
+              <button class="finishedLevelNextButton" onclick="game.hideHistogramView();" ontouchend="game.hideHistogramView();"
+                style="touch-action: none">
+                Close
               </button>
             </div>
             </div>

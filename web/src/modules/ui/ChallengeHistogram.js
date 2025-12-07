@@ -45,7 +45,9 @@ export function renderHistogram(container, histogramData, playerMoves) {
   const position95 = moveCounts[Math.floor(moveCounts.length*0.95)]
 
   const rangeBegin = 1;
-  const rangeEnd = Math.max(Math.min(Math.ceil(percentile99*3), maxMoveCount), playerMoves);
+  const rangeEnd = playerMoves != null 
+    ? Math.max(Math.min(Math.ceil(percentile99*3), maxMoveCount), playerMoves)
+    : Math.min(Math.ceil(percentile99*3), maxMoveCount);
 
   //const rangeEnd = Math.max(Math.min(Math.ceil(position95*2), maxMoveCount), playerMoves);
 
