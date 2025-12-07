@@ -1,6 +1,6 @@
 "use strict";
 
-import { drawIcon } from './icon.js';
+import { getCachedLevelIconDataUrl } from './icon.js';
 import { htmlStringToElement } from '../utils/helpers.js';
 import { vector_sum } from '../core/algo.js';
 import { screenManager } from './ScreenManager.js';
@@ -209,16 +209,8 @@ export class LevelMenuComponent {
     </div>
     `);
 
-    // TODO: this is duplicate code from icon.js
-
-    // Create a temporary canvas to draw the icon
-    const canvas = document.createElement("canvas");
-    canvas.width = 55 * window.devicePixelRatio;
-    canvas.height = 55 * window.devicePixelRatio;
-    drawIcon(level, canvas);
-    
-    // Convert canvas to data URL and set as img src
-    const dataURL = canvas.toDataURL();
+    // Get cached or generate icon dataURL
+    const dataURL = getCachedLevelIconDataUrl(level);
     let icon = element.querySelector(".level_icon_image");
     icon.src = dataURL;
     icon.style.width = "55px";

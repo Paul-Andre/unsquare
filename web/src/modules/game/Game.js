@@ -8,7 +8,7 @@ import { trackLevelEnd } from '../utils/analytics.js';
 import { getBestNumMoves, setBestNumMoves, getCachedChallengeStatistics, saveChallengeStatistics } from '../core/levelUtils.js';
 import * as config from '../utils/config.js';
 import { renderHistogram } from '../ui/ChallengeHistogram.js';
-import { drawIcon } from '../ui/icon.js';
+import { drawIcon, getCachedLevelIconDataUrl } from '../ui/icon.js';
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from '../utils/api.js';
 
 
@@ -280,12 +280,7 @@ export class Game extends GameBase {
     // Generate level preview icon
     const previewImg = element.querySelector(".finishedChallengeLevelPreview");
     if (previewImg && this.level) {
-      const canvas = document.createElement("canvas");
-      const size = 55 * (window.devicePixelRatio || 1);
-      canvas.width = size;
-      canvas.height = size;
-      drawIcon(this.level, canvas);
-      const dataURL = canvas.toDataURL();
+      const dataURL = getCachedLevelIconDataUrl(this.level);
       previewImg.src = dataURL;
       previewImg.style.width = "55px";
       previewImg.style.height = "55px";

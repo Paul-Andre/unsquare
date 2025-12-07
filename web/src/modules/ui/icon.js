@@ -6,12 +6,32 @@
 
 // }
 
-export function createLevelIcon(level) {
-  // Create a temporary canvas to draw the icon
-  const canvas = createLevelIconCanvas(level);
+// Cache for level icon dataURLs, keyed by level full identifier
+const iconCache = new Map();
+
+/**
+ * Get cached icon dataURL for a level, or generate and cache it if not found.
+ * @param {Level} level - The level to get the icon dataURL for
+ * @returns {string} The dataURL for the level icon
+ */
+export function getCachedLevelIconDataUrl(level) {
+  const fullIdentifier = level.getFullIdentifier();
   
-  // Convert canvas to data URL
+  if (iconCache.has(fullIdentifier)) {
+    return iconCache.get(fullIdentifier);
+  }
+  
+  // Generate icon and cache it
+  const canvas = createLevelIconCanvas(level);
   const dataURL = canvas.toDataURL();
+  iconCache.set(fullIdentifier, dataURL);
+  
+  return dataURL;
+}
+
+export function createLevelIcon(level) {
+  // Get cached or generate dataURL
+  const dataURL = getCachedLevelIconDataUrl(level);
   
   // Create img element with data URL
   const img = document.createElement("img");
