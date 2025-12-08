@@ -287,7 +287,8 @@ export class GameLevelMenu {
     }
 
     // Update heading with level number (index + 1)
-    const levelNumber = dailyLevel.index + 1;
+    // TODO: getDailyLevelIndex is calculated twice...
+    const levelNumber = this.getDailyLevelIndex() + 1;
     heading.textContent = `Daily Level #${levelNumber}:`;
 
     let element = /** @type {HTMLElement} */ (container.querySelector(".level_icon"));
