@@ -244,3 +244,7 @@ Stats button, and cache icons
 07 Dec 2025
 0.11.4
 fix histogramViewIcon ontouchend
+
+07 Dec 2025
+0.11.5
+update daily levels json
