@@ -275,7 +275,7 @@ def main():
     args = parser.parse_args()
     
     input_path = Path(args.input)
-    output_path = Path(args.output) if args.output else input_path.with_name(input_path.stem + '_all_solutions.json')
+    output_path = Path(args.output) if args.output else input_path.with_name(input_path.stem + '_exhaustive.json')
     solver_dir = Path(__file__).parent.absolute()
     
     if not input_path.exists():
