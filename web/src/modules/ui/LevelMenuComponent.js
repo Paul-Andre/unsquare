@@ -227,6 +227,10 @@ export class LevelMenuComponent {
       let par_display = element.querySelector(".level_icon_par");
       let par = (level.solutions && level.solutions.length > 0) ? vector_sum(level.solutions[0]) : 0;
       par_display.innerText = par;
+      let colors = ["black", "black", "black", "magenta", "red", "orange", "cyan", "green", "purple", "blue"];
+      par_display.style.color = colors[par] || "purple";
+
+      element.style.borderColor = colors[par] || "purple";
 
       if (level.isIcon) {
         element.classList.add("bookIconRepresentative");
@@ -294,12 +298,12 @@ export class LevelMenuComponent {
   }
 
   reindexLevels() {
-    let displayIndex = 0;
+    let index = 0;
     for (let i = 0; i < this.book.levels.length; i++) {
       let level = this.book.levels[i];
-      if (!level.hidden) {
-        level.index = displayIndex++;
-      }
+      //if (!level.hidden) {
+        level.index = index++;
+     // }
     }
   }
 
