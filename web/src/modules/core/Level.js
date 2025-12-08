@@ -31,7 +31,7 @@ export class Level {
     let m = operations.length;
 
     level.solutions = [new Array(m).fill(0)];
-    level.solutionType = "confirmed";
+    level.solutionType = "running";
 
     return level;
   }

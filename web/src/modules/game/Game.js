@@ -359,7 +359,6 @@ export class Game extends GameBase {
       //vector_simplify_arithmetic(newSolution, level_get_arithmetic(this.level));
       let newSum = vector_sum(newSolution);
 
-      //debugger;
       if (newSum < oldSum) {
         // Player solution is better, replace entire array
         this.level.solutions = [newSolution];
@@ -368,7 +367,6 @@ export class Game extends GameBase {
         // Player solution is equal, check if it's already in the array
         let isAlreadyInArray = this.level.solutions.some(sol => vector_equal(sol, newSolution));
         if (!isAlreadyInArray) {
-          // Add it to the array
           this.level.solutions.push(newSolution);
         }
       }

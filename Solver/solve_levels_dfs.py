@@ -69,32 +69,6 @@ def compile_and_run_toZnDual(input_file, solver_dir):
     return run_result.stdout, run_result.stderr
 
 
-def solve_with_minizinc(dzn_file, model_file):
-    """Run MiniZinc solver: minizinc model.mzn data.dzn -a --solver highs"""
-    cmd = ['minizinc', str(model_file), str(dzn_file), '-a', '--solver', 'highs']
-    
-    try:
-        result = subprocess.run(cmd, capture_output=True, text=True, timeout=MINIZINC_TIMEOUT)
-        if result.returncode != 0:
-            print(f"MiniZinc error: {result.stderr}", file=sys.stderr)
-            return None
-        return result.stdout
-    except subprocess.TimeoutExpired:
-        print("MiniZinc timeout", file=sys.stderr)
-        return None
-
-
-def parse_minizinc_output(output):
-    """Parse MiniZinc output to extract the final result vector (solution)."""
-    if not output or 'unsolvable' in output.lower():
-        return None
-    
-    matches = re.findall(r'\[([\d,\s]+)\];\s*\d+', output)
-    if not matches:
-        return None
-    
-    result_str = matches[-1]
-    return [int(x.strip()) for x in result_str.split(',') if x.strip()]
 
 
 def generate_operations(m, n):
@@ -149,8 +123,8 @@ def validate_level(level, force):
         return False, "Not a square tile shape"
     if not level.get('tiles'):
         return False, "No tiles"
-    if not force and level.get('solutionType') == 'minizinc':
-        return False, "Already solved (minizinc)"
+    # if not force and level.get('solutionType') == 'minizinc':
+    #     return False, "Already solved (minizinc)"
     return True, None
 
 
@@ -262,6 +236,7 @@ def solve_json_file(input_path, output_path, solver_dir, force=False):
         
         if result.solutions:
             level['solutions'] = result.solutions
+            level['solutionType'] = "exhaustive"
             solved_count += 1
             if result.improved:
                 improved_levels.append((level, old_ops, sum(result.solutions[0]), i))

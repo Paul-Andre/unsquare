@@ -14,7 +14,6 @@ export class Editor extends GameBase {
   constructor(canvasId, divId) {
     super(canvasId, divId);
     this.referenceToOriginalLevel = null;
-    this.runningSolution = null; // Tracks cumulative solution (starts from level.solutions[0])
     this.drawMode = false;
     this.drawPaintValue = null; // The value to paint when dragging in draw mode
     this.drawUndoSaved = false; // Track if we've saved undo state for current draw operation
@@ -35,8 +34,6 @@ export class Editor extends GameBase {
     // The reason I don't just put it in the base is that at some point the game might need to modify the level
     this.referenceToOriginalLevel = level;
     super.openLevel(level.clone(), book);
-    // Initialize runningSolution from level's solutions
-    this.runningSolution = (this.level.solutions && this.level.solutions.length > 0) ? this.level.solutions[0].slice() : new Array(this.operations.length).fill(0);
     this.updateDrawModeButton();
     this.updateModeDropdown();
   }
@@ -50,16 +47,12 @@ export class Editor extends GameBase {
   // Hook to add additional state to undo
   getAdditionalState() {
     return {
-      runningSolution: this.runningSolution ? this.runningSolution.slice() : null,
       level: this.level.clone(),
     };
   }
 
   // Hook to restore additional state from undo
   restoreAdditionalState(undo) {
-    if (undo.runningSolution) {
-      this.runningSolution = undo.runningSolution.slice();
-    }
     if (undo.level) {
       this.level = undo.level;
       // Recompute operations when level changes
@@ -73,18 +66,21 @@ export class Editor extends GameBase {
 
   // Save state before a move is applied
   preMove(move) {
-    // Track the move in runningSolution
-    if (move != null && this.inverseOperations && this.runningSolution) {
+    if (move != null && this.inverseOperations && this.level.solutions) {
+      // When there was multiple running solutions, we only take the first one.
+      // TODO: instead, we could apply to move to all of them, and take the ones for which it minimizes the number of moves.
+      let runningSolution = this.level.solutions[0].slice();
       let vector = this.level.tileShape.moveToVector(this.tiles, move);
       let opIndex = this.inverseOperations.get(vector.join(""));
       if (opIndex !== undefined) {
-        this.runningSolution[opIndex] += 1;
+        runningSolution[opIndex] += 1;
+        vector_simplify_arithmetic(runningSolution, level_get_arithmetic(this.level));
+        if (this.level) {
+          this.level.solutions = [runningSolution]; // Don't need to slice
+          this.level.solutionType = "running";
+          this.level.par = null;
+        }
       }
-    }
-    vector_simplify_arithmetic(this.runningSolution, level_get_arithmetic(this.level));
-    // Update level.solutions whenever runningSolution changes
-    if (this.level) {
-      this.level.solutions = [this.runningSolution.slice()];
     }
   }
 
@@ -99,9 +95,6 @@ export class Editor extends GameBase {
 
     // Note that this modifies the copy of level, not the reference to the original level
     this.level.tiles = this.tiles;
-    this.level.solutions = [this.runningSolution.slice()];
-    // TODO: ???
-    this.level.par = null;
   }
 
   saveLevel() {
@@ -129,9 +122,8 @@ export class Editor extends GameBase {
 
       this.level.solutions = [sol.slice()];
       this.level.solutionType = "submitted";
+      this.level.par = null;
 
-      // Update runningSolution
-      this.runningSolution = sol.slice();
     } else {
       alert("Solution not satisfactory");
     }
@@ -154,8 +146,6 @@ export class Editor extends GameBase {
       for (let i = 0; i < this.operations.length; i++) {
         this.inverseOperations.set(this.operations[i].join(""), i);
       }
-      this.runningSolution = (level.solutions && level.solutions.length > 0) ? level.solutions[0].slice() : new Array(this.operations.length).fill(0);
-      this.level.solutions = [this.runningSolution.slice()];
     } else {
       alert("Could not parse string");
     }
@@ -174,8 +164,9 @@ export class Editor extends GameBase {
       return 1;
     });
     let m = this.operations.length;
-    this.runningSolution = new Array(m).fill(0);
-    this.level.solutions = [this.runningSolution.slice()];
+    this.level.solutions = [new Array(m).fill(0)];
+    this.level.solutionType = "running";
+    this.level.par = 0;
     this.updateGui();
     this.draw();
     // Start animation loop if animations were triggered
@@ -189,12 +180,6 @@ export class Editor extends GameBase {
   }
 
   specificOnShow() {
-    let currentSolution = (this.level.solutions && this.level.solutions.length > 0) ? this.level.solutions[0] : null;
-    if (currentSolution && !vector_equal(currentSolution, this.runningSolution)) {
-      this.runningSolution = currentSolution.slice();
-    } else if (!currentSolution) {
-      this.runningSolution = new Array(this.operations.length).fill(0);
-    }
     this.updateDrawModeButton();
     this.updateModeDropdown();
   }
@@ -225,8 +210,8 @@ export class Editor extends GameBase {
         }
 
         this.level.solutions = [new Array(m).fill(0)];
-        this.level.solutionType = "confirmed";
-        this.runningSolution = new Array(m).fill(0);
+        this.level.solutionType = "running";
+        this.level.par = 0;
       }
     }
   }
@@ -273,7 +258,7 @@ export class Editor extends GameBase {
         minEric = Math.min(minEric, eric);
       }
       
-      let solutionsText = numSolutions > 1 ? ` (${numSolutions} solutions)` : "";
+      let solutionsText = `(${numSolutions})`;
       this.div.getElementsByClassName("editorBest")[0].innerText =
         type +" "+sum + solutionsText + " " + minEric;
     } else {
@@ -466,14 +451,6 @@ export class Editor extends GameBase {
       for (let i = 0; i < operations.length; i++) {
         this.inverseOperations.set(operations[i].join(""), i);
       }
-
-      // Update running solution
-      this.runningSolution = (this.level.solutions && this.level.solutions.length > 0)
-        ? this.level.solutions[0].slice()
-        : new Array(m).fill(0);
-      
-      // Update level.solutions whenever runningSolution changes
-      this.level.solutions = [this.runningSolution.slice()];
 
       // Update GUI
       this.updateGui();
