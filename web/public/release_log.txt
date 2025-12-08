@@ -248,3 +248,7 @@ fix histogramViewIcon ontouchend
 07 Dec 2025
 0.11.5
 update daily levels json
+
+07 Dec 2025
+0.11.6
+Fix "Daily Level #"
