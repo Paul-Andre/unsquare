@@ -628,10 +628,15 @@ export class Game extends GameBase {
     return this.div.getElementsByClassName(className)[0];
   }
 
+  getLevelArrayIndex(level) {
+    return level.index;
+  }
+
   // Helper: Calculate display index for a level (excluding hidden levels)
-  getDisplayIndex(level) {
+  // TODO: this should not be recomputed like this every time for every level.
+  getLevelDisplayIndex(level) {
     let displayIndex = 0;
-    const currentArrayIndex = this.book.levels.indexOf(level);
+    const currentArrayIndex = this.getLevelArrayIndex(level);
     for (let i = 0; i < currentArrayIndex; i++) {
       if (!this.book.levels[i].hidden) {
         displayIndex++;
@@ -703,20 +708,28 @@ export class Game extends GameBase {
     }
 
     // Calculate display index (excluding hidden levels)
-    const index = this.getDisplayIndex(level);
-    const levelDisplay = level.isCustom ? "Custom Level" : (level.title || `Level ${1 + index}`);
+    let levelDisplay;
+    if (level.title) {
+      levelDisplay = level.title;
+    } else if (level.isCustom) {
+      levelDisplay = "Custom Level";
+    } else {
+      const index = this.getLevelDisplayIndex(level);
+      levelDisplay = `Level ${1 + index}`
+    };
+
     document.getElementById("LevelIndicator").innerText = levelDisplay;
 
     const states = calculateStates(this.book);
-    this.updateNavigationButtons(index, states);
+    this.updateNavigationButtons(states);
 
     // Update hint button visibility
     this.updateHintButtonVisibility();
   }
 
-  updateNavigationButtons(index, states) {
+  updateNavigationButtons(states) {
     const prevButton = this.div.querySelector("#prevButton");
-    const currentArrayIndex = this.book.levels.indexOf(this.level);
+    const currentArrayIndex = this.getLevelArrayIndex(this.level);
     const prevArrayIndex = this.findPrevVisibleLevel(currentArrayIndex);
     prevButton.toggleAttribute("disabled", prevArrayIndex < 0 || states[prevArrayIndex] <= LEVEL_STATES.LOCKED);
 
@@ -748,8 +761,8 @@ export class Game extends GameBase {
     }
 
     discordEl.hidden = true;
-    const currentArrayIndex = this.book.levels.indexOf(this.level);
-    if (currentArrayIndex === -1) return;
+    const currentArrayIndex = this.getLevelArrayIndex(this.level);
+    if (currentArrayIndex === null) return;
     
     const nextArrayIndex = this.findNextVisibleLevel(currentArrayIndex);
     if (nextArrayIndex >= 0) {
@@ -758,8 +771,8 @@ export class Game extends GameBase {
   }
 
   prevLevel() {
-    const currentArrayIndex = this.book.levels.indexOf(this.level);
-    if (currentArrayIndex === -1) return;
+    const currentArrayIndex = this.getLevelArrayIndex(this.level);
+    if (currentArrayIndex === null) return;
     
     const prevArrayIndex = this.findPrevVisibleLevel(currentArrayIndex);
     if (prevArrayIndex >= 0) {

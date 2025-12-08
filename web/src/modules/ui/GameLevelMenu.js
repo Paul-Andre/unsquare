@@ -264,11 +264,11 @@ export class GameLevelMenu {
       return null;
     }
 
-    const level = this.dailyLevels[index];
+    const level = this.dailyLevels[index].clone();
     
     // Set title to "Daily #X" where X is index + 1
     level.title = `Daily #${index + 1}`;
-    level.index = index;
+    level.index = 0;
     
     return level;
   }
