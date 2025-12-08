@@ -87,18 +87,20 @@ export class Editor extends GameBase {
   postMove() {
   }
 
-  updateLevelInfo() {
+  syncTilesToLevel() {
     // Return early if no state is loaded yet
     if (!this.tiles || !this.level) {
       return;
     }
 
     // Note that this modifies the copy of level, not the reference to the original level
+    // TODO: if here we're assigning by reference (as opposed to making a copy) and it works,
+    // then why do we need this function at all? Investigate.
     this.level.tiles = this.tiles;
   }
 
   saveLevel() {
-    this.updateLevelInfo();
+    this.syncTilesToLevel();
     this.referenceToOriginalLevel.copyFrom(this.level);
     save_editor_book(this.book);
   }
@@ -114,7 +116,7 @@ export class Editor extends GameBase {
     let sol_string = window.prompt("Solution in 01010101010 format");
     let sol = Array.from(sol_string).map(x => Number(x));
 
-    this.updateLevelInfo();
+    this.syncTilesToLevel();
     let check = level_check_solution(this.level, sol);
     if (check) {
       // Save undo state
@@ -174,7 +176,7 @@ export class Editor extends GameBase {
   }
 
   play() {
-    this.updateLevelInfo();
+    this.syncTilesToLevel();
     window.game.openLevel(this.level, this.book);
     screenManager.switchTo("game");
   }
@@ -222,7 +224,7 @@ export class Editor extends GameBase {
   }
 
   saveAs() {
-    this.updateLevelInfo();
+    this.syncTilesToLevel();
     const newLevel = this.level.clone();
     newLevel.id = generate_id("level");
     newLevel.index = this.book.levels.length;
@@ -240,7 +242,7 @@ export class Editor extends GameBase {
   }
 
   updateGui() {
-    this.updateLevelInfo();
+    this.syncTilesToLevel();
 
     if (!this.tiles || !this.level) {
       return;

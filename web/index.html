@@ -223,11 +223,11 @@
             <h1> Solved! </h1>
             <h2 class="finishedLevelMoves"> 40/3 moves</h2>
             <div class="finishedLevelButtons">
-              <button class="finishedLevelRestartButton" onclick="game.restart();" ontouchend="game.restart();"
+              <button class="finishedLevelRestartButton" onclick="game.restart();"
                 style="touch-action: none">
                 ⟳ Redo
               </button>
-              <button class="finishedLevelNextButton" onclick="nextLevel();" ontouchend="nextLevel();"
+              <button class="finishedLevelNextButton" onclick="game.nextLevel();"
                 style="touch-action: none">
                 Next →
               </button>
@@ -241,7 +241,7 @@
             <h1> Perfect! </h1>
             <h2 class="finishedLevelMoves"> 40/3 moves</h2>
             <div class="finishedLevelButtons">
-              <button class="finishedLevelNextButton" onclick="nextLevel();" ontouchend="nextLevel();"
+              <button class="finishedLevelNextButton" onclick="game.nextLevel();"
                 style="touch-action: none">
                 Next →
               </button>
@@ -272,11 +272,11 @@
 
             <h2 class="finishedLevelMoves"> 3 moves</h2>
             <div class="finishedLevelButtons challengeFinishedButtons">
-              <button class="finishedLevelRestartButton" onclick="game.restart();" ontouchend="game.restart();"
+              <button class="finishedLevelRestartButton" onclick="game.restart();"
                 style="touch-action: none">
                 ⟳ Redo
               </button>
-              <button class="finishedLevelNextButton" onclick="nextLevel();" ontouchend="nextLevel();"
+              <button class="finishedLevelNextButton" onclick="game.nextLevel();"
                 style="touch-action: none">
                 Next →
               </button>
@@ -333,14 +333,14 @@
               <button class="discord_button_blue">Discord</button>
             </form>
             <br />
-            <button onclick="nextLevel();"> Continue Playing</button>
+            <button onclick="game.nextLevel();"> Continue Playing</button>
           </div>
 
           <canvas id="gameCanvas" class="gameCanvas" width="30px" height="30px"></canvas>
         </div>
         <div class="footer">
-          <button id="prevButton" onclick="prevLevel();">&#60; Prev</button>
-          <button id="nextButton" onclick="nextLevel();" style="float: right">
+          <button id="prevButton" onclick="game.prevLevel();">&#60; Prev</button>
+          <button id="nextButton" onclick="game.nextLevel();" style="float: right">
             Next &#62;
           </button>
         </div>

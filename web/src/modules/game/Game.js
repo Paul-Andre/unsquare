@@ -568,7 +568,7 @@ export class Game extends GameBase {
     
     if (hasNextLevel) {
       nextButton.textContent = "Next →";
-      nextButton.onclick = () => window.nextLevel();
+      nextButton.onclick = () => this.nextLevel();
     } else {
       nextButton.textContent = "Return";
       nextButton.onclick = () => window.screenManager.goBack();

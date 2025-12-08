@@ -20,8 +20,6 @@ declare global {
     gameLevelMenu: typeof gameLevelMenu;
     editorLevelMenu: typeof editorLevelMenu;
     parseCustomLevel: typeof checkAndOpenCustomLevel;
-    nextLevel: () => void;
-    prevLevel: () => void;
     openEditor: () => void;
     openPlayerEditor: () => void;
     onboardingPrev: () => void;
