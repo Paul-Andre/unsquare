@@ -3,7 +3,7 @@
 import { getCachedLevelIconDataUrl } from './icon.js';
 import { htmlStringToElement } from '../utils/helpers.js';
 import { ICON_SIZE } from '../utils/config.js';
-import { vector_sum } from '../core/algo.js';
+import { vector_sum } from '../core/algo';
 import { screenManager } from './ScreenManager.js';
 import { Level } from '../core/Level.js';
 import { save_editor_book, book_reviver } from '../core/bookUtils.js';

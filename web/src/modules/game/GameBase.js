@@ -1,7 +1,7 @@
 "use strict";
 
 import { TileAnimationState } from '../core/TileAnimationState.js';
-import { compute_operations_for_level } from '../core/algo.js';
+import { compute_operations_for_level } from '../core/algo';
 import { trackLevelStart } from '../utils/analytics.js';
 import * as config from '../utils/config.js';
 import { cancelEvent } from '../utils/helpers.js';

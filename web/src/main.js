@@ -8,7 +8,7 @@ import { editorLevelMenu } from './modules/ui/editorLevelMenu.js';
 import { checkAndOpenCustomLevel } from './modules/utils/customParse.js';
 import { Level } from './modules/core/Level.js';
 import * as config from './modules/utils/config.js';
-import * as algo from './modules/core/algo.js';
+import * as algo from './modules/core/algo';
 import { generate_id } from './modules/utils/helpers.js';
 
 // Global configuration
