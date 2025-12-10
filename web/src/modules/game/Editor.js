@@ -3,7 +3,7 @@
 import { GameBase } from './GameBase.js';
 import { TileAnimationState } from '../core/TileAnimationState.js';
 import { Grid } from '../core/Grid';
-import { compute_operations_for_level, vector_sum, level_check_solution, get_level_compact_solution, vector_equal, vector_simplify_arithmetic, level_get_arithmetic, eric_partition_number } from '../core/algo.js';
+import { compute_operations_for_level, vector_sum, level_check_solution, get_level_compact_solution, vector_equal, vector_simplify_arithmetic, level_get_arithmetic, eric_partition_number, obviousScore } from '../core/algo.js';
 import { save_editor_book } from '../core/bookUtils.js';
 import { screenManager } from '../ui/ScreenManager.js';
 import { Level, compute_gaussian_solution } from '../core/Level.js';
@@ -259,10 +259,18 @@ export class Editor extends GameBase {
         let eric = eric_partition_number(this.level, solution);
         minEric = Math.min(minEric, eric);
       }
+
+      let minObv = Infinity;
+      for (let solution of this.level.solutions) {
+        let obv = obviousScore(this.level, solution);
+        minObv = Math.min(minObv, obv);
+      }
+      // multiply by 100 and round to integer
+      minObv = Math.round(minObv * 100);
       
       let solutionsText = `(${numSolutions})`;
       this.div.getElementsByClassName("editorBest")[0].innerText =
-        type +" "+sum + solutionsText + " " + minEric;
+        type +" "+sum + solutionsText + " " + minEric + " " + minObv;
     } else {
       let type = this.level.solutionType || "unknown";
       this.div.getElementsByClassName("editorBest")[0].innerText = "? " + type;

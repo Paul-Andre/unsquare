@@ -33,9 +33,33 @@ export function compute_operations(geometry) {
   throw new Error(`geometry ${JSON.stringify(geometry)} not supported`);
 }
 
+export function compute_operation_borders(geometry) {
+  let operations = [];
+  if (geometry.type == "square") {
+    let w = geometry.width;
+    let h = geometry.height;
+    for (let i = 0; i < w; i++) {
+      for (let j = 0; j < h; j++) {
+        for (let s = 2; i + s <= w && j + s <= h; s++) {
+          let arr = new Array(w * h).fill(0);
+          for (let ii = 0; ii < s; ii++) {
+            for (let jj = 0; jj < s; jj++) {
+              let x = i + ii;
+              let y = j + jj;
+              arr[x + y * w] = 1;
+            }
+          }
+          operations.push(arr);
+        }
+      }
+    }
+    return operations;
+  }
+  throw new Error(`geometry ${JSON.stringify(geometry)} not supported`);
+}
+
 // Convert operation index to move coordinates {x, y, size}
-// Operations are generated in compute_operations in order: for each x, for each y, for each size
-export function operation_index_to_move(geometry, opIndex) {
+export function compute_moves(geometry) {
   if (geometry.type !== "square") {
     throw new Error(`geometry ${JSON.stringify(geometry)} not supported`);
   }
@@ -43,19 +67,22 @@ export function operation_index_to_move(geometry, opIndex) {
   const width = geometry.width;
   const height = geometry.height;
   let index = 0;
-  
+  let moves = [];
+
   for (let x = 0; x < width; x++) {
     for (let y = 0; y < height; y++) {
       for (let size = 2; x + size <= width && y + size <= height; size++) {
-        if (index === opIndex) {
-          return { x, y, size };
-        }
-        index++;
+        moves.push({ x, y, size });
       }
     }
   }
   
-  return null;
+  return moves;
+}
+
+// TODO: remove all usecases of this function. 
+export function operation_index_to_move(geometry, opIndex) {
+  return compute_moves(geometry)[opIndex];
 }
 
 export function get_geometry_m(geometry) {
@@ -92,6 +119,21 @@ export function compute_operations_for_level(level) {
     return compute_operations(level.geometry);
   } else if (level.tileShape.name == "square") {
     return compute_operations({
+      type: "square",
+      width: level.tiles.width,
+      height: level.tiles.height,
+    });
+  }
+  console.log(level);
+  throw new Error("Did not understand how to compute operations for level");
+}
+
+// Oh god, the duplication...
+export function compute_moves_for_level(level) {
+  if (level.geometry) {
+    return compute_moves(level.geometry);
+  } else if (level.tileShape.name == "square") {
+    return compute_moves({
       type: "square",
       width: level.tiles.width,
       height: level.tiles.height,
@@ -485,6 +527,9 @@ export function eric_partition_number(level, solution=null) {
   let operations = compute_operations_for_level(level);
   assert(operations.length == solution.length);
   let m = new Set();
+  console.log(vector_sum(solution));
+  let emptyArea = "0".repeat(vector_sum(solution));
+  m.add(emptyArea);
   for (let j=0; j<operations[0].length; j++) {
     let s = "";
     for (let i=0; i<operations.length; i++) {
@@ -497,9 +542,50 @@ export function eric_partition_number(level, solution=null) {
     }
     m.add(s);
   }
+  console.log(m);
   return m.size;
 }
 
+export function move_border_count(grid, square) {
+  let tot = 0;
+  let virt = grid.virtual(()=>1);
+  for (let i=0; i<square.size; i++) {
+    tot += +(virt.get(square.x-1, square.y+i) != virt.get( square.x, square.y+i));
+    tot += +(virt.get(square.x+square.size-1, square.y+i) != virt.get(square.x+square.size, square.y+i));
+    tot += +(virt.get(square.x+i, square.y-1)!= virt.get( square.x+i, square.y));
+    tot += +(virt.get( square.x+i, square.y+square.size-1)!= virt.get(square.x+i, square.y+square.size));
+  }
+  //cerr << tot <<"/"<<goal<<endl;
+  return tot;
+}
+
+export function obviousScore(level, solution, squares=null) {
+  //debugger;
+  squares = squares || compute_moves_for_level(level);
+  let grid = level.tiles;
+  let cnt = solution.length;
+  let tot = 0;
+  console.log("Calculating obviousScore");
+  for (let i = 0; i < solution.length; i++) {
+    let square = squares[i];
+
+    let border = move_border_count(grid, square);
+    let sides = square.size * 4;
+
+
+
+    let obv = border / sides;
+    console.log(JSON.stringify(square), border, sides, obv, solution[i]);
+
+
+    let diff = Math.abs(obv - solution[i]);
+    tot += diff * diff;
+    //tot += diff;
+  }
+  let ret = tot / cnt;
+  console.log(ret);
+  return ret;
+}
 // export function solution_obviousness(level, solution=null, operations=null) {
 //   if (solution === null) {
 //     solution = level.solutions && level.solutions.length > 0 ? level.solutions[0] : null;

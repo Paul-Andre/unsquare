@@ -2,7 +2,7 @@
 
 import { GameBase } from './GameBase.js';
 import { calculateStates, LEVEL_STATES } from '../ui/LevelMenuComponent.js';
-import { vector_sum, vector_simplify_arithmetic, level_get_arithmetic, vector_sub, operation_index_to_move, level_get_geometry, eric_partition_number, assert, vector_equal } from '../core/algo.js';
+import { obviousScore, vector_sum, vector_simplify_arithmetic, level_get_arithmetic, vector_sub, operation_index_to_move, level_get_geometry, eric_partition_number, assert, vector_equal } from '../core/algo.js';
 import { save_editor_book } from '../core/bookUtils.js';
 import { trackLevelEnd } from '../utils/analytics.js';
 import { getBestNumMoves, setBestNumMoves, getCachedChallengeStatistics, saveChallengeStatistics } from '../core/levelUtils.js';
@@ -898,7 +898,8 @@ export class Game extends GameBase {
         
         const newSolution = remainingSolution.slice();
         newSolution[i] -= 1;
-        const partition = eric_partition_number(this.level, newSolution);
+        //const partition = eric_partition_number(this.level, newSolution);
+        const partition = obviousScore(this.level, newSolution);
         minPartitionForThisMove = Math.min(minPartitionForThisMove, partition);
       }
       
