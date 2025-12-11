@@ -5,7 +5,7 @@ import { colorSchemes, colorSchemeByMod, ColorScheme } from './ColorScheme.js';
 import { tileShapes } from './tileShapes.ts';
 import { compute_operations_for_level, compute_operations, vector_multiply_matrix, vector_simplify_arithmetic, level_get_arithmetic, level_check_solution, vector_sum, get_gaussian_solution_for_level, assert, get_level_full_identifier } from './algo';
 import { generate_id } from '../utils/helpers.ts';
-import { getBestNumMoves } from './levelUtils.js';
+import { getBestNumMoves } from './levelUtils.ts';
 import { Book } from './Book';
 import { Geometry } from './algo';
 import { SquareTileShape } from './SquareTileShape';

@@ -8,7 +8,7 @@ import { screenManager } from './ScreenManager.js';
 import { Level } from '../core/Level.ts';
 import { save_editor_book, book_reviver } from '../core/bookUtils.ts';
 import { book_replacer } from '../core/bookUtils.ts';
-import { clearBestNumMoves } from '../core/levelUtils.js';
+import { clearBestNumMoves } from '../core/levelUtils.ts';
 import { editor } from '../game/Editor.js';
 
 // Level state constants to replace magic numbers
