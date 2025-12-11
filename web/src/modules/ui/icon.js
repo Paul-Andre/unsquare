@@ -6,7 +6,7 @@
 
 // }
 
-import { ICON_SIZE } from '../utils/config.js';
+import { ICON_SIZE } from '../utils/config.ts';
 
 // Cache for level icon dataURLs, keyed by level full identifier
 const iconCache = new Map();

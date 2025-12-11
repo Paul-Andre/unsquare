@@ -1,5 +1,5 @@
 "use strict";
-import { generate_id } from '../utils/helpers.js';
+import { generate_id } from '../utils/helpers.ts';
 import { Level } from './Level';
 import { Book } from './Book'
 

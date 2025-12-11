@@ -5,12 +5,12 @@ import { screenManager } from './ScreenManager.js';
 import { book_reviver } from '../core/bookUtils.ts';
 import { Level } from '../core/Level.ts';
 import { getCachedLevelIconDataUrl } from './icon.js';
-import { htmlStringToElement } from '../utils/helpers.js';
-import { SUPABASE_URL, SUPABASE_ANON_KEY } from '../utils/api.js';
+import { htmlStringToElement } from '../utils/helpers.ts';
+import { SUPABASE_URL, SUPABASE_ANON_KEY } from '../utils/api.ts';
 import { getCachedChallengeStatistics, saveChallengeStatistics } from '../core/levelUtils.js';
 import mainBookData from '../../data/2025_nov_11_reordered_solved_fixed_all_solutions.json';
 import dailyLevelsData from '../../data/daily_submitting_07_dec_exhaustive.json'
-import { DAILY_UNLOCK_HOUR, DAILY_LEVELS_START_DATE, ICON_SIZE } from '../utils/config.js';
+import { DAILY_UNLOCK_HOUR, DAILY_LEVELS_START_DATE, ICON_SIZE } from '../utils/config.ts';
 
 export class GameLevelMenu {
   constructor() {

@@ -2,9 +2,9 @@
 
 import { TileAnimationState } from '../core/TileAnimationState.ts';
 import { compute_operations_for_level } from '../core/algo';
-import { trackLevelStart } from '../utils/analytics.js';
-import * as config from '../utils/config.js';
-import { cancelEvent } from '../utils/helpers.js';
+import { trackLevelStart } from '../utils/analytics.ts';
+import * as config from '../utils/config.ts';
+import { cancelEvent } from '../utils/helpers.ts';
 
 /// This is what does the basics of drawing the tiles to the screen.
 ///

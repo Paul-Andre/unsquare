@@ -5,11 +5,11 @@ import { screenManager } from './modules/ui/ScreenManager.js';
 import { bookMenu } from './modules/ui/BookMenu.js';
 import { gameLevelMenu } from './modules/ui/GameLevelMenu.js';
 import { editorLevelMenu } from './modules/ui/editorLevelMenu.js';
-import { checkAndOpenCustomLevel } from './modules/utils/customParse.js';
+import { checkAndOpenCustomLevel } from './modules/utils/customParse.ts';
 import { Level } from './modules/core/Level.ts';
-import * as config from './modules/utils/config.js';
+import * as config from './modules/utils/config.ts';
 import * as algo from './modules/core/algo';
-import { generate_id } from './modules/utils/helpers.js';
+import { generate_id } from './modules/utils/helpers.ts';
 
 // Global configuration
 window.config = config;

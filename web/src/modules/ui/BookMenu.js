@@ -1,7 +1,7 @@
 "use strict";
 
-import { generate_id } from '../utils/helpers.js';
-import { htmlStringToElement } from '../utils/helpers.js';
+import { generate_id } from '../utils/helpers.ts';
+import { htmlStringToElement } from '../utils/helpers.ts';
 import { createLevelIconElement } from './icon.js';
 import { editorLevelMenu } from './editorLevelMenu.js';
 import { screenManager } from './ScreenManager.js';

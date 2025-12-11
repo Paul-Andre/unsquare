@@ -7,7 +7,7 @@ import { compute_operations_for_level, vector_sum, level_check_solution, get_lev
 import { save_editor_book } from '../core/bookUtils.ts';
 import { screenManager } from '../ui/ScreenManager.js';
 import { Level, compute_gaussian_solution } from '../core/Level.ts';
-import { generate_id } from '../utils/helpers.js';
+import { generate_id } from '../utils/helpers.ts';
 
 
 export class Editor extends GameBase {
