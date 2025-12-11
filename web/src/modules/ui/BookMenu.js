@@ -5,7 +5,7 @@ import { htmlStringToElement } from '../utils/helpers.js';
 import { createLevelIconElement } from './icon.js';
 import { editorLevelMenu } from './editorLevelMenu.js';
 import { screenManager } from './ScreenManager.js';
-import { book_reviver, create_empty_book, save_editor_book } from '../core/bookUtils.js';
+import { book_reviver, create_empty_book, save_editor_book } from '../core/bookUtils.ts';
 import book1OldData from '../../data/book1Old.json';
 import basicBlackWhiteData from '../../data/basicBlackWhite.json';
 import niceLevelsData from '../../data/niceLevels.json';

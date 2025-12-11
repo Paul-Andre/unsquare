@@ -1,6 +1,7 @@
 "use strict";
 import { generate_id } from '../utils/helpers.js';
-import { Level } from './Level.js';
+import { Level } from './Level';
+import { Book } from './Book'
 
 // For use with JSON.stringify
 export function book_replacer(key, value) {
@@ -31,7 +32,7 @@ export function book_reviver(key, value) {
   return value;
 }
 
-export function create_empty_book() {
+export function create_empty_book(): Book {
   let book = {
     id: generate_id("book"),
     title: "New Book",
@@ -40,7 +41,7 @@ export function create_empty_book() {
   return book;
 }
 
-export function save_editor_book(book) {
+export function save_editor_book(book: Book) {
   let key = "editor_" + book.id;
   localStorage.setItem(key, JSON.stringify(book, book_replacer));
 }

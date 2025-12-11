@@ -1,6 +1,6 @@
 "use strict";
 
-import { squareTileShape } from '../core/SquareTileShape.js';
+import { squareTileShape } from '../core/SquareTileShape.ts';
 
 /**
  * Registry of available tile shapes.

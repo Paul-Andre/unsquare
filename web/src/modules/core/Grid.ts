@@ -27,6 +27,10 @@ export class Grid<T = any> {
     return new GridFromArray(new Array(w * h), w, h);
   }
 
+  static fill<T>(w: number, h: number, v: T): GridFromArray<T> {
+    return new GridFromArray(new Array(w * h).fill(v), w, h);
+  }
+
   static withArrayConstructor = {
     blank<T>(con: new (length: number) => T[], w: number, h: number): GridFromArray<T> {
       return new GridFromArray(new con(w * h), w, h);

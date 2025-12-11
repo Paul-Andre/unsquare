@@ -2,8 +2,8 @@
 
 import { LevelMenuComponent, calculateLevelState, applyStateClass } from './LevelMenuComponent.js';
 import { screenManager } from './ScreenManager.js';
-import { book_reviver } from '../core/bookUtils.js';
-import { Level } from '../core/Level.js';
+import { book_reviver } from '../core/bookUtils.ts';
+import { Level } from '../core/Level.ts';
 import { getCachedLevelIconDataUrl } from './icon.js';
 import { htmlStringToElement } from '../utils/helpers.js';
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from '../utils/api.js';

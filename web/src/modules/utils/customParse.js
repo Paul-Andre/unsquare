@@ -1,4 +1,4 @@
-import { Level } from '../core/Level.js';
+import { Level } from '../core/Level.ts';
 import { screenManager } from '../ui/ScreenManager.js';
 
 export function checkAndOpenCustomLevel(game) {

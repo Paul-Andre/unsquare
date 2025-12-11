@@ -1,7 +1,12 @@
 "use strict";
 
+import { Arithmetic } from "./algo";
+
 export class ColorScheme {
-  constructor(name, cells, arithmetic) {
+  name: string;e
+  cells: { [key: number]: { fill: string } };
+  arithmetic: Arithmetic;
+  constructor(name: string, cells: { [key: number]: { fill: string; }; }, arithmetic: Arithmetic) {
     this.name = name;
     this.cells = cells;
     this.arithmetic = arithmetic;
@@ -79,7 +84,7 @@ export class RainbowColorScheme extends ColorScheme {
         7: { fill: "#FA5858" },
       },
       {
-        type: "",
+        type: "modular",
         modulus: 7,
       }
     );

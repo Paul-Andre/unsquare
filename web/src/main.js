@@ -6,7 +6,7 @@ import { bookMenu } from './modules/ui/BookMenu.js';
 import { gameLevelMenu } from './modules/ui/GameLevelMenu.js';
 import { editorLevelMenu } from './modules/ui/editorLevelMenu.js';
 import { checkAndOpenCustomLevel } from './modules/utils/customParse.js';
-import { Level } from './modules/core/Level.js';
+import { Level } from './modules/core/Level.ts';
 import * as config from './modules/utils/config.js';
 import * as algo from './modules/core/algo';
 import { generate_id } from './modules/utils/helpers.js';
@@ -30,15 +30,6 @@ window.screenManager.additionalFunctions.editorLevelMenu = editorLevelMenu;
 window.screenManager.additionalFunctions.bookMenu = bookMenu;
 window.screenManager.additionalFunctions.editor = editor;
 window.screenManager.additionalFunctions.game = window.game;
-
-// Make nextLevel and prevLevel globally available for HTML onclick handlers
-window.nextLevel = function() {
-  window.game.nextLevel();
-};
-
-window.prevLevel = function() {
-  window.game.prevLevel();
-};
 
 window.openEditor = function() {
   window.screenManager.switchTo("bookMenu");

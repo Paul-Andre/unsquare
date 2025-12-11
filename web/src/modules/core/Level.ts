@@ -1,18 +1,39 @@
 "use strict";
 
-import { Grid } from './Grid';
-import { colorSchemes, colorSchemeByMod } from './ColorScheme.js';
+import { Grid, GridFromArray } from './Grid';
+import { colorSchemes, colorSchemeByMod, ColorScheme } from './ColorScheme.js';
 import { tileShapes } from './tileShapes.js';
 import { compute_operations_for_level, compute_operations, vector_multiply_matrix, vector_simplify_arithmetic, level_get_arithmetic, level_check_solution, vector_sum, get_gaussian_solution_for_level, assert, get_level_full_identifier } from './algo';
 import { generate_id } from '../utils/helpers.js';
-import { getBestNumMoves } from '../core/levelUtils.js';
+import { getBestNumMoves } from './levelUtils.js';
+import { Book } from './Book';
+import { Geometry } from './algo';
+import { SquareTileShape } from './SquareTileShape';
+
+
 
 export class Level {
+  colorScheme: ColorScheme;
+  tileShape: SquareTileShape;
+  tiles: GridFromArray<number>;
+  par: number;
+  text: string;
+  title: string | null;
+  index: number;
+  isIcon: boolean;
+  isCustom: boolean;
+  hidden: boolean;
+  mode: "normal"|"challenge";
+  id: string;
+  solutions: number[][];
+  solutionType: "running"|"submitted"|"gaussian"|"impossible"|"exhaustive"|"manual"|"custom";
+  book: Book | null;
+  geometry: Geometry | null;
+
   constructor() {}
 
   static empty(size) {
-    const grid = Grid.empty(size, size);
-    grid.setAll(1);
+    const grid = Grid.fill(size, size, 1);
     const level = new Level();
     level.colorScheme = colorSchemes.BW;
     level.tileShape = tileShapes.square;
@@ -36,7 +57,7 @@ export class Level {
     return level;
   }
 
-  static fromJsonObject(json) {
+  static fromJsonObject(json: any) {
     const level = new Level();
     level.colorScheme = colorSchemes.BW; //colorSchemes[json.colorScheme];
     level.tileShape = tileShapes.square; // tileShapes[json.tileShape];
@@ -88,25 +109,26 @@ export class Level {
     return level;
   }
 
-  static fromCompact(s) {
-    let [geo, arith, tOrV, data] = s.split("$");
+  static fromCompact(s: string) {
+    let [geo, arith, tOrV, dataStr] = s.split("$");
     if (!geo.startsWith("s_")) {
       return null;
     }
-    let [_1, w, h] = geo.split("_");
-    w = Number(w);
-    h = Number(h);
+    let [_1, wStr, hStr] = geo.split("_");
+    let w = Number(wStr);
+    let h = Number(hStr);
 
     if (!arith.startsWith("m_")) {
       return null;
     }
-    let [_2, mod] = arith.split("_");
-    mod = Number(mod);
+    let [_2, modStr] = arith.split("_");
+    let mod = Number(modStr);
 
-    if (data.startsWith("_")) {
-      data = data.slice(1).split("_").map(Number);
+    let data: number[];
+    if (dataStr.startsWith("_")) {
+      data = dataStr.slice(1).split("_").map(Number);
     } else {
-      data = Array.from(data).map(Number);
+      data = Array.from(dataStr).map(Number);
     }
 
     const level = new Level();
@@ -129,8 +151,7 @@ export class Level {
 
       let solution = data;
 
-      let reach = vector_multiply_matrix(solution, operations);
-      vector_simplify_arithmetic(reach, level_get_arithmetic(level));
+      let reach = vector_multiply_matrix(solution, operations, level_get_arithmetic(level));
 
       reach = reach.map(a => a + 1);
       level.tiles = Grid.usingFlatArray(reach, w, h);
@@ -149,7 +170,7 @@ export class Level {
   }
 
   toJsonObject() {
-    const json = {};
+    const json: any = {};
     json.colorScheme = this.colorScheme.name;
     json.tileShape = this.tileShape.name;
     json.tiles = this.tiles.to2dArray(); //TODO: should be tileShape.gridToJson...
@@ -179,13 +200,13 @@ export class Level {
     return json;
   }
 
-  clone() {
+  clone(): Level {
     const level = new Level();
     level.copyFrom(this);
     return level;
   }
 
-  copyFrom(otherLevel) {
+  copyFrom(otherLevel: this): void {
     this.colorScheme = otherLevel.colorScheme;
     this.tileShape = otherLevel.tileShape;
     this.tiles = otherLevel.tiles.clone();
@@ -210,20 +231,20 @@ export class Level {
     }
   }
 
-  getFullIdentifier() {
+  getFullIdentifier(): string {
     // Contains the id of the level, as well as information that can be used to recreate the level.
     return get_level_full_identifier(this);
   }
 
-  getBestNumMoves() {
+  getBestNumMoves(): number {
     return getBestNumMoves(this);
   }
 
-  showsDemo() {
+  showsDemo(): boolean {
     return this.id == "level_1693531796434";
   }
 
-  getPar() {
+  getPar(): number | null {
     if (!this.solutions || this.solutions.length === 0) {
       return null;
     }
@@ -232,14 +253,14 @@ export class Level {
   }
 }
 
-export function check_all_solutions(level) {
-  if (!level.solutions || level.solutions.length === 0) {
+export function check_all_solutions(level: Level): boolean {
+  if (!level.solutions || level.solutions.length == 0) {
     return false;
   }
   return level.solutions.every(sol => level_check_solution(level, sol));
 }
 
-export function compute_gaussian_solution(level) {
+export function compute_gaussian_solution(level: Level): void {
   let sol = get_gaussian_solution_for_level(level);
   if (sol) {
     level.solutions = [sol];

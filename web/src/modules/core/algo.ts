@@ -1,15 +1,31 @@
-"use strict";
+import {Level} from "../core/Level"
+import { BoundedGrid } from "./Grid";
 
-export function assert(a) {
+export function assert(a: boolean): void {
   if (!a) {
     throw Error("Assertion failed");
   }
 }
 
-//export function compute
+export type Geometry = {
+  type: "square";
+  width: number;
+  height: number;
+};
 
-export function compute_operations(geometry) {
-  let operations = [];
+export type Arithmetic = {
+  type: "modular";
+  modulus: number;
+};
+
+export type Move = {
+  x: number;
+  y: number;
+  size: number;
+};
+
+export function compute_operations(geometry:Geometry): number[][] {
+  let operations: number[][] = [];
   if (geometry.type == "square") {
     let w = geometry.width;
     let h = geometry.height;
@@ -33,8 +49,8 @@ export function compute_operations(geometry) {
   throw new Error(`geometry ${JSON.stringify(geometry)} not supported`);
 }
 
-export function compute_operation_borders(geometry) {
-  let operations = [];
+export function compute_operation_borders(geometry:Geometry): number[][] {
+  let operations: number[][] = [];
   if (geometry.type == "square") {
     let w = geometry.width;
     let h = geometry.height;
@@ -59,7 +75,7 @@ export function compute_operation_borders(geometry) {
 }
 
 // Convert operation index to move coordinates {x, y, size}
-export function compute_moves(geometry) {
+export function compute_moves(geometry:Geometry): Move[] {
   if (geometry.type !== "square") {
     throw new Error(`geometry ${JSON.stringify(geometry)} not supported`);
   }
@@ -67,7 +83,7 @@ export function compute_moves(geometry) {
   const width = geometry.width;
   const height = geometry.height;
   let index = 0;
-  let moves = [];
+  let moves: Move[] = [];
 
   for (let x = 0; x < width; x++) {
     for (let y = 0; y < height; y++) {
@@ -81,15 +97,15 @@ export function compute_moves(geometry) {
 }
 
 // TODO: remove all usecases of this function. 
-export function operation_index_to_move(geometry, opIndex) {
+export function operation_index_to_move(geometry:Geometry, opIndex: number): Move {
   return compute_moves(geometry)[opIndex];
 }
 
-export function get_geometry_m(geometry) {
+export function get_geometry_m(geometry:Geometry): number {
   return compute_operations(geometry).length;
 }
 
-export function vector_sum(v) {
+export function vector_sum(v: number[]): number {
   let sum = 0;
   for (let i = 0; i < v.length; i++) {
     sum += v[i];
@@ -97,7 +113,7 @@ export function vector_sum(v) {
   return sum;
 }
 
-export function vector_equal(a, b) {
+export function vector_equal(a: number[], b: number[]): boolean {
   if (a.length != b.length) {
     return false;
   }
@@ -114,7 +130,7 @@ export function vector_equal(a, b) {
   assert(vector_equal([], []));
 }
 
-export function compute_operations_for_level(level) {
+export function compute_operations_for_level(level:Level) {
   if (level.geometry) {
     return compute_operations(level.geometry);
   } else if (level.tileShape.name == "square") {
@@ -129,7 +145,7 @@ export function compute_operations_for_level(level) {
 }
 
 // Oh god, the duplication...
-export function compute_moves_for_level(level) {
+export function compute_moves_for_level(level:Level): Move[] {
   if (level.geometry) {
     return compute_moves(level.geometry);
   } else if (level.tileShape.name == "square") {
@@ -147,7 +163,7 @@ export function compute_moves_for_level(level) {
 // what is this coding style bruv
 // fix it
 
-export function level_get_geometry(level) {
+export function level_get_geometry(level:Level): Geometry | null {
   if (level.geometry) {
     return level.geometry;
   }
@@ -159,10 +175,10 @@ export function level_get_geometry(level) {
     };
   }
   console.log(level);
-  return "what is this?";
+  return null;
 }
 
-export function vector_add(a, b) {
+export function vector_add(a: number[], b: number[]): number[] {
   assert(a.length == b.length);
   let c = new Array(a.length).fill(0);
   for (let i = 0; i < a.length; i++) {
@@ -171,7 +187,7 @@ export function vector_add(a, b) {
   return c;
 }
 
-export function vector_sub(a, b) {
+export function vector_sub(a: number[], b: number[]): number[] {
   assert(a.length == b.length);
   let c = new Array(a.length).fill(0);
   for (let i = 0; i < a.length; i++) {
@@ -180,21 +196,21 @@ export function vector_sub(a, b) {
   return c;
 }
 
-export function vector_self_add(self, other) {
+export function vector_self_add(self: number[], other: number[]): number[] {
   assert(self.length == other.length);
   for (let i = 0; i < self.length; i++) {
     self[i] += other[i];
   }
   return self;
 }
-export function vector_self_sub(self, other) {
+export function vector_self_sub(self: number[], other: number[]): number[] {
   assert(self.length == other.length);
   for (let i = 0; i < self.length; i++) {
     self[i] -= other[i];
   }
   return self;
 }
-export function vector_apply_modulus(self, modulus) {
+export function vector_apply_modulus(self: number[], modulus: number): void {
   for (let i = 0; i < self.length; i++) {
     self[i] %= modulus;
     self[i] += modulus;
@@ -202,9 +218,9 @@ export function vector_apply_modulus(self, modulus) {
   }
 }
 
-export function vector_simplify_arithmetic(vector, arithmetic) {
+export function vector_simplify_arithmetic(vector: number[], arithmetic: Arithmetic | null): void {
   if (!arithmetic) {
-    // nothing (but probably better to create null object for natural arithmetic
+    // TODO: probably better to create an object for natural arithmetic
   } else if (arithmetic.type == "modular") {
     vector_apply_modulus(vector, arithmetic.modulus);
   } else {
@@ -212,20 +228,20 @@ export function vector_simplify_arithmetic(vector, arithmetic) {
   }
 }
 
-export function get_geometry_compact(geometry) {
+export function get_geometry_compact(geometry:Geometry): string {
   if (geometry.type == "square") {
     return `s_${geometry.width}_${geometry.height}`;
   }
   throw new Error(`geometry ${JSON.stringify(geometry)} not supported`);
 }
-export function get_arithmetic_compact(arithmetic) {
+export function get_arithmetic_compact(arithmetic:Arithmetic): string {
   if ((arithmetic.type = "modular")) {
     return `m_${arithmetic.modulus}`;
   }
   throw new Error(`arithmetic ${JSON.stringify(arithmetic)} not supported`);
 }
 
-export function get_level_compact_tiles(level) {
+export function get_level_compact_tiles(level:Level): string {
   // todo: make a lowercase "t" for cases where the digits fit.
   // for (let i=0; i<level.tiles.length; i++) {
   //   assert(level.tiles[i]>= 1 level.tiles[i] <= 9);
@@ -242,7 +258,7 @@ export function get_level_compact_tiles(level) {
   // If do to2dArray() instead of array, then magically works... maybe want that?
 }
 
-export function get_level_full_identifier(level) {
+export function get_level_full_identifier(level:Level): string {
   return level.id + "$" + get_level_compact_tiles(level);
 }
 
@@ -250,7 +266,7 @@ export function get_level_full_identifier(level) {
 // representing the level by transmitting its solution
 // And it's not even the most compact representation...
 // small "s" is the compact version, big "S" is the version with underscores.
-export function get_level_compact_solution(level) {
+export function get_level_compact_solution(level:Level): string {
   let solution = (level.solutions && level.solutions.length > 0) ? level.solutions[0] : [];
   return (
     get_geometry_compact(level_get_geometry(level)) +
@@ -262,7 +278,7 @@ export function get_level_compact_solution(level) {
   );
 }
 
-export function vector_multiply_matrix(applications, operations, arithmetic) {
+export function vector_multiply_matrix(applications: number[], operations: number[][], arithmetic: Arithmetic|null = null): number[] {
   let m = applications.length;
   assert(operations.length == m);
   let n = operations[0].length;
@@ -276,15 +292,15 @@ export function vector_multiply_matrix(applications, operations, arithmetic) {
   return ret;
 }
 
-let MOD_2 = {
+let MOD_2: Arithmetic = {
   type: "modular",
   modulus: 2,
 };
 
-export function transpose_matrix(a) {
+export function transpose_matrix<T>(a: T[][]): T[][] {
   let m = a.length;
   let n = a[0].length;
-  let ret = [];
+  let ret: T[][] = [];
   for (let i = 0; i < n; i++) {
     let rr = [];
     for (let j = 0; j < m; j++) {
@@ -314,7 +330,7 @@ export function transpose_matrix(a) {
 }
 
 // Used to rapidly create tests where it's possible to have
-export function test_multiply_and_gaussian(a, b) {
+export function test_multiply_and_gaussian(a: number[], b: number[][]) {
   let c = vector_multiply_matrix(a, b);
   vector_apply_modulus(c, 2);
   console.log(a, b, c);
@@ -331,14 +347,14 @@ export function test_multiply_and_gaussian(a, b) {
   test_multiply_and_gaussian(a, b);
 }
 
-export function random_vector(n, mod) {
+export function random_vector(n: number, mod: number): number[] {
   let rr = [];
   for (let j = 0; j < n; j++) {
     rr.push(Math.floor(Math.random() * mod));
   }
   return rr;
 }
-export function random_matrix(m, n, mod) {
+export function random_matrix(m: number, n: number, mod: number): number[][]  {
   let ret = [];
   for (let i = 0; i < m; i++) {
     let rr = [];
@@ -361,7 +377,7 @@ if (false) {
 }
 
 // Aw man, gaussian elimination
-export function solve_gaussian(operations, tiles, arithmetic) {
+export function solve_gaussian(operations: number[][], tiles: number[], arithmetic: Arithmetic): {solution: number[], kernel: number[][]} {
   let mat = transpose_matrix(operations);
   let target = tiles.slice();
 
@@ -472,14 +488,15 @@ export function solve_gaussian(operations, tiles, arithmetic) {
     assert(vector_equal(tiles, target_reach));
   }
 
-  let ret = {};
-  ret.solution = solution;
-  ret.kernel = kernelBasis;
+  let ret = {
+    solution:solution,
+    kernel: kernelBasis,
+  };
 
   return ret;
 }
 
-export function get_level_tiles_vector(level) {
+export function get_level_tiles_vector(level:Level): number[] {
   let tilesVector = level.tiles.array.slice();
   for (let i = 0; i < tilesVector.length; i++) {
     tilesVector[i] -= 1;
@@ -487,12 +504,12 @@ export function get_level_tiles_vector(level) {
   return tilesVector;
 }
 
-export function level_get_arithmetic(level) {
+export function level_get_arithmetic(level:Level): Arithmetic {
   return level.colorScheme.arithmetic;
 }
 
 // TODO: do some kind of check more specific than try catch
-export function level_check_solution(level, solution = null) {
+export function level_check_solution(level:Level, solution: number[] | null = null): boolean {
   if (solution === null) {
     solution = level.solutions && level.solutions.length > 0 ? level.solutions[0] : null;
   }
@@ -506,7 +523,7 @@ export function level_check_solution(level, solution = null) {
   return vector_equal(target, reach);
 }
 
-export function get_gaussian_solution_for_level(level) {
+export function get_gaussian_solution_for_level(level:Level): number[] | null {
   //let level.tiles.array
   let arithmetic = level.colorScheme.arithmetic;
   let operations = compute_operations_for_level(level);
@@ -520,7 +537,7 @@ export function get_gaussian_solution_for_level(level) {
   return null;
 }
 
-export function eric_partition_number(level, solution=null) {
+export function eric_partition_number(level:Level, solution: number[] | null = null): number {
   if (solution === null) {
     solution = level.solutions && level.solutions.length > 0 ? level.solutions[0] : null;
   }
@@ -546,7 +563,7 @@ export function eric_partition_number(level, solution=null) {
   return m.size;
 }
 
-export function move_border_count(grid, square) {
+export function move_border_count(grid: BoundedGrid<number>, square: Move): number {
   let tot = 0;
   let virt = grid.virtual(()=>1);
   for (let i=0; i<square.size; i++) {
@@ -559,7 +576,7 @@ export function move_border_count(grid, square) {
   return tot;
 }
 
-export function obviousScore(level, solution, squares=null) {
+export function obviousScore(level:Level, solution: number[] | null = null, squares: Move[] | null = null): number {
   //debugger;
   squares = squares || compute_moves_for_level(level);
   let grid = level.tiles;
@@ -586,11 +603,4 @@ export function obviousScore(level, solution, squares=null) {
   console.log(ret);
   return ret;
 }
-// export function solution_obviousness(level, solution=null, operations=null) {
-//   if (solution === null) {
-//     solution = level.solutions && level.solutions.length > 0 ? level.solutions[0] : null;
-//   }
-//   operations = operations || compute_operations_for_level(level);
-//   //for ()
 
-// }

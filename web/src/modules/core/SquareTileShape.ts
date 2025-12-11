@@ -1,19 +1,10 @@
 "use strict";
 
-import { Grid } from './Grid';
-import { ENABLE_INSET_DRAWING } from '../utils/config.js';
-
-/**
- * @typedef {Object} BoundedGrid
- * @property {number} width
- * @property {number} height
- * @property {function} forEach
- * @property {function} get
- * @property {function} set
- * @property {function} window
- */
+import { Grid, GridFromArray } from './Grid';
+import { ENABLE_INSET_DRAWING } from '../utils/config';
 
 export class SquareTileShape {
+  name: "square";
 
   constructor() {
     this.name = "square";
@@ -77,7 +68,7 @@ export class SquareTileShape {
    * @param {number[][]} tiles - 2D array representation of tiles
    * @returns {Grid} Grid object
    */
-  gridFromJsonObject(tiles) {
+  gridFromJsonObject(tiles: number[][]): GridFromArray<number> {
     return Grid.from2dArray(tiles);
   }
 

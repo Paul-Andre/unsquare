@@ -9,6 +9,7 @@ import { gameLevelMenu } from './modules/ui/GameLevelMenu.js';
 import { editorLevelMenu } from './modules/ui/editorLevelMenu.js';
 import { checkAndOpenCustomLevel } from './modules/utils/customParse.js';
 import * as config from './modules/utils/config.js';
+import * as algo from './modules/core/algo.ts';
 
 declare global {
   interface Window {
@@ -28,6 +29,8 @@ declare global {
     posthog?: {
       capture: (event: string, properties?: Record<string, any>) => void;
     };
+    algo: typeof algo;
+    
   }
 }
 
