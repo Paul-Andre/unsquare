@@ -1,7 +1,23 @@
 "use strict";
 
-import { Grid, GridFromArray } from './Grid';
+import { Grid, GridFromArray, BoundedGrid } from './Grid';
 import { ENABLE_INSET_DRAWING } from '../utils/config';
+import { ColorScheme } from './ColorScheme';
+import { Level } from './Level';
+
+interface TileState {
+  selected: boolean;
+  oldSelected: boolean;
+  insetState: number;
+  reverseInsetState: number;
+  transitionState: number;
+}
+
+interface Move {
+  x: number;
+  y: number;
+  size: number;
+}
 
 export class SquareTileShape {
   name: "square";
@@ -14,15 +30,15 @@ export class SquareTileShape {
    * Given fractional positions the two corners of the dragged rectangle
    * relative to the grid, returns the top right corner and size of square
    * to be inverted.
-   * @param {number} x1 - First corner x position (0-1)
-   * @param {number} y1 - First corner y position (0-1)
-   * @param {number} x2 - Second corner x position (0-1)
-   * @param {number} y2 - Second corner y position (0-1)
-   * @param {number} gridWidth - Grid width in cells
-   * @param {number} gridHeight - Grid height in cells
-   * @returns {{x: number, y: number, size: number}} Square coordinates and size. Numbers are between 0 and gridWidth/gridHeight, not between 0 and 1. You still need to check if the "size" is bigger than 1.
+   * @param x1 - First corner x position (0-1)
+   * @param y1 - First corner y position (0-1)
+   * @param x2 - Second corner x position (0-1)
+   * @param y2 - Second corner y position (0-1)
+   * @param gridWidth - Grid width in cells
+   * @param gridHeight - Grid height in cells
+   * Returns: Square coordinates and size. Numbers are between 0 and gridWidth/gridHeight, not between 0 and 1. You still need to check if the "size" is bigger than 1.
    */
-  calculateSquare(x1, y1, x2, y2, gridWidth, gridHeight) {
+  calculateSquare(x1: number, y1: number, x2: number, y2: number, gridWidth: number, gridHeight: number): Move {
     // Specify the direction in which the square goes. 1 is the default value.
     const xSign = Math.sign(x2 - x1) || 1;
     const ySign = Math.sign(y2 - y1) || 1;
@@ -65,8 +81,6 @@ export class SquareTileShape {
 
   /**
    * Converts a 2D array of tiles to a Grid object.
-   * @param {number[][]} tiles - 2D array representation of tiles
-   * @returns {Grid} Grid object
    */
   gridFromJsonObject(tiles: number[][]): GridFromArray<number> {
     return Grid.from2dArray(tiles);
@@ -74,12 +88,10 @@ export class SquareTileShape {
 
   /**
    * Converts mouse position from [0, 1] normalized coordinates to [0, grid dimension] cell coordinates.
-   * @param {number} x - Normalized x position (0-1)
-   * @param {number} y - Normalized y position (0-1)
-   * @param {BoundedGrid} tiles - Grid object with width and height properties
-   * @returns {{x: number, y: number}} Cell coordinates
+   * @param x - Normalized x position (0-1)
+   * @param y - Normalized y position (0-1)
    */
-  coordinatesFromMousePosition(x, y, tiles) {
+  coordinatesFromMousePosition(x: number, y: number, tiles: BoundedGrid<any>): {x: number, y: number} {
     return {
       x: Math.floor(x * tiles.width),
       y: Math.floor(y * tiles.height),
@@ -88,12 +100,10 @@ export class SquareTileShape {
 
   /**
    * Converts cell coordinates to normalized position on canvas [0, 1].
-   * @param {number} x - Cell x coordinate
-   * @param {number} y - Cell y coordinate
-   * @param {BoundedGrid} tiles - Grid object with width and height properties
-   * @returns {{x: number, y: number}} Normalized position (0-1)
+   * @param x - Cell x coordinate
+   * @param y - Cell y coordinate
    */
-  positionFromCoordinates(x, y, tiles) {
+  positionFromCoordinates(x: number, y: number, tiles: BoundedGrid<any>): {x: number, y: number} {
     return {
       x: (x + 0.5) / tiles.width,
       y: (y + 0.5) / tiles.height,
@@ -102,14 +112,13 @@ export class SquareTileShape {
 
   /**
    * Creates a move object based on the start and end coordinates of a mouse drag.
-   * @param {number} x1 - Start x position (0-1)
-   * @param {number} y1 - Start y position (0-1)
-   * @param {number} x2 - End x position (0-1)
-   * @param {number} y2 - End y position (0-1)
-   * @param {BoundedGrid} tiles - Grid object with width and height properties
-   * @returns {{x: number, y: number, size: number}|null} Move object or null if size <= 1
+   * @param x1 - Start x position (0-1)
+   * @param y1 - Start y position (0-1)
+   * @param x2 - End x position (0-1)
+   * @param y2 - End y position (0-1)
+   * @returns Move object or null if size <= 1
    */
-  moveFromMousePositions(x1, y1, x2, y2, tiles) {
+  moveFromMousePositions(x1: number, y1: number, x2: number, y2: number, tiles: BoundedGrid<any>): Move | null {
     const width = tiles.width;
     const height = tiles.height;
 
@@ -131,11 +140,9 @@ export class SquareTileShape {
 
   /**
    * Iterates over tiles in a move set, calling action for each tile.
-   * @param {BoundedGrid} grid - Grid to iterate over
-   * @param {{x: number, y: number, size: number}|null} move - Move object
-   * @param {function} action - Function to call for each tile: (value, x, y) => newValue
+   * @param action - Function to call for each tile: (value, x, y) => newValue
    */
-  forTilesInMoveSet(grid, move, action) {
+  forTilesInMoveSet<T>(grid: BoundedGrid<T>, move: Move | null, action: (value: T, x: number, y: number) => T): void {
     if (move !== null)
       grid
         .window(move.x, move.y, move.size, move.size)
@@ -146,12 +153,10 @@ export class SquareTileShape {
 
   /**
    * Converts a move object to a 0-1 vector (flat array) representing it.
-   * @param {BoundedGrid} grid - Grid object with width and height properties
-   * @param {{x: number, y: number, size: number}|null} move - Move object
-   * @returns {number[]} Flat array with 1s for tiles in the move, 0s elsewhere
+   * @returns Flat array with 1s for tiles in the move, 0s elsewhere
    */
-  moveToVector(grid, move) {
-    let move_grid = Grid.empty(grid.width, grid.height);
+  moveToVector(grid: BoundedGrid<any>, move: Move | null): number[] {
+    let move_grid = Grid.empty<number>(grid.width, grid.height);
     move_grid.setAll(0);
     this.forTilesInMoveSet(move_grid, move, () => 1);
     return move_grid.array;
@@ -159,11 +164,9 @@ export class SquareTileShape {
 
   /**
    * Iterates over tiles in a move, calling action for each tile.
-   * @param {BoundedGrid} grid - Grid to iterate over
-   * @param {{x: number, y: number, size: number}|null} move - Move object
-   * @param {function} action - Function to call for each tile: (value, x, y) => void
+   * @param action - Function to call for each tile: (value, x, y) => void
    */
-  forTilesInMove(grid, move, action) {
+  forTilesInMove<T>(grid: BoundedGrid<T>, move: Move | null, action: (value: T, x: number, y: number) => void): void {
     if (move !== null)
       grid
         .window(move.x, move.y, move.size, move.size)
@@ -174,13 +177,12 @@ export class SquareTileShape {
 
   /**
    * Selects tiles based on mouse drag coordinates.
-   * @param {number} x1 - Start x position (0-1)
-   * @param {number} y1 - Start y position (0-1)
-   * @param {number} x2 - End x position (0-1)
-   * @param {number} y2 - End y position (0-1)
-   * @param {BoundedGrid} tileStates - Grid of tile state objects with selected property
+   * @param x1 - Start x position (0-1)
+   * @param y1 - Start y position (0-1)
+   * @param x2 - End x position (0-1)
+   * @param y2 - End y position (0-1)
    */
-  select(x1, y1, x2, y2, tileStates) {
+  select(x1: number, y1: number, x2: number, y2: number, tileStates: BoundedGrid<TileState>): void {
     const width = tileStates.width;
     const height = tileStates.height;
 
@@ -210,11 +212,11 @@ export class SquareTileShape {
 
   /**
    * Calculates proportional border width based on tile size.
-   * @param {number} tileWidth - Tile width in pixels
-   * @param {number} tileHeight - Tile height in pixels
-   * @returns {number} Border width in pixels (2-8px)
+   * @param tileWidth - Tile width in pixels
+   * @param tileHeight - Tile height in pixels
+   * @returns Border width in pixels (2-8px)
    */
-  getBorderWidth(tileWidth, tileHeight) {
+  getBorderWidth(tileWidth: number, tileHeight: number): number {
     const minDimension = Math.min(tileWidth, tileHeight);
     const baseWidth = 2;
     const maxWidth = 8;
@@ -227,31 +229,27 @@ export class SquareTileShape {
 
   /**
    * Draws a single tile with transition animation and optional inset.
-   * @param {CanvasRenderingContext2D} ctx - Canvas rendering context
-   * @param {Object} colorScheme - Color scheme object with cells array
-   * @param {function} changeFunction - Function to transform tile value
-   * @param {number} x - X position in pixels
-   * @param {number} y - Y position in pixels
-   * @param {number} width - Tile width in pixels
-   * @param {number} height - Tile height in pixels
-   * @param {number} tileValue - Current tile value
-   * @param {Object} tileState - Tile state object with transitionState, insetState, reverseInsetState, selected
-   * @param {boolean} [isSingleTileSelection=false] - Whether this is a single tile selection
-   * @param {boolean} [isHovered=false] - Whether the tile is being hovered
+   * @param x - X position in pixels
+   * @param y - Y position in pixels
+   * @param width - Tile width in pixels
+   * @param height - Tile height in pixels
+   * @param tileValue - Current tile value
+   * @param isSingleTileSelection - Whether this is a single tile selection (default: false)
+   * @param isHovered - Whether the tile is being hovered (default: false)
    */
   draw_tile(
-    ctx,
-    colorScheme,
-    changeFunction,
-    x,
-    y,
-    width,
-    height,
-    tileValue,
-    tileState,
-    isSingleTileSelection = false,
-    isHovered = false
-  ) {
+    ctx: CanvasRenderingContext2D,
+    colorScheme: ColorScheme,
+    changeFunction: (value: number) => number,
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+    tileValue: number,
+    tileState: TileState,
+    isSingleTileSelection: boolean = false,
+    isHovered: boolean = false
+  ): void {
     const transitionState = tileState.transitionState;
 
     let mainColor;
@@ -308,13 +306,12 @@ export class SquareTileShape {
 
   /**
    * Calculates tile dimensions and padding based on canvas and grid size.
-   * @param {number} canvasWidth - Canvas width in pixels
-   * @param {number} canvasHeight - Canvas height in pixels
-   * @param {number} gridWidth - Grid width in cells
-   * @param {number} gridHeight - Grid height in cells
-   * @returns {{width: number, height: number, padding: number}} Tile dimensions and padding
+   * @param canvasWidth - Canvas width in pixels
+   * @param canvasHeight - Canvas height in pixels
+   * @param gridWidth - Grid width in cells
+   * @param gridHeight - Grid height in cells
    */
-  _calculateTileDimensions(canvasWidth, canvasHeight, gridWidth, gridHeight) {
+  _calculateTileDimensions(canvasWidth: number, canvasHeight: number, gridWidth: number, gridHeight: number): {width: number, height: number, padding: number} {
     const width = canvasWidth / (gridWidth + 0.1);
     const height = canvasHeight / (gridHeight + 0.1);
     const padding = width * 0.1;
@@ -323,14 +320,9 @@ export class SquareTileShape {
 
   /**
    * Draws the entire grid with tiles, animations, and selection borders.
-   * @param {CanvasRenderingContext2D} ctx - Canvas rendering context
-   * @param {BoundedGrid} tiles - Grid of tile values
-   * @param {BoundedGrid} tileAnimationState - Grid of tile animation state objects
-   * @param {Object} level - Level object with colorScheme property
-   * @param {function} changeFunction - Function to transform tile value
-   * @param {{x: number, y: number}|null} [hoveredTile=null] - Currently hovered tile coordinates
+   * @param hoveredTile - Currently hovered tile coordinates (default: null)
    */
-  draw(ctx, tiles, tileAnimationState, level, changeFunction, hoveredTile = null) {
+  draw(ctx: CanvasRenderingContext2D, tiles: BoundedGrid<number>, tileAnimationState: BoundedGrid<TileState>, level: Level, changeFunction: (value: number) => number, hoveredTile: {x: number, y: number} | null = null): void {
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
     const { width, height, padding } = this._calculateTileDimensions(
@@ -346,7 +338,7 @@ export class SquareTileShape {
     let maxX = -Infinity;
     let maxY = -Infinity;
     let hasSelection = false;
-    let selectedTiles = [];
+    let selectedTiles: {x: number, y: number}[] = [];
     let selectedCount = 0;
 
     // First pass: count selected tiles
@@ -426,13 +418,8 @@ export class SquareTileShape {
 
   /**
    * Draws the expanded view of the grid with inset squares.
-   * @param {CanvasRenderingContext2D} ctx - Canvas rendering context
-   * @param {BoundedGrid} tiles - Grid of tile values
-   * @param {BoundedGrid} tileStates - Grid of tile state objects
-   * @param {Object} colorScheme - Color scheme object with cells array
-   * @param {function} changeFunction - Function to transform tile value
    */
-  draw_expanded(ctx, tiles, tileStates, colorScheme, changeFunction) {
+  draw_expanded(ctx: CanvasRenderingContext2D, tiles: BoundedGrid<number>, tileStates: BoundedGrid<TileState>, colorScheme: ColorScheme, changeFunction: (value: number) => number): void {
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
     const { width, height, padding } = this._calculateTileDimensions(
