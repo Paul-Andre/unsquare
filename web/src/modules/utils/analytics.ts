@@ -1,4 +1,7 @@
-export function getGtagLevelName(level, book) {
+import { Book } from "modules/core/Book";
+import { Level } from "modules/core/Level";
+
+export function getGtagLevelName(level: Level, book: Book) {
   let a =
     "Level_" +
     (level.index + 1) +
@@ -11,7 +14,7 @@ export function getGtagLevelName(level, book) {
   return a;
 }
 
-export function trackLevelStart(level, book) {
+export function trackLevelStart(level: Level, book: Book) {
   // Wrapping in setTimeout to minimize issues if an error happens.
   setTimeout(function () {
     if (window.gtag) {
@@ -28,7 +31,7 @@ export function trackLevelStart(level, book) {
     }
   }, 0);
 }
-export function trackLevelEnd(level, book) {
+export function trackLevelEnd(level: Level, book: Book) {
   // Wrapping in setTimeout to minimize issues if an error happens.
   setTimeout(function () {
     if (window.gtag) {
