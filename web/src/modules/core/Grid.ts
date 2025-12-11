@@ -128,6 +128,10 @@ export class BoundedGrid<T = any> extends Grid<T> {
   virtual(fn: VirtualCallback<T>): VirtualGrid<T> {
     return new VirtualGrid(this, fn);
   }
+
+  map<U>(fn: (v: T, x: number, y: number) => U): GridFromArray<U> {
+    return Grid.withArrayConstructor.fromFunction<U>(Array, this.width, this.height, (x, y) => fn(this.get(x, y), x, y));
+  }
 }
 
 export class GridWindow<T = any> extends BoundedGrid<T> {

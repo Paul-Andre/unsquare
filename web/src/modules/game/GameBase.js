@@ -1,6 +1,6 @@
 "use strict";
 
-import { TileAnimationState } from '../core/TileAnimationState.js';
+import { TileAnimationState } from '../core/TileAnimationState.ts';
 import { compute_operations_for_level } from '../core/algo';
 import { trackLevelStart } from '../utils/analytics.js';
 import * as config from '../utils/config.js';

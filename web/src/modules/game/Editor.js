@@ -1,7 +1,7 @@
 "use strict";
 
 import { GameBase } from './GameBase.js';
-import { TileAnimationState } from '../core/TileAnimationState.js';
+import { TileAnimationState } from '../core/TileAnimationState.ts';
 import { Grid } from '../core/Grid';
 import { compute_operations_for_level, vector_sum, level_check_solution, get_level_compact_solution, vector_equal, vector_simplify_arithmetic, level_get_arithmetic, eric_partition_number, obviousScore } from '../core/algo';
 import { save_editor_book } from '../core/bookUtils.ts';
