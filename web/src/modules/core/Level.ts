@@ -16,7 +16,7 @@ export class Level {
   colorScheme: ColorScheme;
   tileShape: SquareTileShape;
   tiles: GridFromArray<number>;
-  par: number;
+  par: number | null;
   text: string;
   title: string | null;
   index: number;
@@ -236,7 +236,7 @@ export class Level {
     return get_level_full_identifier(this);
   }
 
-  getBestNumMoves(): number {
+  getBestNumMoves(): number | null {
     return getBestNumMoves(this);
   }
 
