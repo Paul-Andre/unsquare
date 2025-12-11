@@ -30,35 +30,37 @@ export class Level {
   book: Book | null;
   geometry: Geometry | null;
 
-  constructor() {}
-
-  static empty(size) {
+  constructor(size: number) {
     const grid = Grid.fill(size, size, 1);
-    const level = new Level();
-    level.colorScheme = colorSchemes.BW;
-    level.tileShape = tileShapes.square;
-    level.tiles = grid;
-    level.par = 0;
-    level.text = "";
-    level.title = null;
-    level.index = -1;
-    level.isIcon = false;
-    level.isCustom = false;
-    level.hidden = false;
-    level.mode = "normal";
-    level.id = generate_id("level");
+    this.colorScheme = colorSchemes.BW;
+    this.tileShape = tileShapes.square;
+    this.tiles = grid;
+    this.par = 0;
+    this.text = "";
+    this.title = null;
+    this.index = -1;
+    this.isIcon = false;
+    this.isCustom = false;
+    this.hidden = false;
+    this.mode = "normal";
+    this.id = generate_id("level");
+    this.book = null;
+    this.geometry = null;
 
-    let operations = compute_operations_for_level(level);
+    let operations = compute_operations_for_level(this);
     let m = operations.length;
 
-    level.solutions = [new Array(m).fill(0)];
-    level.solutionType = "running";
+    this.solutions = [new Array(m).fill(0)];
+    this.solutionType = "running";
+    
+  }
 
-    return level;
+  static empty(size: number): Level {
+    return new Level(size);
   }
 
   static fromJsonObject(json: any) {
-    const level = new Level();
+    const level = new Level(1);
     level.colorScheme = colorSchemes.BW; //colorSchemes[json.colorScheme];
     level.tileShape = tileShapes.square; // tileShapes[json.tileShape];
     level.tiles = level.tileShape.gridFromJsonObject(json.tiles);
@@ -78,8 +80,8 @@ export class Level {
     if (json.solutions) {
       // Only include valid solutions from json.solutions
       level.solutions = json.solutions
-        .map(sol => sol.slice())
-        .filter(sol => level_check_solution(level, sol));
+        .map((sol: number[]) => sol.slice())
+        .filter((sol: number[]) => level_check_solution(level, sol));
       level.solutionType = json.solutionType;
       hasValidSolution = level.solutions.length > 0;
     } else if (json.solutionVector) {
@@ -131,7 +133,7 @@ export class Level {
       data = Array.from(dataStr).map(Number);
     }
 
-    const level = new Level();
+    const level = new Level(1);
     level.colorScheme = colorSchemeByMod[mod];
     level.tileShape = tileShapes.square;
     level.text = "";
@@ -201,7 +203,7 @@ export class Level {
   }
 
   clone(): Level {
-    const level = new Level();
+    const level = new Level(1);
     level.copyFrom(this);
     return level;
   }

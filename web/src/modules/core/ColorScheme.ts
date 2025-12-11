@@ -3,20 +3,20 @@
 import { Arithmetic } from "./algo";
 
 export class ColorScheme {
-  name: string;e
-  cells: { [key: number]: { fill: string } };
+  name: string;
+  cells: Record<number, { fill: string }>;
   arithmetic: Arithmetic;
-  constructor(name: string, cells: { [key: number]: { fill: string; }; }, arithmetic: Arithmetic) {
+  constructor(name: string, cells: Record<number, { fill: string; }>, arithmetic: Arithmetic) {
     this.name = name;
     this.cells = cells;
     this.arithmetic = arithmetic;
   }
 
-  unsquare(e) {
+  unsquare(e: number): number {
     throw new Error("unsquare method must be implemented by subclass");
   }
 
-  resquare(e) {
+  resquare(e: number): number {
     throw new Error("resquare method must be implemented by subclass");
   }
 }
@@ -36,11 +36,11 @@ export class BWColorScheme extends ColorScheme {
     );
   }
 
-  unsquare(e) {
+  unsquare(e: number): number {
     return e == 1 ? 2 : e == 2 ? 1 : 0;
   }
 
-  resquare(e) {
+  resquare(e: number): number {
     return e == 1 ? 2 : e == 2 ? 1 : 0;
   }
 }
@@ -61,11 +61,11 @@ export class TriColorScheme extends ColorScheme {
     );
   }
 
-  unsquare(e) {
+  unsquare(e: number): number {
     return e == 1 ? 3 : e == 3 ? 2 : e == 2 ? 1 : 0;
   }
 
-  resquare(e) {
+  resquare(e: number): number {
     return e == 3 ? 1 : e == 2 ? 3 : e == 1 ? 2 : 0;
   }
 }
@@ -90,7 +90,7 @@ export class RainbowColorScheme extends ColorScheme {
     );
   }
 
-  unsquare(e) {
+  unsquare(e: number): number {
     e++;
     if (e == 8) {
       e = 1;
@@ -98,7 +98,7 @@ export class RainbowColorScheme extends ColorScheme {
     return e;
   }
 
-  resquare(e) {
+  resquare(e: number): number {
     e--;
     if (e == 0) {
       e = 7;
@@ -128,7 +128,7 @@ export class Rainbow2ColorScheme extends ColorScheme {
     );
   }
 
-  unsquare(e) {
+  unsquare(e: number): number {
     e++;
     if (e == 9) {
       e = 1;
@@ -136,7 +136,7 @@ export class Rainbow2ColorScheme extends ColorScheme {
     return e;
   }
 
-  resquare(e) {
+  resquare(e: number): number {
     e--;
     if (e == 0) {
       e = 8;
@@ -146,24 +146,24 @@ export class Rainbow2ColorScheme extends ColorScheme {
 }
 
 // Create instances of color schemes
-export const colorSchemes = {
+export const colorSchemes: Record<string, ColorScheme> = {
   BW: new BWColorScheme(),
   tri: new TriColorScheme(),
   rainbow: new RainbowColorScheme(),
   rainbow2: new Rainbow2ColorScheme(),
 };
 
-export let colorSchemeByMod = {
+export const colorSchemeByMod: Record<number, ColorScheme> = {
   [2]: colorSchemes.BW,
   [3]: colorSchemes.tri,
 };
 
-export let modular_arithmetic_colors_cells = {
+export const modular_arithmetic_colors_cells: Record<number, Record<number, { fill: string }>> = {
   [2]: colorSchemes.BW.cells,
   [3]: colorSchemes.tri.cells,
 };
 
-export function get_arithmetic_color(n, arithmetic) {
+export function get_arithmetic_color(n: number, arithmetic: Arithmetic): string {
   if (arithmetic.type == "modular") {
     return modular_arithmetic_colors_cells[arithmetic.modulus][n - 1].fill;
   }
