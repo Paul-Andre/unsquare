@@ -163,7 +163,7 @@ export function compute_moves_for_level(level:Level): Move[] {
 // what is this coding style bruv
 // fix it
 
-export function level_get_geometry(level:Level): Geometry | null {
+export function level_get_geometry(level:Level): Geometry {
   if (level.geometry) {
     return level.geometry;
   }
@@ -174,8 +174,7 @@ export function level_get_geometry(level:Level): Geometry | null {
       height: level.tiles.height,
     };
   }
-  console.log(level);
-  return null;
+  throw new Error("No geometry found for level");
 }
 
 export function vector_add(a: number[], b: number[]): number[] {
@@ -330,7 +329,7 @@ export function transpose_matrix<T>(a: T[][]): T[][] {
 }
 
 // Used to rapidly create tests where it's possible to have
-export function test_multiply_and_gaussian(a: number[], b: number[][]) {
+export function test_multiply_and_gaussian(a: number[], b: number[][]): void {
   let c = vector_multiply_matrix(a, b);
   vector_apply_modulus(c, 2);
   console.log(a, b, c);
@@ -377,7 +376,7 @@ if (false) {
 }
 
 // Aw man, gaussian elimination
-export function solve_gaussian(operations: number[][], tiles: number[], arithmetic: Arithmetic): {solution: number[], kernel: number[][]} {
+export function solve_gaussian(operations: number[][], tiles: number[], arithmetic: Arithmetic): {solution: number[], kernel: number[][]} | null {
   let mat = transpose_matrix(operations);
   let target = tiles.slice();
 
@@ -508,17 +507,11 @@ export function level_get_arithmetic(level:Level): Arithmetic {
   return level.colorScheme.arithmetic;
 }
 
-// TODO: do some kind of check more specific than try catch
-export function level_check_solution(level:Level, solution: number[] | null = null): boolean {
-  if (solution === null) {
-    solution = level.solutions && level.solutions.length > 0 ? level.solutions[0] : null;
-  }
+export function level_check_solution(level:Level, solution: number[]): boolean {
   let target = get_level_tiles_vector(level);
   let operations = compute_operations_for_level(level);
 
-  let reach = vector_multiply_matrix(solution, operations);
-  vector_simplify_arithmetic(reach, level_get_arithmetic(level));
-  //console.log(reach, target);
+  let reach = vector_multiply_matrix(solution, operations, level_get_arithmetic(level));
 
   return vector_equal(target, reach);
 }
@@ -537,10 +530,9 @@ export function get_gaussian_solution_for_level(level:Level): number[] | null {
   return null;
 }
 
-export function eric_partition_number(level:Level, solution: number[] | null = null): number {
-  if (solution === null) {
-    solution = level.solutions && level.solutions.length > 0 ? level.solutions[0] : null;
-  }
+// TODO: for the complexity metrics, such as eric_partition_number and obviousScore, perhaps have a function that computes the minimum for all the solutions contained in the level.
+
+export function eric_partition_number(level:Level, solution: number[]): number {
   let operations = compute_operations_for_level(level);
   assert(operations.length == solution.length);
   let m = new Set();
@@ -576,7 +568,7 @@ export function move_border_count(grid: BoundedGrid<number>, square: Move): numb
   return tot;
 }
 
-export function obviousScore(level:Level, solution: number[] | null = null, squares: Move[] | null = null): number {
+export function obviousScore(level:Level, solution: number[], squares: Move[] | null = null): number {
   //debugger;
   squares = squares || compute_moves_for_level(level);
   let grid = level.tiles;
