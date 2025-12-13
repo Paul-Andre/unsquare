@@ -252,3 +252,7 @@ update daily levels json
 07 Dec 2025
 0.11.6
 Fix "Daily Level #"
+
+12 Dec 2025
+0.11.7
+Weekly #4 (also a lot of TypeScript stuff)
