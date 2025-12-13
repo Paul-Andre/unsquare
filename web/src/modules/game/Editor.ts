@@ -1,36 +1,31 @@
 "use strict";
 
-import { GameBase } from './GameBase.ts';
+import { GameBase, Move } from './GameBase.ts';
 import { TileAnimationState } from '../core/TileAnimationState.ts';
 import { Grid } from '../core/Grid';
 import { compute_operations_for_level, vector_sum, level_check_solution, get_level_compact_solution, vector_equal, vector_simplify_arithmetic, level_get_arithmetic, eric_partition_number, obviousScore } from '../core/algo';
 import { save_editor_book } from '../core/bookUtils.ts';
 import { screenManager } from '../ui/ScreenManager.ts';
 import { Level, compute_gaussian_solution } from '../core/Level.ts';
-import { cast, generate_id } from '../utils/helpers.ts';
+import { assert, cast, generate_id } from '../utils/helpers.ts';
 import { game } from './Game.ts';
+import { Book } from 'modules/core/Book.ts';
 
 
 export class Editor extends GameBase {
-  constructor(canvasId, divId) {
+  referenceToOriginalLevel: Level | null = null;
+  drawMode: boolean = false;
+  drawPaintValue: number | null = null; // The value to paint when dragging in draw mode
+  drawUndoSaved: boolean = false; // Track if we've saved undo state for current draw operation
+  pendingSolvabilityCheck: NodeJS.Timeout | null = null; // Timeout ID for deferred solvability checking
+  constructor(canvasId: string, divId: string) {
     super(canvasId, divId);
-    this.referenceToOriginalLevel = null;
-    this.drawMode = false;
-    this.drawPaintValue = null; // The value to paint when dragging in draw mode
-    this.drawUndoSaved = false; // Track if we've saved undo state for current draw operation
-    this.pendingSolvabilityCheck = null; // Timeout ID for deferred solvability checking
-
-    // Override openLevel to handle editor-specific behavior
-    this.openLevel = this.editorOpenLevel.bind(this);
-
-    // Bind the action method to preserve 'this' context when passed as callback
-    this.action = this.action.bind(this);
 
     // Set up keyboard event listeners
     this.setupKeyboardListeners();
   }
 
-  editorOpenLevel(level, book) {
+  override openLevel(level: Level, book: Book): void {
     // We don't want the editor to open the actual level.
     // The reason I don't just put it in the base is that at some point the game might need to modify the level
     this.referenceToOriginalLevel = level;
@@ -38,25 +33,29 @@ export class Editor extends GameBase {
     this.updateDrawModeButton();
     this.updateModeDropdown();
   }
+  //override specificOpenLevel(level: Level, book: Book): void {
 
   // this specifies what happens when you activate squares
   // (as in, do you UNsquare or you go the other way)
-  action(v) {
+  override action: (v: number) => number = (v: number): number => {
+    assert(this.level !== null);
     return this.level.colorScheme.resquare(v);
   }
 
   // Hook to add additional state to undo
   getAdditionalState() {
+    assert(this.level !== null);
     return {
       level: this.level.clone(),
     };
   }
 
   // Hook to restore additional state from undo
-  restoreAdditionalState(undo) {
+  restoreAdditionalState(undo: any): void {
     if (undo.level) {
       this.level = undo.level;
       // Recompute operations when level changes
+      assert(this.level !== null);
       this.operations = compute_operations_for_level(this.level);
       this.inverseOperations = new Map();
       for (let i = 0; i < this.operations.length; i++) {
@@ -66,8 +65,11 @@ export class Editor extends GameBase {
   }
 
   // Save state before a move is applied
-  preMove(move) {
-    if (move != null && this.inverseOperations && this.level.solutions) {
+  override preMove(move: Move): void {
+    assert(this.level !== null);
+    assert(this.tiles !== null);
+
+    if (this.inverseOperations && this.level.solutions) { 
       // When there was multiple running solutions, we only take the first one.
       // TODO: instead, we could apply to move to all of them, and take the ones for which it minimizes the number of moves.
       let runningSolution = this.level.solutions[0].slice();
@@ -85,10 +87,12 @@ export class Editor extends GameBase {
     }
   }
 
-  postMove() {
+  override postMove(): void {
   }
 
-  syncTilesToLevel() {
+  syncTilesToLevel(): void {
+    assert(this.tiles !== null);
+    assert(this.level !== null);
     // Return early if no state is loaded yet
     if (!this.tiles || !this.level) {
       return;
@@ -97,31 +101,31 @@ export class Editor extends GameBase {
     // Note that this modifies the copy of level, not the reference to the original level
     // TODO: if here we're assigning by reference (as opposed to making a copy) and it works,
     // then why do we need this function at all? Investigate.
-    this.level.tiles = this.tiles;
+    this.level.tiles = this.tiles.clone();
   }
 
   saveLevel() {
     this.syncTilesToLevel();
+    assert(this.referenceToOriginalLevel !== null);
+    assert(this.level !== null);
     this.referenceToOriginalLevel.copyFrom(this.level);
-    save_editor_book(this.book);
-  }
-
-  undo() {
-    super.undo();
-    this.draw();
-    // Start animation loop if animations were triggered
-    this.startAnimationLoopIfNeeded();
+    if (this.book) {
+      save_editor_book(this.book);
+    }
   }
 
   submitSolution() {
     let sol_string = window.prompt("Solution in 01010101010 format");
+    if (!sol_string) {
+      return;
+    }
     let sol = Array.from(sol_string).map(x => Number(x));
-
+    assert(this.level !== null);
     this.syncTilesToLevel();
     let check = level_check_solution(this.level, sol);
     if (check) {
       // Save undo state
-      this.saveUndoState(null);
+      this.saveUndoState("other");
 
       this.level.solutions = [sol.slice()];
       this.level.solutionType = "submitted";
@@ -136,10 +140,13 @@ export class Editor extends GameBase {
     let string = window.prompt(
       "String representing the level (as found in the link's custom param"
     );
+    if (!string) {
+      return;
+    }
     let level = Level.fromCompact(string);
     if (level) {
       // Save undo state
-      this.saveUndoState(null);
+      this.saveUndoState("other");
 
       this.level = level;
       this.tiles = level.tiles.clone();
@@ -156,17 +163,22 @@ export class Editor extends GameBase {
 
   clear() {
     // Save undo state
-    this.saveUndoState(null);
+    this.saveUndoState("other");
 
     // Animate the clear by setting transition state to 0 for all tiles
-    this.tileAnimationState.forEach(function (tileState) {
+    this.tileAnimationState?.forEach(function (tileState) {
       tileState.transitionState = 0;
     });
 
+    assert(this.tiles !== null);
     this.tiles.forEachSet(function () {
       return 1;
     });
+
+    assert(this.operations !== null);
     let m = this.operations.length;
+
+    assert(this.level !== null);
     this.level.solutions = [new Array(m).fill(0)];
     this.level.solutionType = "running";
     this.level.par = 0;
@@ -178,11 +190,13 @@ export class Editor extends GameBase {
 
   play() {
     this.syncTilesToLevel();
+    assert(this.level !== null);
+    assert(this.book !== null);
     game.openLevel(this.level, this.book);
     screenManager.switchTo("game");
   }
 
-  specificOnShow() {
+  override specificOnShow(): void {
     this.updateDrawModeButton();
     this.updateModeDropdown();
   }
@@ -194,12 +208,12 @@ export class Editor extends GameBase {
       let size = Number(promptedSize);
       if (!isNaN(size)) {
         // Save undo state
-        this.saveUndoState(null);
+        this.saveUndoState("other");
 
-        let grid = Grid.empty(size, size);
-        grid.setAll(1);
+        let grid = Grid.fill(size, size, 1);
 
         // TODO: when expanding the grid, possibly copy the old tiles.
+        assert(this.level !== null);
         this.level.tiles = grid;
         this.tiles = grid.clone();
         this.tileAnimationState = new TileAnimationState(this.tiles);
@@ -225,29 +239,34 @@ export class Editor extends GameBase {
   }
 
   saveAs() {
+    assert(this.level !== null);
+    assert(this.book !== null);
     this.syncTilesToLevel();
     const newLevel = this.level.clone();
     newLevel.id = generate_id("level");
     newLevel.index = this.book.levels.length;
     this.book.levels.push(newLevel);
     save_editor_book(this.book);
-    this.editorOpenLevel(newLevel, this.book);
+    super.openLevel(newLevel, this.book);
   }
 
-  setText(text) {
+  setText(text: string): void {
+    assert(this.level !== null);
     this.level.text = text;
   }
 
-  setMode(mode) {
+  setMode(mode: "normal" | "challenge"): void {
+    assert(this.level !== null);
     this.level.mode = mode;
   }
 
-  updateGui() {
-    this.syncTilesToLevel();
+  updateGui(): void {
 
     if (!this.tiles || !this.level) {
       return;
     }
+
+    this.syncTilesToLevel();
 
     if (this.level.solutions && this.level.solutions.length > 0) {
       let sum = vector_sum(this.level.solutions[0]);
@@ -279,7 +298,8 @@ export class Editor extends GameBase {
   }
 
   // TODO: hardcode the url?
-  getCustomUrl() {
+  getCustomUrl(): string {
+    assert(this.level !== null);
     let base = location.origin + location.pathname;
     let encoding = get_level_compact_solution(this.level);
     return base + "?custom=" + encoding;
@@ -289,12 +309,12 @@ export class Editor extends GameBase {
     let sol_string = window.prompt("URL for sharing", this.getCustomUrl());
   }
 
-  toggleDrawMode() {
+  toggleDrawMode(): void {
     this.drawMode = !this.drawMode;
     this.updateDrawModeButton();
   }
 
-  updateDrawModeButton() {
+  updateDrawModeButton(): void {
     const button = document.getElementById("drawModeButton");
     if (button) {
       button.textContent = this.drawMode ? "Draw Mode: ON" : "Draw Mode: OFF";
@@ -306,7 +326,8 @@ export class Editor extends GameBase {
     }
   }
 
-  updateModeDropdown() {
+  updateModeDropdown(): void {
+    assert(this.level !== null);
     const select = document.getElementById("levelModeSelect");
     if (select instanceof HTMLSelectElement) {
       select.value = this.level.mode || "normal";
@@ -314,16 +335,16 @@ export class Editor extends GameBase {
   }
 
   // TODO: what the heck is this? It was created by AI when I asked it to make the "D" key toggle draw mode.
-  setupKeyboardListeners() {
+  setupKeyboardListeners(): void {
     // TODO: note that the event listener never gets removed
     // It is okay for the time being since I only initialize this "component" once,
     // but will need to figure out a better way to do once I do differently.
-    window.addEventListener("keydown", (e) => {
+    window.addEventListener("keydown", (e: KeyboardEvent) => {
       // Only handle if editor screen is active and not typing in an input
       if (
         screenManager.currentScreenName === "editor" &&
-        e.target.tagName !== "INPUT" &&
-        e.target.tagName !== "TEXTAREA"
+        !( e.target instanceof HTMLElement &&
+        (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA"))
       ) {
         if (e.key === "d" || e.key === "D") {
           e.preventDefault();
@@ -339,7 +360,9 @@ export class Editor extends GameBase {
   }
 
   // Get valid tile coordinates from mouse position, or null if out of bounds
-  getValidTileCoords(mouseX, mouseY) {
+  getValidTileCoords(mouseX: number, mouseY: number): {x: number, y: number} | null {
+    assert(this.level !== null);
+    assert(this.tiles !== null);
     const coords = this.level.tileShape.coordinatesFromMousePosition(
       mouseX,
       mouseY,
@@ -358,7 +381,7 @@ export class Editor extends GameBase {
   }
 
   // Override mouse handlers for draw mode
-  doMouseDown(x, y) {
+  override doMouseDown(x: number, y: number): void {
     if (this.drawMode) {
       this.mouseStart.x = x / this.canvasSize;
       this.mouseStart.y = y / this.canvasSize;
@@ -372,10 +395,12 @@ export class Editor extends GameBase {
       if (coords) {
         // Save state for undo (only once per mouse down)
         if (!this.drawUndoSaved) {
-          this.saveUndoState(null);
+          this.saveUndoState("other");
           this.drawUndoSaved = true;
         }
 
+        assert(this.tiles !== null);
+        assert(this.level !== null);
         // Toggle the clicked tile
         const currentValue = this.tiles.get(coords.x, coords.y);
         const newValue = this.level.colorScheme.resquare(currentValue);
@@ -396,12 +421,15 @@ export class Editor extends GameBase {
     super.doMouseDown(x, y);
   }
 
-  doMouseMove(x, y) {
+  override doMouseMove(x: number, y: number): void {
     if (this.drawMode && this.mouseStart.pressed && this.drawPaintValue !== null) {
       const coords = this.getValidTileCoords(
         x / this.canvasSize,
         y / this.canvasSize
       );
+
+      assert(this.tiles !== null);
+      assert(this.level !== null);
 
       if (coords) {
         // Only paint if the tile value is different (avoid redundant updates)
@@ -423,7 +451,7 @@ export class Editor extends GameBase {
     super.doMouseMove(x, y);
   }
 
-  doMouseUp(x, y) {
+  override doMouseUp(x: number, y: number): void {
     if (this.drawMode) {
       // Final solvability check on mouse up (in case we missed any during drag)
       if (this.tiles && this.level) {
@@ -439,7 +467,7 @@ export class Editor extends GameBase {
     super.doMouseUp(x, y);
   }
 
-  updateSolutionAfterDraw() {
+  updateSolutionAfterDraw(): void {
     // Clear any pending solvability check
     if (this.pendingSolvabilityCheck !== null) {
       clearTimeout(this.pendingSolvabilityCheck);
@@ -449,6 +477,8 @@ export class Editor extends GameBase {
     // Defer solvability checking to the next frame using setTimeout zero trick
     this.pendingSolvabilityCheck = setTimeout(() => {
       this.pendingSolvabilityCheck = null;
+
+      assert(this.level !== null);
 
       // Recompute operations and solution
       const operations = compute_operations_for_level(this.level);

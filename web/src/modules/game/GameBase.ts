@@ -39,7 +39,7 @@ export abstract class GameBase {
   tileAnimationState: TileAnimationState | null;
   undoList: {
     tiles: BoundedGrid<number>;
-    move: Move | "restart";
+    move: Move | "restart" | "other";
     additionalState: any;
   }[];
   lastUpdateTimestamp: number;
@@ -93,7 +93,7 @@ export abstract class GameBase {
     this.onResize();
   }
 
-  onResize() {
+  onResize(): void {
     this.canvasVirtualSize = Math.min(
       this.div.offsetWidth,
       this.div.offsetHeight,
@@ -587,7 +587,7 @@ export abstract class GameBase {
 
   // Action method - must be implemented by subclasses
   // This specifies what happens when you activate squares (e.g., do you unsquare or go the other way)
-  abstract action(v: number): number;
+  abstract action: (v: number) => number;
 
   // Hook for subclasses to implement game-specific logic on mouse down
   onMouseDown(): void {
@@ -607,7 +607,7 @@ export abstract class GameBase {
 
   // Save state for undo. move can be a move object, null (for non-move operations),
   // or "restart" (for restart operations). Additional state is saved via getAdditionalState() hook.
-  saveUndoState(move: Move | "restart"): void {
+  saveUndoState(move: Move | "restart" | "other"): void {
     assert(this.tiles !== null);
     const undo = {
       tiles: this.tiles.clone(),
@@ -640,7 +640,7 @@ export abstract class GameBase {
     if (isRestart) {
       // For restart, we just restore the state without animation
       this.restoreAdditionalState(additionalState);
-    } else {
+    } else if (undoMove !== "other") {
       // For regular moves, animate the reverse
       // Reset all tileStates to default state first
       assert(this.tileAnimationState !== null);

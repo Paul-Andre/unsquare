@@ -59,7 +59,7 @@ export class Game extends GameBase {
   }
 
   // this specifies what happens when you activate squares
-  action(v: number): number {
+  override action = (v: number): number => {
     assert(this.level !== null);
     return this.level.colorScheme.unsquare(v);
   }

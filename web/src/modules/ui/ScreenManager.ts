@@ -2,17 +2,23 @@
 
 "use strict";
 
+import { ensureNotNull } from "../utils/helpers";
+
 export class ScreenManager {
+  additionalFunctions: Record<string, Record<string, () => void>>;
+  stack: { name: string }[];
+  currentScreenName: string;
+  currentScreen: HTMLElement;
   constructor() {
     this.additionalFunctions = {};
     this.stack = [];
     this.currentScreenName = "opening_instructions"
-    this.currentScreen = document.getElementById("loading");
+    this.currentScreen = ensureNotNull(document.getElementById("opening_instructions"));
 
     // Initialize loading screen functions
     this.additionalFunctions.loadingScreen = {
       onHide: () => {
-        document.getElementById("loading").remove();
+        ensureNotNull(document.getElementById("loading")).remove();
         this.stack.shift(); // This is to remove the loadingScreen from the stack.
         delete this.additionalFunctions.loadingScreen;
       },
@@ -21,10 +27,8 @@ export class ScreenManager {
 
   /**
    * Executes a function for a specific screen if it exists
-   * @param {string} screenName - The name of the screen
-   * @param {string} funcName - The name of the function to execute
    */
-  executeFunction(screenName, funcName) {
+  executeFunction(screenName: string, funcName: string): void {
     if (
       screenName in this.additionalFunctions &&
       funcName in this.additionalFunctions[screenName]
@@ -37,14 +41,14 @@ export class ScreenManager {
    * Switches to a new screen
    * @param {string} screenName - The name of the screen to switch to
    */
-  switchTo(screenName) {
+  switchTo(screenName: string): void {
     console.log("Switching to", screenName);
     if (this.currentScreen) {
       this.currentScreen.classList.remove("variant_shown");
     } else {
-      document
+      ensureNotNull(document
         .getElementById(this.currentScreenName)
-        .classList.remove("variant_shown");
+      ).classList.remove("variant_shown");
     }
 
     this.stack.push({
@@ -54,7 +58,7 @@ export class ScreenManager {
     this.executeFunction(this.currentScreenName, "onHide");
 
     this.currentScreenName = screenName;
-    this.currentScreen = document.getElementById(screenName);
+    this.currentScreen = ensureNotNull(document.getElementById(screenName));
     this.currentScreen.classList.add("variant_shown");
     setTimeout(() => {
       this.executeFunction(this.currentScreenName, "onShow");
@@ -67,10 +71,13 @@ export class ScreenManager {
   goBack() {
     this.currentScreen.classList.remove("variant_shown");
     const popped = this.stack.pop();
+    if (!popped) {
+      return;
+    }
     this.executeFunction(this.currentScreenName, "onHide");
 
     this.currentScreenName = popped.name;
-    this.currentScreen = document.getElementById(this.currentScreenName);
+    this.currentScreen = ensureNotNull(document.getElementById(this.currentScreenName));
     this.currentScreen.classList.add("variant_shown");
 
     setTimeout(() => {
