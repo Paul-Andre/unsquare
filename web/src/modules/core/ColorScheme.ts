@@ -2,7 +2,7 @@
 
 import { Arithmetic } from "./algo";
 
-export class ColorScheme {
+export abstract class ColorScheme {
   name: string;
   cells: Record<number, { fill: string }>;
   arithmetic: Arithmetic;
@@ -12,13 +12,9 @@ export class ColorScheme {
     this.arithmetic = arithmetic;
   }
 
-  unsquare(e: number): number {
-    throw new Error("unsquare method must be implemented by subclass");
-  }
+  abstract unsquare(e: number): number;
 
-  resquare(e: number): number {
-    throw new Error("resquare method must be implemented by subclass");
-  }
+  abstract resquare(e: number): number;
 }
 
 export class BWColorScheme extends ColorScheme {
