@@ -1,17 +1,17 @@
 "use strict";
 
-import { GameBase } from './GameBase.js';
-import { calculateStates, LEVEL_STATES } from '../ui/LevelMenuComponent.js';
+import { GameBase } from './GameBase.ts';
+import { calculateStates, LEVEL_STATES } from '../ui/LevelMenuComponent.ts';
 import { obviousScore, vector_sum, vector_simplify_arithmetic, level_get_arithmetic, vector_sub, operation_index_to_move, level_get_geometry, eric_partition_number, vector_equal } from '../core/algo';
 import { save_editor_book } from '../core/bookUtils.ts';
 import { trackLevelEnd } from '../utils/analytics.ts';
 import { getBestNumMoves, setBestNumMoves, getCachedChallengeStatistics, saveChallengeStatistics } from '../core/levelUtils.ts';
 import * as config from '../utils/config.ts';
-import { renderHistogram } from '../ui/ChallengeHistogram.js';
-import { drawIcon, getCachedLevelIconDataUrl } from '../ui/icon.js';
+import { renderHistogram } from '../ui/ChallengeHistogram.ts';
+import { drawIcon, getCachedLevelIconDataUrl } from '../ui/icon.ts';
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from '../utils/api.ts';
 import { assert } from '../utils/helpers.ts';
-import { screenManager } from '../ui/ScreenManager.js';
+import { screenManager } from '../ui/ScreenManager.ts';
 
 
 export class Game extends GameBase {

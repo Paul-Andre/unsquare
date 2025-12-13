@@ -1,14 +1,14 @@
 "use strict";
 
-import { GameBase } from './GameBase.js';
+import { GameBase } from './GameBase.ts';
 import { TileAnimationState } from '../core/TileAnimationState.ts';
 import { Grid } from '../core/Grid';
 import { compute_operations_for_level, vector_sum, level_check_solution, get_level_compact_solution, vector_equal, vector_simplify_arithmetic, level_get_arithmetic, eric_partition_number, obviousScore } from '../core/algo';
 import { save_editor_book } from '../core/bookUtils.ts';
-import { screenManager } from '../ui/ScreenManager.js';
+import { screenManager } from '../ui/ScreenManager.ts';
 import { Level, compute_gaussian_solution } from '../core/Level.ts';
 import { cast, generate_id } from '../utils/helpers.ts';
-import { game } from './Game.js';
+import { game } from './Game.ts';
 
 
 export class Editor extends GameBase {

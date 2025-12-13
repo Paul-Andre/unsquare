@@ -1,12 +1,12 @@
 // Global type declarations for properties added to window/globalThis
-// These are set in main.js and used from HTML onclick handlers and console
+// These are set in main.ts and used from HTML onclick handlers and console
 
-import { Game } from './modules/game/Game.js';
-import { editor } from './modules/game/Editor.js';
-import { screenManager } from './modules/ui/ScreenManager.js';
-import { bookMenu } from './modules/ui/BookMenu.js';
-import { gameLevelMenu } from './modules/ui/GameLevelMenu.js';
-import { editorLevelMenu } from './modules/ui/editorLevelMenu.js';
+import { Game } from './modules/game/Game.ts';
+import { editor } from './modules/game/Editor.ts';
+import { screenManager } from './modules/ui/ScreenManager.ts';
+import { bookMenu } from './modules/ui/BookMenu.ts';
+import { gameLevelMenu } from './modules/ui/GameLevelMenu.ts';
+import { editorLevelMenu } from './modules/ui/editorLevelMenu.ts';
 import { checkAndOpenCustomLevel } from './modules/ui/customParse.ts';
 import * as config from './modules/utils/config.ts';
 import * as algo from './modules/core/algo.ts';

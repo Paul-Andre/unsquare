@@ -1,7 +1,7 @@
 "use strict";
 
 import { Grid, GridFromArray } from './Grid';
-import { colorSchemes, colorSchemeByMod, ColorScheme } from './ColorScheme.js';
+import { colorSchemes, colorSchemeByMod, ColorScheme } from './ColorScheme.ts';
 import { tileShapes } from './tileShapes.ts';
 import { compute_operations_for_level, compute_operations, vector_multiply_matrix, vector_simplify_arithmetic, level_get_arithmetic, level_check_solution, vector_sum, get_gaussian_solution_for_level, get_level_full_identifier } from './algo';
 import { generate_id } from '../utils/helpers.ts';

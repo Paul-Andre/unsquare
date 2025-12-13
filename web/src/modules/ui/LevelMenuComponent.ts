@@ -1,16 +1,16 @@
 "use strict";
 
-import { getCachedLevelIconDataUrl } from './icon.js';
+import { getCachedLevelIconDataUrl } from './icon.ts';
 import { assert, htmlStringToElement } from '../utils/helpers.ts';
 import { ICON_SIZE } from '../utils/config.ts';
 import { vector_sum } from '../core/algo.ts';
-import { screenManager } from './ScreenManager.js';
+import { screenManager } from './ScreenManager.ts';
 import { Level } from '../core/Level.ts';
 import { save_editor_book, book_reviver } from '../core/bookUtils.ts';
 import { book_replacer } from '../core/bookUtils.ts';
 import { clearBestNumMoves } from '../core/levelUtils.ts';
-import { editor } from '../game/Editor.js';
-import { game } from '../game/Game.js';
+import { editor } from '../game/Editor.ts';
+import { game } from '../game/Game.ts';
 
 // Level state constants to replace magic numbers
 export const LEVEL_STATES = {

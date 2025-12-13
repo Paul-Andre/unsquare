@@ -1,6 +1,6 @@
 import { Level } from '../core/Level.ts';
-import { Game } from '../game/Game.js';
-import { screenManager } from './ScreenManager.js';
+import { Game } from '../game/Game.ts';
+import { screenManager } from './ScreenManager.ts';
 
 export function checkAndOpenCustomLevel(game: Game): boolean {
   let customLevelString = new URLSearchParams(location.search).get("custom");

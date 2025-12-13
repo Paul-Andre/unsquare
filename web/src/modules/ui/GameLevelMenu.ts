@@ -1,17 +1,17 @@
 "use strict";
 
-import { LevelMenuComponent, calculateLevelState, applyStateClass } from './LevelMenuComponent.js';
-import { screenManager } from './ScreenManager.js';
+import { LevelMenuComponent, calculateLevelState, applyStateClass } from './LevelMenuComponent.ts';
+import { screenManager } from './ScreenManager.ts';
 import { book_reviver } from '../core/bookUtils.ts';
 import { Level } from '../core/Level.ts';
-import { getCachedLevelIconDataUrl } from './icon.js';
+import { getCachedLevelIconDataUrl } from './icon.ts';
 import { htmlStringToElement } from '../utils/helpers.ts';
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from '../utils/api.ts';
 import { getCachedChallengeStatistics, saveChallengeStatistics } from '../core/levelUtils.ts';
 import mainBookData from '../../data/2025_nov_11_reordered_solved_fixed_all_solutions.json';
 import dailyLevelsData from '../../data/daily_submitting_07_dec_exhaustive.json'
 import { DAILY_UNLOCK_HOUR, DAILY_LEVELS_START_DATE, ICON_SIZE } from '../utils/config.ts';
-import { game } from '../game/Game.js';
+import { game } from '../game/Game.ts';
 
 export class GameLevelMenu {
   constructor() {

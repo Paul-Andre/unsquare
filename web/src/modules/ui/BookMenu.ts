@@ -2,9 +2,9 @@
 
 import { cast, generate_id } from '../utils/helpers.ts';
 import { htmlStringToElement } from '../utils/helpers.ts';
-import { createLevelIconElement } from './icon.js';
-import { editorLevelMenu } from './editorLevelMenu.js';
-import { screenManager } from './ScreenManager.js';
+import { createLevelIconElement } from './icon.ts';
+import { editorLevelMenu } from './editorLevelMenu.ts';
+import { screenManager } from './ScreenManager.ts';
 import { book_reviver, create_empty_book, save_editor_book } from '../core/bookUtils.ts';
 import book1OldData from '../../data/book1Old.json';
 import basicBlackWhiteData from '../../data/basicBlackWhite.json';
