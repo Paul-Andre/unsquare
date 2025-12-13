@@ -232,5 +232,9 @@ export class GridFromArray<T = any> extends BoundedGrid<T> {
   override clone(): GridFromArray<T> {
     return new GridFromArray(this.array.slice(), this.width, this.height);
   }
+
+  override toFlatArray(): T[] {
+    return this.array.slice();
+  }
 }
 

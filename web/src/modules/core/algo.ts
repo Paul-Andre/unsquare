@@ -248,7 +248,7 @@ export function get_level_compact_tiles(level:Level): string {
     get_arithmetic_compact(level_get_arithmetic(level)) +
     "$" +
     "t$" +
-    level.tiles.array.join("_")
+    level.tiles.toFlatArray().join("_")
   );
   // If do to2dArray() instead of array, then magically works... maybe want that?
 }
@@ -492,7 +492,7 @@ export function solve_gaussian(operations: number[][], tiles: number[], arithmet
 }
 
 export function get_level_tiles_vector(level:Level): number[] {
-  let tilesVector = level.tiles.array.slice();
+  let tilesVector = level.tiles.toFlatArray();
   for (let i = 0; i < tilesVector.length; i++) {
     tilesVector[i] -= 1;
   }
