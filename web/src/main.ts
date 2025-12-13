@@ -26,29 +26,29 @@ window.parseCustomLevel = checkAndOpenCustomLevel;
 window.algo = algo;
 
 // Set up screen manager additional functions
-window.screenManager.additionalFunctions.editorLevelMenu = editorLevelMenu;
-window.screenManager.additionalFunctions.bookMenu = bookMenu;
-window.screenManager.additionalFunctions.editor = editor;
-window.screenManager.additionalFunctions.game = window.game;
+screenManager.additionalFunctions.editorLevelMenu = editorLevelMenu;
+screenManager.additionalFunctions.bookMenu = bookMenu;
+screenManager.additionalFunctions.editor = editor;
+screenManager.additionalFunctions.game = game;
 
 window.openEditor = function() {
-  window.screenManager.switchTo("bookMenu");
+  screenManager.switchTo("bookMenu");
 };
 
 window.openPlayerEditor = function() {
   let level = Level.empty(6);
   level.index = 0;
-  window.editor.openLevel(level, {
+  editor.openLevel(level, {
     levels: [level],
     source: "playerEditor",
     id: "playerEditor",
     title: "Player Editor",
   });
-  window.screenManager.switchTo("editor");
+  screenManager.switchTo("editor");
 };
 
 // Parse custom level if present in URL
-let openedCustom = checkAndOpenCustomLevel(window.game);
+let openedCustom = checkAndOpenCustomLevel(game);
 
 // Remove utm parameters from the url
 window.addEventListener('load',
@@ -106,7 +106,7 @@ window.addEventListener('load',
 
         let book = gameLevelMenu.levelMenu.book;
         assert(book !== null);
-        window.game.openLevel(book.levels[0], book);
+        game.openLevel(book.levels[0], book);
         screenManager.switchTo("game");
         has_already_went_to_first_level = true;
       }
