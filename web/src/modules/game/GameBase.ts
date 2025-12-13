@@ -10,7 +10,7 @@ import { cast } from '../utils/helpers.ts';
 import { Book } from 'modules/core/Book.ts';
 import { Level } from 'modules/core/Level.ts';
 
-type Move = {
+export type Move = {
   x: number;
   y: number;
   size: number;
@@ -18,7 +18,7 @@ type Move = {
 
 /// This is what does the basics of drawing the tiles to the screen.
 ///
-export class GameBase {
+export abstract class GameBase {
   canvas: HTMLCanvasElement;
   ctx: CanvasRenderingContext2D;
   div: HTMLElement;
@@ -384,11 +384,9 @@ export class GameBase {
     );
   }
 
-  updateGui() {
-    // Override in subclasses
-  }
+  abstract updateGui(): void;
 
-  draw() {
+  draw(): void {
     this.updateGui();
     if (this.level && this.tiles && this.tileAnimationState) {
       // Update inset states before drawing
@@ -408,7 +406,7 @@ export class GameBase {
     }
   }
 
-  actuallyDrawCanvas() {
+  actuallyDrawCanvas(): void {
     if (!this.level || !this.tiles || !this.tileAnimationState) {
       return;
     }
@@ -427,7 +425,7 @@ export class GameBase {
 
 
   // Start animation loop if there are animations
-  startAnimationLoopIfNeeded() {
+  startAnimationLoopIfNeeded(): void {
     if (!this.animationRunning && this.hasAnimations()) {
       this.animationRunning = true;
       requestAnimationFrame(() => this.drawCanvas());
@@ -435,7 +433,7 @@ export class GameBase {
   }
 
   // Check if there are any animations running (without updating them)
-  hasAnimations() {
+  hasAnimations(): boolean {
     // Check if state exists
     if (!this.tileAnimationState) {
       return false;
@@ -499,7 +497,7 @@ export class GameBase {
     return hasAnimations;
   }
 
-  drawCanvas() {
+  drawCanvas(): void {
     if (!this.hidden && this.tiles && this.tileAnimationState && this.level) {
       const timestamp = performance.now();
 
@@ -520,11 +518,11 @@ export class GameBase {
     }
   }
 
-  specificOnShow() {
-    // Override in subclasses
+  specificOnShow(): void {
+    // Override in subclasses if needed
   }
 
-  onShow() {
+  onShow(): void {
     this.hidden = false;
     document.body.style.zoom = "100%";
 
@@ -533,18 +531,18 @@ export class GameBase {
     this.draw();
   }
 
-  onHide() {
+  onHide(): void {
     this.hidden = true;
   }
 
-  forceRedraw() {
+  forceRedraw(): void {
     // Force an immediate redraw regardless of animation state
     if (this.level && this.tiles && this.tileAnimationState) {
       this.actuallyDrawCanvas();
     }
   }
 
-  printFlat() {
+  printFlat(): void {
     assert(this.tiles !== null);
     let ret = "";
     ret += this.tiles.width;
@@ -561,13 +559,13 @@ export class GameBase {
     console.log(ret);
   }
 
-  printJson() {
+  printJson(): void {
     const json = ensureNotNull(this.level).toJsonObject();
     delete json.index;
     console.log(JSON.stringify(json));
   }
 
-  printJsonWithoutSolution() {
+  printJsonWithoutSolution(): void {
     const json = ensureNotNull(this.level).toJsonObject();
     delete json.solutions;
     delete json.solutionType;
@@ -577,40 +575,33 @@ export class GameBase {
   }
 
   // Hook for subclasses to implement game-specific logic after a move
-  postMove() {
-    // Override in subclasses
+  postMove(): void {
+    // Override in subclasses if needed
   }
 
   // Action method - must be implemented by subclasses
   // This specifies what happens when you activate squares (e.g., do you unsquare or go the other way)
-  action(v: number): number {
-    throw new Error("action method must be implemented by subclass");
-  }
+  abstract action(v: number): number;
 
   // Hook for subclasses to implement game-specific logic on mouse down
-  onMouseDown() {
-    // Override in subclasses
+  onMouseDown(): void {
+    // Override in subclasses if needed
   }
 
-  // Hook for subclasses to save state before a move is applied
+  // Hook for subclasses to implement game-specific logic before a move is applied
   preMove(move: Move): void {
-    // Override in subclasses
+    // Override in subclasses if needed
   }
 
   // Hook for subclasses to add additional state to undo
-  getAdditionalState(): any {
-    // Override in subclasses to return object with additional state
-    return {};
-  }
+  abstract getAdditionalState(): any;
 
   // Hook for subclasses to restore additional state from undo
-  restoreAdditionalState(additionalState: any): void {
-    // Override in subclasses to restore additional state
-  }
+  abstract restoreAdditionalState(additionalState: any): void;
 
   // Save state for undo. move can be a move object, null (for non-move operations),
   // or "restart" (for restart operations). Additional state is saved via getAdditionalState() hook.
-  saveUndoState(move: Move): void {
+  saveUndoState(move: Move | "restart"): void {
     assert(this.tiles !== null);
     const undo = {
       tiles: this.tiles.clone(),
@@ -671,6 +662,8 @@ export class GameBase {
       // Restore additional state from subclasses
       this.restoreAdditionalState(undo.additionalState);
     }
+    this.draw();
+    this.startAnimationLoopIfNeeded();
     return true;
   }
 
@@ -686,11 +679,11 @@ export class GameBase {
 
   // Hook for subclasses to draw overlays after base canvas drawing
   drawOverlays() {
-    // Override in subclasses
+    // Override in subclasses if needed
   }
 
   // Hook for subclasses to display level-specific GUI
   displayLevelGui(level: Level): void {
-    // Override in subclasses
+    // Override in subclasses if needed
   }
 }

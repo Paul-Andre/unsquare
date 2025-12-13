@@ -12,8 +12,10 @@ export function checkAndOpenCustomLevel(game: Game): boolean {
 
     customLevel.isCustom = true;
     game.openLevel(customLevel, {
-      levels: [],
+      levels: [customLevel],
       source: customLevelString,
+      id: "custom",
+      title: "Custom",
     });
     console.log("Switching to customLevel", customLevel);
 

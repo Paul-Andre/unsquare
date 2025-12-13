@@ -10,12 +10,35 @@ import * as config from '../utils/config.ts';
 import { renderHistogram } from '../ui/ChallengeHistogram.ts';
 import { drawIcon, getCachedLevelIconDataUrl } from '../ui/icon.ts';
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from '../utils/api.ts';
-import { assert } from '../utils/helpers.ts';
+import { assert, bezierBlend, cast, ensureNotNull, interpolate } from '../utils/helpers.ts';
 import { screenManager } from '../ui/ScreenManager.ts';
+import { Level } from '../core/Level.ts';
+import { Book } from '../core/Book.ts';
+import { Move } from './GameBase.ts';
+
+const firstDemoDrag = {
+  start: { x: 0.33, y: 0.33 },
+  end: { x: 0.67, y: 0.67 },
+};
 
 
 export class Game extends GameBase {
-  constructor(canvasId, divId) {
+  numMoves: number;
+  playerSolution: number[] | null;
+  numSolvedThisSession: number;
+  showedDiscordOverlay: boolean;
+  demoDrag: {start: {x: number, y: number}, end: {x: number, y: number}} | null;
+  demoDragTime: number;
+  allHistogramData: any | null;
+  hintState: {
+    hintSquare: { x: number; y: number; size: number; } | null;
+    suggestRestart: boolean;
+  } | null;
+
+  viewHistogramChangeHandler: ((e: Event) => void) | null = null;
+  histogramChangeHandler: any;
+
+  constructor(canvasId: string, divId: string) {
     super(canvasId, divId);
     // Bind the action method to preserve 'this' context when passed as callback
     this.action = this.action.bind(this);
@@ -29,10 +52,6 @@ export class Game extends GameBase {
     // Tutorial hint system properties
     this.demoDrag = null;
     this.demoDragTime = 0;
-    this.firstDemoDrag = {
-      start: { x: 0.33, y: 0.33 },
-      end: { x: 0.67, y: 0.67 },
-    };
     this.allHistogramData = null;
 
     // Hint system properties
@@ -40,27 +59,31 @@ export class Game extends GameBase {
   }
 
   // this specifies what happens when you activate squares
-  action(v) {
+  action(v: number): number {
+    assert(this.level !== null);
     return this.level.colorScheme.unsquare(v);
   }
 
   // Game-specific logic for mouse down
-  onMouseDown() {
+  override onMouseDown(): void {
     this.hideFinishedLevelElements();
   }
 
+
+
   // Override openLevel to initialize playerSolution
-  openLevel(level, book) {
+  override openLevel(level: Level, book: Book): void {
     super.openLevel(level, book);
+
     this.numMoves = 0;
-    // Initialize playerSolution to zero vector
+    assert(this.operations !== null);
     this.playerSolution = new Array(this.operations.length).fill(0);
-    // Reset hint state
     this.hintState = null;
   }
 
   // Hook to add additional state to undo
-  getAdditionalState() {
+  getAdditionalState(): unknown {
+    assert(this.playerSolution !== null);
     return {
       numMoves: this.numMoves,
       playerSolution: this.playerSolution.slice(),
@@ -72,7 +95,7 @@ export class Game extends GameBase {
   }
 
   // Hook to restore additional state from undo
-  restoreAdditionalState(additionalState) {
+  restoreAdditionalState(additionalState: any): void {
     this.numMoves = additionalState.numMoves;
     this.playerSolution = additionalState.playerSolution.slice();
     this.hintState = additionalState.hintState ? {
@@ -82,13 +105,15 @@ export class Game extends GameBase {
   }
 
   // Save state before a move is applied
-  preMove(move) {
+  override preMove(move: Move): void {
     // Clear hint state when a move is made
     this.hintState = null;
     // Track the move in playerSolution
     // We compute the vector from the move before applying it
     if (move != null && this.inverseOperations && this.playerSolution) {
       // Create a temporary grid to compute the vector
+      assert(this.level !== null);
+      assert(this.tiles !== null);
       let vector = this.level.tileShape.moveToVector(this.tiles, move);
       let opIndex = this.inverseOperations.get(vector.join(""));
       if (opIndex !== undefined) {
@@ -99,28 +124,30 @@ export class Game extends GameBase {
   }
 
   // Game-specific logic after a move
-  postMove() {
+  override postMove(): void {
     this.sanityCheck();
     if (this.isFinished()) {
       this.finishedLevel();
     }
   }
 
-  sanityCheck() {
+  sanityCheck(): void {
     if (this.tiles === null) {
       return;
     }
-    if (this.numMoves != vector_sum(this.getPlayerSolution())) {
-      console.error("numMoves", this.numMoves, "does not match solution", vector_sum(this.getPlayerSolution()), this.getPlayerSolution());
+    const playerSolution = this.playerSolution;
+    assert(playerSolution !== null);
+    if (this.numMoves != vector_sum(playerSolution)) {
+      console.error("numMoves", this.numMoves, "does not match solution", vector_sum(playerSolution), playerSolution);
       console.error("this.tiles", this.tiles);
-      console.error("this.playerSolution", this.playerSolution, vector_sum(this.playerSolution));
+      console.error("this.playerSolution", this.playerSolution, vector_sum(this.playerSolution!));
+      assert(this.level !== null);
       console.error("this.level.solutions", this.level.solutions, this.level.solutions && this.level.solutions.length > 0 ? vector_sum(this.level.solutions[0]) : null);
-      console.error("this.level.solutionType", this.level.solutionType);
-
+      console.error("this.level.solutionType", this.level?.solutionType);
     }
   }
 
-  restart() {
+  restart(): void {
     // Save current state for undo before restarting
     // TODO: We save and restore the undo list this waybecause the way we restart the level is
     // by simply reopening it, which resets the undoList. Ideally we should either split openLevel into two functions,
@@ -132,6 +159,8 @@ export class Game extends GameBase {
     }
     
     const shouldShowHint = !!(this.hintState?.suggestRestart);
+    assert(this.level !== null);
+    assert(this.book !== null);
     this.openLevel(this.level, this.book);
 
     // Restore the undo list after creating new game state
@@ -153,9 +182,10 @@ export class Game extends GameBase {
     return this.tiles && !this.tiles.some(v => v != 1);
   }
 
-  postSolutionToServer(callback) {
+  postSolutionToServer(callback: () => void): void {
     const level = this.level;
-    const solution = this.getPlayerSolution();
+    assert(level !== null);
+    const solution = this.playerSolution;
     const player_id = localStorage.player_id;
     console.log("solution to be posted", JSON.stringify(solution));
     
@@ -250,7 +280,7 @@ export class Game extends GameBase {
     }
   }
 
-  async showHistogramView() {
+  async showHistogramView(): Promise<void> {
     if (!this.level || this.level.mode !== "challenge") {
       return;
     }
@@ -312,7 +342,7 @@ export class Game extends GameBase {
     }
   }
 
-  renderViewHistogram() {
+  renderViewHistogram(): void {
     const element = this.getElement("viewHistogramOverlay");
     if (!(element instanceof HTMLElement)) {
       return;
@@ -332,11 +362,12 @@ export class Game extends GameBase {
     if (!select || !(select instanceof HTMLSelectElement)) {
       return;
     }
+    assert(this.level !== null);
     const playerMoves = getBestNumMoves(this.level);
     renderHistogram(container, this.allHistogramData[select.value], playerMoves);
   }
 
-  hideHistogramView() {
+  hideHistogramView(): void {
     const element = this.getElement("viewHistogramOverlay");
     if (element instanceof HTMLElement) {
       element.style.display = "none";
@@ -344,18 +375,15 @@ export class Game extends GameBase {
     }
   }
 
-  getPlayerSolution() {
-    return this.playerSolution.slice();
-  }
-
-  finishedLevel() {
+  finishedLevel(): void {
+    assert(this.level !== null);
     if (!this.level.solutions || this.level.solutions.length === 0) {
       // No existing solutions, just set the player solution
-      this.level.solutions = [this.getPlayerSolution()];
+      this.level.solutions = [ensureNotNull(this.playerSolution).slice()];
       this.level.solutionType = "manual";
     } else {
       let oldSum = vector_sum(this.level.solutions[0]);
-      let newSolution = this.getPlayerSolution();
+      let newSolution = ensureNotNull(this.playerSolution).slice();
       //vector_simplify_arithmetic(newSolution, level_get_arithmetic(this.level));
       let newSum = vector_sum(newSolution);
 
@@ -380,12 +408,13 @@ export class Game extends GameBase {
       setBestNumMoves(this.level, numMoves);
     }
 
+    assert(this.book !== null);
     trackLevelEnd(this.level, this.book);
     if (this.level.mode === "challenge") {
       this.postSolutionToServer(
         ()=>{
           this.renderHistogram();
-          this.displayLevelGui(this.level);
+          this.level && this.displayLevelGui(this.level);
           this.updateGui();
         }
       );
@@ -440,7 +469,7 @@ export class Game extends GameBase {
       select.removeEventListener("change", this.histogramChangeHandler);
     }
     
-    this.histogramChangeHandler = (e) => {
+    this.histogramChangeHandler = (e: Event) => {
       this.renderHistogram();
     };
     
@@ -469,7 +498,10 @@ export class Game extends GameBase {
 
   isInBasicBook() {
     // TODO: add some kind of flag to the book object for this.
-    return this.book.source.endsWith(".json");
+    if (!this.book) {
+      return false;
+    }
+    return this.book.source?.endsWith(".json") ?? false;
   }
 
   updateGui() {
@@ -505,7 +537,8 @@ export class Game extends GameBase {
   updateHintButtonVisibility() {
     const hintButton = this.div.querySelector(".hint_button");
     if (hintButton instanceof HTMLElement) {
-      hintButton.style.display = this.level.par !== null ? "" : "none";
+      let visible = this.level?.par !== null;
+      hintButton.style.display = visible ? "" : "none";
     }
   }
 
@@ -528,7 +561,7 @@ export class Game extends GameBase {
     // Update arrow overlay
     const arrowOverlay = this.div.querySelector(".hint_arrow_overlay");
     if (arrowOverlay instanceof HTMLElement) {
-      if (suggestRestart && restartButton) {
+      if (suggestRestart && restartButton instanceof HTMLElement) {
         arrowOverlay.style.display = "block";
         this.positionHintArrow(arrowOverlay, restartButton);
       } else {
@@ -537,10 +570,11 @@ export class Game extends GameBase {
     }
   }
 
-  // Position hint arrow to point at restart button
-  positionHintArrow(arrowOverlay, restartButton) {
+  // TODO: Completely redo this.
+  positionHintArrow(arrowOverlay: HTMLElement, restartButton: HTMLElement): void {
+    assert(this.div.querySelector(".content") !== null);
     const buttonRect = restartButton.getBoundingClientRect();
-    const contentRect = this.div.querySelector(".content").getBoundingClientRect();
+    const contentRect = ensureNotNull(this.div.querySelector(".content")).getBoundingClientRect();
     const canvasRect = this.canvas.getBoundingClientRect();
     
     // Position arrow between canvas and restart button
@@ -551,13 +585,16 @@ export class Game extends GameBase {
     arrowOverlay.style.top = `${arrowY - contentRect.top}px`;
   }
 
-  updateDemoDrag() {
-    this.demoDrag = (this.level.id == "level_1693531796434" && this.numMoves == 0)
-      ? this.firstDemoDrag
+  updateDemoDrag(): void {
+    this.demoDrag = (this.level?.id == "level_1693531796434" && this.numMoves == 0)
+      ? firstDemoDrag
       : null;
   }
 
   updateRestartButton() {
+    if (!this.level) {
+      return;
+    }
     const suggestsRestart = 
       (this.level.id == "level_1693531796434" && this.numMoves >= 1 && !this.isFinished()) ||
       (this.isInBasicBook() && this.level.index < 10 && this.level.par !== null && this.numMoves > this.level.par * 3 && !this.isFinished());
@@ -566,12 +603,13 @@ export class Game extends GameBase {
     restartButton.classList.toggle("in_yo_face", suggestsRestart);
   }
 
-  updateFinishedLevelNextButton(element) {
+  updateFinishedLevelNextButton(element: HTMLElement): void {
     const nextButton = element.querySelector(".finishedLevelNextButton");
-    if (!nextButton) {
+    if (!(nextButton instanceof HTMLElement)) {
       return;
     }
-
+    assert(this.level !== null);
+    assert(this.book !== null);
     const hasNextLevel = this.level.index + 1 < this.book.levels.length;
     
     if (hasNextLevel) {
@@ -583,7 +621,10 @@ export class Game extends GameBase {
     }
   }
 
-  showFinishedLevel() {
+  showFinishedLevel(): void {
+    if (!this.level || !this.book) {
+      return;
+    }
 
     if (this.book.id === "book_1762877873556" && this.level.index >= this.book.levels.length - 1) {
       const finishedGame = this.getElement("finishedGame");
@@ -644,17 +685,20 @@ export class Game extends GameBase {
     bestContent.innerText = best !== null ? best.toString() : "-";
   }
 
-  getElement(className) {
+  getElement(className: string): Element {
     return this.div.getElementsByClassName(className)[0];
   }
 
-  getLevelArrayIndex(level) {
+  getLevelArrayIndex(level: Level): number {
     return level.index;
   }
 
   // Helper: Calculate display index for a level (excluding hidden levels)
   // TODO: this should not be recomputed like this every time for every level.
-  getLevelDisplayIndex(level) {
+  getLevelDisplayIndex(level: Level): number {
+    if (!this.book) {
+      return 0;
+    }
     let displayIndex = 0;
     const currentArrayIndex = this.getLevelArrayIndex(level);
     for (let i = 0; i < currentArrayIndex; i++) {
@@ -666,7 +710,10 @@ export class Game extends GameBase {
   }
 
   // Helper: Find next visible (non-hidden) level starting from startIndex
-  findNextVisibleLevel(startIndex) {
+  findNextVisibleLevel(startIndex: number): number {
+    if (!this.book) {
+      return -1;
+    }
     for (let i = startIndex + 1; i < this.book.levels.length; i++) {
       if (!this.book.levels[i].hidden) {
         return i;
@@ -676,7 +723,10 @@ export class Game extends GameBase {
   }
 
   // Helper: Find previous visible (non-hidden) level starting from startIndex
-  findPrevVisibleLevel(startIndex) {
+  findPrevVisibleLevel(startIndex: number): number {
+    if (!this.book) {
+      return -1;
+    }
     for (let i = startIndex - 1; i >= 0; i--) {
       if (!this.book.levels[i].hidden) {
         return i;
@@ -685,10 +735,13 @@ export class Game extends GameBase {
     return -1;
   }
 
-  displayLevelGui(level) {
+  override displayLevelGui(level: Level): void {
     this.hideFinishedLevelElements();
 
-    document.getElementById("TextShower").innerText = level.text;
+    const textShower = document.getElementById("TextShower");
+    if (textShower instanceof HTMLElement) {
+      textShower.innerText = level.text;
+    }
 
     // Handle par/top indicator
     const parIndicator = this.getElement("parContentInclusive");
@@ -739,7 +792,7 @@ export class Game extends GameBase {
       levelDisplay = `Level ${1 + index}`
     };
 
-    document.getElementById("LevelIndicator").innerText = levelDisplay;
+    cast(document.getElementById("LevelIndicator"), HTMLElement).innerText = levelDisplay;
 
     const states = calculateStates(this.book);
     this.updateNavigationButtons(states);
@@ -748,40 +801,54 @@ export class Game extends GameBase {
     this.updateHintButtonVisibility();
   }
 
-  updateNavigationButtons(states) {
+  updateNavigationButtons(states: number[]): void {
+    const currentArrayIndex = this.level ? this.getLevelArrayIndex(this.level) : null;
+
     const prevButton = this.div.querySelector("#prevButton");
-    const currentArrayIndex = this.getLevelArrayIndex(this.level);
-    const prevArrayIndex = this.findPrevVisibleLevel(currentArrayIndex);
-    prevButton.toggleAttribute("disabled", prevArrayIndex < 0 || states[prevArrayIndex] <= LEVEL_STATES.LOCKED);
+    if (prevButton instanceof HTMLElement) {
+      let dis = true;
+      if (currentArrayIndex !== null) {
+        const prevArrayIndex = this.findPrevVisibleLevel(currentArrayIndex);
+        dis = prevArrayIndex < 0 || states[prevArrayIndex] <= LEVEL_STATES.LOCKED;
+      }
+      prevButton.toggleAttribute("disabled", dis);
+    }
 
     const nextButton = this.div.querySelector("#nextButton");
-    const nextArrayIndex = this.findNextVisibleLevel(currentArrayIndex);
-    nextButton.toggleAttribute("disabled", nextArrayIndex < 0 || states[nextArrayIndex] <= LEVEL_STATES.LOCKED);
+    if (nextButton instanceof HTMLElement) {
+      let dis = true;
+      if (currentArrayIndex !== null) {
+        const nextArrayIndex = this.findNextVisibleLevel(currentArrayIndex);
+        dis = nextArrayIndex < 0 || states[nextArrayIndex] <= LEVEL_STATES.LOCKED
+      }
+      nextButton.toggleAttribute("disabled", dis);
+    }
   }
 
-  undo() {
-    super.undo();
-    this.draw();
-    // Start animation loop if animations were triggered
-    this.startAnimationLoopIfNeeded();
-  }
-
-  checkShowOverlayMessage() {
+  checkShowOverlayMessage(): boolean {
+    if (!this.book) {
+      return false;
+    }
     // TODO: when multiple books, rethink this.
     const totSolved = this.book.levels.filter(level => getBestNumMoves(level)).length;
     // Todo: make this be a parameter on posthog
     return totSolved >= 35 && this.numSolvedThisSession >= 10 && !this.showedDiscordOverlay;
   }
 
-  nextLevel() {
+  nextLevel(): void {
     const discordEl = document.getElementById("discord_overlay_message");
-    if (this.checkShowOverlayMessage()) {
-      discordEl.hidden = false;
-      this.showedDiscordOverlay = true;
+    if (discordEl instanceof HTMLElement) {
+      if (this.checkShowOverlayMessage()) {
+        discordEl.hidden = false;
+        this.showedDiscordOverlay = true;
+        return;
+      }
+
+      discordEl.hidden = true;
+    }
+    if (!this.level || !this.book) {
       return;
     }
-
-    discordEl.hidden = true;
     const currentArrayIndex = this.getLevelArrayIndex(this.level);
     if (currentArrayIndex === null) return;
     
@@ -791,7 +858,10 @@ export class Game extends GameBase {
     }
   }
 
-  prevLevel() {
+  prevLevel(): void {
+    if (!this.level || !this.book) {
+      return;
+    }
     const currentArrayIndex = this.getLevelArrayIndex(this.level);
     if (currentArrayIndex === null) return;
     
@@ -801,30 +871,23 @@ export class Game extends GameBase {
     }
   }
 
-  navigateToLevel(level) {
+  // TODO: figure out whether this is the best place for this and how to deal with book.
+  navigateToLevel(level: Level): void {
+    assert(this.book !== null);
     this.openLevel(level, this.book);
     this.onShow();
     this.forceRedraw();
   }
 
-  // Animation utility methods
-  interpolate(a, b, t) {
-    return a + (b - a) * t;
-  }
 
-  // [0,1] -> [0,1]
-  // https://stackoverflow.com/a/25730573/2356347
-  bezierBlend(t) {
-    return t * t * (3.0 - 2.0 * t);
-  }
 
-  dragBlend(x) {
-    const bezier = this.bezierBlend(x);
-    return this.interpolate(this.interpolate(this.interpolate(bezier, 1, x), 1, x), 1, x);
+  dragBlend(x: number): number {
+    const bezier = bezierBlend(x);
+    return interpolate(interpolate(interpolate(bezier, 1, x), 1, x), 1, x);
   }
 
   // Tutorial hint overlay drawing
-  overlayDemoDrag() {
+  overlayDemoDrag(): void {
     if (!this.demoDrag) {
       return;
     }
@@ -845,8 +908,8 @@ export class Game extends GameBase {
 
     // Draw animated bubble
     const easedTime = this.dragBlend(this.demoDragTime);
-    const bubbleX = this.interpolate(this.demoDrag.start.x, this.demoDrag.end.x, easedTime) * width;
-    const bubbleY = this.interpolate(this.demoDrag.start.y, this.demoDrag.end.y, easedTime) * height;
+    const bubbleX = interpolate(this.demoDrag.start.x, this.demoDrag.end.x, easedTime) * width;
+    const bubbleY = interpolate(this.demoDrag.start.y, this.demoDrag.end.y, easedTime) * height;
     const bubbleSize = relativeDragSize * width;
 
     this.ctx.fillStyle = "#4fb6ff55";
@@ -856,11 +919,11 @@ export class Game extends GameBase {
   }
 
   // Hook methods for animation and drawing
-  hasAdditionalAnimations() {
+  override hasAdditionalAnimations(): boolean {
     return this.demoDrag !== null;
   }
 
-  updateAdditionalAnimations(timestamp) {
+  override updateAdditionalAnimations(timestamp: number): boolean {
     if (this.demoDrag) {
       this.demoDragTime +=
         (timestamp - this.lastUpdateTimestamp) / 1500;
@@ -870,27 +933,28 @@ export class Game extends GameBase {
     return false;
   }
 
-  drawOverlays() {
+  override drawOverlays(): void {
     if (this.demoDrag) {
       this.overlayDemoDrag();
     }
     this.drawHintOverlay();
   }
 
-
   // Find the next move in the solution
-  findNextHintMove() {
-    if (!this.playerSolution || !this.level.solutions || this.level.solutions.length === 0 || !this.operations) {
-      return null;
-    }
+  // TODO: this should actually return a more involved object with a few other options,
+  // perhaps instructions to undo a few moves, or instruction to restart.
+  findNextHintMove(): Move | null {
+    assert(this.level !== null);
+    assert(this.playerSolution !== null);
+    assert(this.level.solutions !== null);
+    assert(this.level.solutions.length > 0);
+    assert(this.operations !== null);
     
     // Helper function to check if player is aligned with a solution
-    const isAlignedWithSolution = (solution) => {
-      if (this.playerSolution.length !== solution.length) {
-        return false;
-      }
+    const isAlignedWithSolution = (solution: number[]): boolean => {
+      assert(this.playerSolution!.length === solution.length);
       // Check alignment: for each i, playerSolution[i] <= solution[i]
-      return this.playerSolution.every((val, i) => val <= solution[i]);
+      return this.playerSolution!.every((val, i) => val <= solution[i]);
     };
     
     // Filter to only solutions the player is aligned with
@@ -936,9 +1000,11 @@ export class Game extends GameBase {
     return operation_index_to_move(level_get_geometry(this.level), bestMoveIndex);
   }
 
-  getHint() {
-    if (!this.playerSolution || !this.level.solutions || this.level.solutions.length === 0) {
-      return { suggestRestart: true, hintSquare: null };
+  getHint(): { hintSquare: { x: number; y: number; size: number; } | null; suggestRestart: boolean } | null {
+    assert(this.level !== null);
+    assert(this.playerSolution !== null);
+    if (!this.level.solutions || this.level.solutions.length === 0 || !this.operations) {
+      return null;
     }
     
     const hintSquare = this.findNextHintMove();
@@ -967,6 +1033,7 @@ export class Game extends GameBase {
     if (!this.hintState?.hintSquare) {
       return;
     }
+    assert(this.tiles !== null);
     
     const square = this.hintState.hintSquare;
     const width = this.canvas.width / (this.tiles.width + 0.1);

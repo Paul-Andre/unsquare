@@ -68,3 +68,14 @@ export function ensureNotNull<T>(value: T | null | undefined): T {
   }
   return value;
 }
+
+ // Animation utility methods
+ export function interpolate(a: number, b: number, t: number): number {
+  return a + (b - a) * t;
+}
+
+// [0,1] -> [0,1]
+// https://stackoverflow.com/a/25730573/2356347
+export function bezierBlend(t: number): number {
+  return t * t * (3.0 - 2.0 * t);
+}
