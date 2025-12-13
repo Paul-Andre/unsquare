@@ -6,7 +6,7 @@
  * @param {Object} histogramData - Object mapping move counts to solution counts, e.g. { 3: 5, 4: 12, 5: 8 }
  * @param {number} playerMoves - The player's move count to highlight
  */
-export function renderHistogram(container, histogramData, playerMoves) {
+export function renderHistogram(container: HTMLElement, histogramData: Record<number, number>, playerMoves: number | null) {
   // Clear existing content
   container.innerHTML = "";
 
@@ -55,11 +55,11 @@ export function renderHistogram(container, histogramData, playerMoves) {
   const maxSolutionCount = Math.max(...Object.values(dataWithPlayer), 1);
 
   // Tooltip state management
-  let activeTooltip = null;
-  const barContainers = []; // Store all bar containers with tooltips
+  let activeTooltip: HTMLElement | null = null;
+  const barContainers: { container: HTMLElement, tooltip: HTMLElement }[] = []; // Store all bar containers with tooltips
 
   // Show tooltip and hide previous one
-  function showTooltip(tooltip) {
+  function showTooltip(tooltip: HTMLElement) {
     if (activeTooltip && activeTooltip !== tooltip) {
       activeTooltip.classList.remove("visible");
     }
@@ -92,7 +92,7 @@ export function renderHistogram(container, histogramData, playerMoves) {
     if (hasData || isPlayerBar) {
       bar.style.height = `${percentage}%`;
       bar.setAttribute("data-moves", moveCount.toString());
-      bar.setAttribute("data-count", solutionCount);
+      bar.setAttribute("data-count", solutionCount.toString());
     } else {
       bar.style.height = "0%";
       bar.style.visibility = "hidden";
@@ -129,7 +129,7 @@ export function renderHistogram(container, histogramData, playerMoves) {
   let isDragging = false;
 
   // Find the closest bar to a given point
-  function findClosestBarTooltip(x, y) {
+  function findClosestBarTooltip(x: number, y: number): HTMLElement | null {
     if (barContainers.length === 0) return null;
 
     const containerRect = container.getBoundingClientRect();
@@ -194,12 +194,12 @@ export function renderHistogram(container, histogramData, playerMoves) {
 }
 
 
-export function generateDummyHistogramData(center) {
+export function generateDummyHistogramData(center: number): { allSolutions: Record<number, number>, bestPerPlayer: Record<number, number>, uniqueSolutions: Record<number, number> } {
   const minMoves = Math.max(3, center - 8);
   const maxMoves = center + 25;
 
-  const generateLongTailDistribution = (center, total, tailStrength) => {
-    const data = {};
+  const generateLongTailDistribution = (center: number, total: number, tailStrength: number): Record<number, number> => {
+    const data: Record<number, number> = {};
     const decayFactor = 2.5;
     
     // Generate distribution with exponential decay and gaps

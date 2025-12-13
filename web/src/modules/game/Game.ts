@@ -789,8 +789,10 @@ export class Game extends GameBase {
 
     cast(document.getElementById("LevelIndicator"), HTMLElement).innerText = levelDisplay;
 
-    const states = calculateStates(this.book);
-    this.updateNavigationButtons(states);
+    if (this.book) {
+      const states = calculateStates(this.book);
+      this.updateNavigationButtons(states);
+    }
 
     // Update hint button visibility
     this.updateHintButtonVisibility();
