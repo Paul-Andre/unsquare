@@ -1,7 +1,7 @@
 "use strict";
 
 import { LevelMenuComponent } from './LevelMenuComponent.js';
-import Sortable from './Sortable.js';
+import Sortable from 'sortablejs';
 
 export const editorLevelMenu = new LevelMenuComponent("editorLevelMenu", true);
 console.log("editorLevelMenu", editorLevelMenu);
