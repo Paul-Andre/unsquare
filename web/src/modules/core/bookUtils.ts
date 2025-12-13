@@ -34,15 +34,14 @@ export function book_reviver(key: string, value: any) {
 }
 
 export function create_empty_book(): Book {
-  let book = {
+  return {
     id: generate_id("book"),
     title: "New Book",
     levels: [],
   };
-  return book;
 }
 
-export function save_editor_book(book: Book) {
+export function save_editor_book(book: Book): void {
   let key = "editor_" + book.id;
   localStorage.setItem(key, JSON.stringify(book, book_replacer));
 }

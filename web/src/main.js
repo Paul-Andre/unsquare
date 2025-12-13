@@ -5,11 +5,11 @@ import { screenManager } from './modules/ui/ScreenManager.js';
 import { bookMenu } from './modules/ui/BookMenu.js';
 import { gameLevelMenu } from './modules/ui/GameLevelMenu.js';
 import { editorLevelMenu } from './modules/ui/editorLevelMenu.js';
-import { checkAndOpenCustomLevel } from './modules/utils/customParse.ts';
+import { checkAndOpenCustomLevel } from './modules/utils/customParse';
 import { Level } from './modules/core/Level.ts';
 import * as config from './modules/utils/config.ts';
 import * as algo from './modules/core/algo';
-import { generate_id } from './modules/utils/helpers.ts';
+import { assert, cast, generate_id } from './modules/utils/helpers.ts';
 
 // Global configuration
 window.config = config;
@@ -67,8 +67,8 @@ window.addEventListener('load',
 (function setupOnboarding() {
   const slidesContainer = document.getElementById('onboardingSlides');
   const openingSection = document.getElementById('opening_instructions');
-  const prevBtn = document.getElementById('onboardingPrevBtn');
-  const nextBtn = document.getElementById('onboardingNextBtn');
+  const prevBtn = cast(document.getElementById('onboardingPrevBtn'), HTMLButtonElement);
+  const nextBtn = cast(document.getElementById('onboardingNextBtn'), HTMLButtonElement);
 
   let currentSlideIndex = 0;
   const slides = Array.from(slidesContainer.children);

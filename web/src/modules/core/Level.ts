@@ -60,7 +60,7 @@ export class Level {
     return new Level(size);
   }
 
-  static fromJsonObject(json: any) {
+  static fromJsonObject(json: any): Level {
     const level = new Level(1);
     level.colorScheme = colorSchemes.BW; //colorSchemes[json.colorScheme];
     level.tileShape = tileShapes.square; // tileShapes[json.tileShape];
@@ -112,7 +112,7 @@ export class Level {
     return level;
   }
 
-  static fromCompact(s: string) {
+  static fromCompact(s: string): Level | null {
     let [geo, arith, tOrV, dataStr] = s.split("$");
     if (!geo.startsWith("s_")) {
       return null;
@@ -171,8 +171,7 @@ export class Level {
 
     return level;
   }
-
-  toJsonObject() {
+  toJsonObject(): Record<string, any> {
     const json: any = {};
     json.colorScheme = this.colorScheme.name;
     json.tileShape = this.tileShape.name;

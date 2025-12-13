@@ -7,10 +7,10 @@
     
     /* Stricter Type Checking (The "Strict" Part) */
     "strict": true, // This enables all strict checking flags for TS files
-    
-    // Ensure all JS-related options are disabled or set appropriately for TS files
-    "allowJs": false,
-    "checkJs": false 
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "noImplicitReturns": true,
+    "noImplicitOverride": true
   },
   "include": ["src/**/*.ts"], // ONLY include TypeScript files
   "exclude": ["node_modules"]
