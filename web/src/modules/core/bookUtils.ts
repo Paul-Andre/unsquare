@@ -4,7 +4,7 @@ import { Level } from './Level';
 import { Book } from './Book'
 
 // For use with JSON.stringify
-export function book_replacer(key, value) {
+export function book_replacer(key: string, value: any) {
   if (value instanceof Level) {
     return value.toJsonObject();
   }
@@ -12,7 +12,7 @@ export function book_replacer(key, value) {
 }
 
 // For use with JSON.parse
-export function book_reviver(key, value) {
+export function book_reviver(key: string, value: any) {
   if (typeof value === "object" && value !== null) {
     if (value.__type__ == "Level") {
       return Level.fromJsonObject(value);
@@ -26,7 +26,8 @@ export function book_reviver(key, value) {
     if (value.levels) {
       // Don't set indices here - let reindexLevels() handle it to account for hidden levels
       // Indices will be set when the book is opened in the editor or when reindexLevels() is called
-      // TODO: probably SHOULD set indices here, possibly even have two different types of indices.
+      // TODO: The above message was written by AI. We probably SHOULD set indices here,
+      // possibly even have two different types of indices.
     }
   }
   return value;

@@ -366,7 +366,7 @@ export class SquareTileShape {
         value,
         tileState,
         selectedCount === 1 && tileState.selected,
-        hoveredTile && hoveredTile.x === x && hoveredTile.y === y
+        hoveredTile !== null && hoveredTile.x === x && hoveredTile.y === y
       );
 
       // Track selection bounds
