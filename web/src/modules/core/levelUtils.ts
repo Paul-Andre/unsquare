@@ -3,6 +3,13 @@
 
 import { Level } from "./Level";
 
+export type ChallengeStatistics = {
+  player_best: number;
+  top_best: number;
+  rank: number;
+  total_players: number;
+}
+
 // "lsk" = local storage key
 // Best moves storage methods
 export function getLskForBestNumMoves(level: Level): string {
@@ -29,17 +36,17 @@ export function getChallengeStatsCacheKey(levelId: string): string {
 }
 
 // TODO: figure out the type of the stats.
-export function getCachedChallengeStatistics(levelId: string): Record<string, any> | null {
+export function getCachedChallengeStatistics(levelId: string): ChallengeStatistics | null {
   const cached = localStorage.getItem(getChallengeStatsCacheKey(levelId));
   if (!cached) return null;
   try {
-    return JSON.parse(cached);
+    return JSON.parse(cached) as ChallengeStatistics;
   } catch (e) { 
     return null;
   }
 }
 
 // TODO: figure out the type of the stats.
-export function saveChallengeStatistics(levelId: string, stats: Record<string, any>): void {
+export function saveChallengeStatistics(levelId: string, stats: ChallengeStatistics): void {
   localStorage.setItem(getChallengeStatsCacheKey(levelId), JSON.stringify(stats));
 }

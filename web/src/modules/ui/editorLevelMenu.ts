@@ -1,6 +1,6 @@
 "use strict";
 
-import { cast } from 'modules/utils/helpers.ts';
+import { cast } from '../utils/helpers.ts';
 import { LevelMenuComponent } from './LevelMenuComponent.ts';
 import Sortable from 'sortablejs';
 

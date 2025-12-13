@@ -41,6 +41,8 @@ window.openPlayerEditor = function() {
   window.editor.openLevel(level, {
     levels: [level],
     source: "playerEditor",
+    id: "playerEditor",
+    title: "Player Editor",
   });
   window.screenManager.switchTo("editor");
 };
@@ -66,6 +68,7 @@ window.addEventListener('load',
 // Onboarding flow (first-run instructions)
 (function setupOnboarding() {
   const slidesContainer = document.getElementById('onboardingSlides');
+  assert(slidesContainer !== null);
   const openingSection = document.getElementById('opening_instructions');
   const prevBtn = cast(document.getElementById('onboardingPrevBtn'), HTMLButtonElement);
   const nextBtn = cast(document.getElementById('onboardingNextBtn'), HTMLButtonElement);
@@ -73,7 +76,7 @@ window.addEventListener('load',
   let currentSlideIndex = 0;
   const slides = Array.from(slidesContainer.children);
 
-  function showSlide(idx) {
+  function showSlide(idx: number): void {
     currentSlideIndex = Math.max(0, Math.min(idx, slides.length - 1));
     for (let i = 0; i < slides.length; i++) {
       slides[i].classList.toggle('variant_shown', i === currentSlideIndex);
@@ -102,6 +105,7 @@ window.addEventListener('load',
         screenManager.switchTo('gameLevelMenu');
 
         let book = gameLevelMenu.levelMenu.book;
+        assert(book !== null);
         window.game.openLevel(book.levels[0], book);
         screenManager.switchTo("game");
         has_already_went_to_first_level = true;
@@ -152,7 +156,7 @@ if (localStorage.getItem("player_id") === null) {
   if (!titleElement) return;
 
   let clickCount = 0;
-  let resetTimeout = null;
+  let resetTimeout: NodeJS.Timeout | null = null;
   const REQUIRED_CLICKS = 8;
   const RESET_DELAY = 2000; // 2 seconds
 

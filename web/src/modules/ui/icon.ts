@@ -1,4 +1,5 @@
 "use strict";
+import { assert } from '../utils/helpers.ts';
 import { Level } from '../core/Level.ts';
 // Pretty self explanatory. It draws the icon for the given level on the canvas.
 // It creates a new context and draws the icon such that it covers the whole canvas.
@@ -17,7 +18,7 @@ const iconCache = new Map();
  * @param {Level} level - The level to get the icon dataURL for
  * @returns {string} The dataURL for the level icon
  */
-export function getCachedLevelIconDataUrl(level) {
+export function getCachedLevelIconDataUrl(level: Level): string {
   const fullIdentifier = level.getFullIdentifier();
   
   if (iconCache.has(fullIdentifier)) {
@@ -35,12 +36,12 @@ export function getCachedLevelIconDataUrl(level) {
  * @param {Level} level - The level
  * @returns {string} The dataURL for the level icon
  */
-export function createLevelIconDataUrl(level, size) {
+export function createLevelIconDataUrl(level: Level, size: number): string {
   const canvas = createLevelIconCanvas(level, size);
   return canvas.toDataURL();
 }
 
-export function createLevelIconElement(level, size=ICON_SIZE) {
+export function createLevelIconElement(level: Level, size: number = ICON_SIZE): HTMLImageElement {
   // Get cached or generate dataURL
   const dataURL = getCachedLevelIconDataUrl(level);
   
@@ -54,7 +55,7 @@ export function createLevelIconElement(level, size=ICON_SIZE) {
   return img;
 }
 
-export function createLevelIconCanvas(level, size) {
+export function createLevelIconCanvas(level: Level, size: number): HTMLCanvasElement {
   const icon = document.createElement("canvas");
   icon.style.width = `${size}px`;
   icon.style.height = `${size}px`;
@@ -64,7 +65,7 @@ export function createLevelIconCanvas(level, size) {
   return icon;
 }
 
-export function drawIcon(level, canvas) {
+export function drawIcon(level: Level, canvas: HTMLCanvasElement): void {
   if (level.colorScheme) {
     let colorScheme = level.colorScheme;
 
@@ -76,6 +77,7 @@ export function drawIcon(level, canvas) {
     let cellHeight = canvas.height / tiles.height;
 
     let ctx = canvas.getContext("2d");
+    assert(ctx !== null);
 
     tiles.forEach(function (v, x, y) {
       let f = colorScheme.cells[v].fill;

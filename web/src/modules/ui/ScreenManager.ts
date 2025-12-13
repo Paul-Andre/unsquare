@@ -4,8 +4,13 @@
 
 import { ensureNotNull } from "../utils/helpers";
 
+type AdditionalFunctions = {
+  onHide?: () => void;
+  onShow?: () => void;
+};
+
 export class ScreenManager {
-  additionalFunctions: Record<string, Record<string, () => void>>;
+  additionalFunctions: Record<string, AdditionalFunctions>;
   stack: { name: string }[];
   currentScreenName: string;
   currentScreen: HTMLElement;
@@ -28,12 +33,12 @@ export class ScreenManager {
   /**
    * Executes a function for a specific screen if it exists
    */
-  executeFunction(screenName: string, funcName: string): void {
+  executeFunction(screenName: string, funcName: "onHide" | "onShow"): void {
     if (
       screenName in this.additionalFunctions &&
       funcName in this.additionalFunctions[screenName]
     ) {
-      this.additionalFunctions[screenName][funcName]();
+      this.additionalFunctions[screenName]?.[funcName]?.();
     }
   }
 

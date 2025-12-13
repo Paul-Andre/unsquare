@@ -5,17 +5,25 @@ import { screenManager } from './ScreenManager.ts';
 import { book_reviver } from '../core/bookUtils.ts';
 import { Level } from '../core/Level.ts';
 import { getCachedLevelIconDataUrl } from './icon.ts';
-import { htmlStringToElement } from '../utils/helpers.ts';
+import { assert, cast, htmlStringToElement } from '../utils/helpers.ts';
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from '../utils/api.ts';
 import { getCachedChallengeStatistics, saveChallengeStatistics } from '../core/levelUtils.ts';
 import mainBookData from '../../data/2025_nov_11_reordered_solved_fixed_all_solutions.json';
 import dailyLevelsData from '../../data/daily_submitting_07_dec_exhaustive.json'
 import { DAILY_UNLOCK_HOUR, DAILY_LEVELS_START_DATE, ICON_SIZE } from '../utils/config.ts';
 import { game } from '../game/Game.ts';
+import { ChallengeStatistics } from '../core/levelUtils.ts';
+
+
 
 export class GameLevelMenu {
+  bookUrl: string;
+  dailyLevels: Level[];
+  weeklyChallengeLevel: Level;
+  levelMenu: LevelMenuComponent;
+  
   constructor() {
-    this.bookUrl = "data/2025_nov_11_reordered_solved_fixed.json";
+    this.bookUrl = "../../data/2025_nov_11_reordered_solved_fixed_all_solutions.json";
     
     // Load daily levels
     this.dailyLevels = JSON.parse(JSON.stringify(dailyLevelsData), book_reviver).levels || [];
@@ -65,15 +73,14 @@ export class GameLevelMenu {
 
 
     this.weeklyChallengeLevel = Level.fromJsonObject(challengeLevelJson);
-    
-    // Delay the creation of level menu until after game is ready
+
+    this.levelMenu = new LevelMenuComponent("gameLevelMenu", false);
     this.initializeLevelMenu();
 
     this.loadBook();
   }
 
   initializeLevelMenu() {
-    this.levelMenu = new LevelMenuComponent("gameLevelMenu", false);
     screenManager.additionalFunctions.gameLevelMenu = this.levelMenu;
     // Add onShow callback to refresh challenge statistics and daily icon
     const originalOnShow = this.levelMenu.onShow;
@@ -96,6 +103,7 @@ export class GameLevelMenu {
       this.levelMenu.openBook(data);
 
       let button = document.getElementById("homePlayButton");
+      assert(button instanceof HTMLButtonElement);
       button.removeAttribute("disabled");
       button.innerText = "Start Game!";
 
@@ -143,7 +151,7 @@ export class GameLevelMenu {
     }
   }
 
-  updateChallengeStatisticsDisplay(stats) {
+  updateChallengeStatisticsDisplay(stats: ChallengeStatistics) {
     const youEl = document.getElementById("challengeStatYou");
     const topEl = document.getElementById("challengeStatTop");
     const rankEl = document.getElementById("challengeStatRank");
@@ -207,8 +215,8 @@ export class GameLevelMenu {
       return;
     }
 
-    let element = /** @type {HTMLElement} */ (container.querySelector(".level_icon"));
-    const iconImg = /** @type {HTMLImageElement} */ (element.querySelector(".level_icon_image"));
+    let element = cast(container.querySelector(".level_icon"), HTMLElement);
+    const iconImg = cast(element.querySelector(".level_icon_image"), HTMLImageElement);
     if (iconImg) {
       const dataURL = getCachedLevelIconDataUrl(this.weeklyChallengeLevel);
       iconImg.src = dataURL;
@@ -216,11 +224,14 @@ export class GameLevelMenu {
       iconImg.style.height = `${ICON_SIZE}px`;
     }
 
-    /** @type {any} */ (element).level = this.weeklyChallengeLevel;
+    // XXX: using any to access property on the element
+    (element as any).level = this.weeklyChallengeLevel;
     element.onclick = () => {
       game.openLevel(this.weeklyChallengeLevel, {
         levels: [this.weeklyChallengeLevel],
         source: "challenge",
+        id: "challenge",
+        title: "Weekly Challenge",
       });
       screenManager.switchTo("game");
     };
@@ -288,27 +299,31 @@ export class GameLevelMenu {
 
     // Update heading with level number (index + 1)
     // TODO: getDailyLevelIndex is calculated twice...
-    const levelNumber = this.getDailyLevelIndex() + 1;
+    let levelIndex = this.getDailyLevelIndex();
+    const levelNumber = (levelIndex != null) ? levelIndex + 1 : "-";
     heading.textContent = `Daily Level #${levelNumber}:`;
 
-    let element = /** @type {HTMLElement} */ (container.querySelector(".level_icon"));
-    if (!element) {
+    let element = container.querySelector(".level_icon");
+    if (!(element instanceof HTMLElement)) {
       return;
     }
 
-    const iconImg = /** @type {HTMLImageElement} */ (element.querySelector(".level_icon_image"));
-    if (iconImg) {
+    const iconImg = (element.querySelector(".level_icon_image"));
+    if (iconImg instanceof HTMLImageElement) {
       const dataURL = getCachedLevelIconDataUrl(dailyLevel);
       iconImg.src = dataURL;
       iconImg.style.width = `${ICON_SIZE}px`;
       iconImg.style.height = `${ICON_SIZE}px`;
     }
 
-    /** @type {any} */ (element).level = dailyLevel;
+    // XXX: using any to access property on the element
+    (element as any).level = dailyLevel;
     element.onclick = () => {
       game.openLevel(dailyLevel, {
         levels: [dailyLevel],
         source: "daily",
+        id: "daily",
+        title: "Daily Level",
       });
       screenManager.switchTo("game");
     };
