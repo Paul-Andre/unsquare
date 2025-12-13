@@ -1,5 +1,6 @@
 "use strict";
 
+import { cast } from 'modules/utils/helpers.ts';
 import { LevelMenuComponent } from './LevelMenuComponent.ts';
 import Sortable from 'sortablejs';
 
@@ -18,7 +19,7 @@ if (editorLevelMenu && editorLevelMenu.container) {
   });
 
   // This was supposed to be a temporary swap area.
-  Sortable.create(document.querySelector("#editorLevelMenu #iconContainer2"), {
+  Sortable.create(cast(document.querySelector("#editorLevelMenu #iconContainer2"), HTMLElement), {
     // animation: 150,
     draggable: '.level_icon',
     group: "editor",
