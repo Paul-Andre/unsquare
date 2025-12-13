@@ -10,7 +10,7 @@ export function cancelEvent(e: Event): boolean {
 }
 
 //https://stackoverflow.com/a/35385518
-export function htmlStringToElement(html: string): ChildNode {
+export function htmlStringToElement(html: string): ChildNode | null {
   let template = document.createElement("template");
   html = html.trim(); // Never return a text node of whitespace as the result
   template.innerHTML = html;
@@ -45,4 +45,17 @@ function largeNumber(): number {
 
 export function generate_id(prefix = "id"): string {
   return prefix + "_" + largeNumber();
+}
+
+export function assert(a: boolean): asserts a {
+  if (!a) {
+    throw new Error("Assertion failed");
+  }
+}
+
+export function cast<T>(value: unknown, constructor: new (...args: any[]) => T): T {
+  if (!(value instanceof constructor)) {
+    throw new Error(`Expected instance of ${constructor.name}, got ${value?.constructor?.name || typeof value}`);
+  }
+  return value;
 }

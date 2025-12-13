@@ -2,7 +2,7 @@
 
 import { GameBase } from './GameBase.js';
 import { calculateStates, LEVEL_STATES } from '../ui/LevelMenuComponent.js';
-import { obviousScore, vector_sum, vector_simplify_arithmetic, level_get_arithmetic, vector_sub, operation_index_to_move, level_get_geometry, eric_partition_number, assert, vector_equal } from '../core/algo';
+import { obviousScore, vector_sum, vector_simplify_arithmetic, level_get_arithmetic, vector_sub, operation_index_to_move, level_get_geometry, eric_partition_number, vector_equal } from '../core/algo';
 import { save_editor_book } from '../core/bookUtils.ts';
 import { trackLevelEnd } from '../utils/analytics.ts';
 import { getBestNumMoves, setBestNumMoves, getCachedChallengeStatistics, saveChallengeStatistics } from '../core/levelUtils.ts';
@@ -10,6 +10,7 @@ import * as config from '../utils/config.ts';
 import { renderHistogram } from '../ui/ChallengeHistogram.js';
 import { drawIcon, getCachedLevelIconDataUrl } from '../ui/icon.js';
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from '../utils/api.ts';
+import { assert } from '../utils/helpers.ts';
 
 
 export class Game extends GameBase {
@@ -254,9 +255,7 @@ export class Game extends GameBase {
     }
 
     const element = this.getElement("viewHistogramOverlay");
-    if (!element) {
-      return;
-    }
+    assert(element instanceof HTMLElement);
 
     // Check if overlay is already open - if so, close it
     const isOpen = element.classList.contains("showing") || 
@@ -277,7 +276,7 @@ export class Game extends GameBase {
 
     // Set up dropdown change handler
     const select = element.querySelector("#viewHistogramTypeSelect");
-    if (select && select instanceof HTMLSelectElement) {
+    if (select instanceof HTMLSelectElement) {
       if (this.viewHistogramChangeHandler) {
         select.removeEventListener("change", this.viewHistogramChangeHandler);
       }
@@ -314,12 +313,12 @@ export class Game extends GameBase {
 
   renderViewHistogram() {
     const element = this.getElement("viewHistogramOverlay");
-    if (!element) {
+    if (!(element instanceof HTMLElement)) {
       return;
     }
 
     const container = element.querySelector("#viewHistogramBars");
-    if (!container) {
+    if (!(container instanceof HTMLElement)) {
       return;
     }
 
@@ -338,7 +337,7 @@ export class Game extends GameBase {
 
   hideHistogramView() {
     const element = this.getElement("viewHistogramOverlay");
-    if (element) {
+    if (element instanceof HTMLElement) {
       element.style.display = "none";
       element.classList.remove("showing");
     }
@@ -400,26 +399,32 @@ export class Game extends GameBase {
   renderHistogram() {
     const element = this.getElement("finishedChallengeHistogram");
     const container = element.querySelector("#histogramBars");
+    assert(container instanceof HTMLElement);
     if (this.allHistogramData === null) {
       container.innerHTML = "loading...";
       return;
     }
     
     const select = element.querySelector("#histogramTypeSelect");
+    assert(select instanceof HTMLSelectElement);
     renderHistogram(container, this.allHistogramData[select.value], this.numMoves);
   }
 
 
   showFinishedLevelChallenge() {
     const element = this.getElement("finishedChallengeHistogram");
+    assert(element instanceof HTMLElement);
+
     const numMoves = this.numMoves;
     const movesDisplay = element.querySelector(".finishedLevelMoves");
+    assert(movesDisplay instanceof HTMLElement);
     if (movesDisplay) {
       movesDisplay.innerText = `${numMoves} moves`;
     }
 
     // Generate level preview icon
     const previewImg = element.querySelector(".challengeLevelPreview");
+    assert(previewImg instanceof HTMLImageElement);
     if (previewImg && this.level) {
       const dataURL = getCachedLevelIconDataUrl(this.level);
       previewImg.src = dataURL;
@@ -428,6 +433,7 @@ export class Game extends GameBase {
     }
 
     const select = element.querySelector("#histogramTypeSelect");
+    assert(select instanceof HTMLSelectElement);
 
     if (this.histogramChangeHandler) {
       select.removeEventListener("change", this.histogramChangeHandler);
@@ -448,6 +454,7 @@ export class Game extends GameBase {
 
   hideFinishedLevelChallenge() {
     const element = this.getElement("finishedChallengeHistogram");
+    assert(element instanceof HTMLElement);
     element.style.display = "none";
     element.classList.remove("showing");
   }
@@ -496,30 +503,30 @@ export class Game extends GameBase {
 
   updateHintButtonVisibility() {
     const hintButton = this.div.querySelector(".hint_button");
-    if (hintButton) {
+    if (hintButton instanceof HTMLElement) {
       hintButton.style.display = this.level.par !== null ? "" : "none";
     }
   }
 
   updateHintUI() {
-    const blockingOverlay = this.div.querySelector(".hint_blocking_overlay");
-    const restartButton = this.div.querySelector(".restart_button");
-    const arrowOverlay = this.div.querySelector(".hint_arrow_overlay");
     const suggestRestart = this.hintState?.suggestRestart || false;
 
     // Update blocking overlay and canvas pointer events
-    if (blockingOverlay) {
+    const blockingOverlay = this.div.querySelector(".hint_blocking_overlay");
+    if (blockingOverlay instanceof HTMLElement) {
       blockingOverlay.style.display = suggestRestart ? "block" : "none";
       this.canvas.style.pointerEvents = suggestRestart ? "none" : "auto";
     }
 
     // Update restart button styling
-    if (restartButton) {
+    const restartButton = this.div.querySelector(".restart_button");
+    if (restartButton instanceof HTMLElement) {
       restartButton.classList.toggle("hint_suggest_restart", suggestRestart);
     }
 
     // Update arrow overlay
-    if (arrowOverlay) {
+    const arrowOverlay = this.div.querySelector(".hint_arrow_overlay");
+    if (arrowOverlay instanceof HTMLElement) {
       if (suggestRestart && restartButton) {
         arrowOverlay.style.display = "block";
         this.positionHintArrow(arrowOverlay, restartButton);
@@ -578,11 +585,15 @@ export class Game extends GameBase {
   showFinishedLevel() {
 
     if (this.book.id === "book_1762877873556" && this.level.index >= this.book.levels.length - 1) {
-      this.getElement("finishedGame").style.display = "block";
+      const finishedGame = this.getElement("finishedGame");
+      if(finishedGame instanceof HTMLElement) {
+      finishedGame.style.display = "block";
+      }
     }
 
     const isPerfect = this.level.par !== null && this.numMoves <= this.level.par;
     const element = this.getElement(isPerfect ? "finishedLevelPerfect" : "finishedLevel");
+    assert(element instanceof HTMLElement);
     
     if (isPerfect) {
       element.classList.toggle("withGoldenGlow", config.PERFECT_SCREEN_GOLDEN_GLOW);
@@ -590,7 +601,7 @@ export class Game extends GameBase {
 
     element.style.display = "block";
     const movesDisplay = element.querySelector(".finishedLevelMoves");
-    if (movesDisplay) {
+    if (movesDisplay instanceof HTMLElement) {
       const parDisplay = this.level.par === null ? "?" : this.level.par;
       movesDisplay.innerText = `${this.numMoves}/${parDisplay} moves`;
     }
@@ -600,14 +611,18 @@ export class Game extends GameBase {
 
   hideFinishedLevelElements() {
     const finishedLevel = this.getElement("finishedLevel");
+    assert(finishedLevel instanceof HTMLElement);
     finishedLevel.style.display = "none";
     finishedLevel.classList.remove("showing");
 
     const finishedLevelPerfect = this.getElement("finishedLevelPerfect");
+    assert(finishedLevelPerfect instanceof HTMLElement);
     finishedLevelPerfect.style.display = "none";
     finishedLevelPerfect.classList.remove("showing");
 
-    this.getElement("finishedGame").style.display = "none";
+    const finishedGame = this.getElement("finishedGame");
+    assert(finishedGame instanceof HTMLElement);
+    finishedGame.style.display = "none";
     
     this.hideFinishedLevelChallenge();
     this.hideHistogramView();
@@ -615,13 +630,17 @@ export class Game extends GameBase {
 
   updateMovesDisplay() {
     if (this.tiles) {
-      this.getElement("movesContent").innerText = this.numMoves;
+      const movesContent = this.getElement("movesContent");
+      assert(movesContent instanceof HTMLElement);
+      movesContent.innerText = this.numMoves.toString();
     }
   }
 
   updateBestDisplay() {
     const best = this.getCurrentBest();
-    this.getElement("bestContent").innerText = best !== null ? best : "-";
+    const bestContent = this.getElement("bestContent");
+    assert(bestContent instanceof HTMLElement);
+    bestContent.innerText = best !== null ? best.toString() : "-";
   }
 
   getElement(className) {
@@ -669,16 +688,17 @@ export class Game extends GameBase {
     this.hideFinishedLevelElements();
 
     document.getElementById("TextShower").innerText = level.text;
-    
+
     // Handle par/top indicator
     const parIndicator = this.getElement("parContentInclusive");
+    assert(parIndicator instanceof HTMLElement);
     const parTextSpan = parIndicator.querySelector(".parText");
     if (level.mode === "challenge") {
       const cachedStats = getBestNumMoves(level) !== null 
         ? getCachedChallengeStatistics(level.id) 
         : null;
       const topBest = cachedStats?.top_best ?? null;
-      if (parTextSpan) {
+      if (parTextSpan instanceof HTMLElement) {
         parTextSpan.innerText = `top: ${topBest !== null ? topBest : "?"}`;
       } else {
         parIndicator.innerText = `top: ${topBest !== null ? topBest : "?"}`;
@@ -694,7 +714,7 @@ export class Game extends GameBase {
       const showPar = !config.DONT_SHOW_PAR_FOR_UNSOLVED_LEVELS || getBestNumMoves(level) !== null;
       const parDisplay = (par === null || !showPar) ? "?" : par;
       const parText = level.isCustom ? `creator par: ${parDisplay}` : `par: ${parDisplay}`;
-      if (parTextSpan) {
+      if (parTextSpan instanceof HTMLElement) {
         parTextSpan.innerText = parText;
       } else {
         parIndicator.innerText = parText;

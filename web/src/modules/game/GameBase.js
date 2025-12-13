@@ -5,14 +5,18 @@ import { compute_operations_for_level } from '../core/algo';
 import { trackLevelStart } from '../utils/analytics.ts';
 import * as config from '../utils/config.ts';
 import { cancelEvent } from '../utils/helpers.ts';
+import { cast } from '../utils/helpers.ts';
 
 /// This is what does the basics of drawing the tiles to the screen.
 ///
 export class GameBase {
+  /** @type {HTMLCanvasElement} */
+  canvas;
+
   constructor(canvasId, divId) {
-    this.canvas = document.getElementById(canvasId);
+    this.canvas = cast(document.getElementById(canvasId), HTMLCanvasElement);
     this.ctx = this.canvas.getContext("2d");
-    this.div = document.getElementById(divId);
+    this.div = cast(document.getElementById(divId), HTMLElement);
 
     this.mouseStart = {
       x: 0,

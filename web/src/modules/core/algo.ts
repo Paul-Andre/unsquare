@@ -1,11 +1,7 @@
 import {Level} from "../core/Level"
 import { BoundedGrid } from "./Grid";
+import { assert } from '../utils/helpers.ts';
 
-export function assert(a: boolean): void {
-  if (!a) {
-    throw Error("Assertion failed");
-  }
-}
 
 export type Geometry = {
   type: "square";
