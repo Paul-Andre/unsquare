@@ -4,6 +4,7 @@ import { Grid, GridFromArray, BoundedGrid } from './Grid';
 import { ENABLE_INSET_DRAWING } from '../utils/config';
 import { ColorScheme } from './ColorScheme';
 import { Level } from './Level';
+import { TileAnimationState } from './TileAnimationState';
 
 interface TileState {
   selected: boolean;

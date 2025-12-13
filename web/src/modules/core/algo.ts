@@ -126,7 +126,7 @@ export function vector_equal(a: number[], b: number[]): boolean {
   assert(vector_equal([], []));
 }
 
-export function compute_operations_for_level(level:Level) {
+export function compute_operations_for_level(level:Level): number[][] {
   if (level.geometry) {
     return compute_operations(level.geometry);
   } else if (level.tileShape.name == "square") {

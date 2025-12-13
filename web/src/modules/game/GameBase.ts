@@ -1,21 +1,61 @@
 "use strict";
 
+import { BoundedGrid, GridFromArray } from 'modules/core/Grid.ts';
 import { TileAnimationState } from '../core/TileAnimationState.ts';
 import { compute_operations_for_level } from '../core/algo';
 import { trackLevelStart } from '../utils/analytics.ts';
 import * as config from '../utils/config.ts';
-import { cancelEvent } from '../utils/helpers.ts';
+import { assert, cancelEvent, ensureNotNull } from '../utils/helpers.ts';
 import { cast } from '../utils/helpers.ts';
+import { Book } from 'modules/core/Book.ts';
+import { Level } from 'modules/core/Level.ts';
+
+type Move = {
+  x: number;
+  y: number;
+  size: number;
+};
 
 /// This is what does the basics of drawing the tiles to the screen.
 ///
 export class GameBase {
-  /** @type {HTMLCanvasElement} */
-  canvas;
+  canvas: HTMLCanvasElement;
+  ctx: CanvasRenderingContext2D;
+  div: HTMLElement;
+  mouseStart: {
+    x: number;
+    y: number;
+    pressed: boolean;
+  };
+  mouseNow: {
+    x: number;
+    y: number;
+  };
+  hoveredTile: {
+    x: number;
+    y: number;
+  } | null;
+  tiles: BoundedGrid<number> | null;
+  tileAnimationState: TileAnimationState | null;
+  undoList: {
+    tiles: BoundedGrid<number>;
+    move: Move | "restart";
+    additionalState: any;
+  }[];
+  lastUpdateTimestamp: number;
+  operations: number[][] | null;
+  inverseOperations: Map<string, number> | null;
+  canvasVirtualSize: number;
+  canvasSize: number;
+  hidden: boolean;
+  animationRunning: boolean;
+  level: Level | null = null;
+  book: Book | null = null;
 
-  constructor(canvasId, divId) {
+
+  constructor(canvasId: string, divId: string) {
     this.canvas = cast(document.getElementById(canvasId), HTMLCanvasElement);
-    this.ctx = this.canvas.getContext("2d");
+    this.ctx = ensureNotNull(this.canvas.getContext("2d"));
     this.div = cast(document.getElementById(divId), HTMLElement);
 
     this.mouseStart = {
@@ -67,7 +107,7 @@ export class GameBase {
     this.draw();
   }
 
-  openLevel(level, book) {
+  openLevel(level: Level, book: Book): void{
     this.tiles = level.tiles.clone();
     this.tileAnimationState = new TileAnimationState(this.tiles);
     this.undoList = [];
@@ -89,10 +129,14 @@ export class GameBase {
   }
 
   // TODO: remove glitch
-  doMouseDown(x, y) {
+  doMouseDown(x: number, y: number): void {
     this.mouseStart.x = x / this.canvasSize;
     this.mouseStart.y = y / this.canvasSize;
     this.mouseStart.pressed = true;
+
+    if (!this.level || !this.tileAnimationState) {
+      return;
+    }
 
     // Immediately select the tile under the mouse cursor
     this.level.tileShape.select(
@@ -100,7 +144,7 @@ export class GameBase {
       this.mouseStart.y,
       this.mouseStart.x,
       this.mouseStart.y,
-      this.tileAnimationState
+      this.tileAnimationState.grid
     );
 
     // Update inset states for immediate selection
@@ -121,7 +165,11 @@ export class GameBase {
     this.onMouseDown();
   }
 
-  doMouseMove(x, y) {
+  doMouseMove(x: number, y: number): void {
+    if (!this.level || !this.tileAnimationState) {
+      return;
+    }
+
     this.mouseNow.x = x / this.canvasSize;
     this.mouseNow.y = y / this.canvasSize;
 
@@ -132,7 +180,7 @@ export class GameBase {
         this.mouseStart.y,
         x / this.canvasSize,
         y / this.canvasSize,
-        this.tileAnimationState
+        this.tileAnimationState.grid
       );
 
       // Check if selection changed and redraw if needed
@@ -158,7 +206,10 @@ export class GameBase {
     }
   }
 
-  doMouseUp(x, y) {
+  doMouseUp(x: number, y: number): void {
+    if (!this.level || !this.tileAnimationState) {
+      return;
+    }
     if (this.mouseStart.pressed) {
       this.mouseStart.pressed = false;
       const move = this.level.tileShape.moveFromMousePositions(
@@ -166,7 +217,7 @@ export class GameBase {
         this.mouseStart.y,
         x / this.canvasSize,
         y / this.canvasSize,
-        this.tileAnimationState
+        this.tileAnimationState.grid
       );
 
       if (move !== null) {
@@ -181,7 +232,7 @@ export class GameBase {
           // v.transitionState = 0;
         });
         this.level.tileShape.forTilesInMove(
-          this.tileAnimationState,
+          this.tileAnimationState.grid,
           move,
           function (v) {
             v.transitionState = 0;
@@ -209,17 +260,20 @@ export class GameBase {
   }
 
   // Handle mouse hover events
-  handleMouseEnter(event) {
+  handleMouseEnter(event: MouseEvent): void {
     // Mouse entered canvas
   }
 
-  handleMouseLeave(event) {
+  handleMouseLeave(event: MouseEvent): void {
     // Mouse left canvas - clear hover state
     this.hoveredTile = null;
     this.forceRedraw();
   }
 
-  handleMouseMove(event) {
+  handleMouseMove(event: MouseEvent): void {
+    if (!this.tiles) {
+      return;
+    }
     if (!this.mouseStart.pressed) {
       // Only handle hover when not dragging
       const coords = this.getCoordinates(event);
@@ -259,7 +313,7 @@ export class GameBase {
 
   // Gets the coordinates of the touch/mouse relative to the canvas element.
   //http://www.jacklmoore.com/notes/mouse-position/
-  getCoordinates(event) {
+  getCoordinates(event: MouseEvent): {x: number, y: number} {
     const style = window.getComputedStyle(this.canvas, null);
     const borderLeftWidth = parseInt(style.borderLeftWidth, 10);
     const borderTopWidth = parseInt(style.borderTopWidth, 10);
@@ -285,19 +339,19 @@ export class GameBase {
   }
 
   setupEventListeners() {
-    const beginSliding = e => {
+    const beginSliding = (e: MouseEvent): boolean => {
       const coords = this.getCoordinates(e);
       this.doMouseDown(coords.x, coords.y);
       return cancelEvent(e);
     };
 
-    const slide = e => {
+    const slide = (e: MouseEvent): boolean => {
       const coords = this.getCoordinates(e);
       this.doMouseMove(coords.x, coords.y);
       return cancelEvent(e);
     };
 
-    const stopSliding = e => {
+    const stopSliding = (e: MouseEvent): boolean => {
       const coords = this.getCoordinates(e);
       this.doMouseUp(coords.x, coords.y);
       return cancelEvent(e);
@@ -355,10 +409,13 @@ export class GameBase {
   }
 
   actuallyDrawCanvas() {
+    if (!this.level || !this.tiles || !this.tileAnimationState) {
+      return;
+    }
     this.level.tileShape.draw(
       this.ctx,
       this.tiles,
-      this.tileAnimationState,
+      this.tileAnimationState.grid,
       this.level,
       this.action,
       this.hoveredTile
@@ -405,7 +462,11 @@ export class GameBase {
   }
 
   // Simple animation system - returns true if any animations are still running
-  updateCanvasAnimations(timestamp) {
+  updateCanvasAnimations(timestamp: number): boolean {
+    if (!this.tileAnimationState) {
+      return false;
+    }
+
     let hasAnimations = false;
 
     // Update additional animations from subclasses
@@ -484,6 +545,7 @@ export class GameBase {
   }
 
   printFlat() {
+    assert(this.tiles !== null);
     let ret = "";
     ret += this.tiles.width;
     ret += " ";
@@ -500,13 +562,13 @@ export class GameBase {
   }
 
   printJson() {
-    const json = this.level.toJsonObject();
+    const json = ensureNotNull(this.level).toJsonObject();
     delete json.index;
     console.log(JSON.stringify(json));
   }
 
   printJsonWithoutSolution() {
-    const json = this.level.toJsonObject();
+    const json = ensureNotNull(this.level).toJsonObject();
     delete json.solutions;
     delete json.solutionType;
     delete json.par;
@@ -521,7 +583,7 @@ export class GameBase {
 
   // Action method - must be implemented by subclasses
   // This specifies what happens when you activate squares (e.g., do you unsquare or go the other way)
-  action(v) {
+  action(v: number): number {
     throw new Error("action method must be implemented by subclass");
   }
 
@@ -531,24 +593,25 @@ export class GameBase {
   }
 
   // Hook for subclasses to save state before a move is applied
-  preMove(move) {
+  preMove(move: Move): void {
     // Override in subclasses
   }
 
   // Hook for subclasses to add additional state to undo
-  getAdditionalState() {
+  getAdditionalState(): any {
     // Override in subclasses to return object with additional state
     return {};
   }
 
   // Hook for subclasses to restore additional state from undo
-  restoreAdditionalState(additionalState) {
+  restoreAdditionalState(additionalState: any): void {
     // Override in subclasses to restore additional state
   }
 
   // Save state for undo. move can be a move object, null (for non-move operations),
   // or "restart" (for restart operations). Additional state is saved via getAdditionalState() hook.
-  saveUndoState(move) {
+  saveUndoState(move: Move): void {
+    assert(this.tiles !== null);
     const undo = {
       tiles: this.tiles.clone(),
       move: move,
@@ -558,51 +621,57 @@ export class GameBase {
   }
 
   // Apply a move to the board
-  applyMove(move, action) {
-    if (move != null) {
-      // Apply the move
-      this.level.tileShape.forTilesInMoveSet(this.tiles, move, action);
-    }
+  applyMove(move: Move, action: (v: number) => number): void {
+    assert(this.level !== null);
+    assert(this.tiles !== null);
+
+    // Apply the move
+    this.level.tileShape.forTilesInMoveSet(this.tiles, move, action);
   }
 
   // Undo the last move
-  undo() {
-    if (this.undoList.length > 0) {
-      const undo = this.undoList.pop();
-      const { tiles:previousTiles, move:undoMove, additionalState:additionalState } = undo;
-      this.tiles = previousTiles;
+  undo(): boolean {
+    const undo = this.undoList.pop();
+    if (!undo) {
+      return false;
+    } 
+    const { tiles:previousTiles, move:undoMove, additionalState:additionalState } = undo;
+    this.tiles = previousTiles;
 
-      const isRestart = undoMove === "restart";
-      // Handle restart operations differently
-      if (isRestart) {
-        // For restart, we just restore the state without animation
-        this.restoreAdditionalState(additionalState);
-      } else {
-        // For regular moves, animate the reverse
-        // Reset all tileStates to default state first
-        this.tileAnimationState.reset();
-        
-        // Debug: check if undo.move exists
-        if (undoMove) {
-          this.level.tileShape.forTilesInMove(
-            this.tileAnimationState,
-            undoMove,
-            function (ts) {
-              ts.transitionState = 0;
-            }
-          );
-        } else {
-          // If no move, just reset all tiles to trigger animation
-          this.tileAnimationState.forEach(function (ts) {
+    const isRestart = undoMove === "restart";
+    // Handle restart operations differently
+    if (isRestart) {
+      // For restart, we just restore the state without animation
+      this.restoreAdditionalState(additionalState);
+    } else {
+      // For regular moves, animate the reverse
+      // Reset all tileStates to default state first
+      assert(this.tileAnimationState !== null);
+      this.tileAnimationState.reset();
+      
+      // Debug: check if undo.move exists
+      if (undoMove) {
+        assert(this.level !== null);
+        assert(this.tileAnimationState !== null);
+        this.level.tileShape.forTilesInMove(
+          this.tileAnimationState.grid,
+          undoMove,
+          function (ts) {
             ts.transitionState = 0;
-          });
-        }
-        // Update timestamp for animation system
-        this.lastUpdateTimestamp = performance.now();
-        // Restore additional state from subclasses
-        this.restoreAdditionalState(undo.additionalState);
+          }
+        );
+      } else {
+        // If no move, just reset all tiles to trigger animation
+        this.tileAnimationState.forEach(function (ts) {
+          ts.transitionState = 0;
+        });
       }
+      // Update timestamp for animation system
+      this.lastUpdateTimestamp = performance.now();
+      // Restore additional state from subclasses
+      this.restoreAdditionalState(undo.additionalState);
     }
+    return true;
   }
 
   // Hook for subclasses to check for additional animations beyond tile animations
@@ -611,7 +680,7 @@ export class GameBase {
   }
 
   // Hook for subclasses to update additional animations
-  updateAdditionalAnimations(timestamp) {
+  updateAdditionalAnimations(timestamp: number): boolean {
     return false;
   }
 
@@ -621,7 +690,7 @@ export class GameBase {
   }
 
   // Hook for subclasses to display level-specific GUI
-  displayLevelGui(level) {
+  displayLevelGui(level: Level): void {
     // Override in subclasses
   }
 }

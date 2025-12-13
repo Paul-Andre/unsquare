@@ -61,3 +61,10 @@ export function cast<T>(value: unknown, constructor: new (...args: any[]) => T):
   }
   return value;
 }
+
+export function ensureNotNull<T>(value: T | null | undefined): T {
+  if (value === null || value === undefined) {
+    throw new Error("Value cannot be null or undefined");
+  }
+  return value;
+}

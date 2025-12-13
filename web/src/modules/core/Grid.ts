@@ -115,6 +115,16 @@ export abstract class BoundedGrid<T = any> extends Grid<T> {
     return ret;
   }
 
+  toFlatArray(): T[] {
+    const ret: T[] = [];
+    for (let j = 0; j < this.height; j++) {
+      for (let i = 0; i < this.width; i++) {
+        ret.push(this.get(i, j));
+      }
+    }
+    return ret;
+  }
+
   setAll(v: T): void {
     this.forEachSet(function () {
       return v;
@@ -127,6 +137,13 @@ export abstract class BoundedGrid<T = any> extends Grid<T> {
 
   map<U>(fn: (v: T, x: number, y: number) => U): GridFromArray<U> {
     return Grid.withArrayConstructor.fromFunction<U>(Array, this.width, this.height, (x, y) => fn(this.get(x, y), x, y));
+  }
+
+  clone(): BoundedGrid<T> {
+    return this.map((v) => v);
+    // TODO: The following would be more efficient. Need to check that it works correctly:
+    // return Grid.usingFlatArray(this.toFlatArray(), this.width, this.height);
+    // Anyway I end up overriding this in subclasses.
   }
 }
 
@@ -212,7 +229,7 @@ export class GridFromArray<T = any> extends BoundedGrid<T> {
     return (this.array[this.width * y + x] = v);
   }
 
-  clone(): GridFromArray<T> {
+  override clone(): GridFromArray<T> {
     return new GridFromArray(this.array.slice(), this.width, this.height);
   }
 }
