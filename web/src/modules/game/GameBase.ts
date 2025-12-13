@@ -107,6 +107,10 @@ export abstract class GameBase {
     this.draw();
   }
 
+  specificOpenLevel(level: Level, book: Book): void {
+    // Override in subclasses if needed
+  }
+
   openLevel(level: Level, book: Book): void{
     this.tiles = level.tiles.clone();
     this.tileAnimationState = new TileAnimationState(this.tiles);
@@ -120,6 +124,8 @@ export abstract class GameBase {
     for (let i = 0; i < this.operations.length; i++) {
       this.inverseOperations.set(this.operations[i].join(""), i);
     }
+
+    this.specificOpenLevel(level, book);
 
     trackLevelStart(level, book);
 

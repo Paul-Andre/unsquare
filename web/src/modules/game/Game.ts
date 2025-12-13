@@ -69,12 +69,7 @@ export class Game extends GameBase {
     this.hideFinishedLevelElements();
   }
 
-
-
-  // Override openLevel to initialize playerSolution
-  override openLevel(level: Level, book: Book): void {
-    super.openLevel(level, book);
-
+  override specificOpenLevel(level: Level, book: Book): void {
     this.numMoves = 0;
     assert(this.operations !== null);
     this.playerSolution = new Array(this.operations.length).fill(0);
