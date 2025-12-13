@@ -193,8 +193,4 @@ if (localStorage.getItem("player_id") === null) {
     handleClick();
   });
 
-  // Reset counter when home screen is hidden
-  screenManager.additionalFunctions.home = {
-    onHide: resetCounter
-  };
 })();

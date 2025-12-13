@@ -102,11 +102,6 @@ export class GameLevelMenu {
 
       this.levelMenu.openBook(data);
 
-      let button = document.getElementById("homePlayButton");
-      assert(button instanceof HTMLButtonElement);
-      button.removeAttribute("disabled");
-      button.innerText = "Start Game!";
-
       this.levelMenu.displayIcons();
       this.displayDailyIcon();
       this.displayChallengeIcon();
