@@ -1,6 +1,6 @@
 "use strict";
 
-import { cast, generate_id } from '../utils/helpers.ts';
+import { assert, cast, generate_id } from '../utils/helpers.ts';
 import { htmlStringToElement } from '../utils/helpers.ts';
 import { createLevelIconElement } from './icon.ts';
 import { editorLevelMenu } from './editorLevelMenu.ts';
@@ -9,6 +9,8 @@ import { book_reviver, create_empty_book, save_editor_book } from '../core/bookU
 import book1OldData from '../../data/book1Old.json';
 import basicBlackWhiteData from '../../data/basicBlackWhite.json';
 import niceLevelsData from '../../data/niceLevels.json';
+import { Book } from '../core/Book.ts';
+import { Level } from '../core/Level.ts';
 
 export function load_static_books() {
   // Convert imported JSON data using book_reviver
@@ -22,16 +24,15 @@ export function load_static_books() {
 
 //let static_books = load_static_books();
 
-let editor_books = [];
+let editor_books: Book[] = [];
 
 export function load_editor_books() {
   editor_books = [];
   for (let i = 0; i < localStorage.length; i++) {
     let key = localStorage.key(i);
-    if (key.startsWith("editor_book")) {
+    if (key && key.startsWith("editor_book")) {
       let value = localStorage.getItem(key);
-      // console.log(value);
-      let book = JSON.parse(value, book_reviver);
+      let book = JSON.parse(value!, book_reviver);
       book.source = key;
       editor_books.push(book);
     }
@@ -39,8 +40,8 @@ export function load_editor_books() {
 }
 
 export class BookMenu {
+  books: Book[] = [];
   constructor() {
-    this.books = [];
   }
 
   onShow() {
@@ -53,6 +54,7 @@ export class BookMenu {
 
   showBooks() {
     let container = document.getElementById("bookContainer");
+    assert(container !== null);
 
     container.innerHTML = "";
 
@@ -61,7 +63,7 @@ export class BookMenu {
     }
   }
 
-  openBook(book) {
+  openBook(book: Book): void {
     editorLevelMenu.openBook(book);
     screenManager.switchTo("editorLevelMenu");
   }
@@ -99,7 +101,7 @@ export class BookMenu {
 
   loadBooks() {}
 
-  prepareBook(book) {
+  prepareBook(book: Book): HTMLElement {
     let node = cast(htmlStringToElement(bookTemplate), HTMLElement);
     {
       let bn = node.getElementsByClassName("bookName")[0];
@@ -144,7 +146,7 @@ let bookTemplate =
   </div>\
 </div>";
 
-export function select_book_icon_level(book) {
+export function select_book_icon_level(book: Book): Level | null {
   for (let i = 0; i < book.levels.length; i++) {
     let level = book.levels[i];
     if (level.isIcon) {
