@@ -42,7 +42,7 @@ export function cyrb53(str: string, seed: number): number {
 
 function largeNumber(): number {
   // very suspect... see if something else can be done
-  return Math.floor(Math.random()*10000000000000000);
+  return Math.floor(Math.random()*Number.MAX_SAFE_INTEGER);
 }
 
 export function generate_id(prefix = "id"): string {
