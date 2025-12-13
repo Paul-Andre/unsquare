@@ -99,11 +99,6 @@ export class GameLevelMenu {
       button.removeAttribute("disabled");
       button.innerText = "Start Game!";
 
-      // if ?reset added at the end of the url, reset the bests
-      let resetUrlParam = new URLSearchParams(location.search).get("reset");
-      if (resetUrlParam !== null) {
-        this.levelMenu.clearAllBests();
-      }
       this.levelMenu.displayIcons();
       this.displayDailyIcon();
       this.displayChallengeIcon();

@@ -1,7 +1,7 @@
 "use strict";
 
 import { getCachedLevelIconDataUrl } from './icon.ts';
-import { assert, htmlStringToElement } from '../utils/helpers.ts';
+import { assert, cast, htmlStringToElement } from '../utils/helpers.ts';
 import { ICON_SIZE } from '../utils/config.ts';
 import { vector_sum } from '../core/algo.ts';
 import { screenManager } from './ScreenManager.ts';
@@ -11,6 +11,7 @@ import { book_replacer } from '../core/bookUtils.ts';
 import { clearBestNumMoves } from '../core/levelUtils.ts';
 import { editor } from '../game/Editor.ts';
 import { game } from '../game/Game.ts';
+import { Book } from 'modules/core/Book.ts';
 
 // Level state constants to replace magic numbers
 export const LEVEL_STATES = {
@@ -20,6 +21,7 @@ export const LEVEL_STATES = {
   SUBOPTIMAL: 3, // solved, but not in optimal moves
   OPTIMAL: 4, // solved in optimal moves
 };
+export type LevelState = typeof LEVEL_STATES[keyof typeof LEVEL_STATES];
 
 /**
  * Calculates the state of each level in the book for the level menu, using fixed parameters for how many unsolved and locked levels are allowed to be visible.
@@ -45,8 +47,8 @@ export const LEVEL_STATES = {
  *
  * Returns an array of states for each level.
  */
-export function calculateStatesWithParams(book, allowedUnsolved, allowedLocked) {
-  let states = [];
+export function calculateStatesWithParams(book: Book, allowedUnsolved: number, allowedLocked: number): LevelState[] {
+  let states: LevelState[] = [];
   for (let i = 0; i < book.levels.length; i++) {
     let level = book.levels[i];
     let par = level.par;
@@ -61,7 +63,7 @@ export function calculateStatesWithParams(book, allowedUnsolved, allowedLocked) 
       } else {
         states[i] = LEVEL_STATES.CONCEALED;
       }
-    } else if (best > par) {
+    } else if (par === null || best > par) {
       states[i] = LEVEL_STATES.SUBOPTIMAL;
     } else {
       states[i] = LEVEL_STATES.OPTIMAL;
@@ -80,7 +82,7 @@ export function calculateStatesWithParams(book, allowedUnsolved, allowedLocked) 
 //   LEVEL_STATES.SUBOPTIMAL (3): suboptimal (solved, but not in optimal moves)
 //   LEVEL_STATES.OPTIMAL (4): optimal (solved in optimal moves)
 // - Up to 50 locked levels are allowed to be visible.
-export function calculateStatesProportional(book) {
+export function calculateStatesProportional(book: Book): LevelState[] {
   let allowedUnsolved = 3;
   const suboptimalIncrease = 0.2;
   const optimalIncrease = 0.5;
@@ -102,7 +104,7 @@ export function calculateStatesProportional(book) {
       } else {
         states[i] = LEVEL_STATES.CONCEALED; // concealed
       }
-    } else if (best > par) {
+    } else if (par === null || best > par) {
       states[i] = LEVEL_STATES.SUBOPTIMAL; // solved suboptimally
       allowedUnsolved += suboptimalIncrease;
     } else {
@@ -113,7 +115,7 @@ export function calculateStatesProportional(book) {
   return states;
 }
 
-export function calculateStates(book) {
+export function calculateStates(book: Book): LevelState[] {
   if (book.levels.length == 0) {
     return [];
   }
@@ -134,13 +136,13 @@ export function calculateStates(book) {
  * @param {Level} level - The level to calculate state for
  * @returns {number} One of LEVEL_STATES.UNSOLVED, LEVEL_STATES.SUBOPTIMAL, or LEVEL_STATES.OPTIMAL
  */
-export function calculateLevelState(level) {
+export function calculateLevelState(level: Level): LevelState {
   const best = level.getBestNumMoves();
   const par = level.par;
   
   if (best === null) {
     return LEVEL_STATES.UNSOLVED;
-  } else if (best > par) {
+  } else if (par === null || best > par) {
     return LEVEL_STATES.SUBOPTIMAL;
   } else {
     return LEVEL_STATES.OPTIMAL;
@@ -153,7 +155,7 @@ export function calculateLevelState(level) {
  * @param {HTMLElement} element - The DOM element to apply the class to
  * @param {number} state - One of the LEVEL_STATES constants
  */
-export function applyStateClass(element, state) {
+export function applyStateClass(element: HTMLElement, state: LevelState): void {
   // Remove all existing state classes
   element.classList.remove(
     "icon_concealed",
@@ -180,10 +182,19 @@ export function applyStateClass(element, state) {
 // This component manages a level menu DOM element, populating it with level data and handling user interactions.
 // It encapsulates the functionality for displaying and interacting with a collection of puzzle levels.
 export class LevelMenuComponent {
-  constructor(elementId, isEditor) {
+  elementId: string;
+  isEditor: boolean;
+  container: HTMLElement;
+  deleting: boolean;
+  selectingIcon: boolean;
+  togglingHidden: boolean;
+  defaultSize: number;
+  book: Book | null = null;
+
+  constructor(elementId: string, isEditor: boolean) {
     this.elementId = elementId;
     this.isEditor = isEditor;
-    this.container = document.querySelector("#" + elementId + " .content");
+    this.container = cast(document.querySelector("#" + elementId + " .content"), HTMLElement);
 
     // TODO: turn it into a single state variable
     this.deleting = false;
@@ -194,7 +205,7 @@ export class LevelMenuComponent {
     this.onIconClick = this.onIconClick.bind(this);
   }
 
-  openBook(book) {
+  openBook(book: Book): void {
     this.book = book;
     // Recalculate indices to account for hidden levels
     if (this.isEditor) {
@@ -204,7 +215,7 @@ export class LevelMenuComponent {
   }
 
   // TODO: rename; this creates an html node
-  createLevelInfo(level, state, glow) {
+  createLevelInfo(level: Level, state: LevelState, glow: boolean): HTMLDivElement {
     let element = htmlStringToElement(`<div class="level_icon">
     <img class="level_icon_image"> </img>
     <div class="level_icon_par"> </div>
@@ -221,7 +232,8 @@ export class LevelMenuComponent {
     icon.style.height = `${ICON_SIZE}px`;
 
     // TODO: find a better way to associate the level with the element
-    element.level = level;
+    // XXX
+    (element as any).level = level;
 
     if (this.isEditor || state >= 2) {
       element.onclick = this.onIconClick.bind(this);
@@ -256,23 +268,31 @@ export class LevelMenuComponent {
 
   // this function is to be called on icons using the onclick event
   // now "this" refers to the LevelMenuComponent instance due to bind()
-  onIconClick(event) {
+  onIconClick = (event: MouseEvent): void => {
+    if (!(event.target instanceof HTMLElement)) {
+      return;
+    }
     const iconElement = event.target.closest(".level_icon"); // Get the icon element
-
+    if (!(iconElement instanceof HTMLElement)) {
+      return;
+    }
+    // XXX: using any to access property on the element
+    const iconLevel = (iconElement as any).level;
     if (this.deleting) {
       iconElement.remove();
       this.saveIconOrder();
     } else if (this.selectingIcon) {
+      assert(this.book !== null);
       this.book.levels.forEach(function (a) {
         a.isIcon = false;
       });
-      iconElement.level.isIcon = true;
+      iconLevel.isIcon = true;
 
       this.toggleSelectIcon();
       this.displayIcons();
       this.saveBook();
     } else if (this.togglingHidden) {
-      iconElement.level.hidden = !iconElement.level.hidden;
+      iconLevel.hidden = !iconLevel.hidden;
       this.reindexLevels();
       this.displayIcons();
       this.updateLevelCounter();
@@ -280,15 +300,17 @@ export class LevelMenuComponent {
     } else {
       //let levelObject = Level.fromJsonObject(iconElement.level);
 
+      assert(this.book !== null);
+
       if (this.isEditor) {
         //editor.setBook(this.book);
 
         // TODO: some kind of callback in order to nicely set level data?
-        editor.openLevel(iconElement.level, this.book);
+        editor.openLevel(iconLevel, this.book);
         screenManager.switchTo("editor");
       } else {
-        console.log("Attempting to open level:", iconElement.level);
-        game.openLevel(iconElement.level, this.book);
+        console.log("Attempting to open level:", iconLevel);
+        game.openLevel(iconLevel, this.book);
         screenManager.switchTo("game");
       }
     }
@@ -296,6 +318,7 @@ export class LevelMenuComponent {
 
   reindexLevels() {
     let index = 0;
+    assert(this.book !== null);
     for (let i = 0; i < this.book.levels.length; i++) {
       let level = this.book.levels[i];
       //if (!level.hidden) {
@@ -323,7 +346,7 @@ export class LevelMenuComponent {
 
     this.container.innerHTML = "";
 
-    let states;
+    let states = null;
     if (!this.isEditor) {
       states = calculateStates(this.book);
     }
@@ -346,12 +369,12 @@ export class LevelMenuComponent {
         continue;
       }
       
-      let glow = !this.isEditor && firstVisibleIndex >= 0 && i == firstVisibleIndex && states[i] == LEVEL_STATES.UNSOLVED;
+      let glow = !this.isEditor && firstVisibleIndex >= 0 && i == firstVisibleIndex && !!states && states[i] == LEVEL_STATES.UNSOLVED;
       // check par, and based on it figure out the restriction level.
       this.container.appendChild(
         this.createLevelInfo(
           level,
-          this.isEditor ? LEVEL_STATES.UNSOLVED : states[i],
+          states ? states[i] : LEVEL_STATES.UNSOLVED,
           glow
         )
       );
@@ -364,6 +387,7 @@ export class LevelMenuComponent {
 
   saveBook() {
     if (this.isEditor) {
+      assert(this.book !== null);
       save_editor_book(this.book);
     }
   }
@@ -373,10 +397,11 @@ export class LevelMenuComponent {
     // The way it works is by looking through the DOM and getting the associated level object from each level_icon element.
     // TODO: see if Sortable.js provides an alternative way to do this. 
     if (this.isEditor) {
-      this.book.levels = Array.prototype.map.call(
-        this.container.children,
-        function (element) {
-          return element.level;
+      assert(this.book !== null);
+      this.book.levels = Array.from(this.container.children).map(
+        function (element: Element): Level {
+          // XXX: using any to access property on the element
+          return (element as any).level as Level;
         }
       );
       this.reindexLevels();
@@ -388,6 +413,7 @@ export class LevelMenuComponent {
   newLevel() {
     if (this.isEditor) {
       const level = Level.empty(this.defaultSize);
+      assert(this.book !== null);
       level.book = this.book;
       this.book.levels.push(level);
       this.displayIcons();
@@ -397,7 +423,7 @@ export class LevelMenuComponent {
     }
   }
 
-  setDefaultSize() {
+  setDefaultSize(): void {
     if (this.isEditor) {
       const input = window.prompt("Enter default grid size:", String(this.defaultSize));
       if (input !== null) {
@@ -411,7 +437,7 @@ export class LevelMenuComponent {
     }
   }
 
-  async displayBookJson() {
+  async displayBookJson(): Promise<void> {
     if (this.isEditor) {
       let s = JSON.stringify(this.book, book_replacer);
       try {
@@ -424,7 +450,7 @@ export class LevelMenuComponent {
     }
   }
 
-  showJsonTextarea(jsonString) {
+  showJsonTextarea(jsonString: string): void {
     // Pure slop, creating dom objects in js...
     
     // Remove any existing JSON textarea
@@ -490,7 +516,7 @@ export class LevelMenuComponent {
     textarea.focus();
   }
 
-  appendJson() {
+  appendJson(): void {
     if (this.isEditor) {
       let jsonString = window.prompt("Paste JSON (book object or array of levels)");
       if (!jsonString) {
@@ -500,8 +526,8 @@ export class LevelMenuComponent {
       let parsed;
       try {
         parsed = JSON.parse(jsonString, book_reviver);
-      } catch (e) {
-        alert("Error parsing JSON: " + e.message);
+      } catch (e: unknown) {
+        alert("Error parsing JSON: " + (e as Error).message);
         return;
       }
 
@@ -516,6 +542,7 @@ export class LevelMenuComponent {
         alert("Invalid format: expected a book object with 'levels' property or an array of levels");
         return;
       }
+      assert(this.book !== null);
 
       // Append levels to the book
       for (let level of levelsToAppend) {
@@ -532,7 +559,7 @@ export class LevelMenuComponent {
     }
   }
 
-  toggleDelete() {
+  toggleDelete(): void {
     if (this.isEditor) {
       // toggle the deleting state
       this.deleting = !this.deleting;
@@ -540,7 +567,7 @@ export class LevelMenuComponent {
     }
   }
 
-  toggleSelectIcon() {
+  toggleSelectIcon(): void {
     if (this.isEditor) {
       // toggle the selecting icon state
       this.selectingIcon = !this.selectingIcon;
@@ -566,7 +593,9 @@ export class LevelMenuComponent {
     }
   }
 
-  changeBookTitle() {
+  changeBookTitle(): void {
+    assert(this.book !== null);
+    
     let new_title = prompt("Set book title", this.book.title);
 
     if (new_title) {
@@ -576,14 +605,15 @@ export class LevelMenuComponent {
   }
 
   // TODO: put this in "subclass"
-  clearAllBests() {
+  clearAllBests(): void {
+    assert(this.book !== null);
     for (let i = 0; i < this.book.levels.length; i++) {
       clearBestNumMoves(this.book.levels[i]);
     }
     this.displayIcons();
   }
 
-  onShow() {
+  onShow(): void {
     this.displayIcons();
   }
 }
