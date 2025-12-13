@@ -15,6 +15,7 @@ resources/signing
 # Build output
 /dist
 /.vite
+/dist-types
 
 # TypeScript
 *.tsbuildinfo

@@ -11,6 +11,7 @@
     "strict": false,
     "composite": true,
     "emitDeclarationOnly": true,
+    "outDir": "./dist-types",
     "skipLibCheck": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
@@ -27,7 +28,8 @@
   ],
   "exclude": [
     "node_modules",
-    "dist"
+    "dist",
+    "dist-types"
   ],
   "references": [
     { "path": "./tsconfig.strict.json" }
