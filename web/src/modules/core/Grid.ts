@@ -1,12 +1,8 @@
-export class Grid<T = any> {
+export abstract class Grid<T = any> {
   // Abstract base class - get and set methods should be implemented by subclasses
-  get(x: number, y: number): T {
-    throw new Error("get method must be implemented by subclass");
-  }
+  abstract get(x: number, y: number): T;
 
-  set(x: number, y: number, v: T): void {
-    throw new Error("set method must be implemented by subclass");
-  }
+  abstract set(x: number, y: number, v: T): void;
 
   window(x: number, y: number, w: number, h: number): GridWindow<T> {
     return new GridWindow(this, x, y, w, h);
@@ -61,9 +57,9 @@ type PredicateCallback<T> = (v: T, x: number, y: number, grid: BoundedGrid<T>) =
 type TransformCallback<T> = (v: T, x: number, y: number, grid: BoundedGrid<T>) => T;
 type VirtualCallback<T> = (x: number, y: number, original: BoundedGrid<T>) => T;
 
-export class BoundedGrid<T = any> extends Grid<T> {
-  width!: number;
-  height!: number;
+export abstract class BoundedGrid<T = any> extends Grid<T> {
+  abstract width: number;
+  abstract height: number;
 
   forEach(f: ForEachCallback<T>): void {
     // f(v,x,y,grid)
@@ -136,6 +132,8 @@ export class BoundedGrid<T = any> extends Grid<T> {
 
 export class GridWindow<T = any> extends BoundedGrid<T> {
   original: Grid<T>;
+  width: number;
+  height: number;
   x: number;
   y: number;
 
@@ -177,6 +175,19 @@ export class VirtualGrid<T = any> extends Grid<T> {
       return this.virtual(x, y, this.original);
     } else {
       return this.original.get(x, y);
+    }
+  }
+
+  set(x: number, y: number, v: T): void {
+    if (
+      x < 0 ||
+      y < 0 ||
+      x >= this.original.width ||
+      y >= this.original.height
+    ) {
+      throw new Error("Invalid coordinates for virtual grid");
+    } else {
+      return this.original.set(x, y, v);
     }
   }
 }
