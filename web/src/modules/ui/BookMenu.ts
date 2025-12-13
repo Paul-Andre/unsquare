@@ -1,6 +1,6 @@
 "use strict";
 
-import { assert, cast, generate_id } from '../utils/helpers.ts';
+import { cast, ensureNotNull, generate_id } from '../utils/helpers.ts';
 import { htmlStringToElement } from '../utils/helpers.ts';
 import { createLevelIconElement } from './icon.ts';
 import { editorLevelMenu } from './editorLevelMenu.ts';
@@ -41,7 +41,11 @@ export function load_editor_books() {
 
 export class BookMenu {
   books: Book[] = [];
-  constructor() {
+  root: HTMLElement;
+  container: HTMLElement;
+  constructor(root: HTMLElement) {
+    this.root = root;
+    this.container = cast(this.root.querySelector("#bookContainer"), HTMLElement);
   }
 
   onShow() {
@@ -53,13 +57,10 @@ export class BookMenu {
   }
 
   showBooks() {
-    let container = document.getElementById("bookContainer");
-    assert(container !== null);
-
-    container.innerHTML = "";
+    this.container.innerHTML = "";
 
     for (let i = 0; i < this.books.length; i++) {
-      container.append(this.prepareBook(this.books[i]));
+      this.container.append(this.prepareBook(this.books[i]));
     }
   }
 
@@ -159,4 +160,5 @@ export function select_book_icon_level(book: Book): Level | null {
   return null;
 }
 
-export const bookMenu = new BookMenu();
+const bookMenuRoot = ensureNotNull(document.getElementById("bookMenu"));
+export const bookMenu = new BookMenu(bookMenuRoot);

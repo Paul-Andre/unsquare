@@ -182,7 +182,7 @@ export function applyStateClass(element: HTMLElement, state: LevelState): void {
 // This component manages a level menu DOM element, populating it with level data and handling user interactions.
 // It encapsulates the functionality for displaying and interacting with a collection of puzzle levels.
 export class LevelMenuComponent {
-  elementId: string;
+  root: HTMLElement;
   isEditor: boolean;
   container: HTMLElement;
   deleting: boolean;
@@ -191,10 +191,10 @@ export class LevelMenuComponent {
   defaultSize: number;
   book: Book | null = null;
 
-  constructor(elementId: string, isEditor: boolean) {
-    this.elementId = elementId;
+  constructor(root: HTMLElement, isEditor: boolean) {
+    this.root = root;
     this.isEditor = isEditor;
-    this.container = cast(document.querySelector("#" + elementId + " .content"), HTMLElement);
+    this.container = cast(this.root.querySelector(".content"), HTMLElement);
 
     // TODO: turn it into a single state variable
     this.deleting = false;
@@ -331,8 +331,8 @@ export class LevelMenuComponent {
     if (!this.isEditor || !this.book) {
       return;
     }
-    const counter = document.getElementById("levelCounter");
-    if (counter) {
+    const counter = this.root.querySelector("#levelCounter");
+    if (counter instanceof HTMLElement) {
       const nonHiddenCount = this.book.levels.filter(level => !level.hidden).length;
       counter.innerText = `Levels: ${nonHiddenCount}`;
     }
@@ -454,7 +454,7 @@ export class LevelMenuComponent {
     // Pure slop, creating dom objects in js...
     
     // Remove any existing JSON textarea
-    const existing = document.getElementById("jsonTextareaContainer");
+    const existing = this.root.querySelector("#jsonTextareaContainer");
     if (existing) {
       existing.remove();
     }
@@ -509,7 +509,7 @@ export class LevelMenuComponent {
     container.appendChild(closeButton);
 
     // Add to document
-    document.body.appendChild(container);
+    this.root.appendChild(container);
 
     // Select all text in textarea for easy copying
     textarea.select();
@@ -582,7 +582,7 @@ export class LevelMenuComponent {
       this.container.classList.toggle("togglingHidden");
       
       // Update button highlight
-      const button = document.getElementById("toggleHiddenButton");
+      const button = this.root.querySelector("#toggleHiddenButton");
       if (button) {
         if (this.togglingHidden) {
           button.classList.add("drawModeActive");

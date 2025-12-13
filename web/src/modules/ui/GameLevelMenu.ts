@@ -5,7 +5,7 @@ import { screenManager } from './ScreenManager.ts';
 import { book_reviver } from '../core/bookUtils.ts';
 import { Level } from '../core/Level.ts';
 import { getCachedLevelIconDataUrl } from './icon.ts';
-import { assert, cast, htmlStringToElement } from '../utils/helpers.ts';
+import { cast, ensureNotNull } from '../utils/helpers.ts';
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from '../utils/api.ts';
 import { getCachedChallengeStatistics, saveChallengeStatistics } from '../core/levelUtils.ts';
 import mainBookData from '../../data/2025_nov_11_reordered_solved_fixed_all_solutions.json';
@@ -17,12 +17,14 @@ import { ChallengeStatistics } from '../core/levelUtils.ts';
 
 
 export class GameLevelMenu {
+  root: HTMLElement;
   bookUrl: string;
   dailyLevels: Level[];
   weeklyChallengeLevel: Level;
   levelMenu: LevelMenuComponent;
   
-  constructor() {
+  constructor(root: HTMLElement) {
+    this.root = root;
     this.bookUrl = "../../data/2025_nov_11_reordered_solved_fixed_all_solutions.json";
     
     // Load daily levels
@@ -74,7 +76,7 @@ export class GameLevelMenu {
 
     this.weeklyChallengeLevel = Level.fromJsonObject(challengeLevelJson);
 
-    this.levelMenu = new LevelMenuComponent("gameLevelMenu", false);
+    this.levelMenu = new LevelMenuComponent(this.root, false);
     this.initializeLevelMenu();
 
     this.loadBook();
@@ -147,10 +149,10 @@ export class GameLevelMenu {
   }
 
   updateChallengeStatisticsDisplay(stats: ChallengeStatistics) {
-    const youEl = document.getElementById("challengeStatYou");
-    const topEl = document.getElementById("challengeStatTop");
-    const rankEl = document.getElementById("challengeStatRank");
-    const iconEl = document.querySelector("#challengeIconContainer .level_icon");
+    const youEl = this.root.querySelector("#challengeStatYou");
+    const topEl = this.root.querySelector("#challengeStatTop");
+    const rankEl = this.root.querySelector("#challengeStatRank");
+    const iconEl = this.root.querySelector("#challengeIconContainer .level_icon");
 
     if (!youEl || !topEl || !rankEl || !iconEl) {
       return;
@@ -205,7 +207,7 @@ export class GameLevelMenu {
   }
 
   displayChallengeIcon() {
-    const container = document.getElementById("challengeIconContainer");
+    const container = this.root.querySelector("#challengeIconContainer");
     if (!container) {
       return;
     }
@@ -280,8 +282,8 @@ export class GameLevelMenu {
   }
 
   displayDailyIcon() {
-    const container = document.getElementById("dailyIconContainer");
-    const heading = document.getElementById("dailyLevelHeading");
+    const container = this.root.querySelector("#dailyIconContainer");
+    const heading = this.root.querySelector("#dailyLevelHeading");
     
     if (!container || !heading) {
       return;
@@ -330,4 +332,5 @@ export class GameLevelMenu {
 }
 
 // Create global instance
-export const gameLevelMenu = new GameLevelMenu();
+const gameLevelMenuRoot = ensureNotNull(document.getElementById("gameLevelMenu"));
+export const gameLevelMenu = new GameLevelMenu(gameLevelMenuRoot);

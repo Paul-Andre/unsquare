@@ -6,7 +6,6 @@ import { compute_operations_for_level } from '../core/algo';
 import { trackLevelStart } from '../utils/analytics.ts';
 import * as config from '../utils/config.ts';
 import { assert, cancelEvent, ensureNotNull } from '../utils/helpers.ts';
-import { cast } from '../utils/helpers.ts';
 import { Book } from 'modules/core/Book.ts';
 import { Level } from 'modules/core/Level.ts';
 
@@ -19,6 +18,7 @@ export type Move = {
 /// This is what does the basics of drawing the tiles to the screen.
 ///
 export abstract class GameBase {
+  root: HTMLElement;
   canvas: HTMLCanvasElement;
   ctx: CanvasRenderingContext2D;
   div: HTMLElement;
@@ -53,10 +53,10 @@ export abstract class GameBase {
   book: Book | null = null;
 
 
-  constructor(canvasId: string, divId: string) {
-    this.canvas = cast(document.getElementById(canvasId), HTMLCanvasElement);
+  constructor(root: HTMLElement, canvas: HTMLCanvasElement) {
+    this.canvas = canvas;
     this.ctx = ensureNotNull(this.canvas.getContext("2d"));
-    this.div = cast(document.getElementById(divId), HTMLElement);
+    this.div = root;
 
     this.mouseStart = {
       x: 0,

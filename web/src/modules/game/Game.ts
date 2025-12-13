@@ -38,8 +38,8 @@ export class Game extends GameBase {
   viewHistogramChangeHandler: ((e: Event) => void) | null = null;
   histogramChangeHandler: any;
 
-  constructor(canvasId: string, divId: string) {
-    super(canvasId, divId);
+  constructor(root: HTMLElement, canvas: HTMLCanvasElement) {
+    super(root, canvas);
     // Bind the action method to preserve 'this' context when passed as callback
     this.action = this.action.bind(this);
 
@@ -733,7 +733,7 @@ export class Game extends GameBase {
   override displayLevelGui(level: Level): void {
     this.hideFinishedLevelElements();
 
-    const textShower = document.getElementById("TextShower");
+    const textShower = this.div.querySelector("#TextShower");
     if (textShower instanceof HTMLElement) {
       textShower.innerText = level.text;
     }
@@ -754,8 +754,8 @@ export class Game extends GameBase {
       }
       
       // Show histogram icon only if player has solved the challenge
-      const histogramIcon = document.getElementById("histogramViewIcon");
-      if (histogramIcon) {
+      const histogramIcon = this.div.querySelector("#histogramViewIcon");
+      if (histogramIcon instanceof HTMLElement) {
         histogramIcon.style.display = getBestNumMoves(level) !== null ? "inline" : "none";
       }
     } else {
@@ -770,8 +770,8 @@ export class Game extends GameBase {
       }
       
       // Hide histogram icon for non-challenge levels
-      const histogramIcon = document.getElementById("histogramViewIcon");
-      if (histogramIcon) {
+      const histogramIcon = this.div.querySelector("#histogramViewIcon");
+      if (histogramIcon instanceof HTMLElement) {
         histogramIcon.style.display = "none";
       }
     }
@@ -787,7 +787,10 @@ export class Game extends GameBase {
       levelDisplay = `Level ${1 + index}`
     };
 
-    cast(document.getElementById("LevelIndicator"), HTMLElement).innerText = levelDisplay;
+    const levelIndicator = this.div.querySelector("#LevelIndicator");
+    if (levelIndicator instanceof HTMLElement) {
+      levelIndicator.innerText = levelDisplay;
+    }
 
     if (this.book) {
       const states = calculateStates(this.book);
@@ -833,7 +836,7 @@ export class Game extends GameBase {
   }
 
   nextLevel(): void {
-    const discordEl = document.getElementById("discord_overlay_message");
+    const discordEl = this.div.querySelector("#discord_overlay_message");
     if (discordEl instanceof HTMLElement) {
       if (this.checkShowOverlayMessage()) {
         discordEl.hidden = false;
@@ -1053,4 +1056,6 @@ export class Game extends GameBase {
   }
 }
 
-export const game = new Game("gameCanvas", "game");
+const gameRoot = ensureNotNull(document.getElementById("game"));
+const gameCanvas = cast(gameRoot.querySelector("#gameCanvas"), HTMLCanvasElement);
+export const game = new Game(gameRoot, gameCanvas);

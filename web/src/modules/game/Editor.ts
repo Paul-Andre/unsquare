@@ -7,7 +7,7 @@ import { compute_operations_for_level, vector_sum, level_check_solution, get_lev
 import { save_editor_book } from '../core/bookUtils.ts';
 import { screenManager } from '../ui/ScreenManager.ts';
 import { Level, compute_gaussian_solution } from '../core/Level.ts';
-import { assert, cast, generate_id } from '../utils/helpers.ts';
+import { assert, cast, ensureNotNull, generate_id } from '../utils/helpers.ts';
 import { game } from './Game.ts';
 import { Book } from 'modules/core/Book.ts';
 
@@ -18,8 +18,8 @@ export class Editor extends GameBase {
   drawPaintValue: number | null = null; // The value to paint when dragging in draw mode
   drawUndoSaved: boolean = false; // Track if we've saved undo state for current draw operation
   pendingSolvabilityCheck: NodeJS.Timeout | null = null; // Timeout ID for deferred solvability checking
-  constructor(canvasId: string, divId: string) {
-    super(canvasId, divId);
+  constructor(root: HTMLElement, canvas: HTMLCanvasElement) {
+    super(root, canvas);
 
     // Set up keyboard event listeners
     this.setupKeyboardListeners();
@@ -315,7 +315,7 @@ export class Editor extends GameBase {
   }
 
   updateDrawModeButton(): void {
-    const button = document.getElementById("drawModeButton");
+    const button = this.div.querySelector("#drawModeButton");
     if (button) {
       button.textContent = this.drawMode ? "Draw Mode: ON" : "Draw Mode: OFF";
       if (this.drawMode) {
@@ -328,7 +328,7 @@ export class Editor extends GameBase {
 
   updateModeDropdown(): void {
     assert(this.level !== null);
-    const select = document.getElementById("levelModeSelect");
+    const select = this.div.querySelector("#levelModeSelect");
     if (select instanceof HTMLSelectElement) {
       select.value = this.level.mode || "normal";
     }
@@ -500,4 +500,6 @@ export class Editor extends GameBase {
   }
 }
 
-export const editor = new Editor("editorCanvas", "editor");
+const editorRoot = ensureNotNull(document.getElementById("editor"));
+const editorCanvas = cast(editorRoot.querySelector("#editorCanvas"), HTMLCanvasElement);
+export const editor = new Editor(editorRoot, editorCanvas);
