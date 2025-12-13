@@ -918,8 +918,8 @@ export class Game extends GameBase {
         
         const newSolution = remainingSolution.slice();
         newSolution[i] -= 1;
-        //const partition = eric_partition_number(this.level, newSolution);
-        const partition = obviousScore(this.level, newSolution);
+        const partition = eric_partition_number(this.level, newSolution);
+        //const partition = obviousScore(this.level, newSolution);
         minPartitionForThisMove = Math.min(minPartitionForThisMove, partition);
       }
       

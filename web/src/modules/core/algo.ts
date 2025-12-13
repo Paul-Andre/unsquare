@@ -532,7 +532,7 @@ export function eric_partition_number(level: Level, solution: number[]): number 
   let operations = compute_operations_for_level(level);
   assert(operations.length == solution.length);
   let m = new Set();
-  console.log(vector_sum(solution));
+  //console.log(vector_sum(solution));
   let emptyArea = "0".repeat(vector_sum(solution));
   m.add(emptyArea);
   for (let j=0; j<operations[0].length; j++) {
@@ -580,7 +580,7 @@ export function obviousScore(level:Level, solution: number[], squares: Move[] | 
 
 
     let obv = border / sides;
-    console.log(JSON.stringify(square), border, sides, obv, solution[i]);
+    //console.log(JSON.stringify(square), border, sides, obv, solution[i]);
 
 
     let diff = Math.abs(obv - solution[i]);
