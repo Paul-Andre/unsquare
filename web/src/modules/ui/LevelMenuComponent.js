@@ -10,6 +10,7 @@ import { save_editor_book, book_reviver } from '../core/bookUtils.ts';
 import { book_replacer } from '../core/bookUtils.ts';
 import { clearBestNumMoves } from '../core/levelUtils.ts';
 import { editor } from '../game/Editor.js';
+import { game } from '../game/Game.js';
 
 // Level state constants to replace magic numbers
 export const LEVEL_STATES = {
@@ -287,16 +288,8 @@ export class LevelMenuComponent {
         screenManager.switchTo("editor");
       } else {
         console.log("Attempting to open level:", iconElement.level);
-        console.log("Game object:", window.game);
-        console.log("Window.game object:", window.game);
-        console.log("Game.openLevel method:", window.game?.openLevel);
-        console.log("Window.game.openLevel method:", window.game?.openLevel);
-        if (window.game && window.game.openLevel) {
-          window.game.openLevel(iconElement.level, this.book);
-          screenManager.switchTo("game");
-        } else {
-          console.error("Game or game.openLevel is not available!");
-        }
+        game.openLevel(iconElement.level, this.book);
+        screenManager.switchTo("game");
       }
     }
   }

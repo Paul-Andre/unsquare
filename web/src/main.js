@@ -1,5 +1,5 @@
 // Main entry point for the application
-import { Game } from './modules/game/Game.js';
+import { game } from './modules/game/Game.js';
 import { editor } from './modules/game/Editor.js';
 import { screenManager } from './modules/ui/ScreenManager.js';
 import { bookMenu } from './modules/ui/BookMenu.js';
@@ -15,7 +15,7 @@ import { assert, cast, generate_id } from './modules/utils/helpers.ts';
 window.config = config;
 
 // Initialize global instances
-window.game = new Game("gameCanvas", "game");
+window.game = game;
 window.editor = editor;
 window.screenManager = screenManager;
 window.bookMenu = bookMenu;

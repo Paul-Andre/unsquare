@@ -11,6 +11,7 @@ import { getCachedChallengeStatistics, saveChallengeStatistics } from '../core/l
 import mainBookData from '../../data/2025_nov_11_reordered_solved_fixed_all_solutions.json';
 import dailyLevelsData from '../../data/daily_submitting_07_dec_exhaustive.json'
 import { DAILY_UNLOCK_HOUR, DAILY_LEVELS_START_DATE, ICON_SIZE } from '../utils/config.ts';
+import { game } from '../game/Game.js';
 
 export class GameLevelMenu {
   constructor() {
@@ -72,23 +73,17 @@ export class GameLevelMenu {
   }
 
   initializeLevelMenu() {
-    // Wait for game to be available
-    if (window.game) {
-      this.levelMenu = new LevelMenuComponent("gameLevelMenu", false);
-      screenManager.additionalFunctions.gameLevelMenu = this.levelMenu;
-      // Add onShow callback to refresh challenge statistics and daily icon
-      const originalOnShow = this.levelMenu.onShow;
-      this.levelMenu.onShow = () => {
-        if (originalOnShow) {
-          originalOnShow.call(this.levelMenu);
-        }
-        this.displayDailyIcon();
-        this.updateChallengeStatistics();
-      };
-    } else {
-      // Retry after a short delay
-      setTimeout(() => this.initializeLevelMenu(), 100);
-    }
+    this.levelMenu = new LevelMenuComponent("gameLevelMenu", false);
+    screenManager.additionalFunctions.gameLevelMenu = this.levelMenu;
+    // Add onShow callback to refresh challenge statistics and daily icon
+    const originalOnShow = this.levelMenu.onShow;
+    this.levelMenu.onShow = () => {
+      if (originalOnShow) {
+        originalOnShow.call(this.levelMenu);
+      }
+      this.displayDailyIcon();
+      this.updateChallengeStatistics();
+    };
   }
 
 
@@ -228,13 +223,11 @@ export class GameLevelMenu {
 
     /** @type {any} */ (element).level = this.weeklyChallengeLevel;
     element.onclick = () => {
-      if (window.game?.openLevel) {
-        window.game.openLevel(this.weeklyChallengeLevel, {
-          levels: [this.weeklyChallengeLevel],
-          source: "challenge",
-        });
-        screenManager.switchTo("game");
-      }
+      game.openLevel(this.weeklyChallengeLevel, {
+        levels: [this.weeklyChallengeLevel],
+        source: "challenge",
+      });
+      screenManager.switchTo("game");
     };
 
     this.updateChallengeStatistics();
@@ -318,13 +311,11 @@ export class GameLevelMenu {
 
     /** @type {any} */ (element).level = dailyLevel;
     element.onclick = () => {
-      if (window.game?.openLevel) {
-        window.game.openLevel(dailyLevel, {
-          levels: [dailyLevel],
-          source: "daily",
-        });
-        screenManager.switchTo("game");
-      }
+      game.openLevel(dailyLevel, {
+        levels: [dailyLevel],
+        source: "daily",
+      });
+      screenManager.switchTo("game");
     };
 
     // Apply state-based CSS class

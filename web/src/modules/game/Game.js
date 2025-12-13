@@ -11,6 +11,7 @@ import { renderHistogram } from '../ui/ChallengeHistogram.js';
 import { drawIcon, getCachedLevelIconDataUrl } from '../ui/icon.js';
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from '../utils/api.ts';
 import { assert } from '../utils/helpers.ts';
+import { screenManager } from '../ui/ScreenManager.js';
 
 
 export class Game extends GameBase {
@@ -578,7 +579,7 @@ export class Game extends GameBase {
       nextButton.onclick = () => this.nextLevel();
     } else {
       nextButton.textContent = "Return";
-      nextButton.onclick = () => window.screenManager.goBack();
+      nextButton.onclick = () => screenManager.goBack();
     }
   }
 
@@ -987,3 +988,5 @@ export class Game extends GameBase {
     this.ctx.setLineDash([]); // Reset to solid line
   }
 }
+
+export const game = new Game("gameCanvas", "game");

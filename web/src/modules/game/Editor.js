@@ -8,6 +8,7 @@ import { save_editor_book } from '../core/bookUtils.ts';
 import { screenManager } from '../ui/ScreenManager.js';
 import { Level, compute_gaussian_solution } from '../core/Level.ts';
 import { cast, generate_id } from '../utils/helpers.ts';
+import { game } from './Game.js';
 
 
 export class Editor extends GameBase {
@@ -177,7 +178,7 @@ export class Editor extends GameBase {
 
   play() {
     this.syncTilesToLevel();
-    window.game.openLevel(this.level, this.book);
+    game.openLevel(this.level, this.book);
     screenManager.switchTo("game");
   }
 
