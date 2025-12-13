@@ -1,7 +1,7 @@
 "use strict";
 
 import { getCachedLevelIconDataUrl } from './icon.js';
-import { htmlStringToElement } from '../utils/helpers.ts';
+import { assert, htmlStringToElement } from '../utils/helpers.ts';
 import { ICON_SIZE } from '../utils/config.ts';
 import { vector_sum } from '../core/algo.ts';
 import { screenManager } from './ScreenManager.js';
@@ -209,14 +209,17 @@ export class LevelMenuComponent {
     <div class="level_icon_par"> </div>
     </div>
     `);
+    assert(element instanceof HTMLDivElement);
 
     // Get cached or generate icon dataURL
     const dataURL = getCachedLevelIconDataUrl(level);
     let icon = element.querySelector(".level_icon_image");
+    assert(icon instanceof HTMLImageElement);
     icon.src = dataURL;
     icon.style.width = `${ICON_SIZE}px`;
     icon.style.height = `${ICON_SIZE}px`;
 
+    // TODO: find a better way to associate the level with the element
     element.level = level;
 
     if (this.isEditor || state >= 2) {
@@ -225,8 +228,9 @@ export class LevelMenuComponent {
 
     if (this.isEditor) {
       let par_display = element.querySelector(".level_icon_par");
+      assert(par_display instanceof HTMLElement);
       let par = (level.solutions && level.solutions.length > 0) ? vector_sum(level.solutions[0]) : 0;
-      par_display.innerText = par;
+      par_display.innerText = String(par);
       let colors = ["black", "black", "black", "magenta", "red", "orange", "cyan", "green", "purple", "blue"];
       par_display.style.color = colors[par] || "purple";
 
@@ -372,11 +376,14 @@ export class LevelMenuComponent {
   }
 
   saveIconOrder() {
+    // This function saves the order of levels after they have been reordered by the user using drag-and-drop with Sortable.js
+    // The way it works is by looking through the DOM and getting the associated level object from each level_icon element.
+    // TODO: see if Sortable.js provides an alternative way to do this. 
     if (this.isEditor) {
       this.book.levels = Array.prototype.map.call(
         this.container.children,
-        function (child) {
-          return child.level;
+        function (element) {
+          return element.level;
         }
       );
       this.reindexLevels();

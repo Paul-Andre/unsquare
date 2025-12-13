@@ -1,4 +1,5 @@
 "use strict";
+import { Level } from '../core/Level.ts';
 // Pretty self explanatory. It draws the icon for the given level on the canvas.
 // It creates a new context and draws the icon such that it covers the whole canvas.
 

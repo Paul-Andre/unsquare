@@ -10,11 +10,13 @@ export function cancelEvent(e: Event): boolean {
 }
 
 //https://stackoverflow.com/a/35385518
-export function htmlStringToElement(html: string): ChildNode | null {
+export function htmlStringToElement(html: string): ChildNode {
   let template = document.createElement("template");
   html = html.trim(); // Never return a text node of whitespace as the result
   template.innerHTML = html;
-  return template.content.firstChild;
+  let firstChild = template.content.firstChild;
+  assert(firstChild !== null);
+  return firstChild;
 }
 
 // https://stackoverflow.com/a/52171480

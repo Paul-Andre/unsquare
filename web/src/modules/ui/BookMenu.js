@@ -1,6 +1,6 @@
 "use strict";
 
-import { generate_id } from '../utils/helpers.ts';
+import { cast, generate_id } from '../utils/helpers.ts';
 import { htmlStringToElement } from '../utils/helpers.ts';
 import { createLevelIconElement } from './icon.js';
 import { editorLevelMenu } from './editorLevelMenu.js';
@@ -100,7 +100,7 @@ export class BookMenu {
   loadBooks() {}
 
   prepareBook(book) {
-    let node = htmlStringToElement(bookTemplate);
+    let node = cast(htmlStringToElement(bookTemplate), HTMLElement);
     {
       let bn = node.getElementsByClassName("bookName")[0];
       bn.innerHTML = book.title;
@@ -118,7 +118,7 @@ export class BookMenu {
       bic.append(icon);
     }
 
-    node.book = book;
+    // node.book = book;
     node.onclick = () => {
       this.openBook(book);
     };

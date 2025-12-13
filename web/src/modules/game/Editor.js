@@ -7,7 +7,7 @@ import { compute_operations_for_level, vector_sum, level_check_solution, get_lev
 import { save_editor_book } from '../core/bookUtils.ts';
 import { screenManager } from '../ui/ScreenManager.js';
 import { Level, compute_gaussian_solution } from '../core/Level.ts';
-import { generate_id } from '../utils/helpers.ts';
+import { cast, generate_id } from '../utils/helpers.ts';
 
 
 export class Editor extends GameBase {
@@ -269,11 +269,11 @@ export class Editor extends GameBase {
       minObv = Math.round(minObv * 100);
       
       let solutionsText = `(${numSolutions})`;
-      this.div.getElementsByClassName("editorBest")[0].innerText =
+      cast(this.div.getElementsByClassName("editorBest")[0], HTMLElement).innerText =
         type +" "+sum + solutionsText + " " + minEric + " " + minObv;
     } else {
       let type = this.level.solutionType || "unknown";
-      this.div.getElementsByClassName("editorBest")[0].innerText = "? " + type;
+      cast(this.div.getElementsByClassName("editorBest")[0], HTMLElement).innerText = "? " + type;
     }
   }
 
@@ -307,11 +307,12 @@ export class Editor extends GameBase {
 
   updateModeDropdown() {
     const select = document.getElementById("levelModeSelect");
-    if (select) {
+    if (select instanceof HTMLSelectElement) {
       select.value = this.level.mode || "normal";
     }
   }
 
+  // TODO: what the heck is this? It was created by AI when I asked it to make the "D" key toggle draw mode.
   setupKeyboardListeners() {
     // TODO: note that the event listener never gets removed
     // It is okay for the time being since I only initialize this "component" once,
