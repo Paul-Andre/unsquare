@@ -7,9 +7,10 @@
     "resolveJsonModule": true,
     "allowJs": true,
     "checkJs": true,
-    "noEmit": true,
     "isolatedModules": true,
-    "strict": true,
+    "strict": false,
+    "composite": true,
+    "emitDeclarationOnly": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
@@ -27,6 +28,9 @@
   "exclude": [
     "node_modules",
     "dist"
+  ],
+  "references": [
+    { "path": "./tsconfig.strict.json" }
   ]
 }
 

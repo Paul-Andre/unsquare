@@ -1,0 +1,17 @@
+// tsconfig.strict.json
+{
+  "extends": "./tsconfig.json", // Inherit all options from the base config
+  "compilerOptions": {
+    "composite": true, // Required for project references
+    "emitDeclarationOnly": true,
+    
+    /* Stricter Type Checking (The "Strict" Part) */
+    "strict": true, // This enables all strict checking flags for TS files
+    
+    // Ensure all JS-related options are disabled or set appropriately for TS files
+    "allowJs": false,
+    "checkJs": false 
+  },
+  "include": ["src/**/*.ts"], // ONLY include TypeScript files
+  "exclude": ["node_modules"]
+}

@@ -532,7 +532,7 @@ export function get_gaussian_solution_for_level(level:Level): number[] | null {
 
 // TODO: for the complexity metrics, such as eric_partition_number and obviousScore, perhaps have a function that computes the minimum for all the solutions contained in the level.
 
-export function eric_partition_number(level:Level, solution: number[]): number {
+export function eric_partition_number(level: Level, solution: number[]): number {
   let operations = compute_operations_for_level(level);
   assert(operations.length == solution.length);
   let m = new Set();
