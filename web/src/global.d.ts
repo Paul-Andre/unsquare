@@ -7,7 +7,7 @@ import { screenManager } from './modules/ui/ScreenManager.js';
 import { bookMenu } from './modules/ui/BookMenu.js';
 import { gameLevelMenu } from './modules/ui/GameLevelMenu.js';
 import { editorLevelMenu } from './modules/ui/editorLevelMenu.js';
-import { checkAndOpenCustomLevel } from './modules/utils/customParse.ts';
+import { checkAndOpenCustomLevel } from './modules/ui/customParse.ts';
 import * as config from './modules/utils/config.ts';
 import * as algo from './modules/core/algo.ts';
 
