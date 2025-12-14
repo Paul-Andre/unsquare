@@ -23,30 +23,23 @@ export class AppContext {
     // Create screenManager first (no DOM queries needed)
     this.screenManager = new ScreenManager();
 
-    // Create game instance
     const gameRoot = ensureNotNull(document.getElementById("game"));
     const gameCanvas = cast(gameRoot.querySelector("#gameCanvas"), HTMLCanvasElement);
     this.game = new Game(gameRoot, gameCanvas);
 
-    // Create editor instance
     const editorRoot = ensureNotNull(document.getElementById("editor"));
     const editorCanvas = cast(editorRoot.querySelector("#editorCanvas"), HTMLCanvasElement);
     this.editor = new Editor(editorRoot, editorCanvas);
 
-    // Create bookMenu instance
     const bookMenuRoot = ensureNotNull(document.getElementById("bookMenu"));
     this.bookMenu = new BookMenu(bookMenuRoot);
 
-    // Create gameLevelMenu instance
     const gameLevelMenuRoot = ensureNotNull(document.getElementById("gameLevelMenu"));
     this.gameLevelMenu = new GameLevelMenu(gameLevelMenuRoot);
-    // Set up screen manager additional functions after gameLevelMenu is created
-    this.screenManager.additionalFunctions.gameLevelMenu = this.gameLevelMenu.levelMenu;
 
-    // Create editorLevelMenu instance
     this.editorLevelMenu = createEditorLevelMenu();
 
-    // Set up screen manager additional functions (hook bindings)
+    this.screenManager.additionalFunctions.gameLevelMenu = this.gameLevelMenu;
     this.screenManager.additionalFunctions.editorLevelMenu = this.editorLevelMenu;
     this.screenManager.additionalFunctions.bookMenu = this.bookMenu;
     this.screenManager.additionalFunctions.editor = this.editor;

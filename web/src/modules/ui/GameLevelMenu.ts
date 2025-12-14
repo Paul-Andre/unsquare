@@ -76,22 +76,14 @@ export class GameLevelMenu {
     this.weeklyChallengeLevel = Level.fromJsonObject(challengeLevelJson);
 
     this.levelMenu = new LevelMenuComponent(this.root, false);
-    this.initializeLevelMenu();
 
     this.loadBook();
   }
 
-  initializeLevelMenu() {
-    // Note: appContext.screenManager setup is done in AppContext after gameLevelMenu is created
-    // Add onShow callback to refresh challenge statistics and daily icon
-    const originalOnShow = this.levelMenu.onShow;
-    this.levelMenu.onShow = () => {
-      if (originalOnShow) {
-        originalOnShow.call(this.levelMenu);
-      }
-      this.displayDailyIcon();
-      this.updateChallengeStatistics();
-    };
+  onShow() {
+    this.levelMenu.onShow();
+    this.displayDailyIcon();
+    this.updateChallengeStatistics();
   }
 
 
