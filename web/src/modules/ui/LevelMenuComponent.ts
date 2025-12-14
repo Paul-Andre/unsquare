@@ -3,7 +3,7 @@
 import { getCachedLevelIconDataUrl } from './icon.ts';
 import { assert, cast, htmlStringToElement } from '../utils/helpers.ts';
 import { ICON_SIZE } from '../utils/config.ts';
-import { vector_sum } from '../core/algo.ts';
+import { vector_sum, eric_partition_number, obviousScore } from '../core/algo.ts';
 import { appContext } from '../core/AppContext.ts';
 import { Level } from '../core/Level.ts';
 import { save_editor_book, book_reviver } from '../core/bookUtils.ts';
@@ -187,6 +187,7 @@ export class LevelMenuComponent {
   selectingIcon: boolean;
   togglingHidden: boolean;
   defaultSize: number;
+  iconDisplayType: "par" | "eric" | "obv" | "eric/par" | "obv/par" = "par";
   book: Book | null = null;
 
   constructor(root: HTMLElement, isEditor: boolean) {
@@ -240,12 +241,71 @@ export class LevelMenuComponent {
     if (this.isEditor) {
       let par_display = element.querySelector(".level_icon_par");
       assert(par_display instanceof HTMLElement);
-      let par = (level.solutions && level.solutions.length > 0) ? vector_sum(level.solutions[0]) : 0;
-      par_display.innerText = String(par);
-      let colors = ["black", "black", "black", "magenta", "red", "orange", "cyan", "green", "purple", "blue"];
-      par_display.style.color = colors[par] || "purple";
-
-      element.style.borderColor = colors[par] || "purple";
+      
+      let displayValue = 0;
+      if (level.solutions && level.solutions.length > 0) {
+        if (this.iconDisplayType === "par") {
+          displayValue = vector_sum(level.solutions[0]);
+        } else if (this.iconDisplayType === "eric") {
+          // Calculate minimum eric_partition_number across all solutions
+          let minEric = Infinity;
+          for (let solution of level.solutions) {
+            let eric = eric_partition_number(level, solution);
+            minEric = Math.min(minEric, eric);
+          }
+          displayValue = minEric === Infinity ? 0 : minEric;
+        } else if (this.iconDisplayType === "obv") {
+          // Calculate minimum obviousScore across all solutions
+          let minObv = Infinity;
+          for (let solution of level.solutions) {
+            let obv = obviousScore(level, solution);
+            minObv = Math.min(minObv, obv);
+          }
+          // Multiply by 100 and round to integer
+          displayValue = minObv === Infinity ? 0 : Math.round(minObv * 100);
+        } else if (this.iconDisplayType === "eric/par") {
+          // Calculate eric/par ratio
+          let par = vector_sum(level.solutions[0]);
+          let minEric = Infinity;
+          for (let solution of level.solutions) {
+            let eric = eric_partition_number(level, solution);
+            minEric = Math.min(minEric, eric);
+          }
+          if (par === 0) {
+            displayValue = 0;
+          } else {
+            displayValue = minEric === Infinity ? 0 : Math.round((minEric / par) * 10);
+          }
+        } else if (this.iconDisplayType === "obv/par") {
+          // Calculate obv/par ratio
+          let par = vector_sum(level.solutions[0]);
+          let minObv = Infinity;
+          for (let solution of level.solutions) {
+            let obv = obviousScore(level, solution);
+            minObv = Math.min(minObv, obv);
+          }
+          if (par === 0) {
+            displayValue = 0;
+          } else {
+            displayValue = minObv === Infinity ? 0 : Math.round((minObv / par) * 1000);
+          }
+        }
+      }
+      
+      par_display.innerText = String(displayValue);
+      
+      // Only apply colors when using par mode
+      if (this.iconDisplayType === "par") {
+        let colors = ["black", "black", "black", "magenta", "red", "orange", "cyan", "green", "purple", "blue"];
+        // Use modulo for color selection to handle larger values
+        let colorIndex = displayValue % colors.length;
+        par_display.style.color = colors[colorIndex] || "purple";
+        element.style.borderColor = colors[colorIndex] || "purple";
+      } else {
+        // Reset to default colors for other modes
+        par_display.style.color = "";
+        element.style.borderColor = "";
+      }
 
       if (level.isIcon) {
         element.classList.add("bookIconRepresentative");
@@ -586,6 +646,13 @@ export class LevelMenuComponent {
           button.classList.remove("drawModeActive");
         }
       }
+    }
+  }
+
+  setIconDisplayType(type: string): void {
+    if (this.isEditor && (type === "par" || type === "eric" || type === "obv" || type === "eric/par" || type === "obv/par")) {
+      this.iconDisplayType = type as "par" | "eric" | "obv" | "eric/par" | "obv/par";
+      this.displayIcons();
     }
   }
 

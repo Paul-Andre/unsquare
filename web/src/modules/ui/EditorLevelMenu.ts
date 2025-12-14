@@ -47,6 +47,10 @@ export class EditorLevelMenu {
     this.levelMenu.toggleHidden();
   }
 
+  setIconDisplayType(type: string) {
+    this.levelMenu.setIconDisplayType(type);
+  }
+
   changeBookTitle() {
     this.levelMenu.changeBookTitle();
   }

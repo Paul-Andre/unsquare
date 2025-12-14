@@ -393,6 +393,13 @@
           <button onclick="appContext.editorLevelMenu.changeBookTitle();" style="float: right">
             Change Book Title
           </button>
+          <select id="iconDisplayTypeSelect" onchange="appContext.editorLevelMenu.setIconDisplayType(this.value);" style="float: right; margin-right: 0.5em;">
+            <option value="par">par</option>
+            <option value="eric">eric</option>
+            <option value="obv">obv</option>
+            <option value="eric/par">eric/par</option>
+            <option value="obv/par">obv/par</option>
+          </select>
         </div>
 
         <div id="iconContainer" class="content" style="width:500px"></div>
