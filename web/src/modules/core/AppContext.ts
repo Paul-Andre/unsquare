@@ -7,6 +7,7 @@ import { ScreenManager } from '../ui/ScreenManager.ts';
 import { BookMenu } from '../ui/BookMenu.ts';
 import { GameLevelMenu } from '../ui/GameLevelMenu.ts';
 import { LevelMenuComponent } from '../ui/LevelMenuComponent.ts';
+import { OpeningInstructions } from '../ui/OpeningInstructions.ts';
 import { Level } from '../core/Level.ts';
 import { Book } from '../core/Book.ts';
 import { createEditorLevelMenu } from '../ui/editorLevelMenu.ts';
@@ -19,6 +20,7 @@ export class AppContext {
   bookMenu: BookMenu;
   gameLevelMenu: GameLevelMenu;
   editorLevelMenu: LevelMenuComponent;
+  openingInstructions: OpeningInstructions;
 
   constructor() {
     // Create screenManager first (no DOM queries needed)
@@ -38,6 +40,9 @@ export class AppContext {
     const gameLevelMenuRoot = ensureNotNull(document.getElementById("gameLevelMenu"));
     this.gameLevelMenu = new GameLevelMenu(gameLevelMenuRoot);
 
+    const openingInstructionsRoot = ensureNotNull(document.getElementById("opening_instructions"));
+    this.openingInstructions = new OpeningInstructions(openingInstructionsRoot);
+
     this.editorLevelMenu = createEditorLevelMenu();
 
     this.screenManager.additionalFunctions.gameLevelMenu = this.gameLevelMenu;
@@ -45,6 +50,7 @@ export class AppContext {
     this.screenManager.additionalFunctions.bookMenu = this.bookMenu;
     this.screenManager.additionalFunctions.editor = this.editor;
     this.screenManager.additionalFunctions.game = this.game;
+    this.screenManager.additionalFunctions.opening_instructions = this.openingInstructions;
   }
 
   openEditor(): void {
@@ -75,6 +81,10 @@ export class AppContext {
   editorOpenBook(book: Book) {
     this.editorLevelMenu.openBook(book);
     this.screenManager.switchTo("editorLevelMenu");
+  }
+
+  goBack() {
+    this.screenManager.goBack();
   }
 }
 

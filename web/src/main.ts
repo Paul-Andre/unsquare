@@ -31,66 +31,8 @@ window.addEventListener('load',
   });
 
 
-// Onboarding flow (first-run instructions)
-(function setupOnboarding() {
-  const slidesContainer = document.getElementById('onboardingSlides');
-  assert(slidesContainer !== null);
-  const openingSection = document.getElementById('opening_instructions');
-  const prevBtn = cast(document.getElementById('onboardingPrevBtn'), HTMLButtonElement);
-  const nextBtn = cast(document.getElementById('onboardingNextBtn'), HTMLButtonElement);
-
-  let currentSlideIndex = 0;
-  const slides = Array.from(slidesContainer.children);
-
-  function showSlide(idx: number): void {
-    currentSlideIndex = Math.max(0, Math.min(idx, slides.length - 1));
-    for (let i = 0; i < slides.length; i++) {
-      slides[i].classList.toggle('variant_shown', i === currentSlideIndex);
-    }
-    prevBtn.disabled = currentSlideIndex === 0;
-    if (currentSlideIndex === slides.length - 1) {
-      nextBtn.textContent = 'Play';
-    } else {
-      nextBtn.textContent = 'Next >';
-    }
-  }
-
-  window.onboardingPrev = function() {
-    showSlide(currentSlideIndex - 1);
-  };
-
-  let has_already_went_to_first_level = false;
-
-  window.onboardingNext = function() {
-    if (currentSlideIndex === slides.length - 1) {
-      if (has_already_went_to_first_level) {
-        appContext.screenManager.switchTo('gameLevelMenu');
-      } else {
-        // Switch to gameLevelMenu and then right after to game in order to have is
-        // in the history stack.
-        appContext.screenManager.switchTo('gameLevelMenu');
-
-        let book = appContext.gameLevelMenu.levelMenu.book;
-        assert(book !== null);
-        appContext.playLevel(book.levels[0], book);
-        has_already_went_to_first_level = true;
-      }
-
-      return;
-    }
-    showSlide(currentSlideIndex + 1);
-  };
-
-
-  // Register screen lifecycle to reset slides when shown
-  appContext.screenManager.additionalFunctions.opening_instructions = {
-    onShow: function() {
-      showSlide(0);
-    }
-  };
-
-  showSlide(0);
-
+// Initial screen selection based on user experience
+(function setupInitialScreen() {
   let num_levels_done = 0;
   for (let key in localStorage) {
     if (key.startsWith("level_") && key.endsWith("bestNumMoves")) {
@@ -103,7 +45,7 @@ window.addEventListener('load',
   if (openedCustom) {
     // pass; It was already opened by the checkAndOpenCustomLevel function.
   } else if (had_experience) {
-    has_already_went_to_first_level = true;
+    appContext.openingInstructions.hasAlreadyWentToFirstLevel = true;
     appContext.screenManager.switchTo('gameLevelMenu');
   } else {
     appContext.screenManager.switchTo('opening_instructions');

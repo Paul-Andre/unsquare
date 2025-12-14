@@ -233,7 +233,7 @@ export class Editor extends GameBase {
 
   saveAndReturn() {
     this.saveLevel();
-    appContext.screenManager.goBack();
+    appContext.goBack();
   }
 
   saveAs() {

@@ -10,8 +10,6 @@ declare global {
   interface Window {
     config: typeof config;
     appContext: AppContext;
-    onboardingPrev: () => void;
-    onboardingNext: () => void;
     gtag?: (...args: any[]) => void;
     posthog?: {
       capture: (event: string, properties?: Record<string, any>) => void;

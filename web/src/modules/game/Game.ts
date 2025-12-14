@@ -612,7 +612,7 @@ export class Game extends GameBase {
       nextButton.onclick = () => this.nextLevel();
     } else {
       nextButton.textContent = "Return";
-      nextButton.onclick = () => appContext.screenManager.goBack();
+      nextButton.onclick = () => appContext.goBack();
     }
   }
 

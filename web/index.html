@@ -77,8 +77,8 @@
               <img class="instruction_image" src="/drag.gif" alt="Drag to flip" />
               <p>Select <strong>square areas</strong> (2x2 or larger) to flip the tiles.</p>
               <div class="footer">
-                <!-- <button id="onboardingPrevBtn" onclick="onboardingPrev();">&#60; Previous</button> -->
-                <button id="onboardingNextBtn" onclick="onboardingNext();" style="float: right">Next &#62;</button>
+                <!-- <button id="onboardingPrevBtn" onclick="appContext.openingInstructions.prev();">&#60; Previous</button> -->
+                <button id="onboardingNextBtn" onclick="appContext.openingInstructions.next();" style="float: right">Next &#62;</button>
               </div>
 
             </div>
@@ -87,8 +87,8 @@
               <img class="instruction_image" src="/flip.gif" alt="Colors flip" />
               <p>White tiles flip to black. Black tiles flip to white.</p>
               <div class="footer">
-                <button id="onboardingPrevBtn" onclick="onboardingPrev();">&#60; Prev</button>
-                <button id="onboardingNextBtn" onclick="onboardingNext();" style="float: right">Next &#62;</button>
+                <button id="onboardingPrevBtn" onclick="appContext.openingInstructions.prev();">&#60; Prev</button>
+                <button id="onboardingNextBtn" onclick="appContext.openingInstructions.next();" style="float: right">Next &#62;</button>
               </div>
 
             </div>
@@ -98,8 +98,8 @@
                 style="display: block; margin: 0 auto;" />
               <p>Make all tiles white to win!</p>
               <div class="footer">
-                <button id="onboardingPrevBtn" onclick="onboardingPrev();">&#60; Prev</button>
-                <button id="onboardingNextBtn" onclick="onboardingNext();" style="float: right">Play!</button>
+                <button id="onboardingPrevBtn" onclick="appContext.openingInstructions.prev();">&#60; Prev</button>
+                <button id="onboardingNextBtn" onclick="appContext.openingInstructions.next();" style="float: right">Play!</button>
               </div>
 
             </div>
@@ -109,7 +109,7 @@
       </section>
 
       <section id="options">
-        <button onclick="appContext.screenManager.goBack();" style="float: left">
+        <button onclick="appContext.goBack();" style="float: left">
           Back
         </button>
       </section>
@@ -126,7 +126,7 @@
               Pull from one corner of the square to the other.
             </p>
             <p id="Debugger"></p>
-            <button onclick="appContext.screenManager.goBack();">&#8592; All Levels</button>
+            <button onclick="appContext.goBack();">&#8592; All Levels</button>
           </div>
 
           <button onclick="appContext.screenManager.switchTo('instructions');" style="float: right">
@@ -161,7 +161,7 @@
           </div>
 
           <div style="clear: both; bottom: 0px">
-            <!-- <button onclick="appContext.screenManager.goBack();" style="float:left">&#8592; Levels</button> -->
+            <!-- <button onclick="appContext.goBack();" style="float:left">&#8592; Levels</button> -->
             <!--<button onclick="share();" style="float:left" id="inGameShareButton" > &#9733; Share</button>-->
             <button onclick="appContext.game.restart();" style="float: right" class="restart_button">
               ⟳ Restart
@@ -319,7 +319,7 @@
             <button onclick="appContext.editor.saveAs();" style="float: left">
               Save As
             </button>
-            <button onclick="appContext.screenManager.goBack();" style="float: left">
+            <button onclick="appContext.goBack();" style="float: left">
               Cancel
             </button>
 
@@ -368,7 +368,7 @@
           <div class="IndicContainer" id="statsIndicator">
             <div class="indicator" id="levelCounter">Levels: 0</div>
           </div>
-          <button onclick="appContext.screenManager.goBack();">&#8592; Menu</button>
+          <button onclick="appContext.goBack();">&#8592; Menu</button>
           <button onclick="appContext.editorLevelMenu.displayBookJson();" style="float: right">
             To JSON
           </button>
@@ -420,7 +420,7 @@
 
           </div>
           <div class="IndicContainer" id="statsIndicator"></div>
-          <!-- <button onclick="appContext.screenManager.goBack();">&#8592; Menu</button> -->
+          <!-- <button onclick="appContext.goBack();">&#8592; Menu</button> -->
         </div>
         <h2 id="dailyLevelHeading">Daily Level #1:</h2>
         <div id="dailyIconContainer">
@@ -461,7 +461,7 @@
       <section id="bookMenu" class="screen">
         <div class="header">
           <h1>Puzzle Books:</h1>
-          <button onclick="appContext.screenManager.goBack();">&#8592; Menu</button>
+          <button onclick="appContext.goBack();">&#8592; Menu</button>
         </div>
         <div id="bookContainer" class="content"></div>
         <div class="footer">
@@ -478,7 +478,7 @@
       </section>
 
       <section id="instructions" class="">
-        <button onclick="appContext.screenManager.goBack();">&#8592; Back</button>
+        <button onclick="appContext.goBack();">&#8592; Back</button>
         <h1>Instructions</h1>
         <p>
           <!-- TODO: make two different screens, one for the mechanic, the other for the par/undo screen -->
@@ -501,7 +501,7 @@
           Use "Undo" to undo the last move and "Restart" to restart the level.
         </p>
         <!-- Need to change font; need new image; need images for invalid moves -->
-        <button onclick="appContext.screenManager.goBack();" style="float: left">
+        <button onclick="appContext.goBack();" style="float: left">
           &#8592; Back
         </button>
       </section>
