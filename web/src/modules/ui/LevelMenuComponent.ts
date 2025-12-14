@@ -304,8 +304,7 @@ export class LevelMenuComponent {
         //editor.setBook(this.book);
 
         // TODO: some kind of callback in order to nicely set level data?
-        appContext.editor.openLevel(iconLevel, this.book);
-        appContext.screenManager.switchTo("editor");
+        appContext.editLevel(iconLevel, this.book);
       } else {
         console.log("Attempting to open level:", iconLevel);
         appContext.playLevel(iconLevel, this.book);

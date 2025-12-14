@@ -60,18 +60,22 @@ export class AppContext {
   openPlayerEditor(): void {
     let level = Level.empty(6);
     level.index = 0;
-    this.editor.openLevel(level, {
+    this.editLevel(level, {
       levels: [level],
       source: "playerEditor",
       id: "playerEditor",
       title: "Player Editor",
     });
-    this.screenManager.switchTo("editor");
   }
 
   playLevel(level: Level, book: Book): void {
     this.game.openLevel(level, book);
     this.screenManager.switchTo("game");
+  }
+
+  editLevel(level: Level, book: Book): void {
+    this.editor.openLevel(level, book);
+    this.screenManager.switchTo("editor");
   }
 }
 
