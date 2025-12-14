@@ -8,6 +8,7 @@ import { BookMenu } from '../ui/BookMenu.ts';
 import { GameLevelMenu } from '../ui/GameLevelMenu.ts';
 import { LevelMenuComponent } from '../ui/LevelMenuComponent.ts';
 import { Level } from '../core/Level.ts';
+import { Book } from '../core/Book.ts';
 import { createEditorLevelMenu } from '../ui/editorLevelMenu.ts';
 
 export class AppContext {
@@ -66,6 +67,11 @@ export class AppContext {
       title: "Player Editor",
     });
     this.screenManager.switchTo("editor");
+  }
+
+  playLevel(level: Level, book: Book): void {
+    this.game.openLevel(level, book);
+    this.screenManager.switchTo("game");
   }
 }
 

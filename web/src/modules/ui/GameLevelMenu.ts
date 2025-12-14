@@ -223,13 +223,12 @@ export class GameLevelMenu {
     // XXX: using any to access property on the element
     (element as any).level = this.weeklyChallengeLevel;
     element.onclick = () => {
-      appContext.game.openLevel(this.weeklyChallengeLevel, {
+      appContext.playLevel(this.weeklyChallengeLevel, {
         levels: [this.weeklyChallengeLevel],
         source: "challenge",
         id: "challenge",
         title: "Weekly Challenge",
       });
-      appContext.screenManager.switchTo("game");
     };
 
     this.updateChallengeStatistics();
@@ -315,13 +314,12 @@ export class GameLevelMenu {
     // XXX: using any to access property on the element
     (element as any).level = dailyLevel;
     element.onclick = () => {
-      appContext.game.openLevel(dailyLevel, {
+      appContext.playLevel(dailyLevel, {
         levels: [dailyLevel],
         source: "daily",
         id: "daily",
         title: "Daily Level",
       });
-      appContext.screenManager.switchTo("game");
     };
 
     // Apply state-based CSS class

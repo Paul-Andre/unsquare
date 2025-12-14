@@ -1,8 +1,7 @@
 import { Level } from '../core/Level.ts';
-import { Game } from '../game/Game.ts';
 import { appContext } from '../core/AppContext.ts';
 
-export function checkAndOpenCustomLevel(game: Game): boolean {
+export function checkAndOpenCustomLevel(): boolean {
   let customLevelString = new URLSearchParams(location.search).get("custom");
   if (customLevelString !== null) {
     let customLevel = Level.fromCompact(customLevelString);
@@ -11,16 +10,15 @@ export function checkAndOpenCustomLevel(game: Game): boolean {
     }
 
     customLevel.isCustom = true;
-    game.openLevel(customLevel, {
+    console.log("Switching to customLevel", customLevel);
+
+    appContext.screenManager.switchTo("gameLevelMenu");
+    appContext.playLevel(customLevel, {
       levels: [customLevel],
       source: customLevelString,
       id: "custom",
       title: "Custom",
     });
-    console.log("Switching to customLevel", customLevel);
-
-    appContext.screenManager.switchTo("gameLevelMenu");
-    appContext.screenManager.switchTo("game");
 
     return true;
   }

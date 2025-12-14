@@ -308,8 +308,7 @@ export class LevelMenuComponent {
         appContext.screenManager.switchTo("editor");
       } else {
         console.log("Attempting to open level:", iconLevel);
-        appContext.game.openLevel(iconLevel, this.book);
-        appContext.screenManager.switchTo("game");
+        appContext.playLevel(iconLevel, this.book);
       }
     }
   }

@@ -191,8 +191,7 @@ export class Editor extends GameBase {
     this.syncTilesToLevel();
     assert(this.level !== null);
     assert(this.book !== null);
-    appContext.game.openLevel(this.level, this.book);
-    appContext.screenManager.switchTo("game");
+    appContext.playLevel(this.level, this.book);
   }
 
   override specificOnShow(): void {

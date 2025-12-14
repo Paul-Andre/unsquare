@@ -14,7 +14,7 @@ window.appContext = appContext;
 window.algo = algo;
 
 // Parse custom level if present in URL
-let openedCustom = checkAndOpenCustomLevel(appContext.game);
+let openedCustom = checkAndOpenCustomLevel();
 
 // Remove utm parameters from the url
 window.addEventListener('load',
@@ -72,8 +72,7 @@ window.addEventListener('load',
 
         let book = appContext.gameLevelMenu.levelMenu.book;
         assert(book !== null);
-        appContext.game.openLevel(book.levels[0], book);
-        appContext.screenManager.switchTo("game");
+        appContext.playLevel(book.levels[0], book);
         has_already_went_to_first_level = true;
       }
 
