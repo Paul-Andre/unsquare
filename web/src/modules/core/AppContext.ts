@@ -6,11 +6,10 @@ import { Editor } from '../game/Editor.ts';
 import { ScreenManager } from '../ui/ScreenManager.ts';
 import { BookMenu } from '../ui/BookMenu.ts';
 import { GameLevelMenu } from '../ui/GameLevelMenu.ts';
-import { LevelMenuComponent } from '../ui/LevelMenuComponent.ts';
 import { OpeningInstructions } from '../ui/OpeningInstructions.ts';
 import { Level } from '../core/Level.ts';
 import { Book } from '../core/Book.ts';
-import { createEditorLevelMenu } from '../ui/editorLevelMenu.ts';
+import { EditorLevelMenu } from '../ui/EditorLevelMenu.ts';
 
 export class AppContext {
 
@@ -19,7 +18,7 @@ export class AppContext {
   screenManager: ScreenManager;
   bookMenu: BookMenu;
   gameLevelMenu: GameLevelMenu;
-  editorLevelMenu: LevelMenuComponent;
+  editorLevelMenu: EditorLevelMenu;
   openingInstructions: OpeningInstructions;
 
   constructor() {
@@ -43,7 +42,8 @@ export class AppContext {
     const openingInstructionsRoot = ensureNotNull(document.getElementById("opening_instructions"));
     this.openingInstructions = new OpeningInstructions(openingInstructionsRoot);
 
-    this.editorLevelMenu = createEditorLevelMenu();
+    const editorLevelMenuRoot = ensureNotNull(document.getElementById("editorLevelMenu"));
+    this.editorLevelMenu = new EditorLevelMenu(editorLevelMenuRoot);
 
     this.screenManager.additionalFunctions.gameLevelMenu = this.gameLevelMenu;
     this.screenManager.additionalFunctions.editorLevelMenu = this.editorLevelMenu;
