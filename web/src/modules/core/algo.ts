@@ -564,6 +564,22 @@ export function move_border_count(grid: BoundedGrid<number>, square: Move): numb
   return tot;
 }
 
+// For now this is just some boilerplate, it doesn't actually do what I want it to do yet.
+export function eric_with_border_count(level:Level, solution: number[], squares: Move[] | null = null): number {
+  squares = squares || compute_moves_for_level(level);
+  let grid = level.tiles;
+  let cnt = solution.length;
+  let tot = 0;
+  for (let i = 0; i < solution.length; i++) {
+    let square = squares[i];
+    let border = move_border_count(grid, square);
+    let sides = square.size * 4;
+    let obv = border / sides;
+    tot += obv;
+  }
+  return tot / cnt;
+}
+
 export function obviousScore(level:Level, solution: number[], squares: Move[] | null = null): number {
   //debugger;
   squares = squares || compute_moves_for_level(level);
