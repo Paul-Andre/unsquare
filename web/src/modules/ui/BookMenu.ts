@@ -64,8 +64,7 @@ export class BookMenu {
   }
 
   openBook(book: Book): void {
-    appContext.editorLevelMenu.openBook(book);
-    appContext.screenManager.switchTo("editorLevelMenu");
+    appContext.editorOpenBook(book);
   }
 
   newBook() {

@@ -12,6 +12,7 @@ import { Book } from '../core/Book.ts';
 import { createEditorLevelMenu } from '../ui/editorLevelMenu.ts';
 
 export class AppContext {
+
   game: Game;
   editor: Editor;
   screenManager: ScreenManager;
@@ -69,6 +70,11 @@ export class AppContext {
   editLevel(level: Level, book: Book): void {
     this.editor.openLevel(level, book);
     this.screenManager.switchTo("editor");
+  }
+
+  editorOpenBook(book: Book) {
+    this.editorLevelMenu.openBook(book);
+    this.screenManager.switchTo("editorLevelMenu");
   }
 }
 
