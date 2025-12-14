@@ -3,8 +3,7 @@
 import { cast, ensureNotNull, generate_id } from '../utils/helpers.ts';
 import { htmlStringToElement } from '../utils/helpers.ts';
 import { createLevelIconElement } from './icon.ts';
-import { editorLevelMenu } from './editorLevelMenu.ts';
-import { screenManager } from './ScreenManager.ts';
+import { appContext } from '../core/AppContext.ts';
 import { book_reviver, create_empty_book, save_editor_book } from '../core/bookUtils.ts';
 import book1OldData from '../../data/book1Old.json';
 import basicBlackWhiteData from '../../data/basicBlackWhite.json';
@@ -65,8 +64,8 @@ export class BookMenu {
   }
 
   openBook(book: Book): void {
-    editorLevelMenu.openBook(book);
-    screenManager.switchTo("editorLevelMenu");
+    appContext.editorLevelMenu.openBook(book);
+    appContext.screenManager.switchTo("editorLevelMenu");
   }
 
   newBook() {
@@ -159,6 +158,3 @@ export function select_book_icon_level(book: Book): Level | null {
   }
   return null;
 }
-
-const bookMenuRoot = ensureNotNull(document.getElementById("bookMenu"));
-export const bookMenu = new BookMenu(bookMenuRoot);

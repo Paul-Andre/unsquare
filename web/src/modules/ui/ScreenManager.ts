@@ -90,6 +90,3 @@ export class ScreenManager {
     }, 0);
   }
 }
-
-// Create global instance for backward compatibility
-export const screenManager = new ScreenManager();

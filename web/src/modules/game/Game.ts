@@ -11,7 +11,7 @@ import { renderHistogram } from '../ui/ChallengeHistogram.ts';
 import { drawIcon, getCachedLevelIconDataUrl } from '../ui/icon.ts';
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from '../utils/api.ts';
 import { assert, bezierBlend, cast, ensureNotNull, interpolate } from '../utils/helpers.ts';
-import { screenManager } from '../ui/ScreenManager.ts';
+import { appContext } from '../core/AppContext.ts';
 import { Level } from '../core/Level.ts';
 import { Book } from '../core/Book.ts';
 import { Move } from './GameBase.ts';
@@ -612,7 +612,7 @@ export class Game extends GameBase {
       nextButton.onclick = () => this.nextLevel();
     } else {
       nextButton.textContent = "Return";
-      nextButton.onclick = () => screenManager.goBack();
+      nextButton.onclick = () => appContext.screenManager.goBack();
     }
   }
 
@@ -1055,7 +1055,3 @@ export class Game extends GameBase {
     this.ctx.setLineDash([]); // Reset to solid line
   }
 }
-
-const gameRoot = ensureNotNull(document.getElementById("game"));
-const gameCanvas = cast(gameRoot.querySelector("#gameCanvas"), HTMLCanvasElement);
-export const game = new Game(gameRoot, gameCanvas);

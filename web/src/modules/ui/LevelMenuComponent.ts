@@ -4,13 +4,11 @@ import { getCachedLevelIconDataUrl } from './icon.ts';
 import { assert, cast, htmlStringToElement } from '../utils/helpers.ts';
 import { ICON_SIZE } from '../utils/config.ts';
 import { vector_sum } from '../core/algo.ts';
-import { screenManager } from './ScreenManager.ts';
+import { appContext } from '../core/AppContext.ts';
 import { Level } from '../core/Level.ts';
 import { save_editor_book, book_reviver } from '../core/bookUtils.ts';
 import { book_replacer } from '../core/bookUtils.ts';
 import { clearBestNumMoves } from '../core/levelUtils.ts';
-import { editor } from '../game/Editor.ts';
-import { game } from '../game/Game.ts';
 import { Book } from 'modules/core/Book.ts';
 
 // Level state constants to replace magic numbers
@@ -306,12 +304,12 @@ export class LevelMenuComponent {
         //editor.setBook(this.book);
 
         // TODO: some kind of callback in order to nicely set level data?
-        editor.openLevel(iconLevel, this.book);
-        screenManager.switchTo("editor");
+        appContext.editor.openLevel(iconLevel, this.book);
+        appContext.screenManager.switchTo("editor");
       } else {
         console.log("Attempting to open level:", iconLevel);
-        game.openLevel(iconLevel, this.book);
-        screenManager.switchTo("game");
+        appContext.game.openLevel(iconLevel, this.book);
+        appContext.screenManager.switchTo("game");
       }
     }
   }

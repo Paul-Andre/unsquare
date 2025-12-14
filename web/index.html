@@ -109,7 +109,7 @@
       </section>
 
       <section id="options">
-        <button onclick="screenManager.goBack();" style="float: left">
+        <button onclick="appContext.screenManager.goBack();" style="float: left">
           Back
         </button>
       </section>
@@ -126,10 +126,10 @@
               Pull from one corner of the square to the other.
             </p>
             <p id="Debugger"></p>
-            <button onclick="screenManager.goBack();">&#8592; All Levels</button>
+            <button onclick="appContext.screenManager.goBack();">&#8592; All Levels</button>
           </div>
 
-          <button onclick="screenManager.switchTo('instructions');" style="float: right">
+          <button onclick="appContext.screenManager.switchTo('instructions');" style="float: right">
             ?
           </button>
 
@@ -145,7 +145,7 @@
             </div>
             <div class="indicator parContentInclusive" id="ParIndicator">
               <span class="parText">par:</span>
-              <span class="histogramViewIcon" id="histogramViewIcon" onclick="game.showHistogramView();" style="display: none; cursor: pointer; margin-left: 0.5em;" title="View histogram">
+              <span class="histogramViewIcon" id="histogramViewIcon" onclick="appContext.game.showHistogramView();" style="display: none; cursor: pointer; margin-left: 0.5em;" title="View histogram">
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
                   <rect x="1" y="12" width="2" height="3"/>
                   <rect x="4" y="9" width="2" height="6"/>
@@ -161,15 +161,15 @@
           </div>
 
           <div style="clear: both; bottom: 0px">
-            <!-- <button onclick="screenManager.goBack();" style="float:left">&#8592; Levels</button> -->
+            <!-- <button onclick="appContext.screenManager.goBack();" style="float:left">&#8592; Levels</button> -->
             <!--<button onclick="share();" style="float:left" id="inGameShareButton" > &#9733; Share</button>-->
-            <button onclick="game.restart();" style="float: right" class="restart_button">
+            <button onclick="appContext.game.restart();" style="float: right" class="restart_button">
               ⟳ Restart
             </button>
-            <!-- <button onclick="game.showHint();" style="float: right" class="hint_button">
+            <!-- <button onclick="appContext.game.showHint();" style="float: right" class="hint_button">
               💡 Hint
             </button> -->
-            <button onclick="game.undo();" style="float: right">
+            <button onclick="appContext.game.undo();" style="float: right">
               ⤺ Undo
             </button>
           </div>
@@ -187,11 +187,11 @@
             <h1> Solved! </h1>
             <h2 class="finishedLevelMoves"> 40/3 moves</h2>
             <div class="finishedLevelButtons">
-              <button class="finishedLevelRestartButton" onclick="game.restart();"
+              <button class="finishedLevelRestartButton" onclick="appContext.game.restart();"
                 style="touch-action: none">
                 ⟳ Redo
               </button>
-              <button class="finishedLevelNextButton" onclick="game.nextLevel();"
+              <button class="finishedLevelNextButton" onclick="appContext.game.nextLevel();"
                 style="touch-action: none">
                 Next →
               </button>
@@ -205,7 +205,7 @@
             <h1> Perfect! </h1>
             <h2 class="finishedLevelMoves"> 40/3 moves</h2>
             <div class="finishedLevelButtons">
-              <button class="finishedLevelNextButton" onclick="game.nextLevel();"
+              <button class="finishedLevelNextButton" onclick="appContext.game.nextLevel();"
                 style="touch-action: none">
                 Next →
               </button>
@@ -236,11 +236,11 @@
 
             <h2 class="finishedLevelMoves"> 3 moves</h2>
             <div class="finishedLevelButtons challengeFinishedButtons">
-              <button class="finishedLevelRestartButton" onclick="game.restart();"
+              <button class="finishedLevelRestartButton" onclick="appContext.game.restart();"
                 style="touch-action: none">
                 ⟳ Redo
               </button>
-              <button class="finishedLevelNextButton" onclick="game.nextLevel();"
+              <button class="finishedLevelNextButton" onclick="appContext.game.nextLevel();"
                 style="touch-action: none">
                 Next →
               </button>
@@ -268,7 +268,7 @@
             </div>
 
             <div class="finishedLevelButtons challengeFinishedButtons">
-              <button class="finishedLevelNextButton" onclick="game.hideHistogramView();"
+              <button class="finishedLevelNextButton" onclick="appContext.game.hideHistogramView();"
                 style="touch-action: none">
                 Close
               </button>
@@ -277,7 +277,7 @@
           </div>
 
           <div class="finishedGame" style="display: none">
-            <!-- <button onclick="game.restart();" >⟳ Restart</button> -->
+            <!-- <button onclick="appContext.game.restart();" >⟳ Restart</button> -->
             <h2>Congratulations! You finished the game!</h2>
             <p>I'm going to create more levels, including daily and weekly challenge levels.
             </p>
@@ -297,14 +297,14 @@
               <button class="discord_button_blue">Discord</button>
             </form>
             <br />
-            <button onclick="game.nextLevel();"> Continue Playing</button>
+            <button onclick="appContext.game.nextLevel();"> Continue Playing</button>
           </div>
 
           <canvas id="gameCanvas" class="gameCanvas" width="30px" height="30px"></canvas>
         </div>
         <div class="footer">
-          <button id="prevButton" onclick="game.prevLevel();">&#60; Prev</button>
-          <button id="nextButton" onclick="game.nextLevel();" style="float: right">
+          <button id="prevButton" onclick="appContext.game.prevLevel();">&#60; Prev</button>
+          <button id="nextButton" onclick="appContext.game.nextLevel();" style="float: right">
             Next &#62;
           </button>
         </div>
@@ -313,40 +313,40 @@
       <section id="editor" class="screen">
         <div class="header">
           <div style="clear: both; bottom: 0px">
-            <button onclick="editor.saveAndReturn();" style="float: left">
+            <button onclick="appContext.editor.saveAndReturn();" style="float: left">
               Done
             </button>
-            <button onclick="editor.saveAs();" style="float: left">
+            <button onclick="appContext.editor.saveAs();" style="float: left">
               Save As
             </button>
-            <button onclick="screenManager.goBack();" style="float: left">
+            <button onclick="appContext.screenManager.goBack();" style="float: left">
               Cancel
             </button>
 
-            <button onclick="editor.undo();" style="float: right">
+            <button onclick="appContext.editor.undo();" style="float: right">
               Undo
             </button>
-            <button onclick="editor.clear();" style="float: right">
+            <button onclick="appContext.editor.clear();" style="float: right">
               Clear
             </button>
-            <button id="drawModeButton" onclick="editor.toggleDrawMode();" style="float: right">
+            <button id="drawModeButton" onclick="appContext.editor.toggleDrawMode();" style="float: right">
               Draw Mode: OFF
             </button>
-            <!-- <button onclick="editor.saveLevel();" style="float:right;">Save</button> -->
-            <button onclick="editor.promptSize();" style="float: right">
+            <!-- <button onclick="appContext.editor.saveLevel();" style="float:right;">Save</button> -->
+            <button onclick="appContext.editor.promptSize();" style="float: right">
               Change size
             </button>
 
-            <!-- <button onclick="editor.printFlat();" style="float:right;">Print Flat</button> -->
+            <!-- <button onclick="appContext.editor.printFlat();" style="float:right;">Print Flat</button> -->
 
-            <!-- <button onclick="editor.submitSolution();" style="float:right;">Input Solution</button> -->
-            <button onclick="editor.submitCompact();" style="float: right">
+            <!-- <button onclick="appContext.editor.submitSolution();" style="float:right;">Input Solution</button> -->
+            <button onclick="appContext.editor.submitCompact();" style="float: right">
               Input String
             </button>
-            <button onclick="editor.displayShare();" style="float: right">
+            <button onclick="appContext.editor.displayShare();" style="float: right">
               Share Link
             </button>
-            <button onclick="editor.play();" style="float: right">
+            <button onclick="appContext.editor.play();" style="float: right">
               Play
             </button>
 
@@ -368,29 +368,29 @@
           <div class="IndicContainer" id="statsIndicator">
             <div class="indicator" id="levelCounter">Levels: 0</div>
           </div>
-          <button onclick="screenManager.goBack();">&#8592; Menu</button>
-          <button onclick="editorLevelMenu.displayBookJson();" style="float: right">
+          <button onclick="appContext.screenManager.goBack();">&#8592; Menu</button>
+          <button onclick="appContext.editorLevelMenu.displayBookJson();" style="float: right">
             To JSON
           </button>
-          <button onclick="editorLevelMenu.appendJson();" style="float: right">
+          <button onclick="appContext.editorLevelMenu.appendJson();" style="float: right">
             Append JSON
           </button>
-          <button onclick="editorLevelMenu.newLevel();" style="float: right">
+          <button onclick="appContext.editorLevelMenu.newLevel();" style="float: right">
             Add level
           </button>
-          <button onclick="editorLevelMenu.setDefaultSize();" style="float: right">
+          <button onclick="appContext.editorLevelMenu.setDefaultSize();" style="float: right">
             Default size
           </button>
-          <button onclick="editorLevelMenu.toggleDelete();" style="float: right" class="deleteButton">
+          <button onclick="appContext.editorLevelMenu.toggleDelete();" style="float: right" class="deleteButton">
             Delete
           </button>
-          <button onclick="editorLevelMenu.toggleSelectIcon();" style="float: right">
+          <button onclick="appContext.editorLevelMenu.toggleSelectIcon();" style="float: right">
             Select Book Icon
           </button>
-          <button id="toggleHiddenButton" onclick="editorLevelMenu.toggleHidden();" style="float: right">
+          <button id="toggleHiddenButton" onclick="appContext.editorLevelMenu.toggleHidden();" style="float: right">
             Toggle Hidden
           </button>
-          <button onclick="editorLevelMenu.changeBookTitle();" style="float: right">
+          <button onclick="appContext.editorLevelMenu.changeBookTitle();" style="float: right">
             Change Book Title
           </button>
         </div>
@@ -409,18 +409,18 @@
 
             <div style="display: flex; justify-content: center; gap: 1em; margin-bottom: 1em;">
 
-              <button onclick="screenManager.switchTo('opening_instructions');">Instructions</button>
+              <button onclick="appContext.screenManager.switchTo('opening_instructions');">Instructions</button>
 
 
               <form style="display: inline" target="_blank" action="https://discord.gg/Hg6zVmTJeP" method="get">
                 <button class="discord_button">Discord</button>
               </form>
-              <button onclick="openPlayerEditor()">Level Editor</button>
+              <button onclick="appContext.openPlayerEditor()">Level Editor</button>
             </div>
 
           </div>
           <div class="IndicContainer" id="statsIndicator"></div>
-          <!-- <button onclick="screenManager.goBack();">&#8592; Menu</button> -->
+          <!-- <button onclick="appContext.screenManager.goBack();">&#8592; Menu</button> -->
         </div>
         <h2 id="dailyLevelHeading">Daily Level #1:</h2>
         <div id="dailyIconContainer">
@@ -461,24 +461,24 @@
       <section id="bookMenu" class="screen">
         <div class="header">
           <h1>Puzzle Books:</h1>
-          <button onclick="screenManager.goBack();">&#8592; Menu</button>
+          <button onclick="appContext.screenManager.goBack();">&#8592; Menu</button>
         </div>
         <div id="bookContainer" class="content"></div>
         <div class="footer">
           <br />
 
-          <button onclick="bookMenu.addFromJson();" style="float: right">
+          <button onclick="appContext.bookMenu.addFromJson();" style="float: right">
             Add from json
           </button>
 
-          <button onclick="bookMenu.newBook();" style="float: right">
+          <button onclick="appContext.bookMenu.newBook();" style="float: right">
             Add book
           </button>
         </div>
       </section>
 
       <section id="instructions" class="">
-        <button onclick="screenManager.goBack();">&#8592; Back</button>
+        <button onclick="appContext.screenManager.goBack();">&#8592; Back</button>
         <h1>Instructions</h1>
         <p>
           <!-- TODO: make two different screens, one for the mechanic, the other for the par/undo screen -->
@@ -501,7 +501,7 @@
           Use "Undo" to undo the last move and "Restart" to restart the level.
         </p>
         <!-- Need to change font; need new image; need images for invalid moves -->
-        <button onclick="screenManager.goBack();" style="float: left">
+        <button onclick="appContext.screenManager.goBack();" style="float: left">
           &#8592; Back
         </button>
       </section>

@@ -1,12 +1,6 @@
 // Main entry point for the application
-import { game } from './modules/game/Game.ts';
-import { editor } from './modules/game/Editor.ts';
-import { screenManager } from './modules/ui/ScreenManager.ts';
-import { bookMenu } from './modules/ui/BookMenu.ts';
-import { gameLevelMenu } from './modules/ui/GameLevelMenu.ts';
-import { editorLevelMenu } from './modules/ui/editorLevelMenu.ts';
+import { appContext } from './modules/core/AppContext.ts';
 import { checkAndOpenCustomLevel } from './modules/ui/customParse.ts';
-import { Level } from './modules/core/Level.ts';
 import * as config from './modules/utils/config.ts';
 import * as algo from './modules/core/algo';
 import { assert, cast, generate_id } from './modules/utils/helpers.ts';
@@ -15,40 +9,12 @@ import { assert, cast, generate_id } from './modules/utils/helpers.ts';
 window.config = config;
 
 // Initialize global instances
-window.game = game;
-window.editor = editor;
-window.screenManager = screenManager;
-window.bookMenu = bookMenu;
-window.gameLevelMenu = gameLevelMenu;
-window.editorLevelMenu = editorLevelMenu;
-window.parseCustomLevel = checkAndOpenCustomLevel;
+window.appContext = appContext;
 
 window.algo = algo;
 
-// Set up screen manager additional functions
-screenManager.additionalFunctions.editorLevelMenu = editorLevelMenu;
-screenManager.additionalFunctions.bookMenu = bookMenu;
-screenManager.additionalFunctions.editor = editor;
-screenManager.additionalFunctions.game = game;
-
-window.openEditor = function() {
-  screenManager.switchTo("bookMenu");
-};
-
-window.openPlayerEditor = function() {
-  let level = Level.empty(6);
-  level.index = 0;
-  editor.openLevel(level, {
-    levels: [level],
-    source: "playerEditor",
-    id: "playerEditor",
-    title: "Player Editor",
-  });
-  screenManager.switchTo("editor");
-};
-
 // Parse custom level if present in URL
-let openedCustom = checkAndOpenCustomLevel(game);
+let openedCustom = checkAndOpenCustomLevel(appContext.game);
 
 // Remove utm parameters from the url
 window.addEventListener('load',
@@ -98,16 +64,16 @@ window.addEventListener('load',
   window.onboardingNext = function() {
     if (currentSlideIndex === slides.length - 1) {
       if (has_already_went_to_first_level) {
-        screenManager.switchTo('gameLevelMenu');
+        appContext.screenManager.switchTo('gameLevelMenu');
       } else {
         // Switch to gameLevelMenu and then right after to game in order to have is
         // in the history stack.
-        screenManager.switchTo('gameLevelMenu');
+        appContext.screenManager.switchTo('gameLevelMenu');
 
-        let book = gameLevelMenu.levelMenu.book;
+        let book = appContext.gameLevelMenu.levelMenu.book;
         assert(book !== null);
-        game.openLevel(book.levels[0], book);
-        screenManager.switchTo("game");
+        appContext.game.openLevel(book.levels[0], book);
+        appContext.screenManager.switchTo("game");
         has_already_went_to_first_level = true;
       }
 
@@ -118,7 +84,7 @@ window.addEventListener('load',
 
 
   // Register screen lifecycle to reset slides when shown
-  screenManager.additionalFunctions.opening_instructions = {
+  appContext.screenManager.additionalFunctions.opening_instructions = {
     onShow: function() {
       showSlide(0);
     }
@@ -139,9 +105,9 @@ window.addEventListener('load',
     // pass; It was already opened by the checkAndOpenCustomLevel function.
   } else if (had_experience) {
     has_already_went_to_first_level = true;
-    screenManager.switchTo('gameLevelMenu');
+    appContext.screenManager.switchTo('gameLevelMenu');
   } else {
-    screenManager.switchTo('opening_instructions');
+    appContext.screenManager.switchTo('opening_instructions');
   }
 })();
 
@@ -182,7 +148,7 @@ if (localStorage.getItem("player_id") === null) {
     // Check if we've reached the required number of clicks
     if (clickCount >= REQUIRED_CLICKS) {
       resetCounter();
-      window.openEditor();
+      appContext.openEditor();
     }
   }
 

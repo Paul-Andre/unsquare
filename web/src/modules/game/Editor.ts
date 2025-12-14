@@ -5,10 +5,9 @@ import { TileAnimationState } from '../core/TileAnimationState.ts';
 import { Grid } from '../core/Grid';
 import { compute_operations_for_level, vector_sum, level_check_solution, get_level_compact_solution, vector_equal, vector_simplify_arithmetic, level_get_arithmetic, eric_partition_number, obviousScore } from '../core/algo';
 import { save_editor_book } from '../core/bookUtils.ts';
-import { screenManager } from '../ui/ScreenManager.ts';
+import { appContext } from '../core/AppContext.ts';
 import { Level, compute_gaussian_solution } from '../core/Level.ts';
 import { assert, cast, ensureNotNull, generate_id } from '../utils/helpers.ts';
-import { game } from './Game.ts';
 import { Book } from 'modules/core/Book.ts';
 
 
@@ -192,8 +191,8 @@ export class Editor extends GameBase {
     this.syncTilesToLevel();
     assert(this.level !== null);
     assert(this.book !== null);
-    game.openLevel(this.level, this.book);
-    screenManager.switchTo("game");
+    appContext.game.openLevel(this.level, this.book);
+    appContext.screenManager.switchTo("game");
   }
 
   override specificOnShow(): void {
@@ -235,7 +234,7 @@ export class Editor extends GameBase {
 
   saveAndReturn() {
     this.saveLevel();
-    screenManager.goBack();
+    appContext.screenManager.goBack();
   }
 
   saveAs() {
@@ -342,7 +341,7 @@ export class Editor extends GameBase {
     window.addEventListener("keydown", (e: KeyboardEvent) => {
       // Only handle if editor screen is active and not typing in an input
       if (
-        screenManager.currentScreenName === "editor" &&
+        appContext.screenManager.currentScreenName === "editor" &&
         !( e.target instanceof HTMLElement &&
         (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA"))
       ) {
@@ -499,7 +498,3 @@ export class Editor extends GameBase {
     }, 0);
   }
 }
-
-const editorRoot = ensureNotNull(document.getElementById("editor"));
-const editorCanvas = cast(editorRoot.querySelector("#editorCanvas"), HTMLCanvasElement);
-export const editor = new Editor(editorRoot, editorCanvas);

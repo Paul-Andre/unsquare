@@ -1,6 +1,6 @@
 import { Level } from '../core/Level.ts';
 import { Game } from '../game/Game.ts';
-import { screenManager } from './ScreenManager.ts';
+import { appContext } from '../core/AppContext.ts';
 
 export function checkAndOpenCustomLevel(game: Game): boolean {
   let customLevelString = new URLSearchParams(location.search).get("custom");
@@ -19,8 +19,8 @@ export function checkAndOpenCustomLevel(game: Game): boolean {
     });
     console.log("Switching to customLevel", customLevel);
 
-    screenManager.switchTo("gameLevelMenu");
-    screenManager.switchTo("game");
+    appContext.screenManager.switchTo("gameLevelMenu");
+    appContext.screenManager.switchTo("game");
 
     return true;
   }

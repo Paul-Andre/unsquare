@@ -1,7 +1,7 @@
 "use strict";
 
 import { LevelMenuComponent, calculateLevelState, applyStateClass } from './LevelMenuComponent.ts';
-import { screenManager } from './ScreenManager.ts';
+import { appContext } from '../core/AppContext.ts';
 import { book_reviver } from '../core/bookUtils.ts';
 import { Level } from '../core/Level.ts';
 import { getCachedLevelIconDataUrl } from './icon.ts';
@@ -11,7 +11,6 @@ import { getCachedChallengeStatistics, saveChallengeStatistics } from '../core/l
 import mainBookData from '../../data/2025_nov_11_reordered_solved_fixed_all_solutions.json';
 import dailyLevelsData from '../../data/daily_submitting_07_dec_exhaustive.json'
 import { DAILY_UNLOCK_HOUR, DAILY_LEVELS_START_DATE, ICON_SIZE } from '../utils/config.ts';
-import { game } from '../game/Game.ts';
 import { ChallengeStatistics } from '../core/levelUtils.ts';
 
 
@@ -83,7 +82,7 @@ export class GameLevelMenu {
   }
 
   initializeLevelMenu() {
-    screenManager.additionalFunctions.gameLevelMenu = this.levelMenu;
+    // Note: appContext.screenManager setup is done in AppContext after gameLevelMenu is created
     // Add onShow callback to refresh challenge statistics and daily icon
     const originalOnShow = this.levelMenu.onShow;
     this.levelMenu.onShow = () => {
@@ -224,13 +223,13 @@ export class GameLevelMenu {
     // XXX: using any to access property on the element
     (element as any).level = this.weeklyChallengeLevel;
     element.onclick = () => {
-      game.openLevel(this.weeklyChallengeLevel, {
+      appContext.game.openLevel(this.weeklyChallengeLevel, {
         levels: [this.weeklyChallengeLevel],
         source: "challenge",
         id: "challenge",
         title: "Weekly Challenge",
       });
-      screenManager.switchTo("game");
+      appContext.screenManager.switchTo("game");
     };
 
     this.updateChallengeStatistics();
@@ -316,13 +315,13 @@ export class GameLevelMenu {
     // XXX: using any to access property on the element
     (element as any).level = dailyLevel;
     element.onclick = () => {
-      game.openLevel(dailyLevel, {
+      appContext.game.openLevel(dailyLevel, {
         levels: [dailyLevel],
         source: "daily",
         id: "daily",
         title: "Daily Level",
       });
-      screenManager.switchTo("game");
+      appContext.screenManager.switchTo("game");
     };
 
     // Apply state-based CSS class
@@ -330,7 +329,3 @@ export class GameLevelMenu {
     applyStateClass(element, state);
   }
 }
-
-// Create global instance
-const gameLevelMenuRoot = ensureNotNull(document.getElementById("gameLevelMenu"));
-export const gameLevelMenu = new GameLevelMenu(gameLevelMenuRoot);
