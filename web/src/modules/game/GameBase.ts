@@ -18,7 +18,6 @@ export type Move = {
 /// This is what does the basics of drawing the tiles to the screen.
 ///
 export abstract class GameBase {
-  root: HTMLElement;
   canvas: HTMLCanvasElement;
   ctx: CanvasRenderingContext2D;
   div: HTMLElement;
