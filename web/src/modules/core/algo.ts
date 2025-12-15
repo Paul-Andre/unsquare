@@ -526,12 +526,11 @@ export function get_gaussian_solution_for_level(level:Level): number[] | null {
   return null;
 }
 
-// TODO: for the complexity metrics, such as eric_partition_number and obviousScore, perhaps have a function that computes the minimum for all the solutions contained in the level.
 
-export function eric_partition_number(level: Level, solution: number[]): number {
+export function ericTilesPartition(level: Level, solution: number[]): Set<string> {
   let operations = compute_operations_for_level(level);
   assert(operations.length == solution.length);
-  let m = new Set();
+  let m = new Set<string>();
   //console.log(vector_sum(solution));
   let emptyArea = "0".repeat(vector_sum(solution));
   m.add(emptyArea);
@@ -547,8 +546,96 @@ export function eric_partition_number(level: Level, solution: number[]): number 
     }
     m.add(s);
   }
+  return m;
+}
+
+// TODO: for the complexity metrics, such as eric_partition_number and obviousScore, perhaps have a function that computes the minimum for all the solutions contained in the level.
+
+export function ericTilesNumber(level: Level, solution: number[]): number {
+  let m = ericTilesPartition(level, solution);
   console.log(m);
   return m.size;
+}
+
+// For now this is just some boilerplate, it doesn't actually do what I want it to do yet.
+export function ericBordersPartition(level:Level, solution: number[], squares: Move[] | null = null): Set<string> {
+  squares = squares || compute_moves_for_level(level);
+  let grid = level.tiles;
+  let cnt = solution.length;
+  let tot = 0;
+
+  let width = grid.width;
+  let height = grid.height;
+
+  let m = new Set<string>();
+  // vertical borders
+  for (let x = 0; x <= width; x++) {
+    for (let y = 0; y < height; y++) {
+      let s = "";
+      for (let i = 0; i < solution.length; i++) {
+        if (!solution[i]) continue;
+        let square = squares[i];
+        if ( (y>= square.y && y < square.y+square.size) &&
+            (x == square.x || x == square.x + square.size)) {
+          s+="1";
+        }else {
+          s+="0";
+        }
+      }
+      m.add(s);
+    }
+  }
+
+    // horizontal borders
+    for (let x = 0; x < width; x++) {
+      for (let y = 0; y <= height; y++) {
+        let s = "";
+        for (let i = 0; i < solution.length; i++) {
+          if (!solution[i]) continue;
+          let square = squares[i];
+          if ( (x>= square.x && x < square.x+square.size) &&
+              (y == square.y || y == square.y + square.size)) {
+            s+="1";
+          }else {
+            s+="0";
+          }
+        }
+        m.add(s);
+      }
+    }
+  return m;
+}
+
+export function ericBordersNumber(level:Level, solution: number[], squares: Move[] | null = null): number {
+  let m = ericBordersPartition(level, solution, squares);
+  console.log(m);
+  return m.size;
+}
+
+export function ericUnionNumber(level:Level, solution: number[], squares: Move[] | null = null): number {
+  let m = ericTilesPartition(level, solution)
+  ericBordersPartition(level, solution, squares).forEach(item => m.add(item));
+  console.log(m);
+  return m.size;
+}
+
+export function ericUnionWeightedNumber(
+    level:Level, solution: number[],
+      weightTiles: number = 1, weightBorders: number = 0.5,
+      squares: Move[] | null = null): number {
+  let tiles = ericTilesPartition(level, solution);
+  let borders = ericBordersPartition(level, solution, squares);
+  let tot = 0;
+  tiles.forEach(item => {
+    tot += weightTiles;
+  });
+  borders.forEach(item => {
+    if (tiles.has(item)) {
+      return;
+    }
+    tot += weightBorders;
+  });
+  return tot;
 }
 
 export function move_border_count(grid: BoundedGrid<number>, square: Move): number {
@@ -562,22 +649,6 @@ export function move_border_count(grid: BoundedGrid<number>, square: Move): numb
   }
   //cerr << tot <<"/"<<goal<<endl;
   return tot;
-}
-
-// For now this is just some boilerplate, it doesn't actually do what I want it to do yet.
-export function eric_with_border_count(level:Level, solution: number[], squares: Move[] | null = null): number {
-  squares = squares || compute_moves_for_level(level);
-  let grid = level.tiles;
-  let cnt = solution.length;
-  let tot = 0;
-  for (let i = 0; i < solution.length; i++) {
-    let square = squares[i];
-    let border = move_border_count(grid, square);
-    let sides = square.size * 4;
-    let obv = border / sides;
-    tot += obv;
-  }
-  return tot / cnt;
 }
 
 export function obviousScore(level:Level, solution: number[], squares: Move[] | null = null): number {

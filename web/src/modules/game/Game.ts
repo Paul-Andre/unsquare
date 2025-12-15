@@ -2,7 +2,7 @@
 
 import { GameBase } from './GameBase.ts';
 import { calculateStates, LEVEL_STATES } from '../ui/LevelMenuComponent.ts';
-import { obviousScore, vector_sum, vector_simplify_arithmetic, level_get_arithmetic, vector_sub, operation_index_to_move, level_get_geometry, eric_partition_number, vector_equal } from '../core/algo';
+import { obviousScore, vector_sum, vector_simplify_arithmetic, level_get_arithmetic, vector_sub, operation_index_to_move, level_get_geometry, ericTilesNumber, vector_equal, ericBordersNumber, ericUnionNumber, ericUnionWeightedNumber } from '../core/algo';
 import { save_editor_book } from '../core/bookUtils.ts';
 import { trackLevelEnd } from '../utils/analytics.ts';
 import { getBestNumMoves, setBestNumMoves, getCachedChallengeStatistics, saveChallengeStatistics } from '../core/levelUtils.ts';
@@ -983,13 +983,20 @@ export class Game extends GameBase {
         
         const newSolution = remainingSolution.slice();
         newSolution[i] -= 1;
-        const partition = eric_partition_number(this.level, newSolution);
+        //const partition = ericTilesNumber(this.level, newSolution);
+        //const partition = eric_partition_with_borders_number(this.level, newSolution);
+       // const partition = obviousScore(this.level, newSolution);
+
+        const partition = ericUnionWeightedNumber(this.level, newSolution, 1, 0.2); // + 1*obviousScore(this.level, newSolution);
+        //const partition = ericTilesNumber(this.level, newSolution)*1 + ericBordersNumber(this.level, newSolution) * 0.0;
+        //const partition = ericUnionWeightedNumber(this.level, newSolution);
         //const partition = obviousScore(this.level, newSolution);
+        //const partition = eric_partition_with_borders_number(this.level, newSolution) + eric_partition_number(this.level, newSolution);
         minPartitionForThisMove = Math.min(minPartitionForThisMove, partition);
       }
       
       if (isValidForAnySolution && minPartitionForThisMove < bestPartition) {
-        bestPartition = minPartitionForThisMove;
+        bestPartition = minPartitionForThisMove;  
         bestMoveIndex = i;
       }
     }

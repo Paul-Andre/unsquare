@@ -3,7 +3,7 @@
 import { getCachedLevelIconDataUrl } from './icon.ts';
 import { assert, cast, htmlStringToElement } from '../utils/helpers.ts';
 import { ICON_SIZE } from '../utils/config.ts';
-import { vector_sum, eric_partition_number, obviousScore } from '../core/algo.ts';
+import { vector_sum, ericTilesNumber, obviousScore } from '../core/algo.ts';
 import { appContext } from '../core/AppContext.ts';
 import { Level } from '../core/Level.ts';
 import { save_editor_book, book_reviver } from '../core/bookUtils.ts';
@@ -250,7 +250,7 @@ export class LevelMenuComponent {
           // Calculate minimum eric_partition_number across all solutions
           let minEric = Infinity;
           for (let solution of level.solutions) {
-            let eric = eric_partition_number(level, solution);
+            let eric = ericTilesNumber(level, solution);
             minEric = Math.min(minEric, eric);
           }
           displayValue = minEric === Infinity ? 0 : minEric;
@@ -268,7 +268,7 @@ export class LevelMenuComponent {
           let par = vector_sum(level.solutions[0]);
           let minEric = Infinity;
           for (let solution of level.solutions) {
-            let eric = eric_partition_number(level, solution);
+            let eric = ericTilesNumber(level, solution);
             minEric = Math.min(minEric, eric);
           }
           if (par === 0) {

@@ -3,7 +3,7 @@
 import { GameBase, Move } from './GameBase.ts';
 import { TileAnimationState } from '../core/TileAnimationState.ts';
 import { Grid } from '../core/Grid';
-import { compute_operations_for_level, vector_sum, level_check_solution, get_level_compact_solution, vector_equal, vector_simplify_arithmetic, level_get_arithmetic, eric_partition_number, obviousScore } from '../core/algo';
+import { compute_operations_for_level, vector_sum, level_check_solution, get_level_compact_solution, vector_equal, vector_simplify_arithmetic, level_get_arithmetic, ericTilesNumber, obviousScore, ericBordersNumber, ericUnionNumber } from '../core/algo';
 import { save_editor_book } from '../core/bookUtils.ts';
 import { appContext } from '../core/AppContext.ts';
 import { Level, compute_gaussian_solution } from '../core/Level.ts';
@@ -67,23 +67,31 @@ export class Editor extends GameBase {
   override preMove(move: Move): void {
     assert(this.level !== null);
     assert(this.tiles !== null);
+    let newSolutions: number[][] = [];
+    let newSolutionNumMoves = Infinity;
 
-    if (this.inverseOperations && this.level.solutions) { 
-      // When there was multiple running solutions, we only take the first one.
-      // TODO: instead, we could apply to move to all of them, and take the ones for which it minimizes the number of moves.
-      let runningSolution = this.level.solutions[0].slice();
+    if (!(this.inverseOperations && this.level.solutions)) { 
+return;
+    }
+    for (let solution of this.level.solutions) {
+      let runningSolution = solution.slice();
       let vector = this.level.tileShape.moveToVector(this.tiles, move);
       let opIndex = this.inverseOperations.get(vector.join(""));
       if (opIndex !== undefined) {
         runningSolution[opIndex] += 1;
         vector_simplify_arithmetic(runningSolution, level_get_arithmetic(this.level));
-        if (this.level) {
-          this.level.solutions = [runningSolution]; // Don't need to slice
-          this.level.solutionType = "running";
-          this.level.par = null;
+        let numMoves = vector_sum(runningSolution);
+        if (numMoves < newSolutionNumMoves) {
+          newSolutionNumMoves = numMoves;
+          newSolutions = [runningSolution];
+        } else if (numMoves == newSolutionNumMoves) {
+          newSolutions.push(runningSolution);
         }
       }
     }
+    this.level.solutions = newSolutions;
+    this.level.solutionType = "running";
+    this.level.par = null;
   }
 
   override postMove(): void {
@@ -274,8 +282,26 @@ export class Editor extends GameBase {
       // Calculate minimum eric partition number across all solutions
       let minEric = Infinity;
       for (let solution of this.level.solutions) {
-        let eric = eric_partition_number(this.level, solution);
+        let eric = ericTilesNumber(this.level, solution);
         minEric = Math.min(minEric, eric);
+      }
+
+      let minEricWithBorders = Infinity;
+      for (let solution of this.level.solutions) {
+        let ericWithBorders = ericBordersNumber(this.level, solution);
+        minEricWithBorders = Math.min(minEricWithBorders, ericWithBorders);
+      }
+
+      let minEricUnion = Infinity;
+      for (let solution of this.level.solutions) {
+        let ericUnion = ericUnionNumber(this.level, solution);
+        minEricUnion = Math.min(minEricUnion, ericUnion);
+      }
+
+      let minEricSum = Infinity;
+      for (let solution of this.level.solutions) {
+        let ericSum = ericTilesNumber(this.level, solution) + ericBordersNumber(this.level, solution);
+        minEricSum = Math.min(minEricSum, ericSum);
       }
 
       let minObv = Infinity;
@@ -288,7 +314,7 @@ export class Editor extends GameBase {
       
       let solutionsText = `(${numSolutions})`;
       cast(this.div.getElementsByClassName("editorBest")[0], HTMLElement).innerText =
-        type +" "+sum + solutionsText + " " + minEric + " " + minObv;
+        type +" "+sum + solutionsText + " " + minEric + " " + minEricWithBorders + " " + minEricUnion + " " + minEricSum + " " + minObv;
     } else {
       let type = this.level.solutionType || "unknown";
       cast(this.div.getElementsByClassName("editorBest")[0], HTMLElement).innerText = "? " + type;
