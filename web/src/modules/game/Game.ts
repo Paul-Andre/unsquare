@@ -35,8 +35,13 @@ export class Game extends GameBase {
     suggestRestart: boolean;
   } | null;
 
-  viewHistogramChangeHandler: ((e: Event) => void) | null = null;
-  histogramChangeHandler: any;
+  // These functions are stored to be able to unregister event listeners.
+  // They are used for the same dropdown of two different instances of what should
+  // be pretty much the same "component" in the UI: the histogram that appears when you click
+  // the little icon, and the one that appears when you finish a challenge level.
+  // TODO: Refactor this by wrapping it in a class or component.
+  viewHistogramSelectTypeListener: ((e: Event) => void) | null = null;
+  finishedHistogramSelectTypeListener: ((e: Event) => void) | null = null;
 
   constructor(root: HTMLElement, canvas: HTMLCanvasElement) {
     super(root, canvas);
@@ -303,15 +308,15 @@ export class Game extends GameBase {
     // Set up dropdown change handler
     const select = element.querySelector("#viewHistogramTypeSelect");
     if (select instanceof HTMLSelectElement) {
-      if (this.viewHistogramChangeHandler) {
-        select.removeEventListener("change", this.viewHistogramChangeHandler);
+      if (this.viewHistogramSelectTypeListener) {
+        select.removeEventListener("change", this.viewHistogramSelectTypeListener);
       }
       
-      this.viewHistogramChangeHandler = (e) => {
+      this.viewHistogramSelectTypeListener = (e) => {
         this.renderViewHistogram();
       };
       
-      select.addEventListener("change", this.viewHistogramChangeHandler);
+      select.addEventListener("change", this.viewHistogramSelectTypeListener);
     }
 
     // Render the histogram with whatever data is available (or show loading)
@@ -460,15 +465,15 @@ export class Game extends GameBase {
     const select = element.querySelector("#histogramTypeSelect");
     assert(select instanceof HTMLSelectElement);
 
-    if (this.histogramChangeHandler) {
-      select.removeEventListener("change", this.histogramChangeHandler);
+    if (this.finishedHistogramSelectTypeListener) {
+      select.removeEventListener("change", this.finishedHistogramSelectTypeListener);
     }
     
-    this.histogramChangeHandler = (e: Event) => {
+    this.finishedHistogramSelectTypeListener = (e: Event) => {
       this.renderHistogram();
     };
     
-    select.addEventListener("change", this.histogramChangeHandler);
+    select.addEventListener("change", this.finishedHistogramSelectTypeListener);
 
     this.renderHistogram();
 
@@ -987,7 +992,7 @@ export class Game extends GameBase {
         //const partition = eric_partition_with_borders_number(this.level, newSolution);
        // const partition = obviousScore(this.level, newSolution);
 
-        const partition = ericUnionWeightedNumber(this.level, newSolution, 1, 0.2); // + 1*obviousScore(this.level, newSolution);
+        const partition = ericUnionWeightedNumber(this.level, newSolution, 1, 0.2) + 1*obviousScore(this.level, newSolution);
         //const partition = ericTilesNumber(this.level, newSolution)*1 + ericBordersNumber(this.level, newSolution) * 0.0;
         //const partition = ericUnionWeightedNumber(this.level, newSolution);
         //const partition = obviousScore(this.level, newSolution);
