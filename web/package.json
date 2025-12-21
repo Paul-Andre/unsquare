@@ -9,6 +9,7 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.89.0",
     "sortablejs": "^1.15.0"
   },
   "devDependencies": {

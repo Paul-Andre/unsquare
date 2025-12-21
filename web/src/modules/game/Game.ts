@@ -9,7 +9,7 @@ import { getBestNumMoves, setBestNumMoves, getCachedChallengeStatistics, saveCha
 import * as config from '../utils/config.ts';
 import { renderHistogram } from '../ui/ChallengeHistogram.ts';
 import { drawIcon, getCachedLevelIconDataUrl } from '../ui/icon.ts';
-import { SUPABASE_URL, SUPABASE_ANON_KEY } from '../utils/api.ts';
+import { supabase } from '../utils/api.ts';
 import { assert, bezierBlend, cast, ensureNotNull, interpolate } from '../utils/helpers.ts';
 import { appContext } from '../core/AppContext.ts';
 import { Level } from '../core/Level.ts';
@@ -190,45 +190,31 @@ export class Game extends GameBase {
     console.log("solution to be posted", JSON.stringify(solution));
     
     (async () => {
-      const response = await fetch(`${SUPABASE_URL}/functions/v1/validate-and-save-solution`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        level_id: level.id,
-        solution: solution,
-        player_id: player_id,
-        level_full_identifier: level.getFullIdentifier(),
-      })
-    });
+      const { data, error } = await supabase.functions.invoke('validate-and-save-solution', {
+        body: {
+          level_id: level.id,
+          solution: solution,
+          player_id: player_id,
+          level_full_identifier: level.getFullIdentifier(),
+        }
+      });
     
-    let data = null;
+      if (error) {
+        console.error("Error calling validate-and-save-solution:", error);
+        callback();
+        return;
+      }
     
-    try {
-      if (response.ok) {
-        data = await response.json();
-      } else {
-        console.error(`HTTP error! status: ${response.status}`, await response.text());
-      }
-    } catch (e) {
-      if (response.ok) {
-        console.error("Failed to parse response as JSON", e);
-      } else {
-        console.error(`HTTP error! status: ${response.status}`);
-      }
-    }
-    console.log("data", data);
+      console.log("data", data);
 
-    this.allHistogramData = data.allHistogramData;
-    // Cache challenge statistics if available
-    if (data.player_summary && level.mode === "challenge") {
-      saveChallengeStatistics(level.id, data.player_summary);
-    }
+      this.allHistogramData = data?.allHistogramData;
+      // Cache challenge statistics if available
+      if (data?.player_summary && level.mode === "challenge") {
+        saveChallengeStatistics(level.id, data.player_summary);
+      }
 
-    callback();
-  })();
+      callback();
+    })();
 
   }
 
@@ -244,36 +230,25 @@ export class Game extends GameBase {
     }
 
     try {
-      const response = await fetch(`${SUPABASE_URL}/rest/v1/rpc/get_player_level_histograms_and_summary`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-          'Content-Type': 'application/json',
-          'apikey': SUPABASE_ANON_KEY
-        },
-        body: JSON.stringify({
-          p_player_id: player_id,
-          p_level_id: level.id
-        })
+      const { data, error } = await supabase.rpc('get_player_level_histograms_and_summary', {
+        p_player_id: player_id,
+        p_level_id: level.id
       });
 
-      console.log(response);
-
-      if (!response.ok) {
-        console.error(`HTTP error! status: ${response.status}`, await response.text());
+      if (error) {
+        console.error("Error fetching histogram data:", error);
         return null;
       }
 
-      const data = await response.json();
       console.log(data);
       
       // Cache challenge statistics if available
-      if (data.player_summary && level.mode === "challenge") {
+      if (data?.player_summary && level.mode === "challenge") {
         saveChallengeStatistics(level.id, data.player_summary);
       }
 
       // Return the histogram data (same structure as before)
-      return data.histogram;
+      return data?.histogram;
     } catch (e) {
       console.error("Failed to fetch histogram data", e);
       return null;

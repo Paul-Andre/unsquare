@@ -6,7 +6,7 @@ import { book_reviver } from '../core/bookUtils.ts';
 import { Level } from '../core/Level.ts';
 import { getCachedLevelIconDataUrl } from './icon.ts';
 import { cast, ensureNotNull } from '../utils/helpers.ts';
-import { SUPABASE_URL, SUPABASE_ANON_KEY } from '../utils/api.ts';
+import { supabase } from '../utils/api.ts';
 import { getCachedChallengeStatistics, saveChallengeStatistics } from '../core/levelUtils.ts';
 import mainBookData from '../../data/2025_nov_11_reordered_solved_fixed_all_solutions.json';
 import dailyLevelsData from '../../data/daily_submitting_07_dec_exhaustive.json'
@@ -125,27 +125,17 @@ export class GameLevelMenu {
     }
 
     try {
-      const response = await fetch(`${SUPABASE_URL}/rest/v1/rpc/get_player_level_summary`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-          'Content-Type': 'application/json',
-          'apikey': SUPABASE_ANON_KEY
-        },
-        body: JSON.stringify({
-          p_player_id: player_id,
-          p_level_id: this.weeklyChallengeLevel.id
-        })
+      const { data, error } = await supabase.rpc('get_player_level_summary', {
+        p_player_id: player_id,
+        p_level_id: this.weeklyChallengeLevel.id
       });
 
-      console.log("response", response);
-
-      if (!response.ok) {
-        console.error(`HTTP error! status: ${response.status}`);
+      if (error) {
+        console.error("Error fetching challenge statistics:", error);
         return null;
       }
 
-      return await response.json();
+      return data;
     } catch (e) {
       console.error("Failed to fetch challenge statistics", e);
       return null;
