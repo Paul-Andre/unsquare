@@ -12,6 +12,7 @@ import mainBookData from '../../data/2025_nov_11_reordered_solved_fixed_all_solu
 import dailyLevelsData from '../../data/daily_submitting_07_dec_exhaustive.json'
 import { DAILY_UNLOCK_HOUR, DAILY_LEVELS_START_DATE, ICON_SIZE } from '../utils/config.ts';
 import { ChallengeStatistics } from '../core/levelUtils.ts';
+import { Book } from '../core/Book.ts';
 
 
 
@@ -19,6 +20,7 @@ export class GameLevelMenu {
   root: HTMLElement;
   bookUrl: string;
   dailyLevels: Level[];
+  weeklyChallengeBook: Book;
   weeklyChallengeLevel: Level;
   levelMenu: LevelMenuComponent;
   
@@ -29,7 +31,8 @@ export class GameLevelMenu {
     // Load daily levels
     this.dailyLevels = JSON.parse(JSON.stringify(dailyLevelsData), book_reviver).levels || [];
 
-    const challengeLevelJson =
+    const challengeBookJson = {
+      levels: [
     // {
     //   "colorScheme": "BW",
     //   "tileShape": "square",
@@ -50,16 +53,16 @@ export class GameLevelMenu {
     //   "index": 0,
     //   "__type__":"Level"
     // };
-    // {
-    //   "colorScheme":"BW",
-    //   "tileShape":"square",
-    //   "tiles":[[1,1,1,1,2,2,2,1,1,1,1],[1,1,1,1,1,2,1,1,1,1,1],[1,1,2,2,2,2,2,2,2,1,1],[1,1,1,2,1,1,1,2,1,1,1],[1,1,1,2,1,1,1,2,1,1,1],[1,2,2,2,2,2,2,2,2,2,1],[1,1,2,1,1,2,1,1,2,1,1],[1,1,2,1,1,2,1,1,2,1,1],[1,2,2,2,2,2,2,2,2,2,1],[1,2,1,1,1,2,1,1,1,2,1],[1,2,1,1,1,2,1,1,1,2,1]],
-    //   "mode":"challenge",
-    //   "id":"level_9159232684496334",
-    //   "__type__":"Level",
-    //   "title": "Weekly #3",
-    //   "index": 0
-    // };
+    {
+      "colorScheme":"BW",
+      "tileShape":"square",
+      "tiles":[[1,1,1,1,2,2,2,1,1,1,1],[1,1,1,1,1,2,1,1,1,1,1],[1,1,2,2,2,2,2,2,2,1,1],[1,1,1,2,1,1,1,2,1,1,1],[1,1,1,2,1,1,1,2,1,1,1],[1,2,2,2,2,2,2,2,2,2,1],[1,1,2,1,1,2,1,1,2,1,1],[1,1,2,1,1,2,1,1,2,1,1],[1,2,2,2,2,2,2,2,2,2,1],[1,2,1,1,1,2,1,1,1,2,1],[1,2,1,1,1,2,1,1,1,2,1]],
+      "mode":"challenge",
+      "id":"level_9159232684496334",
+      "__type__":"Level",
+      "title": "Weekly #3",
+      "index": 0
+    },
     {
       "colorScheme":"BW",
       "tileShape":"square",
@@ -68,12 +71,16 @@ export class GameLevelMenu {
       "id":"level_1184501746690094",
       "__type__":"Level",
       "title": "Weekly #4",
-      "index": 0
-    };
+      "index": 1
+    }
+  ],
+    source: "challenge",
+    id: "challenge",
+    title: "Weekly Challenge",
+  }
 
-
-
-    this.weeklyChallengeLevel = Level.fromJsonObject(challengeLevelJson);
+    this.weeklyChallengeBook = JSON.parse(JSON.stringify(challengeBookJson), book_reviver);
+    this.weeklyChallengeLevel = this.weeklyChallengeBook.levels.at(-1)!;
 
     this.levelMenu = new LevelMenuComponent(this.root, false);
 
@@ -215,12 +222,7 @@ export class GameLevelMenu {
     // XXX: using any to access property on the element
     (element as any).level = this.weeklyChallengeLevel;
     element.onclick = () => {
-      appContext.playLevel(this.weeklyChallengeLevel, {
-        levels: [this.weeklyChallengeLevel],
-        source: "challenge",
-        id: "challenge",
-        title: "Weekly Challenge",
-      });
+      appContext.playLevel(this.weeklyChallengeLevel, this.weeklyChallengeBook);
     };
 
     this.updateChallengeStatistics();
