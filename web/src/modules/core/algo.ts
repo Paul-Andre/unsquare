@@ -1,5 +1,5 @@
 import {Level} from "../core/Level"
-import { BoundedGrid } from "./Grid";
+import { BoundedGrid, Grid } from "./Grid";
 import { assert } from '../utils/helpers.ts';
 
 
@@ -654,7 +654,15 @@ export function move_border_count(grid: BoundedGrid<number>, square: Move): numb
 export function obviousScore(level:Level, solution: number[], squares: Move[] | null = null): number {
   //debugger;
   squares = squares || compute_moves_for_level(level);
-  let grid = level.tiles;
+  
+  // Calculate the grid from the solution instead of using level.tiles
+  let operations = compute_operations_for_level(level);
+  let tilesVector = vector_multiply_matrix(solution, operations, level_get_arithmetic(level));
+  tilesVector = tilesVector.map(a => a + 1);
+
+  let grid = Grid.usingFlatArray(tilesVector, level.tiles.width, level.tiles.height);
+  
+  
   let cnt = solution.length;
   let tot = 0;
   console.log("Calculating obviousScore");
@@ -674,8 +682,31 @@ export function obviousScore(level:Level, solution: number[], squares: Move[] | 
     tot += diff * diff;
     //tot += diff;
   }
+  // Iterate over every 1x1 tile
+  if (false) {
+    for (let x = 0; x < grid.width; x++) {
+      for (let y = 0; y < grid.height; y++) {
+        let square = {x: x, y: y, size: 1};
+        let border = move_border_count(grid, square);
+        let sides = 4;
+
+        let obv = border / sides;
+        let diff = Math.abs(obv - 0);
+        tot += diff * diff;
+        //tot += diff;
+      }
+    }
+  }
+
+
+
   let ret = tot / cnt;
   console.log(ret);
   return ret;
 }
+
+// export function boundingBoxScore(level:Level, solution: number[], squares: Move[] | null = null): number {
+//   return 0;
+// }
+
 

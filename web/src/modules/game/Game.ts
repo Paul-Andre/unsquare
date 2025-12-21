@@ -991,8 +991,12 @@ export class Game extends GameBase {
         //const partition = ericTilesNumber(this.level, newSolution);
         //const partition = eric_partition_with_borders_number(this.level, newSolution);
        // const partition = obviousScore(this.level, newSolution);
+        //const partition = ericUnionWeightedNumber(this.level, newSolution, 1, 0);
+        //const partition = ericUnionWeightedNumber(this.level, newSolution, 1, 1);
 
-        const partition = ericUnionWeightedNumber(this.level, newSolution, 1, 0.2) + 1*obviousScore(this.level, newSolution);
+        const partition = obviousScore(this.level, newSolution);
+        
+        //const partition = ericUnionWeightedNumber(this.level, newSolution, 1, 0.0); // + 1*obviousScore(this.level, newSolution);
         //const partition = ericTilesNumber(this.level, newSolution)*1 + ericBordersNumber(this.level, newSolution) * 0.0;
         //const partition = ericUnionWeightedNumber(this.level, newSolution);
         //const partition = obviousScore(this.level, newSolution);
