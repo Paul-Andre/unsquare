@@ -302,11 +302,10 @@ export class LevelMenuComponent {
       
       // Only apply colors when using par mode
       if (this.iconDisplayType === "par" && displayValue != null) {
-        let colors = ["black", "black", "black", "magenta", "red", "orange", "cyan", "green", "purple", "blue"];
-        // Use modulo for color selection to handle larger values
-        let colorIndex = displayValue % colors.length;
-        par_display.style.color = colors[colorIndex] || "purple";
-        element.style.borderColor = colors[colorIndex] || "purple";
+        let colors = ["", "black", "black", "magenta", "red", "orange", "cyan", "green", "purple", "blue"];
+        let colorIndex = displayValue;
+        par_display.style.color = colors[colorIndex] || "";
+        element.style.borderColor = colors[colorIndex] || "";
       } else {
         // Reset to default colors for other modes
         par_display.style.color = "";
