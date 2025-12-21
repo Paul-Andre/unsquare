@@ -651,16 +651,19 @@ export function move_border_count(grid: BoundedGrid<number>, square: Move): numb
   return tot;
 }
 
+export function solution_to_grid(level: Level, solution: number[]): BoundedGrid<number> {
+  let operations = compute_operations_for_level(level);
+  let tilesVector = vector_multiply_matrix(solution, operations, level_get_arithmetic(level));
+  tilesVector = tilesVector.map(a => a + 1);
+  return Grid.usingFlatArray(tilesVector, level.tiles.width, level.tiles.height);
+}
+
 export function obviousScore(level:Level, solution: number[], squares: Move[] | null = null): number {
   //debugger;
   squares = squares || compute_moves_for_level(level);
   
   // Calculate the grid from the solution instead of using level.tiles
-  let operations = compute_operations_for_level(level);
-  let tilesVector = vector_multiply_matrix(solution, operations, level_get_arithmetic(level));
-  tilesVector = tilesVector.map(a => a + 1);
-
-  let grid = Grid.usingFlatArray(tilesVector, level.tiles.width, level.tiles.height);
+  let grid = solution_to_grid(level, solution);
   
   
   let cnt = solution.length;
@@ -705,8 +708,44 @@ export function obviousScore(level:Level, solution: number[], squares: Move[] | 
   return ret;
 }
 
-// export function boundingBoxScore(level:Level, solution: number[], squares: Move[] | null = null): number {
-//   return 0;
-// }
+export function getBlackBoundingBox(grid: BoundedGrid<number>): {minX: number, minY: number, maxX: number, maxY: number} {
+  let minX = grid.width;
+  let minY = grid.height;
+  let maxX = 0;
+  let maxY = 0;
+  for (let x = 0; x < grid.width; x++) {
+    for (let y = 0; y < grid.height; y++) {
+      if (grid.get(x, y) != 0) {
+        minX = Math.min(minX, x);
+        minY = Math.min(minY, y);
+        maxX = Math.max(maxX, x);
+        maxY = Math.max(maxY, y);
+      }
+    }
+  }
+  return {minX: minX, minY: minY, maxX: maxX, maxY: maxY};
+}
+
+export function boundingBoxAreaScore(level:Level, solution: number[], squares: Move[] | null = null): number {
+  let grid = solution_to_grid(level, solution);
+  let {minX, minY, maxX, maxY} = getBlackBoundingBox(grid);
+  let width = maxX - minX + 1;
+  let height = maxY - minY + 1;
+  let area = width * height;
+  let score = area / (grid.width * grid.height);
+  return score;
+}
+
+export function fractionBlackScore(level:Level, solution: number[], squares: Move[] | null = null): number {
+  let grid = solution_to_grid(level, solution);
+  let tot = 0;
+  grid.forEach(cell => {
+    if (cell == 2) {
+      tot++;
+    }
+  });
+  let score = tot / (grid.width * grid.height);
+  return score;
+}
 
 

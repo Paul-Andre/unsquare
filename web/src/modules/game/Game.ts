@@ -2,7 +2,7 @@
 
 import { GameBase } from './GameBase.ts';
 import { calculateStates, LEVEL_STATES } from '../ui/LevelMenuComponent.ts';
-import { obviousScore, vector_sum, vector_simplify_arithmetic, level_get_arithmetic, vector_sub, operation_index_to_move, level_get_geometry, ericTilesNumber, vector_equal, ericBordersNumber, ericUnionNumber, ericUnionWeightedNumber } from '../core/algo';
+import { obviousScore, vector_sum, vector_simplify_arithmetic, level_get_arithmetic, vector_sub, operation_index_to_move, level_get_geometry, ericTilesNumber, vector_equal, ericBordersNumber, ericUnionNumber, ericUnionWeightedNumber, boundingBoxAreaScore, fractionBlackScore } from '../core/algo';
 import { save_editor_book } from '../core/bookUtils.ts';
 import { trackLevelEnd } from '../utils/analytics.ts';
 import { getBestNumMoves, setBestNumMoves, getCachedChallengeStatistics, saveChallengeStatistics } from '../core/levelUtils.ts';
@@ -995,7 +995,9 @@ export class Game extends GameBase {
         //const partition = ericUnionWeightedNumber(this.level, newSolution, 1, 1);
 
         const partition = obviousScore(this.level, newSolution);
-        
+        //const partition = boundingBoxAreaScore(this.level, newSolution);
+        //const partition = fractionBlackScore(this.level, newSolution);
+
         //const partition = ericUnionWeightedNumber(this.level, newSolution, 1, 0.0); // + 1*obviousScore(this.level, newSolution);
         //const partition = ericTilesNumber(this.level, newSolution)*1 + ericBordersNumber(this.level, newSolution) * 0.0;
         //const partition = ericUnionWeightedNumber(this.level, newSolution);
