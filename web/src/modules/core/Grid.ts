@@ -145,6 +145,14 @@ export abstract class BoundedGrid<T = any> extends Grid<T> {
     // return Grid.usingFlatArray(this.toFlatArray(), this.width, this.height);
     // Anyway I end up overriding this in subclasses.
   }
+
+  sum(this: BoundedGrid<number>): number {
+    let tot = 0;
+    this.forEach((v) => {
+      tot += v;
+    });
+    return tot;
+  }
 }
 
 export class GridWindow<T = any> extends BoundedGrid<T> {

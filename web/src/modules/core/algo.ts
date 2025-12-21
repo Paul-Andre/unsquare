@@ -748,4 +748,15 @@ export function fractionBlackScore(level:Level, solution: number[], squares: Mov
   return score;
 }
 
-
+export function involvedScore(level:Level, solution: number[], squares: Move[] | null = null): number {
+  let grid = Grid.fill(level.tiles.width, level.tiles.height, 0);
+  squares = squares || compute_moves_for_level(level);
+  for (let i = 0; i < solution.length; i++) {
+    if (solution[i]) {
+      let square = squares[i];
+      grid.set(square.x, square.y, 1);
+    }
+  }
+  let score = grid.sum() / (grid.width * grid.height);
+  return score;
+}
