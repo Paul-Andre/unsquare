@@ -126,11 +126,39 @@ return;
   }
 
   submitSolution() {
-    let sol_string = window.prompt("Solution in 01010101010 format");
+    let sol_string = window.prompt("Solution in [0,1,1,0,0], 01100, or \"01100\" format");
     if (!sol_string) {
       return;
     }
-    let sol = Array.from(sol_string).map(x => Number(x));
+    
+    // Try to parse the solution in multiple formats
+    let sol: number[] | null = null;
+    
+    // First, try parsing as JSON (handles [0,1,1,0,0] and "[0,1,1,0,0]")
+    try {
+      const parsed = JSON.parse(sol_string);
+      if (Array.isArray(parsed) && parsed.every(x => typeof x === 'number')) {
+        sol = parsed;
+      }
+    } catch (e) {
+      // Not valid JSON, continue to try other formats
+    }
+    
+    // If JSON parsing didn't work, treat as string of digits
+    if (sol === null) {
+      // Remove quotes if present
+      const cleaned = sol_string.trim().replace(/^["']|["']$/g, '');
+      // Check if all characters are digits
+      if (/^\d+$/.test(cleaned)) {
+        sol = Array.from(cleaned).map(x => Number(x));
+      }
+    }
+    
+    if (sol === null) {
+      alert("Invalid solution format. Use [0,1,1,0,0], 01100, or \"01100\"");
+      return;
+    }
+    
     assert(this.level !== null);
     this.syncTilesToLevel();
     let check = level_check_solution(this.level, sol);
@@ -142,6 +170,9 @@ return;
       this.level.solutionType = "submitted";
       this.level.par = null;
 
+      // Update UI to reflect the new solution
+      this.updateGui();
+      this.updatePreviewIcon();
     } else {
       alert("Solution not satisfactory");
     }
