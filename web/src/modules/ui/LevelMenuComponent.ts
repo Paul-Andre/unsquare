@@ -187,7 +187,7 @@ export class LevelMenuComponent {
   selectingIcon: boolean;
   togglingHidden: boolean;
   defaultSize: number;
-  iconDisplayType: "par" | "eric" | "obv" | "eric/par" | "obv/par" = "par";
+  iconDisplayType: "par" | "eric" | "obv" | "eric/par" | "obv/par" | "none" = "none";
   book: Book | null = null;
 
   constructor(root: HTMLElement, isEditor: boolean) {
@@ -242,8 +242,10 @@ export class LevelMenuComponent {
       let par_display = element.querySelector(".level_icon_par");
       assert(par_display instanceof HTMLElement);
       
-      let displayValue = 0;
+      let displayValue = null;
       if (level.solutions && level.solutions.length > 0) {
+
+        
         if (this.iconDisplayType === "par") {
           displayValue = vector_sum(level.solutions[0]);
         } else if (this.iconDisplayType === "eric") {
@@ -292,10 +294,14 @@ export class LevelMenuComponent {
         }
       }
       
-      par_display.innerText = String(displayValue);
+      if (displayValue !== null) {
+        par_display.innerText = String(displayValue);
+      } else {
+        par_display.innerText = "";
+      }
       
       // Only apply colors when using par mode
-      if (this.iconDisplayType === "par") {
+      if (this.iconDisplayType === "par" && displayValue != null) {
         let colors = ["black", "black", "black", "magenta", "red", "orange", "cyan", "green", "purple", "blue"];
         // Use modulo for color selection to handle larger values
         let colorIndex = displayValue % colors.length;
@@ -650,8 +656,8 @@ export class LevelMenuComponent {
   }
 
   setIconDisplayType(type: string): void {
-    if (this.isEditor && (type === "par" || type === "eric" || type === "obv" || type === "eric/par" || type === "obv/par")) {
-      this.iconDisplayType = type as "par" | "eric" | "obv" | "eric/par" | "obv/par";
+    if (this.isEditor && (type === "par" || type === "eric" || type === "obv" || type === "eric/par" || type === "obv/par" || type === "none")) {
+      this.iconDisplayType = type as "par" | "eric" | "obv" | "eric/par" | "obv/par" | "none";
       this.displayIcons();
     }
   }

@@ -9,6 +9,8 @@ import { appContext } from '../core/AppContext.ts';
 import { Level, compute_gaussian_solution } from '../core/Level.ts';
 import { assert, cast, ensureNotNull, generate_id } from '../utils/helpers.ts';
 import { Book } from 'modules/core/Book.ts';
+import { createLevelIconDataUrl } from '../ui/icon.ts';
+import { ICON_SIZE } from '../utils/config.ts';
 
 
 export class Editor extends GameBase {
@@ -31,6 +33,7 @@ export class Editor extends GameBase {
     super.openLevel(level.clone(), book);
     this.updateDrawModeButton();
     this.updateModeDropdown();
+    this.updatePreviewIcon();
   }
   //override specificOpenLevel(level: Level, book: Book): void {
 
@@ -95,6 +98,7 @@ return;
   }
 
   override postMove(): void {
+    this.updatePreviewIcon();
   }
 
   syncTilesToLevel(): void {
@@ -163,6 +167,7 @@ return;
       for (let i = 0; i < this.operations.length; i++) {
         this.inverseOperations.set(this.operations[i].join(""), i);
       }
+      this.updatePreviewIcon();
     } else {
       alert("Could not parse string");
     }
@@ -186,13 +191,14 @@ return;
     let m = this.operations.length;
 
     assert(this.level !== null);
-    this.level.solutions = [new Array(m).fill(0)];
-    this.level.solutionType = "running";
-    this.level.par = 0;
-    this.updateGui();
-    this.draw();
-    // Start animation loop if animations were triggered
-    this.startAnimationLoopIfNeeded();
+      this.level.solutions = [new Array(m).fill(0)];
+      this.level.solutionType = "running";
+      this.level.par = 0;
+      this.updateGui();
+      this.draw();
+      // Start animation loop if animations were triggered
+      this.startAnimationLoopIfNeeded();
+      this.updatePreviewIcon();
   }
 
   play() {
@@ -319,6 +325,8 @@ return;
       let type = this.level.solutionType || "unknown";
       cast(this.div.getElementsByClassName("editorBest")[0], HTMLElement).innerText = "? " + type;
     }
+
+    this.updatePreviewIcon();
   }
 
   // TODO: hardcode the url?
@@ -355,6 +363,23 @@ return;
     const select = this.div.querySelector("#levelModeSelect");
     if (select instanceof HTMLSelectElement) {
       select.value = this.level.mode || "normal";
+    }
+  }
+
+  updatePreviewIcon(): void {
+    if (!this.level) {
+      return;
+    }
+
+    // Sync tiles to level before generating icon
+    this.syncTilesToLevel();
+
+    const previewIcon = this.div.querySelector("#editorPreviewIcon");
+    if (previewIcon instanceof HTMLImageElement) {
+      const dataURL = createLevelIconDataUrl(this.level, ICON_SIZE);
+      previewIcon.src = dataURL;
+      previewIcon.style.width = `${ICON_SIZE}px`;
+      previewIcon.style.height = `${ICON_SIZE}px`;
     }
   }
 
@@ -437,6 +462,7 @@ return;
         // Update solution and redraw
         this.updateSolutionAfterDraw();
         this.draw();
+        this.updatePreviewIcon();
       }
       return;
     }
@@ -466,6 +492,7 @@ return;
           // Update solution and redraw
           this.updateSolutionAfterDraw();
           this.draw();
+          this.updatePreviewIcon();
         }
       }
       return;
