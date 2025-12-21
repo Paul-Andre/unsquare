@@ -24,13 +24,19 @@ export function book_reviver(key: string, value: any) {
       return Level.fromJsonObject(value);
     }
     if (value.levels) {
-      // Don't set indices here - let reindexLevels() handle it to account for hidden levels
-      // Indices will be set when the book is opened in the editor or when reindexLevels() is called
-      // TODO: The above message was written by AI. We probably SHOULD set indices here,
-      // possibly even have two different types of indices.
+      reindexLevels(value.levels);
+      return value;
     }
   }
   return value;
+}
+
+export function reindexLevels(levels: Level[]): void {
+  let index = 0;
+  for (let i = 0; i < levels.length; i++) {
+    let level = levels[i];
+    level.index = index++;
+  }
 }
 
 export function create_empty_book(): Book {

@@ -6,7 +6,7 @@ import { ICON_SIZE } from '../utils/config.ts';
 import { vector_sum, ericTilesNumber, obviousScore } from '../core/algo.ts';
 import { appContext } from '../core/AppContext.ts';
 import { Level } from '../core/Level.ts';
-import { save_editor_book, book_reviver } from '../core/bookUtils.ts';
+import { save_editor_book, book_reviver, reindexLevels } from '../core/bookUtils.ts';
 import { book_replacer } from '../core/bookUtils.ts';
 import { clearBestNumMoves } from '../core/levelUtils.ts';
 import { Book } from 'modules/core/Book.ts';
@@ -378,14 +378,8 @@ export class LevelMenuComponent {
   }
 
   reindexLevels() {
-    let index = 0;
     assert(this.book !== null);
-    for (let i = 0; i < this.book.levels.length; i++) {
-      let level = this.book.levels[i];
-      //if (!level.hidden) {
-        level.index = index++;
-     // }
-    }
+    reindexLevels(this.book.levels);
   }
 
   updateLevelCounter() {
