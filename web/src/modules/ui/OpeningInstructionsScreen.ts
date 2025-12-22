@@ -3,7 +3,7 @@
 import { assert, cast, ensureNotNull } from '../utils/helpers.ts';
 import { appContext } from '../core/AppContext.ts';
 
-export class OpeningInstructions {
+export class OpeningInstructionsScreen {
   root: HTMLElement;
   slidesContainer: HTMLElement;
   prevBtn: HTMLButtonElement;

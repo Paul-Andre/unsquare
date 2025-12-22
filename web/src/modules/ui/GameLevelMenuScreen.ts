@@ -17,7 +17,7 @@ import { Book } from '../core/Book.ts';
 
 
 
-export class GameLevelMenu {
+export class GameLevelMenuScreen {
   root: HTMLElement;
   bookUrl: string;
   dailyLevels: Level[];

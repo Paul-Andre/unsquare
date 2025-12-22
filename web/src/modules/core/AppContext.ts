@@ -4,12 +4,12 @@ import { cast, ensureNotNull } from '../utils/helpers.ts';
 import { Game } from '../game/Game.ts';
 import { Editor } from '../game/Editor.ts';
 import { ScreenManager } from '../ui/ScreenManager.ts';
-import { BookMenu } from '../ui/BookMenu.ts';
-import { GameLevelMenu } from '../ui/GameLevelMenu.ts';
-import { OpeningInstructions } from '../ui/OpeningInstructions.ts';
+import { BookMenuScreen } from '../ui/BookMenuScreen.ts';
+import { GameLevelMenuScreen } from '../ui/GameLevelMenuScreen.ts';
+import { OpeningInstructionsScreen } from '../ui/OpeningInstructionsScreen.ts';
 import { Level } from '../core/Level.ts';
 import { Book } from '../core/Book.ts';
-import { EditorLevelMenu } from '../ui/EditorLevelMenu.ts';
+import { EditorLevelMenuScreen } from '../ui/EditorLevelMenuScreen.ts';
 import { AuthModal } from '../ui/AuthModal.ts';
 
 export class AppContext {
@@ -17,10 +17,10 @@ export class AppContext {
   game: Game;
   editor: Editor;
   screenManager: ScreenManager;
-  bookMenu: BookMenu;
-  gameLevelMenu: GameLevelMenu;
-  editorLevelMenu: EditorLevelMenu;
-  openingInstructions: OpeningInstructions;
+  bookMenu: BookMenuScreen;
+  gameLevelMenu: GameLevelMenuScreen;
+  editorLevelMenu: EditorLevelMenuScreen;
+  openingInstructions: OpeningInstructionsScreen;
   authModal: AuthModal;
 
   constructor() {    
@@ -36,16 +36,16 @@ export class AppContext {
     this.editor = new Editor(editorRoot, editorCanvas);
 
     const bookMenuRoot = ensureNotNull(document.getElementById("bookMenu"));
-    this.bookMenu = new BookMenu(bookMenuRoot);
+    this.bookMenu = new BookMenuScreen(bookMenuRoot);
 
     const gameLevelMenuRoot = ensureNotNull(document.getElementById("gameLevelMenu"));
-    this.gameLevelMenu = new GameLevelMenu(gameLevelMenuRoot);
+    this.gameLevelMenu = new GameLevelMenuScreen(gameLevelMenuRoot);
 
     const openingInstructionsRoot = ensureNotNull(document.getElementById("opening_instructions"));
-    this.openingInstructions = new OpeningInstructions(openingInstructionsRoot);
+    this.openingInstructions = new OpeningInstructionsScreen(openingInstructionsRoot);
 
     const editorLevelMenuRoot = ensureNotNull(document.getElementById("editorLevelMenu"));
-    this.editorLevelMenu = new EditorLevelMenu(editorLevelMenuRoot);
+    this.editorLevelMenu = new EditorLevelMenuScreen(editorLevelMenuRoot);
 
     const authModalRoot = ensureNotNull(document.getElementById("authModal"));
     this.authModal = new AuthModal(authModalRoot);

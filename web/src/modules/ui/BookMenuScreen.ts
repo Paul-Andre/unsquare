@@ -38,7 +38,7 @@ export function load_editor_books() {
   }
 }
 
-export class BookMenu {
+export class BookMenuScreen {
   books: Book[] = [];
   root: HTMLElement;
   container: HTMLElement;

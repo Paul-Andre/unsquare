@@ -12,7 +12,7 @@ import { showJsonModal } from './JsonModal.tsx';
 import { IconDisplayType } from './iconDisplayCalculations.ts';
 import Sortable from 'sortablejs';
 
-export class EditorLevelMenu {
+export class EditorLevelMenuScreen {
   root: HTMLElement;
   levelMenu: LevelIconGrid;
   deleting: boolean;
