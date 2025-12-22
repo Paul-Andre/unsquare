@@ -11,16 +11,6 @@ import niceLevelsData from '../../data/niceLevels.json';
 import { Book } from '../core/Book.ts';
 import { Level } from '../core/Level.ts';
 
-export function load_static_books() {
-  // Convert imported JSON data using book_reviver
-  const books = [
-    JSON.parse(JSON.stringify(book1OldData), book_reviver),
-    JSON.parse(JSON.stringify(basicBlackWhiteData), book_reviver),
-    JSON.parse(JSON.stringify(niceLevelsData), book_reviver),
-  ];
-  return books;
-}
-
 //let static_books = load_static_books();
 
 let editor_books: Book[] = [];

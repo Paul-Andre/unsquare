@@ -14,6 +14,7 @@ export interface WeeklyChallengeCardProps {
   level: Level;
   book: Book;
   container: HTMLElement;
+  additionallyAppended?: HTMLElement;
 }
 
 /**
@@ -59,6 +60,7 @@ export function createWeeklyChallengeCard(props: WeeklyChallengeCardProps): HTML
     <div className="challenge_icon_wrapper">
       {iconSlot}
       {statistics}
+      {props.additionallyAppended}
     </div>
   ) as any as HTMLDivElement;
 
