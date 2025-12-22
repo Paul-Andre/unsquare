@@ -39,7 +39,8 @@ export class ChallengeLevelMenuScreen {
 
     // Filter challenge levels and reverse the order
     const challengeLevels = this.book.levels
-      .filter(level => level.mode === "challenge")
+      // .filter(level => level.mode === "challenge")
+      .slice()
       .reverse();
 
     if (challengeLevels.length === 0) {

@@ -89,7 +89,7 @@ export class GameLevelMenuScreen {
   }
 
   displayDailyIcon() {
-    const iconSlot = this.root.querySelector("#dailyIconContainer .icon_slot");
+    const iconSlot = this.root.querySelector("#dailyIconContainer .challenge_icon_wrapper");
     const heading = this.root.querySelector("#dailyLevelHeading");
     
     if (!iconSlot || !heading) {
@@ -118,5 +118,19 @@ export class GameLevelMenuScreen {
     });
     
     iconSlot.appendChild(iconElement);
+
+                  // Add "see all" button
+                  const seeAllButton = document.createElement("a");
+                  // seeAllButton.className = "seeAllChallengesButton";
+                  seeAllButton.textContent = "See previous daily";
+                  seeAllButton.style.alignSelf = "flex-end";
+                  seeAllButton.style.marginLeft = "20px"
+                  seeAllButton.href = "#";
+                  seeAllButton.onclick = () => {
+                    appContext.challengeLevelMenu.openBook(this.dailyLevelsBook);
+                    appContext.screenManager.switchTo("challengeLevelMenu");
+                  };
+
+                  iconSlot.appendChild(seeAllButton);
   }
 }
