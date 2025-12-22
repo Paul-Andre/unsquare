@@ -513,6 +513,24 @@ export class LevelMenuComponent {
       existing.remove();
     }
 
+    // Create textarea element first to get reference
+    const textarea = (
+      <textarea
+        value={jsonString}
+        readOnly
+        style={{
+          width: "100%",
+          minWidth: "400px",
+          minHeight: "300px",
+          fontFamily: "monospace",
+          fontSize: "12px",
+          padding: "10px",
+          border: "1px solid var(--border_gray, #c1bbaf)",
+          resize: "both",
+        }}
+      />
+    );
+
     const container = (
       <div
         id="jsonTextareaContainer"
@@ -533,20 +551,7 @@ export class LevelMenuComponent {
         <p style={{ marginBottom: "10px" }}>
           Copy to clipboard failed. Please copy the JSON manually:
         </p>
-        <textarea
-          value={jsonString}
-          readOnly
-          style={{
-            width: "100%",
-            minWidth: "400px",
-            minHeight: "300px",
-            fontFamily: "monospace",
-            fontSize: "12px",
-            padding: "10px",
-            border: "1px solid var(--border_gray, #c1bbaf)",
-            resize: "both",
-          }}
-        />
+        {textarea}
         <button
           onClick={() => container.remove()}
           style={{
@@ -563,7 +568,6 @@ export class LevelMenuComponent {
     this.root.appendChild(container);
 
     // Select all text in textarea for easy copying
-    const textarea = ensureNotNull(container.querySelector("textarea"));
     textarea.select();
     textarea.focus();
   }

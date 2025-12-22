@@ -1,7 +1,7 @@
 "use strict";
 
 import { h } from 'dom-chef';
-import { assert } from '../utils/helpers';
+import { assert } from '../utils/helpers.ts';
 
 /**
  * Renders a histogram showing the distribution of solution move counts
@@ -35,6 +35,8 @@ export function renderHistogram(container: HTMLElement, histogramData: Record<nu
   let percentile99 = 0;
   let cumulativeSolutionCount = 0;
   for (const moveCount of moveCounts) {
+    // TODO: Bug? Should be dataWithPlayer[moveCount] instead of moveCount
+    // need to fix and adjust as appropriate.
     cumulativeSolutionCount += moveCount;
     if (cumulativeSolutionCount / totalSolutionCount >= 0.99) {
       percentile99 = moveCount;
@@ -42,19 +44,13 @@ export function renderHistogram(container: HTMLElement, histogramData: Record<nu
     }
   }
 
-  const minMoveCount = moveCounts[0];
   const maxMoveCount = moveCounts[moveCounts.length - 1];
-
-  const position95 = moveCounts[Math.floor(moveCounts.length*0.95)]
 
   const rangeBegin = 1;
   const rangeEnd = playerMoves != null 
     ? Math.max(Math.min(Math.ceil(percentile99*3), maxMoveCount), playerMoves)
     : Math.min(Math.ceil(percentile99*3), maxMoveCount);
 
-  //const rangeEnd = Math.max(Math.min(Math.ceil(position95*2), maxMoveCount), playerMoves);
-
-     
   const maxSolutionCount = Math.max(...Object.values(dataWithPlayer), 1);
 
   // Tooltip state management
@@ -77,34 +73,30 @@ export function renderHistogram(container: HTMLElement, histogramData: Record<nu
     const solutionCount = dataWithPlayer[moveCount] || 0;
     const hasData = moveCount in dataWithPlayer;
     const isPlayerBar = moveCount === playerMoves;
+    const shouldShow = hasData || isPlayerBar;
 
-    let percentage;
-    if (isPlayerBar && solutionCount === 0) {
-      percentage = 0;
-    } else if (!hasData) {
-      percentage = 0;
-    } else {
-      percentage = (solutionCount / maxSolutionCount) * 100;
+    // Calculate percentage height for the bar
+    const percentage = shouldShow && solutionCount > 0
+      ? (solutionCount / maxSolutionCount) * 100
+      : 0;
+
+    // Create tooltip element if needed
+    let tooltip: HTMLElement | null = null;
+    if (shouldShow) {
+      tooltip = <div className="histogramTooltip">{moveCount}: {solutionCount}</div>;
     }
-
-    const barHeight = (hasData || isPlayerBar) ? `${percentage}%` : "0%";
-    const barVisibility = (hasData || isPlayerBar) ? "visible" : "hidden";
 
     const bar = (
       <div
         className={`histogramBar ${isPlayerBar ? "playerBar" : ""}`}
         style={{
-          height: barHeight,
-          visibility: barVisibility,
+          height: `${percentage}%`,
+          visibility: shouldShow ? "visible" : "hidden",
         }}
-        data-moves={(hasData || isPlayerBar) ? moveCount.toString() : undefined}
-        data-count={(hasData || isPlayerBar) ? solutionCount.toString() : undefined}
+        data-moves={shouldShow ? moveCount.toString() : undefined}
+        data-count={shouldShow ? solutionCount.toString() : undefined}
       >
-        {(hasData || isPlayerBar) && (
-          <div className="histogramTooltip">
-            {moveCount}: {solutionCount}
-          </div>
-        )}
+        {tooltip}
       </div>
     );
 
@@ -116,16 +108,13 @@ export function renderHistogram(container: HTMLElement, histogramData: Record<nu
     );
 
     // Set up event handlers for bars with data
-    if (hasData || isPlayerBar) {
-      const tooltip = barContainer.querySelector(".histogramTooltip");
-      assert(tooltip instanceof HTMLElement);
+    if (shouldShow && tooltip) {
       barContainer.addEventListener("mouseenter", () => {
         showTooltip(tooltip);
       });
 
       // Store bar container with tooltip for closest-bar finding
       barContainers.push({ container: barContainer, tooltip });
-      
     }
 
     container.appendChild(barContainer);
@@ -187,18 +176,16 @@ export function renderHistogram(container: HTMLElement, histogramData: Record<nu
     e.preventDefault();
   });
 
-  container.addEventListener("pointerup", (e) => {
+  container.addEventListener("pointerup", () => {
     isDragging = false;
     // Keep tooltip visible (don't hide it)
   });
 
-  container.addEventListener("pointercancel", (e) => {
+  container.addEventListener("pointercancel", () => {
     isDragging = false;
     hideTooltip();
   });
-
 }
-
 
 export function generateDummyHistogramData(center: number): { allSolutions: Record<number, number>, bestPerPlayer: Record<number, number>, uniqueSolutions: Record<number, number> } {
   const minMoves = Math.max(3, center - 8);
