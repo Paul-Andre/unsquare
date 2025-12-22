@@ -758,8 +758,8 @@ export class Game extends GameBase {
 
     // Calculate display index (excluding hidden levels)
     let levelDisplay;
-    if (level.title) {
-      levelDisplay = level.title;
+    if (level.shortName) {
+      levelDisplay = level.shortName;
     } else if (level.isCustom) {
       levelDisplay = "Custom Level";
     } else {

@@ -264,8 +264,9 @@ export class GameLevelMenu {
 
     const level = this.dailyLevels[index].clone();
     
-    // Set title to "Daily #X" where X is index + 1
-    level.title = `Daily #${index + 1}`;
+    // Set shortName to "Daily #X" where X is index + 1
+    level.shortName = `Daily #${index + 1}`;
+    level.longName = `Daily Level #${index + 1}`
     level.index = 0;
     
     return level;
@@ -284,11 +285,7 @@ export class GameLevelMenu {
       return;
     }
 
-    // Update heading with level number (index + 1)
-    // TODO: getDailyLevelIndex is calculated twice...
-    let levelIndex = this.getDailyLevelIndex();
-    const levelNumber = (levelIndex != null) ? levelIndex + 1 : "-";
-    heading.textContent = `Daily Level #${levelNumber}:`;
+    heading.textContent = dailyLevel.longName;
 
     iconSlot.innerHTML = "";
     

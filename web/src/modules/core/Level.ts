@@ -19,7 +19,8 @@ export class Level {
   tiles: BoundedGrid<number>;
   par: number | null;
   text: string;
-  title: string | null;
+  shortName: string | null;
+  longName: string | null;
   index: number;
   isIcon: boolean;
   isCustom: boolean;
@@ -38,7 +39,8 @@ export class Level {
     this.tiles = grid;
     this.par = 0;
     this.text = "";
-    this.title = null;
+    this.shortName = null;
+    this.longName = null;
     this.index = -1;
     this.isIcon = false;
     this.isCustom = false;
@@ -67,7 +69,9 @@ export class Level {
     level.tiles = level.tileShape.gridFromJsonObject(json.tiles);
     level.par = json.par;
     level.text = json.text || "";
-    level.title = json.title;
+    // Backward compatibility: if title exists but shortName doesn't, use title as shortName
+    level.shortName = json.shortName ?? json.title ?? null;
+    level.longName = json.longName ?? null;
     level.index = json.index;
     level.isIcon = !!json.isIcon;
     level.hidden = !!json.hidden;
@@ -138,7 +142,8 @@ export class Level {
     level.colorScheme = colorSchemeByMod[mod];
     level.tileShape = tileShapes.square;
     level.text = "";
-    level.title = null;
+    level.shortName = null;
+    level.longName = null;
     level.index = -1;
     level.isIcon = false;
     level.mode = "normal";
@@ -180,8 +185,11 @@ export class Level {
     if (this.text) {
       json.text = this.text;
     }
-    if (this.title) {
-      json.title = this.title;
+    if (this.shortName) {
+      json.shortName = this.shortName;
+    }
+    if (this.longName) {
+      json.longName = this.longName;
     }
     if (this.isIcon) {
       json.isIcon = this.isIcon;
@@ -214,7 +222,8 @@ export class Level {
     this.tiles = otherLevel.tiles.clone();
     this.par = otherLevel.par;
     this.text = otherLevel.text;
-    this.title = otherLevel.title;
+    this.shortName = otherLevel.shortName;
+    this.longName = otherLevel.longName;
     // TODO: does it make sense to copy the index?
     this.index = otherLevel.index;
     this.id = otherLevel.id;
