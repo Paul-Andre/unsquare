@@ -14,7 +14,6 @@ import {
 
 // This component displays a grid of level icons. Behavior is injected via callbacks.
 export class LevelIconGrid {
-  root: HTMLElement;
   isEditorMode: boolean;
   container: HTMLElement;
   book: Book | null = null;
@@ -23,7 +22,7 @@ export class LevelIconGrid {
   getIconDisplayType?: () => IconDisplayType;
 
   constructor(
-    root: HTMLElement,
+    container: HTMLElement,
     isEditorMode: boolean,
     callbacks?: {
       onIconClick?: (level: Level, element: HTMLElement) => void;
@@ -31,9 +30,8 @@ export class LevelIconGrid {
       getIconDisplayType?: () => IconDisplayType;
     }
   ) {
-    this.root = root;
     this.isEditorMode = isEditorMode;
-    this.container = cast(this.root.querySelector(".content"), HTMLElement);
+    this.container = container
     this.onIconClick = callbacks?.onIconClick;
     this.onBookOpened = callbacks?.onBookOpened;
     this.getIconDisplayType = callbacks?.getIconDisplayType;

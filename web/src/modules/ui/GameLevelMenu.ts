@@ -1,6 +1,6 @@
 "use strict";
 
-import { assert } from '../utils/helpers.ts';
+import { assert, cast } from '../utils/helpers.ts';
 import { LevelIconGrid } from '../ui/LevelIconGrid.tsx';
 import { calculateLevelState, applyStateClass, LEVEL_STATES } from '../ui/levelStateUtils.ts';
 import { createLevelIcon, updateLevelIconState } from '../ui/LevelIcon.tsx';
@@ -89,7 +89,9 @@ export class GameLevelMenu {
     this.weeklyChallengeBook = JSON.parse(JSON.stringify(challengeBookJson), book_reviver);
     this.weeklyChallengeLevel = this.weeklyChallengeBook.levels.at(-1)!;
 
-    this.levelMenu = new LevelIconGrid(this.root, false, {
+
+    const iconContainer = cast(root.querySelector("#iconContainer"), HTMLElement);
+    this.levelMenu = new LevelIconGrid(iconContainer, false, {
       onIconClick: (level: Level, element: HTMLElement) => {
         if (this.levelMenu.book !== null) {
           appContext.playLevel(level, this.levelMenu.book);

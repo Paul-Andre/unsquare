@@ -31,7 +31,8 @@ export class EditorLevelMenu {
     this.defaultSize = 6;
 
     // Create LevelIconGrid with editor callbacks
-    this.levelMenu = new LevelIconGrid(root, true, {
+    const iconContainer = cast(root.querySelector("#iconContainer"), HTMLElement);
+    this.levelMenu = new LevelIconGrid(iconContainer, true, {
       onIconClick: this.handleIconClick.bind(this),
       onBookOpened: this.handleBookOpened.bind(this),
       getIconDisplayType: () => this.iconDisplayType,
