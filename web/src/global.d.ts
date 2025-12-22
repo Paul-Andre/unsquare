@@ -15,7 +15,7 @@ declare global {
       capture: (event: string, properties?: Record<string, any>) => void;
     };
     algo: typeof algo;
-    
+        
   }
 }
 

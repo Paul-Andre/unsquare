@@ -529,7 +529,7 @@ export class LevelMenuComponent {
           resize: "both",
         }}
       />
-    );
+    ) as unknown as HTMLTextAreaElement;
 
     const container = (
       <div
