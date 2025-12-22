@@ -1,16 +1,16 @@
 "use strict";
 
-import { LevelMenuComponent, calculateLevelState, applyStateClass } from '../ui/LevelMenuComponent.tsx';
+import { LevelMenuComponent } from '../ui/LevelMenuComponent.tsx';
+import { calculateLevelState, applyStateClass, LEVEL_STATES } from '../ui/levelStateUtils.ts';
+import { createLevelIcon, updateLevelIconState } from '../ui/LevelIcon.tsx';
 import { appContext } from '../core/AppContext.ts';
 import { book_reviver } from '../core/bookUtils.ts';
 import { Level } from '../core/Level.ts';
-import { getCachedLevelIconDataUrl } from './icon.ts';
-import { cast, ensureNotNull } from '../utils/helpers.ts';
 import { supabase } from '../utils/api.ts';
 import { getCachedChallengeStatistics, saveChallengeStatistics } from '../core/levelUtils.ts';
 import mainBookData from '../../data/2025_nov_11_reordered_solved_fixed_all_solutions.json';
 import dailyLevelsData from '../../data/daily_submitting_07_dec_exhaustive.json'
-import { DAILY_UNLOCK_HOUR, DAILY_LEVELS_START_DATE, ICON_SIZE } from '../utils/config.ts';
+import { DAILY_UNLOCK_HOUR, DAILY_LEVELS_START_DATE } from '../utils/config.ts';
 import { ChallengeStatistics } from '../core/levelUtils.ts';
 import { Book } from '../core/Book.ts';
 
@@ -148,11 +148,9 @@ export class GameLevelMenu {
     const rankEl = this.root.querySelector("#challengeStatRank");
     const iconEl = this.root.querySelector("#challengeIconContainer .level_icon");
 
-    if (!youEl || !topEl || !rankEl || !iconEl) {
+    if (!youEl || !topEl || !rankEl || !iconEl || !(iconEl instanceof HTMLElement)) {
       return;
     }
-
-    iconEl.classList.remove("icon_unsolved", "icon_suboptimal", "icon_optimal");
 
     if (!stats) {
       const cached = getCachedChallengeStatistics(this.weeklyChallengeLevel.id);
@@ -160,7 +158,7 @@ export class GameLevelMenu {
       youEl.textContent = "you: -";
       topEl.textContent = "top: ?";
       rankEl.textContent = totalPlayers ? `rank: -/${totalPlayers}` : "rank: -/-";
-      iconEl.classList.add("icon_unsolved");
+      updateLevelIconState(iconEl, LEVEL_STATES.UNSOLVED);
       return;
     }
 
@@ -176,11 +174,11 @@ export class GameLevelMenu {
       : `rank: -/${totalPlayers ?? "-"}`;
 
     if (playerBest === null) {
-      iconEl.classList.add("icon_unsolved");
+      updateLevelIconState(iconEl, LEVEL_STATES.UNSOLVED);
     } else if (topBest !== null && playerBest === topBest) {
-      iconEl.classList.add("icon_optimal");
+      updateLevelIconState(iconEl, LEVEL_STATES.OPTIMAL);
     } else {
-      iconEl.classList.add("icon_suboptimal");
+      updateLevelIconState(iconEl, LEVEL_STATES.SUBOPTIMAL);
     }
   }
 
@@ -201,26 +199,22 @@ export class GameLevelMenu {
   }
 
   displayChallengeIcon() {
-    const container = this.root.querySelector("#challengeIconContainer");
-    if (!container) {
+    const iconSlot = this.root.querySelector("#challengeIconContainer .icon_slot");
+    if (!iconSlot) {
       return;
     }
 
-    let element = cast(container.querySelector(".level_icon"), HTMLElement);
-    const iconImg = cast(element.querySelector(".level_icon_image"), HTMLImageElement);
-    if (iconImg) {
-      const dataURL = getCachedLevelIconDataUrl(this.weeklyChallengeLevel);
-      iconImg.src = dataURL;
-      iconImg.style.width = `${ICON_SIZE}px`;
-      iconImg.style.height = `${ICON_SIZE}px`;
-    }
-
-    // XXX: using any to access property on the element
-    (element as any).level = this.weeklyChallengeLevel;
-    element.onclick = () => {
-      appContext.playLevel(this.weeklyChallengeLevel, this.weeklyChallengeBook);
-    };
-
+    iconSlot.innerHTML = "";
+    
+    const iconElement = createLevelIcon({
+      level: this.weeklyChallengeLevel,
+      state: LEVEL_STATES.UNSOLVED,
+      onClick: () => {
+        appContext.playLevel(this.weeklyChallengeLevel, this.weeklyChallengeBook);
+      },
+    });
+    
+    iconSlot.appendChild(iconElement);
     this.updateChallengeStatistics();
   }
 
@@ -270,10 +264,10 @@ export class GameLevelMenu {
   }
 
   displayDailyIcon() {
-    const container = this.root.querySelector("#dailyIconContainer");
+    const iconSlot = this.root.querySelector("#dailyIconContainer .icon_slot");
     const heading = this.root.querySelector("#dailyLevelHeading");
     
-    if (!container || !heading) {
+    if (!iconSlot || !heading) {
       return;
     }
 
@@ -288,32 +282,22 @@ export class GameLevelMenu {
     const levelNumber = (levelIndex != null) ? levelIndex + 1 : "-";
     heading.textContent = `Daily Level #${levelNumber}:`;
 
-    let element = container.querySelector(".level_icon");
-    if (!(element instanceof HTMLElement)) {
-      return;
-    }
-
-    const iconImg = (element.querySelector(".level_icon_image"));
-    if (iconImg instanceof HTMLImageElement) {
-      const dataURL = getCachedLevelIconDataUrl(dailyLevel);
-      iconImg.src = dataURL;
-      iconImg.style.width = `${ICON_SIZE}px`;
-      iconImg.style.height = `${ICON_SIZE}px`;
-    }
-
-    // XXX: using any to access property on the element
-    (element as any).level = dailyLevel;
-    element.onclick = () => {
-      appContext.playLevel(dailyLevel, {
-        levels: [dailyLevel],
-        source: "daily",
-        id: "daily",
-        title: "Daily Level",
-      });
-    };
-
-    // Apply state-based CSS class
+    iconSlot.innerHTML = "";
+    
     const state = calculateLevelState(dailyLevel);
-    applyStateClass(element, state);
+    const iconElement = createLevelIcon({
+      level: dailyLevel,
+      state,
+      onClick: () => {
+        appContext.playLevel(dailyLevel, {
+          levels: [dailyLevel],
+          source: "daily",
+          id: "daily",
+          title: "Daily Level",
+        });
+      },
+    });
+    
+    iconSlot.appendChild(iconElement);
   }
 }
