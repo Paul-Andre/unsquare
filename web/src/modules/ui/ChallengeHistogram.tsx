@@ -1,5 +1,8 @@
 "use strict";
 
+import { h } from 'dom-chef';
+import { assert } from '../utils/helpers';
+
 /**
  * Renders a histogram showing the distribution of solution move counts
  * @param {HTMLElement} container - The container element to render the histogram in
@@ -84,42 +87,45 @@ export function renderHistogram(container: HTMLElement, histogramData: Record<nu
       percentage = (solutionCount / maxSolutionCount) * 100;
     }
 
-    const barContainer = document.createElement("div");
-    barContainer.className = "histogramBarContainer";
+    const barHeight = (hasData || isPlayerBar) ? `${percentage}%` : "0%";
+    const barVisibility = (hasData || isPlayerBar) ? "visible" : "hidden";
 
-    const bar = document.createElement("div");
-    bar.className = `histogramBar ${isPlayerBar ? "playerBar" : ""}`;
+    const bar = (
+      <div
+        className={`histogramBar ${isPlayerBar ? "playerBar" : ""}`}
+        style={{
+          height: barHeight,
+          visibility: barVisibility,
+        }}
+        data-moves={(hasData || isPlayerBar) ? moveCount.toString() : undefined}
+        data-count={(hasData || isPlayerBar) ? solutionCount.toString() : undefined}
+      >
+        {(hasData || isPlayerBar) && (
+          <div className="histogramTooltip">
+            {moveCount}: {solutionCount}
+          </div>
+        )}
+      </div>
+    );
+
+    const barContainer = (
+      <div className={`histogramBarContainer ${isPlayerBar ? "playerBar" : ""}`}>
+        {bar}
+        {isPlayerBar && <div className="playerTriangle" />}
+      </div>
+    );
+
+    // Set up event handlers for bars with data
     if (hasData || isPlayerBar) {
-      bar.style.height = `${percentage}%`;
-      bar.setAttribute("data-moves", moveCount.toString());
-      bar.setAttribute("data-count", solutionCount.toString());
-    } else {
-      bar.style.height = "0%";
-      bar.style.visibility = "hidden";
-    }
-
-    // Create tooltip for bars with data
-    if (hasData || isPlayerBar) {
-      const tooltip = document.createElement("div");
-      tooltip.className = "histogramTooltip";
-      tooltip.textContent = `${moveCount}: ${solutionCount}`;
-      bar.appendChild(tooltip);
-
+      const tooltip = barContainer.querySelector(".histogramTooltip");
+      assert(tooltip instanceof HTMLElement);
       barContainer.addEventListener("mouseenter", () => {
         showTooltip(tooltip);
       });
 
       // Store bar container with tooltip for closest-bar finding
       barContainers.push({ container: barContainer, tooltip });
-    }
-
-    barContainer.appendChild(bar);
-
-    if (isPlayerBar) {
-      const playerTriangle = document.createElement("div");
-      playerTriangle.className = "playerTriangle";
-      barContainer.appendChild(playerTriangle);
-      barContainer.classList.add("playerBar");
+      
     }
 
     container.appendChild(barContainer);

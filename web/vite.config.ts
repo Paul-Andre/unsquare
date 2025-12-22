@@ -23,7 +23,10 @@ export default defineConfig({
   },
   esbuild: {
     // Allow JS files to be processed and type-checked
-    include: /\.(js|ts)$/,
+    include: /\.(js|ts|tsx|jsx)$/,
+    jsx: 'transform',
+    jsxFactory: 'h',
+    jsxFragment: 'DocumentFragment',
   },
 });
 

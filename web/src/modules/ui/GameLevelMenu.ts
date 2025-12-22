@@ -1,6 +1,6 @@
 "use strict";
 
-import { LevelMenuComponent, calculateLevelState, applyStateClass } from './LevelMenuComponent.ts';
+import { LevelMenuComponent, calculateLevelState, applyStateClass } from '../ui/LevelMenuComponent.tsx';
 import { appContext } from '../core/AppContext.ts';
 import { book_reviver } from '../core/bookUtils.ts';
 import { Level } from '../core/Level.ts';

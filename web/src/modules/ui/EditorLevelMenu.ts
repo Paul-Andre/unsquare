@@ -2,7 +2,7 @@
 
 import { Book } from '../core/Book.ts';
 import { cast } from '../utils/helpers.ts';
-import { LevelMenuComponent } from './LevelMenuComponent.ts';
+import { LevelMenuComponent } from './LevelMenuComponent.tsx';
 import Sortable from 'sortablejs';
 
 export class EditorLevelMenu {

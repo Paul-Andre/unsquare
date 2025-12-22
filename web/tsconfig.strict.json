@@ -12,6 +12,6 @@
     "noImplicitReturns": true,
     "noImplicitOverride": true
   },
-  "include": ["src/**/*.ts", "src/**/*.json"], // Include TypeScript and JSON files
+  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.json"], // Include TypeScript and JSON files
   "exclude": ["node_modules"]
 }

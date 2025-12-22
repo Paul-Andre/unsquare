@@ -1,7 +1,8 @@
 "use strict";
 
+import { h } from 'dom-chef';
 import { getCachedLevelIconDataUrl } from './icon.ts';
-import { assert, cast, htmlStringToElement } from '../utils/helpers.ts';
+import { assert, cast, ensureNotNull, htmlStringToElement } from '../utils/helpers.ts';
 import { ICON_SIZE } from '../utils/config.ts';
 import { vector_sum, ericTilesNumber, obviousScore } from '../core/algo.ts';
 import { appContext } from '../core/AppContext.ts';
@@ -506,67 +507,63 @@ export class LevelMenuComponent {
   }
 
   showJsonTextarea(jsonString: string): void {
-    // Pure slop, creating dom objects in js...
-    
     // Remove any existing JSON textarea
     const existing = this.root.querySelector("#jsonTextareaContainer");
     if (existing) {
       existing.remove();
     }
 
-    // Create container
-    const container = document.createElement("div");
-    container.id = "jsonTextareaContainer";
-    container.style.cssText = `
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: var(--white, white);
-      border: 2px solid var(--border_gray, #c1bbaf);
-      padding: 20px;
-      z-index: 1000;
-      max-width: 90%;
-      max-height: 90vh;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-    `;
-
-    // Create label
-    const label = document.createElement("p");
-    label.textContent = "Copy to clipboard failed. Please copy the JSON manually:";
-    label.style.marginBottom = "10px";
-    container.appendChild(label);
-
-    // Create textarea
-    const textarea = document.createElement("textarea");
-    textarea.value = jsonString;
-    textarea.readOnly = true;
-    textarea.style.cssText = `
-      width: 100%;
-      min-width: 400px;
-      min-height: 300px;
-      font-family: monospace;
-      font-size: 12px;
-      padding: 10px;
-      border: 1px solid var(--border_gray, #c1bbaf);
-      resize: both;
-    `;
-    container.appendChild(textarea);
-
-    // Create close button
-    const closeButton = document.createElement("button");
-    closeButton.textContent = "Close";
-    closeButton.onclick = () => container.remove();
-    closeButton.style.cssText = `
-      margin-top: 10px;
-      padding: 8px 16px;
-    `;
-    container.appendChild(closeButton);
+    const container = (
+      <div
+        id="jsonTextareaContainer"
+        style={{
+          position: "fixed",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          background: "var(--white, white)",
+          border: "2px solid var(--border_gray, #c1bbaf)",
+          padding: "20px",
+          zIndex: 1000,
+          maxWidth: "90%",
+          maxHeight: "90vh",
+          boxShadow: "0 4px 6px rgba(0, 0, 0, 0.3)",
+        }}
+      >
+        <p style={{ marginBottom: "10px" }}>
+          Copy to clipboard failed. Please copy the JSON manually:
+        </p>
+        <textarea
+          value={jsonString}
+          readOnly
+          style={{
+            width: "100%",
+            minWidth: "400px",
+            minHeight: "300px",
+            fontFamily: "monospace",
+            fontSize: "12px",
+            padding: "10px",
+            border: "1px solid var(--border_gray, #c1bbaf)",
+            resize: "both",
+          }}
+        />
+        <button
+          onClick={() => container.remove()}
+          style={{
+            marginTop: "10px",
+            padding: "8px 16px",
+          }}
+        >
+          Close
+        </button>
+      </div>
+    );
 
     // Add to document
     this.root.appendChild(container);
 
     // Select all text in textarea for easy copying
+    const textarea = ensureNotNull(container.querySelector("textarea"));
     textarea.select();
     textarea.focus();
   }

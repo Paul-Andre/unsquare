@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.89.0",
+    "dom-chef": "^5.1.1",
     "sortablejs": "^1.15.0"
   },
   "devDependencies": {
