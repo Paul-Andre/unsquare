@@ -6,6 +6,7 @@ import { book_reviver, reindexLevels } from './bookUtils.ts';
 import { DAILY_UNLOCK_HOUR, DAILY_LEVELS_START_DATE } from '../utils/config.ts';
 import mainBookData from '../../data/2025_nov_11_reordered_solved_fixed_all_solutions.json';
 import dailyLevelsData from '../../data/daily_submitting_07_dec_exhaustive.json';
+import { assert } from '../utils/helpers.ts';
 
 /**
  * Placeholder function for future authorization logic
@@ -15,21 +16,25 @@ export function userHasArchiveAccess(): boolean {
   return false;
 }
 
+const NUM_DAILY_LEVELS_PREVIEW = 7;
+const NUM_WEEKLY_CHALLENGES_PREVIEW = 2;
+
 /**
  * Calculate which daily level index to show based on current date and unlock time
  * Returns the index of the level to display (today's if unlocked, yesterday's if locked)
  */
-function getDailyLevelIndex(totalLevels: number): number | null {
-  if (totalLevels === 0) {
-    return null;
-  }
-
+function getDailyLevelIndex(totalLevels: number): number {
+  assert(totalLevels > 0);
   const now = new Date();
   const currentHour = now.getHours();
   
   // Set both dates to midnight for accurate day calculation
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const startDate = new Date(DAILY_LEVELS_START_DATE.getFullYear(), DAILY_LEVELS_START_DATE.getMonth(), DAILY_LEVELS_START_DATE.getDate());
+  const startDate = new Date(
+    DAILY_LEVELS_START_DATE.getFullYear(),
+    DAILY_LEVELS_START_DATE.getMonth(),
+    DAILY_LEVELS_START_DATE.getDate()
+  );
   const daysSinceStart = Math.floor((today.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
   
   // If current time is before unlock hour, show yesterday's level
@@ -37,9 +42,16 @@ function getDailyLevelIndex(totalLevels: number): number | null {
   
   if (daysOffset < 0) {
     return 0;
-  } else {
-    return daysOffset % totalLevels;
   }
+  if (daysOffset >= totalLevels) {
+    return totalLevels - 1;
+  }
+  return daysOffset
+}
+
+function getDailyLevelsFirstIndex(lastIndex:number): number {
+  if (userHasArchiveAccess()) return 0;
+  return Math.max(0, lastIndex-NUM_DAILY_LEVELS_PREVIEW+1);
 }
 
 /**
@@ -48,55 +60,15 @@ function getDailyLevelIndex(totalLevels: number): number | null {
  */
 export function getDailyLevelsBook(): Book {
   // Load all daily levels
-  const allLevels = JSON.parse(JSON.stringify(dailyLevelsData), book_reviver).levels || [];
-  
-  if (userHasArchiveAccess()) {
-    // Set names for all levels
-    for (let i = 0; i < allLevels.length; i++) {
-      allLevels[i].shortName = `Daily #${i + 1}`;
-      allLevels[i].longName = `Daily Level #${i + 1}`;
-    }
-    
-    return {
-      id: "daily",
-      title: "Daily Levels",
-      source: "daily",
-      levels: allLevels,
-    };
-  }
-  
-  // Calculate current daily level index
-  const currentIndex = getDailyLevelIndex(allLevels.length);
-  if (currentIndex === null) {
-    return {
-      id: "daily",
-      title: "Daily Levels",
-      source: "daily",
-      levels: [],
-    };
-  }
-  
-  // Determine which levels to return (last 7 including today's, no wrap-around)
-  let startIndex: number;
-  let endIndex: number;
-  
-  if (currentIndex < 6) {
-    // At the beginning: take available levels up to 7
-    startIndex = 0;
-    endIndex = Math.min(6, allLevels.length - 1);
-  } else if (currentIndex >= allLevels.length - 7) {
-    // At the end: take the last 7 levels
-    startIndex = Math.max(0, allLevels.length - 7);
-    endIndex = allLevels.length - 1;
-  } else {
-    // In the middle: take 7 levels centered around current
-    startIndex = currentIndex - 6;
-    endIndex = currentIndex;
-  }
-  
+  const allLevels = (JSON.parse(JSON.stringify(dailyLevelsData), book_reviver) as Book).levels;
+  const numLevels = allLevels.length;
+  assert( numLevels > 0);
+
+  let currentIndex = getDailyLevelIndex(numLevels);
+  let firstIndex = getDailyLevelsFirstIndex(currentIndex);
   // Extract the levels and set their names
   const selectedLevels: Level[] = [];
-  for (let i = startIndex; i <= endIndex; i++) {
+  for (let i = firstIndex; i <= currentIndex; i++) {
     const level = allLevels[i].clone();
     level.shortName = `Daily #${i + 1}`;
     level.longName = `Daily Level #${i + 1}`;
@@ -122,50 +94,49 @@ export function getWeeklyChallengesBook(): Book {
   const challengeBookJson = {
     levels: [
       {
-        "colorScheme": "BW",
-        "tileShape": "square",
-        "tiles": [[1,2,2,1,2,2,1,2,2,1],[2,1,1,2,1,1,2,1,1,2],[2,1,1,2,1,1,2,1,1,2],[1,2,2,1,2,2,1,2,2,1],[2,1,1,2,1,1,2,1,1,2],[2,1,1,2,1,1,2,1,1,2],[1,2,2,1,2,2,1,2,2,1],[2,1,1,2,1,1,2,1,1,2],[2,1,1,2,1,1,2,1,1,2],[1,2,2,1,2,2,1,2,2,1]],
-        "mode": "challenge",
-        "title": "Weekly #1",
-        "index": 0,
-        "id": "level_1763668451541",
-        "__type__": "Level"
+        colorScheme: "BW",
+        tileShape: "square",
+        tiles: [[1,2,2,1,2,2,1,2,2,1],[2,1,1,2,1,1,2,1,1,2],[2,1,1,2,1,1,2,1,1,2],[1,2,2,1,2,2,1,2,2,1],[2,1,1,2,1,1,2,1,1,2],[2,1,1,2,1,1,2,1,1,2],[1,2,2,1,2,2,1,2,2,1],[2,1,1,2,1,1,2,1,1,2],[2,1,1,2,1,1,2,1,1,2],[1,2,2,1,2,2,1,2,2,1]],
+        mode: "challenge",
+        title: "Weekly #1",
+        id: "level_1763668451541",
+        __type__: "Level"
       },
       {
-        "colorScheme":"BW",
-        "tileShape":"square",
-        "tiles":[[1,1,1,2,2,2,2,1,1,1],[1,1,2,2,2,2,2,2,1,1],[1,1,2,2,2,2,2,2,2,1],[1,2,2,2,2,2,2,1,2,2],[2,2,1,2,2,2,1,2,1,2],[2,1,2,1,2,2,2,1,2,2],[2,2,1,2,2,2,2,2,2,1],[1,2,2,2,2,2,2,2,1,1],[1,1,2,2,2,2,2,2,1,1],[1,1,1,2,2,2,2,1,1,1]],
-        "id":"level_1109238056389808",
-        "mode": "challenge",
-        "title": "Weekly #2",
-        "index": 0,
-        "__type__":"Level"
+        colorScheme: "BW",
+        tileShape: "square",
+        tiles: [[1,1,1,2,2,2,2,1,1,1],[1,1,2,2,2,2,2,2,1,1],[1,1,2,2,2,2,2,2,2,1],[1,2,2,2,2,2,2,1,2,2],[2,2,1,2,2,2,1,2,1,2],[2,1,2,1,2,2,2,1,2,2],[2,2,1,2,2,2,2,2,2,1],[1,2,2,2,2,2,2,2,1,1],[1,1,2,2,2,2,2,2,1,1],[1,1,1,2,2,2,2,1,1,1]],
+        id: "level_1109238056389808",
+        mode: "challenge",
+        title: "Weekly #2",
+        __type__: "Level"
       },
       {
-        "colorScheme":"BW",
-        "tileShape":"square",
-        "tiles":[[1,1,1,1,2,2,2,1,1,1,1],[1,1,1,1,1,2,1,1,1,1,1],[1,1,2,2,2,2,2,2,2,1,1],[1,1,1,2,1,1,1,2,1,1,1],[1,1,1,2,1,1,1,2,1,1,1],[1,2,2,2,2,2,2,2,2,2,1],[1,1,2,1,1,2,1,1,2,1,1],[1,1,2,1,1,2,1,1,2,1,1],[1,2,2,2,2,2,2,2,2,2,1],[1,2,1,1,1,2,1,1,1,2,1],[1,2,1,1,1,2,1,1,1,2,1]],
-        "mode":"challenge",
-        "id":"level_9159232684496334",
-        "__type__":"Level",
-        "title": "Weekly #3",
+        colorScheme: "BW",
+        tileShape: "square",
+        tiles: [[1,1,1,1,2,2,2,1,1,1,1],[1,1,1,1,1,2,1,1,1,1,1],[1,1,2,2,2,2,2,2,2,1,1],[1,1,1,2,1,1,1,2,1,1,1],[1,1,1,2,1,1,1,2,1,1,1],[1,2,2,2,2,2,2,2,2,2,1],[1,1,2,1,1,2,1,1,2,1,1],[1,1,2,1,1,2,1,1,2,1,1],[1,2,2,2,2,2,2,2,2,2,1],[1,2,1,1,1,2,1,1,1,2,1],[1,2,1,1,1,2,1,1,1,2,1]],
+        mode: "challenge",
+        id: "level_9159232684496334",
+        __type__: "Level",
+        title: "Weekly #3",
       },
       {
-        "colorScheme":"BW",
-        "tileShape":"square",
-        "tiles":[[1,1,2,1,1,1,1,1,2,1,1],[1,2,1,2,1,1,1,2,1,2,1],[2,1,2,1,2,1,2,1,2,1,2],[1,2,1,1,1,2,1,1,1,2,1],[1,1,2,1,2,1,2,1,2,1,1],[1,1,1,2,1,2,1,2,1,1,1],[1,1,2,1,2,1,2,1,2,1,1],[1,2,1,1,1,2,1,1,1,2,1],[2,1,2,1,2,1,2,1,2,1,2],[1,2,1,2,1,1,1,2,1,2,1],[1,1,2,1,1,1,1,1,2,1,1]],
-        "mode":"challenge",
-        "id":"level_1184501746690094",
-        "title": "Weekly #4",
-        "__type__":"Level",
+        colorScheme: "BW",
+        tileShape: "square",
+        tiles: [[1,1,2,1,1,1,1,1,2,1,1],[1,2,1,2,1,1,1,2,1,2,1],[2,1,2,1,2,1,2,1,2,1,2],[1,2,1,1,1,2,1,1,1,2,1],[1,1,2,1,2,1,2,1,2,1,1],[1,1,1,2,1,2,1,2,1,1,1],[1,1,2,1,2,1,2,1,2,1,1],[1,2,1,1,1,2,1,1,1,2,1],[2,1,2,1,2,1,2,1,2,1,2],[1,2,1,2,1,1,1,2,1,2,1],[1,1,2,1,1,1,1,1,2,1,1]],
+        mode: "challenge",
+        id: "level_1184501746690094",
+        title: "Weekly #4",
+        __type__: "Level",
       },
-      {"colorScheme":"BW",
-        "tileShape":"square",
-        "tiles":[[1,1,1,1,1,2,1,1,1,1,1],[1,1,1,1,1,2,1,1,1,1,1],[1,1,1,1,2,2,2,1,1,1,1],[1,1,1,1,2,2,2,1,1,1,1],[1,1,1,2,2,2,2,2,1,1,1],[1,1,1,2,2,2,2,2,1,1,1],[1,1,2,2,2,2,2,2,2,1,1],[1,1,2,2,2,2,2,2,2,1,1],[1,2,2,2,2,2,2,2,2,2,1],[1,1,2,2,2,2,2,2,2,1,1],[1,1,1,1,1,2,1,1,1,1,1]],
-        "id":"level_3720617583694259",
-        "mode":"challenge",
-        "title": "Weekly #5",
-        "__type__":"Level",
+      {
+        colorScheme: "BW",
+        tileShape: "square",
+        tiles: [[1,1,1,1,1,2,1,1,1,1,1],[1,1,1,1,1,2,1,1,1,1,1],[1,1,1,1,2,2,2,1,1,1,1],[1,1,1,1,2,2,2,1,1,1,1],[1,1,1,2,2,2,2,2,1,1,1],[1,1,1,2,2,2,2,2,1,1,1],[1,1,2,2,2,2,2,2,2,1,1],[1,1,2,2,2,2,2,2,2,1,1],[1,2,2,2,2,2,2,2,2,2,1],[1,1,2,2,2,2,2,2,2,1,1],[1,1,1,1,1,2,1,1,1,1,1]],
+        id: "level_3720617583694259",
+        mode: "challenge",
+        title: "Weekly #5",
+        __type__: "Level",
       },
     ],
     source: "challenge",
@@ -179,9 +150,8 @@ export function getWeeklyChallengesBook(): Book {
     return weeklyBook;
   }
   
-  // Return last 2 weekly levels
   const allLevels = weeklyBook.levels;
-  const lastTwoLevels = allLevels.slice(-2);
+  const lastTwoLevels = allLevels.slice(-NUM_WEEKLY_CHALLENGES_PREVIEW);
   reindexLevels(lastTwoLevels);
 
   return {

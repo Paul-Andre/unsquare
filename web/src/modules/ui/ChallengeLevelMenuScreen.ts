@@ -37,11 +37,8 @@ export class ChallengeLevelMenuScreen {
     // Clear container
     this.container.innerHTML = "";
 
-    // Filter challenge levels and reverse the order
-    const challengeLevels = this.book.levels
-      // .filter(level => level.mode === "challenge")
-      .slice()
-      .reverse();
+    // Reverse the order (slice to avoid mutating original array)
+    const challengeLevels = this.book.levels.slice().reverse();
 
     if (challengeLevels.length === 0) {
       this.container.innerHTML = "No challenge levels found in this book.";

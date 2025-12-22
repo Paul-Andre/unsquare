@@ -5,7 +5,7 @@ import { Game } from '../game/Game.ts';
 import { Editor } from '../game/Editor.ts';
 import { ScreenManager } from '../ui/ScreenManager.ts';
 import { BookMenuScreen } from '../ui/BookMenuScreen.ts';
-import { GameLevelMenuScreen } from '../ui/GameLevelMenuScreen.ts';
+import { GameLevelMenuScreen } from '../ui/GameLevelMenuScreen.tsx';
 import { OpeningInstructionsScreen } from '../ui/OpeningInstructionsScreen.ts';
 import { Level } from '../core/Level.ts';
 import { Book } from '../core/Book.ts';

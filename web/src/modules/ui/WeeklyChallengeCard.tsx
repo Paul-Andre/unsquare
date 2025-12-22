@@ -138,7 +138,9 @@ export function createWeeklyChallengeCard(props: WeeklyChallengeCardProps): HTML
   }
 
   // Initial load
-  loadStatistics();
+  if (level.mode == "challenge") {
+    loadStatistics();
+  }
 
   return card;
 }

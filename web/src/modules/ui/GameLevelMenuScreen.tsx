@@ -1,16 +1,15 @@
 "use strict";
 
+import { h } from 'dom-chef';
 import { assert, cast } from '../utils/helpers.ts';
-import { LevelIconGrid } from '../ui/LevelIconGrid.tsx';
-import { calculateLevelState, applyStateClass, LEVEL_STATES } from '../ui/levelStateUtils.ts';
-import { createLevelIcon } from '../ui/LevelIcon.tsx';
+import { LevelIconGrid } from './LevelIconGrid.tsx';
+import { calculateLevelState, applyStateClass, LEVEL_STATES } from './levelStateUtils.ts';
+import { createLevelIcon } from './LevelIcon.tsx';
 import { appContext } from '../core/AppContext.ts';
 import { Level } from '../core/Level.ts';
 import { Book } from '../core/Book.ts';
-import { createWeeklyChallengeCard } from '../ui/WeeklyChallengeCard.tsx';
+import { createWeeklyChallengeCard } from './WeeklyChallengeCard.tsx';
 import { getDailyLevelsBook, getWeeklyChallengesBook, getMainBook } from '../core/loadBook.ts';
-
-
 
 export class GameLevelMenuScreen {
   root: HTMLElement;
@@ -27,7 +26,6 @@ export class GameLevelMenuScreen {
 
     // Load weekly challenge book
     this.weeklyChallengesBook = getWeeklyChallengesBook();
-
 
     const iconContainer = cast(root.querySelector("#iconContainer"), HTMLElement);
     this.levelMenu = new LevelIconGrid(iconContainer, false, {
@@ -48,6 +46,24 @@ export class GameLevelMenuScreen {
     this.displayDailyIcon();
   }
 
+  /**
+   * Create a "see all" button that navigates to the challenge level menu
+   */
+  private createSeeAllButton(text: string, book: Book): HTMLElement {
+    const button = (
+      <button
+        // href="#"
+        style={{ alignSelf: "flex-end", marginLeft: "20px" }}
+        onClick={() => {
+          appContext.challengeLevelMenu.openBook(book);
+          appContext.screenManager.switchTo("challengeLevelMenu");
+        }}
+      >
+        {text}
+      </button>
+    ) as any as HTMLElement;
+    return button;
+  }
 
   loadBook() {
     try {
@@ -59,31 +75,17 @@ export class GameLevelMenuScreen {
       this.levelMenu.displayIcons();
       this.displayDailyIcon();
 
-              // Add "see all" button
-              const seeAllButton = document.createElement("a");
-              // seeAllButton.className = "seeAllChallengesButton";
-              seeAllButton.textContent = "See previous weekly";
-              seeAllButton.style.alignSelf = "flex-end";
-              seeAllButton.style.marginLeft = "20px"
-              seeAllButton.href = "#";
-              seeAllButton.onclick = () => {
-                appContext.challengeLevelMenu.openBook(this.weeklyChallengesBook);
-                appContext.screenManager.switchTo("challengeLevelMenu");
-              };
-      
       // Create weekly challenge card
       if (this.weeklyChallengeCardContainer) {
+        const seeAllButton = this.createSeeAllButton("See previous weekly", this.weeklyChallengesBook);
         createWeeklyChallengeCard({
           level: this.weeklyChallengesBook.levels.at(-1)!,
           book: this.weeklyChallengesBook,
           container: this.weeklyChallengeCardContainer,
           additionallyAppended: seeAllButton,
         });
-        
-
       }
     } catch (e) {
-      //alert("Error loading levels");
       console.error(e);
     }
   }
@@ -97,12 +99,11 @@ export class GameLevelMenuScreen {
     }
 
     // Get today's daily level (last level in the dailies book)
-    const dailiesBook = getDailyLevelsBook();
-    if (dailiesBook.levels.length === 0) {
+    if (this.dailyLevelsBook.levels.length === 0) {
       return;
     }
 
-    const dailyLevel = dailiesBook.levels[dailiesBook.levels.length - 1];
+    const dailyLevel = this.dailyLevelsBook.levels[this.dailyLevelsBook.levels.length - 1];
 
     heading.textContent = dailyLevel.longName;
 
@@ -113,24 +114,13 @@ export class GameLevelMenuScreen {
       level: dailyLevel,
       state,
       onClick: () => {
-        appContext.playLevel(dailyLevel, dailiesBook);
+        appContext.playLevel(dailyLevel, this.dailyLevelsBook);
       },
     });
     
     iconSlot.appendChild(iconElement);
 
-                  // Add "see all" button
-                  const seeAllButton = document.createElement("a");
-                  // seeAllButton.className = "seeAllChallengesButton";
-                  seeAllButton.textContent = "See previous daily";
-                  seeAllButton.style.alignSelf = "flex-end";
-                  seeAllButton.style.marginLeft = "20px"
-                  seeAllButton.href = "#";
-                  seeAllButton.onclick = () => {
-                    appContext.challengeLevelMenu.openBook(this.dailyLevelsBook);
-                    appContext.screenManager.switchTo("challengeLevelMenu");
-                  };
-
-                  iconSlot.appendChild(seeAllButton);
+    const seeAllButton = this.createSeeAllButton("See previous daily", this.dailyLevelsBook);
+    iconSlot.appendChild(seeAllButton);
   }
 }
