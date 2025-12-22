@@ -256,10 +256,11 @@ export class Level {
 }
 
 export function check_all_solutions(level: Level): boolean {
-  if (!level.solutions || level.solutions.length == 0) {
-    return false;
+  if (level.solutionType == "impossible") {
+    return level.solutions.length === 0;
   }
-  return level.solutions.every(sol => level_check_solution(level, sol));
+  return level.solutions.length > 0 &&
+      level.solutions.every(sol => level_check_solution(level, sol));
 }
 
 export function compute_gaussian_solution(level: Level): void {
