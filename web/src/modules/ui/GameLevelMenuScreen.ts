@@ -81,8 +81,8 @@ export class GameLevelMenuScreen {
     },
   ],
     source: "challenge",
-    id: "challenge",
-    title: "Weekly Challenge",
+    id: "weekly",
+    title: "Weekly Challenges",
   }
 
     this.weeklyChallengeBook = JSON.parse(JSON.stringify(challengeBookJson), book_reviver);
@@ -127,6 +127,23 @@ export class GameLevelMenuScreen {
           book: this.weeklyChallengeBook,
           container: this.weeklyChallengeCardContainer,
         });
+        
+        // Remove any existing "see all" button to avoid duplicates
+        const existingButton = this.weeklyChallengeCardContainer.querySelector(".seeAllChallengesButton");
+        if (existingButton) {
+          existingButton.remove();
+        }
+        
+        // Add "see all" button
+        const seeAllButton = document.createElement("button");
+        seeAllButton.className = "seeAllChallengesButton";
+        seeAllButton.textContent = "See All";
+        seeAllButton.style.marginTop = "0.5em";
+        seeAllButton.onclick = () => {
+          appContext.challengeLevelMenu.openBook(this.weeklyChallengeBook);
+          appContext.screenManager.switchTo("challengeLevelMenu");
+        };
+        this.weeklyChallengeCardContainer.appendChild(seeAllButton);
       }
     } catch (e) {
       //alert("Error loading levels");

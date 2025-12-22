@@ -10,6 +10,7 @@ import { OpeningInstructionsScreen } from '../ui/OpeningInstructionsScreen.ts';
 import { Level } from '../core/Level.ts';
 import { Book } from '../core/Book.ts';
 import { EditorLevelMenuScreen } from '../ui/EditorLevelMenuScreen.ts';
+import { ChallengeLevelMenuScreen } from '../ui/ChallengeLevelMenuScreen.ts';
 import { AuthModal } from '../ui/AuthModal.ts';
 
 export class AppContext {
@@ -20,6 +21,7 @@ export class AppContext {
   bookMenu: BookMenuScreen;
   gameLevelMenu: GameLevelMenuScreen;
   editorLevelMenu: EditorLevelMenuScreen;
+  challengeLevelMenu: ChallengeLevelMenuScreen;
   openingInstructions: OpeningInstructionsScreen;
   authModal: AuthModal;
 
@@ -47,12 +49,16 @@ export class AppContext {
     const editorLevelMenuRoot = ensureNotNull(document.getElementById("editorLevelMenu"));
     this.editorLevelMenu = new EditorLevelMenuScreen(editorLevelMenuRoot);
 
+    const challengeLevelMenuRoot = ensureNotNull(document.getElementById("challengeLevelMenu"));
+    this.challengeLevelMenu = new ChallengeLevelMenuScreen(challengeLevelMenuRoot);
+
     const authModalRoot = ensureNotNull(document.getElementById("authModal"));
     this.authModal = new AuthModal(authModalRoot);
     console.log("AuthModal initialized:", this.authModal);
 
     this.screenManager.additionalFunctions.gameLevelMenu = this.gameLevelMenu;
     this.screenManager.additionalFunctions.editorLevelMenu = this.editorLevelMenu;
+    this.screenManager.additionalFunctions.challengeLevelMenu = this.challengeLevelMenu;
     this.screenManager.additionalFunctions.bookMenu = this.bookMenu;
     this.screenManager.additionalFunctions.editor = this.editor;
     this.screenManager.additionalFunctions.game = this.game;
