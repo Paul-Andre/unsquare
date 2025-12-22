@@ -208,8 +208,15 @@ export class GameLevelMenu {
 
   displayChallengeIcon() {
     const iconSlot = this.root.querySelector("#challengeIconContainer .icon_slot");
+    const heading = this.root.querySelector("#weeklyChallengeHeading");
+    
     if (!iconSlot) {
       return;
+    }
+
+    // Update heading with longName
+    if (heading) {
+      heading.textContent = (this.weeklyChallengeLevel.longName || "Weekly Challenge") + ":";
     }
 
     iconSlot.innerHTML = "";

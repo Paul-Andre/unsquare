@@ -76,6 +76,17 @@ export class Level {
     level.isIcon = !!json.isIcon;
     level.hidden = !!json.hidden;
     level.mode = json.mode || "normal";
+    
+    // Auto-generate longName for weekly challenge levels if not set
+    if (!level.longName && level.shortName && level.mode === "challenge" && level.shortName.startsWith("Weekly #")) {
+      level.longName = level.shortName.replace("Weekly", "Weekly Challenge");
+    }
+    
+    // Auto-generate longName for daily levels if not set
+    if (!level.longName && level.shortName && level.shortName.startsWith("Daily #")) {
+      level.longName = level.shortName.replace("Daily", "Daily Level");
+    }
+    
     if (json.id) {
       level.id = json.id;
     } else {
