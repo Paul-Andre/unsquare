@@ -11,7 +11,7 @@ import { Book } from '../core/Book.ts';
 import { createWeeklyChallengeCard } from './WeeklyChallengeCard.tsx';
 import { getDailyLevelsBook, getWeeklyChallengesBook, getMainBook } from '../core/loadBook.ts';
 
-export class GameLevelMenuScreen {
+export class MainLevelMenuScreen {
   root: HTMLElement;
   dailyLevelsBook: Book;
   weeklyChallengesBook: Book;

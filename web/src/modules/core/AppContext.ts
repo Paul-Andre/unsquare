@@ -5,7 +5,7 @@ import { Game } from '../game/Game.ts';
 import { Editor } from '../game/Editor.ts';
 import { ScreenManager } from '../ui/ScreenManager.ts';
 import { BookMenuScreen } from '../ui/BookMenuScreen.ts';
-import { GameLevelMenuScreen } from '../ui/GameLevelMenuScreen.tsx';
+import { MainLevelMenuScreen } from '../ui/MainLevelMenuScreen.tsx';
 import { OpeningInstructionsScreen } from '../ui/OpeningInstructionsScreen.ts';
 import { Level } from '../core/Level.ts';
 import { Book } from '../core/Book.ts';
@@ -19,7 +19,7 @@ export class AppContext {
   editor: Editor;
   screenManager: ScreenManager;
   bookMenu: BookMenuScreen;
-  gameLevelMenu: GameLevelMenuScreen;
+  gameLevelMenu: MainLevelMenuScreen;
   editorLevelMenu: EditorLevelMenuScreen;
   challengeLevelMenu: ChallengeLevelMenuScreen;
   openingInstructions: OpeningInstructionsScreen;
@@ -41,7 +41,7 @@ export class AppContext {
     this.bookMenu = new BookMenuScreen(bookMenuRoot);
 
     const gameLevelMenuRoot = ensureNotNull(document.getElementById("gameLevelMenu"));
-    this.gameLevelMenu = new GameLevelMenuScreen(gameLevelMenuRoot);
+    this.gameLevelMenu = new MainLevelMenuScreen(gameLevelMenuRoot);
 
     const openingInstructionsRoot = ensureNotNull(document.getElementById("opening_instructions"));
     this.openingInstructions = new OpeningInstructionsScreen(openingInstructionsRoot);
