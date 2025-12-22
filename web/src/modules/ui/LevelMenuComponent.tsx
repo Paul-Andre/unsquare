@@ -16,16 +16,6 @@ import {
   calculateStates,
 } from './levelStateUtils.ts';
 
-// Re-export for backwards compatibility
-export {
-  LEVEL_STATES,
-  calculateStatesWithParams,
-  calculateStatesProportional,
-  calculateStates,
-  calculateLevelState,
-  applyStateClass,
-} from './levelStateUtils.ts';
-export type { LevelState } from './levelStateUtils.ts';
 
 // This component manages a level menu DOM element, populating it with level data and handling user interactions.
 // It encapsulates the functionality for displaying and interacting with a collection of puzzle levels.
