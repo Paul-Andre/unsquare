@@ -67,7 +67,7 @@ export class LevelMenuComponent {
       this.saveIconOrder();
     } else if (this.selectingIcon) {
       assert(this.book !== null);
-      this.book.levels.forEach(function (a) {
+      this.book.levels.forEach((a) => {
         a.isIcon = false;
       });
       level.isIcon = true;
@@ -87,7 +87,6 @@ export class LevelMenuComponent {
       if (this.isEditor) {
         appContext.editLevel(level, this.book);
       } else {
-        console.log("Attempting to open level:", level);
         appContext.playLevel(level, this.book);
       }
     }
@@ -117,10 +116,7 @@ export class LevelMenuComponent {
 
     this.container.innerHTML = "";
 
-    let states: LevelState[] | null = null;
-    if (!this.isEditor) {
-      states = calculateStates(this.book);
-    }
+    const states: LevelState[] | null = !this.isEditor ? calculateStates(this.book) : null;
 
     let firstVisibleIndex = -1;
     if (!this.isEditor) {
@@ -133,7 +129,7 @@ export class LevelMenuComponent {
     }
     
     for (let i = 0; i < this.book.levels.length; i++) {
-      let level = this.book.levels[i];
+      const level = this.book.levels[i];
       
       // Filter out hidden levels in normal menu
       if (!this.isEditor && level.hidden) {
@@ -174,7 +170,7 @@ export class LevelMenuComponent {
     if (this.isEditor) {
       assert(this.book !== null);
       this.book.levels = Array.from(this.container.children).map(
-        function (element: Element): Level {
+        (element: Element): Level => {
           // XXX: using any to access property on the element
           return (element as any).level as Level;
         }
@@ -214,7 +210,7 @@ export class LevelMenuComponent {
 
   async displayBookJson(): Promise<void> {
     if (this.isEditor) {
-      let s = JSON.stringify(this.book, book_replacer);
+      const s = JSON.stringify(this.book, book_replacer);
       try {
         await navigator.clipboard.writeText(s);
         alert("Saved to clipboard");
@@ -227,7 +223,7 @@ export class LevelMenuComponent {
 
   appendJson(): void {
     if (this.isEditor) {
-      let jsonString = window.prompt("Paste JSON (book object or array of levels)");
+      const jsonString = window.prompt("Paste JSON (book object or array of levels)");
       if (!jsonString) {
         return;
       }
@@ -312,7 +308,7 @@ export class LevelMenuComponent {
   changeBookTitle(): void {
     assert(this.book !== null);
     
-    let new_title = prompt("Set book title", this.book.title);
+    const new_title = prompt("Set book title", this.book.title);
 
     if (new_title) {
       this.book.title = new_title;

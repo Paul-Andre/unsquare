@@ -38,11 +38,11 @@ export type LevelState = typeof LEVEL_STATES[keyof typeof LEVEL_STATES];
  * Returns an array of states for each level.
  */
 export function calculateStatesWithParams(book: Book, allowedUnsolved: number, allowedLocked: number): LevelState[] {
-  let states: LevelState[] = [];
+  const states: LevelState[] = [];
   for (let i = 0; i < book.levels.length; i++) {
-    let level = book.levels[i];
-    let par = level.par;
-    let best = level.getBestNumMoves();
+    const level = book.levels[i];
+    const par = level.par;
+    const best = level.getBestNumMoves();
     if (best === null) {
       if (allowedUnsolved) {
         states[i] = LEVEL_STATES.UNSOLVED;
@@ -79,11 +79,11 @@ export function calculateStatesProportional(book: Book): LevelState[] {
 
   let allowedLocked = 50;
 
-  let states = [];
+  const states = [];
   for (let i = 0; i < book.levels.length; i++) {
-    let level = book.levels[i];
-    let par = level.par;
-    let best = level.getBestNumMoves();
+    const level = book.levels[i];
+    const par = level.par;
+    const best = level.getBestNumMoves();
     if (best === null) {
       if (allowedUnsolved > 0) {
         states[i] = LEVEL_STATES.UNSOLVED; // unsolved and playable
@@ -106,7 +106,7 @@ export function calculateStatesProportional(book: Book): LevelState[] {
 }
 
 export function calculateStates(book: Book): LevelState[] {
-  if (book.levels.length == 0) {
+  if (book.levels.length === 0) {
     return [];
   }
   // Just unlock all...

@@ -6,6 +6,24 @@ import { Level } from '../core/Level.ts';
 export type IconDisplayType = "par" | "eric" | "obv" | "eric/par" | "obv/par" | "none";
 
 /**
+ * Calculate the minimum value across all solutions using a calculation function.
+ */
+function calculateMinValue(
+  level: Level,
+  calculateFn: (level: Level, solution: number[]) => number
+): number {
+  if (!level.solutions || level.solutions.length === 0) {
+    return Infinity;
+  }
+  let min = Infinity;
+  for (const solution of level.solutions) {
+    const value = calculateFn(level, solution);
+    min = Math.min(min, value);
+  }
+  return min;
+}
+
+/**
  * Calculate the display value for a level icon based on the display type.
  * Returns null if no value should be displayed.
  */
@@ -23,34 +41,19 @@ export function calculateIconDisplayValue(level: Level, displayType: IconDisplay
   }
 
   if (displayType === "eric") {
-    // Calculate minimum eric_partition_number across all solutions
-    let minEric = Infinity;
-    for (let solution of level.solutions) {
-      let eric = ericTilesNumber(level, solution);
-      minEric = Math.min(minEric, eric);
-    }
+    const minEric = calculateMinValue(level, ericTilesNumber);
     return minEric === Infinity ? 0 : minEric;
   }
 
   if (displayType === "obv") {
-    // Calculate minimum obviousScore across all solutions
-    let minObv = Infinity;
-    for (let solution of level.solutions) {
-      let obv = obviousScore(level, solution);
-      minObv = Math.min(minObv, obv);
-    }
+    const minObv = calculateMinValue(level, obviousScore);
     // Multiply by 100 and round to integer
     return minObv === Infinity ? 0 : Math.round(minObv * 100);
   }
 
   if (displayType === "eric/par") {
-    // Calculate eric/par ratio
-    let par = vector_sum(level.solutions[0]);
-    let minEric = Infinity;
-    for (let solution of level.solutions) {
-      let eric = ericTilesNumber(level, solution);
-      minEric = Math.min(minEric, eric);
-    }
+    const par = vector_sum(level.solutions[0]);
+    const minEric = calculateMinValue(level, ericTilesNumber);
     if (par === 0) {
       return 0;
     }
@@ -58,13 +61,8 @@ export function calculateIconDisplayValue(level: Level, displayType: IconDisplay
   }
 
   if (displayType === "obv/par") {
-    // Calculate obv/par ratio
-    let par = vector_sum(level.solutions[0]);
-    let minObv = Infinity;
-    for (let solution of level.solutions) {
-      let obv = obviousScore(level, solution);
-      minObv = Math.min(minObv, obv);
-    }
+    const par = vector_sum(level.solutions[0]);
+    const minObv = calculateMinValue(level, obviousScore);
     if (par === 0) {
       return 0;
     }

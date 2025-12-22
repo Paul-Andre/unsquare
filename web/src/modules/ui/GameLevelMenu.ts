@@ -103,7 +103,7 @@ export class GameLevelMenu {
   loadBook() {
     try {
       // Convert imported JSON data using book_reviver
-      let data = JSON.parse(JSON.stringify(mainBookData), book_reviver);
+      const data = JSON.parse(JSON.stringify(mainBookData), book_reviver);
       data.source = this.bookUrl;
 
       this.levelMenu.openBook(data);
@@ -191,8 +191,7 @@ export class GameLevelMenu {
 
     // Fetch fresh statistics
     const stats = await this.fetchChallengeStatistics();
-    console.log("stats", stats);
-    if (stats) {
+      if (stats) {
       saveChallengeStatistics(this.weeklyChallengeLevel.id, stats);
       this.updateChallengeStatisticsDisplay(stats);
     }

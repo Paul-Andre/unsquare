@@ -4,7 +4,7 @@ import { h } from 'dom-chef';
 import { getCachedLevelIconDataUrl } from './icon.ts';
 import { ICON_SIZE } from '../utils/config.ts';
 import { Level } from '../core/Level.ts';
-import { LevelState, applyStateClass } from './levelStateUtils.ts';
+import { LevelState, applyStateClass, LEVEL_STATES } from './levelStateUtils.ts';
 import { IconDisplayType, calculateIconDisplayValue, getParDisplayColor } from './iconDisplayCalculations.ts';
 
 export interface LevelIconProps {
@@ -47,7 +47,7 @@ export function createLevelIcon(props: LevelIconProps): HTMLDivElement {
   (element as any).level = level;
 
   // Set up click handler if provided and level is playable
-  if (onClick && (isEditor || state >= 2)) {
+  if (onClick && (isEditor || state >= LEVEL_STATES.UNSOLVED)) {
     element.onclick = (event: MouseEvent) => {
       onClick(level, element);
     };
