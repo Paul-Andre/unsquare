@@ -428,6 +428,8 @@
                 <button class="discord_button">Discord</button>
               </form>
               <button onclick="appContext.openPlayerEditor()">Level Editor</button>
+              <!-- Temporary test button - remove after testing -->
+              <button onclick="appContext.authModal.show();" style="background-color: #ff6b6b; color: white;">Test Auth</button>
             </div>
 
           </div>
@@ -517,6 +519,55 @@
           &#8592; Back
         </button>
       </section>
+    </div>
+  </div>
+
+  <!-- Auth Modal - placed at body level to overlay any screen -->
+  <div id="authModal" class="authModalOverlay" style="display: none">
+    <div class="authModalBackdrop"></div>
+    <div class="authModalContent finishedLevelInside">
+      <button id="authCloseButton" class="authCloseButton" aria-label="Close">×</button>
+      <h1>Sign In</h1>
+      <div id="authErrorMessage" style="display: none; color: #d32f2f; margin-bottom: 1em; font-size: 0.9em;"></div>
+      
+      <form id="authSignInForm">
+        <div style="margin-bottom: 1em;">
+          <label for="authSignInEmail" style="display: block; margin-bottom: 0.5em;">Email:</label>
+          <input type="email" id="authSignInEmail" required style="width: 100%; padding: 0.5em; font-size: 1em; border: 2px solid var(--border_gray, #c1bbaf); border-radius: 5px;">
+        </div>
+        <div style="margin-bottom: 1em;">
+          <label for="authSignInPassword" style="display: block; margin-bottom: 0.5em;">Password:</label>
+          <input type="password" id="authSignInPassword" required style="width: 100%; padding: 0.5em; font-size: 1em; border: 2px solid var(--border_gray, #c1bbaf); border-radius: 5px;">
+        </div>
+        <button type="submit" style="width: 100%; padding: 0.6em; font-size: 1.1em; margin-bottom: 1em;">Sign In</button>
+      </form>
+
+      <form id="authSignUpForm" style="display: none;">
+        <div style="margin-bottom: 1em;">
+          <label for="authSignUpEmail" style="display: block; margin-bottom: 0.5em;">Email:</label>
+          <input type="email" id="authSignUpEmail" required style="width: 100%; padding: 0.5em; font-size: 1em; border: 2px solid var(--border_gray, #c1bbaf); border-radius: 5px;">
+        </div>
+        <div style="margin-bottom: 1em;">
+          <label for="authSignUpPassword" style="display: block; margin-bottom: 0.5em;">Password:</label>
+          <input type="password" id="authSignUpPassword" required minlength="6" style="width: 100%; padding: 0.5em; font-size: 1em; border: 2px solid var(--border_gray, #c1bbaf); border-radius: 5px;">
+        </div>
+        <button type="submit" style="width: 100%; padding: 0.6em; font-size: 1.1em; margin-bottom: 1em;">Sign Up</button>
+      </form>
+
+      <div style="margin: 1em 0; text-align: center;">
+        <a href="#" id="authToggleLink" style="color: #2da6fd; text-decoration: underline; cursor: pointer;">
+          <span>Don't have an account? Sign up</span>
+        </a>
+      </div>
+
+      <div style="margin: 1.5em 0; text-align: center; position: relative;">
+        <div style="border-top: 1px solid var(--border_gray, #c1bbaf); margin: 1em 0;"></div>
+        <span style="background: #fdfdfd; padding: 0 1em; position: relative; top: -0.7em;">or</span>
+      </div>
+
+      <button id="authGoogleButton" style="width: 100%; padding: 0.6em; font-size: 1.1em; background-color: #4285f4; color: white; border: none; border-radius: 5px; cursor: pointer;">
+        Sign in with Google
+      </button>
     </div>
   </div>
 </body>

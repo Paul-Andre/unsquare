@@ -10,6 +10,7 @@ import { OpeningInstructions } from '../ui/OpeningInstructions.ts';
 import { Level } from '../core/Level.ts';
 import { Book } from '../core/Book.ts';
 import { EditorLevelMenu } from '../ui/EditorLevelMenu.ts';
+import { AuthModal } from '../ui/AuthModal.ts';
 
 export class AppContext {
 
@@ -20,8 +21,9 @@ export class AppContext {
   gameLevelMenu: GameLevelMenu;
   editorLevelMenu: EditorLevelMenu;
   openingInstructions: OpeningInstructions;
+  authModal: AuthModal;
 
-  constructor() {
+  constructor() {    
     // Create screenManager first (no DOM queries needed)
     this.screenManager = new ScreenManager();
 
@@ -44,6 +46,10 @@ export class AppContext {
 
     const editorLevelMenuRoot = ensureNotNull(document.getElementById("editorLevelMenu"));
     this.editorLevelMenu = new EditorLevelMenu(editorLevelMenuRoot);
+
+    const authModalRoot = ensureNotNull(document.getElementById("authModal"));
+    this.authModal = new AuthModal(authModalRoot);
+    console.log("AuthModal initialized:", this.authModal);
 
     this.screenManager.additionalFunctions.gameLevelMenu = this.gameLevelMenu;
     this.screenManager.additionalFunctions.editorLevelMenu = this.editorLevelMenu;

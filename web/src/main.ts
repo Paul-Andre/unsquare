@@ -4,6 +4,8 @@ import { checkAndOpenCustomLevel } from './modules/ui/customParse.ts';
 import * as config from './modules/utils/config.ts';
 import * as algo from './modules/core/algo';
 import { assert, cast, generate_id } from './modules/utils/helpers.ts';
+import { onAuthStateChange, getCurrentUser } from './modules/utils/auth.ts';
+import { supabase } from './modules/utils/api.ts';
 
 // Global configuration
 window.config = config;
