@@ -123,8 +123,8 @@ export class MainLevelMenuScreen {
     iconSlot.appendChild(iconElement);
 
     const seeAllButton = this.createSeeAllButton("See previous daily", () => {
-      appContext.bookLevelMenu.openBook(this.dailyLevelsBook);
-      appContext.screenManager.switchTo("bookLevelMenu");
+      appContext.gridLevelMenu.openBook(this.dailyLevelsBook);
+      appContext.screenManager.switchTo("gridLevelMenu");
     });
     iconSlot.appendChild(seeAllButton);
   }

@@ -6,7 +6,7 @@ import { Level } from '../core/Level.ts';
 import { LevelIconGrid } from './LevelIconGrid.tsx';
 import { appContext } from '../core/AppContext.ts';
 
-export class BookLevelMenuScreen {
+export class GridLevelMenuScreen {
   root: HTMLElement;
   titleElement: HTMLElement;
   levelMenu: LevelIconGrid;

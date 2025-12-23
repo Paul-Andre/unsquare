@@ -11,7 +11,7 @@ import { Level } from '../core/Level.ts';
 import { Book } from '../core/Book.ts';
 import { EditorLevelMenuScreen } from '../ui/EditorLevelMenuScreen.ts';
 import { ChallengeLevelMenuScreen } from '../ui/ChallengeLevelMenuScreen.ts';
-import { BookLevelMenuScreen } from '../ui/BookLevelMenuScreen.ts';
+import { GridLevelMenuScreen } from '../ui/GridLevelMenuScreen.ts';
 import { AuthModal } from '../ui/AuthModal.ts';
 
 export class AppContext {
@@ -23,7 +23,7 @@ export class AppContext {
   gameLevelMenu: MainLevelMenuScreen;
   editorLevelMenu: EditorLevelMenuScreen;
   challengeLevelMenu: ChallengeLevelMenuScreen;
-  bookLevelMenu: BookLevelMenuScreen;
+  gridLevelMenu: GridLevelMenuScreen;
   openingInstructions: OpeningInstructionsScreen;
   authModal: AuthModal;
 
@@ -53,8 +53,8 @@ export class AppContext {
 
     const challengeLevelMenuRoot = ensureNotNull(document.getElementById("challengeLevelMenu"));
     this.challengeLevelMenu = new ChallengeLevelMenuScreen(challengeLevelMenuRoot);
-    const bookLevelMenuRoot = ensureNotNull(document.getElementById("bookLevelMenu"));
-    this.bookLevelMenu = new BookLevelMenuScreen(bookLevelMenuRoot);
+    const gridLevelMenuRoot = ensureNotNull(document.getElementById("gridLevelMenu"));
+    this.gridLevelMenu = new GridLevelMenuScreen(gridLevelMenuRoot);
 
     const authModalRoot = ensureNotNull(document.getElementById("authModal"));
     this.authModal = new AuthModal(authModalRoot);
@@ -63,7 +63,7 @@ export class AppContext {
     this.screenManager.additionalFunctions.gameLevelMenu = this.gameLevelMenu;
     this.screenManager.additionalFunctions.editorLevelMenu = this.editorLevelMenu;
     this.screenManager.additionalFunctions.challengeLevelMenu = this.challengeLevelMenu;
-    this.screenManager.additionalFunctions.bookLevelMenu = this.bookLevelMenu;
+    this.screenManager.additionalFunctions.gridLevelMenu = this.gridLevelMenu;
     this.screenManager.additionalFunctions.bookMenu = this.bookMenu;
     this.screenManager.additionalFunctions.editor = this.editor;
     this.screenManager.additionalFunctions.game = this.game;
