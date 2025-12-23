@@ -10,6 +10,7 @@ import { Level } from '../core/Level.ts';
 import { Book } from '../core/Book.ts';
 import { createWeeklyChallengeCard } from './WeeklyChallengeCard.tsx';
 import { getDailyLevelsBook, getWeeklyChallengesBook, getMainBook } from '../core/loadBook.ts';
+import { MouseEventHandler } from 'react';
 
 export class MainLevelMenuScreen {
   root: HTMLElement;
@@ -47,18 +48,14 @@ export class MainLevelMenuScreen {
   }
 
   /**
-   * Create a "see all" button that navigates to the challenge level menu
+   * Create a "see all" button that navigates to the book level menu
    */
-  private createSeeAllButton(text: string, book: Book): HTMLElement {
+  private createSeeAllButton(text: string, onClick?: MouseEventHandler<HTMLButtonElement>): HTMLElement {
     const button = (
       <button
         // href="#"
         style={{ alignSelf: "flex-end", marginLeft: "20px" }}
-        onClick={() => {
-          appContext.challengeLevelMenu.openBook(book);
-          appContext.screenManager.switchTo("challengeLevelMenu");
-        }}
-      >
+        onClick={onClick} >
         {text}
       </button>
     ) as any as HTMLElement;
@@ -77,7 +74,12 @@ export class MainLevelMenuScreen {
 
       // Create weekly challenge card
       if (this.weeklyChallengeCardContainer) {
-        const seeAllButton = this.createSeeAllButton("See previous weekly", this.weeklyChallengesBook);
+        const seeAllButton = this.createSeeAllButton("See previous weekly",
+          () => {
+            appContext.challengeLevelMenu.openBook(this.weeklyChallengesBook);
+            appContext.screenManager.switchTo("challengeLevelMenu");
+          }
+        );
         createWeeklyChallengeCard({
           level: this.weeklyChallengesBook.levels.at(-1)!,
           book: this.weeklyChallengesBook,
@@ -120,7 +122,10 @@ export class MainLevelMenuScreen {
     
     iconSlot.appendChild(iconElement);
 
-    const seeAllButton = this.createSeeAllButton("See previous daily", this.dailyLevelsBook);
+    const seeAllButton = this.createSeeAllButton("See previous daily", () => {
+      appContext.bookLevelMenu.openBook(this.dailyLevelsBook);
+      appContext.screenManager.switchTo("bookLevelMenu");
+    });
     iconSlot.appendChild(seeAllButton);
   }
 }
