@@ -12,7 +12,7 @@ if (!STRIPE_WEBHOOK_SECRET) {
 }
 
 // Import Stripe SDK for Deno
-import Stripe from "stripe";
+import Stripe from "npm:stripe@^17";
 
 function errorResponse(message: string, status: number = 400, details?: unknown): Response {
   return new Response(

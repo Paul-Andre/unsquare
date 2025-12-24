@@ -13,8 +13,8 @@ if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
 }
 
 // Import Stripe SDK and Supabase client for Deno
-import Stripe from "stripe";
-import { createClient } from "@supabase/supabase-js";
+import Stripe from "npm:stripe@^17";
+import { createClient } from "jsr:@supabase/supabase-js@2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -86,6 +86,7 @@ Deno.serve(async (req) => {
     if (authError || !user) {
       return errorResponse("Unauthorized: User not authenticated", 401);
     }
+    console.log("User email", user.email);
 
     const stripe = new Stripe(STRIPE_SECRET_KEY, {
       apiVersion: "2025-02-24.acacia",
@@ -111,6 +112,7 @@ Deno.serve(async (req) => {
           quantity: quantity,
         },
       ],
+      customer_email: user.email,
       mode: "payment",
       success_url: successUrl,
       cancel_url: cancelUrl,
