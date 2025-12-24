@@ -1,5 +1,6 @@
 "use strict";
 
+import { FunctionsHttpError } from '@supabase/supabase-js';
 import { supabase } from './api.ts';
 
 export interface CreateCheckoutSessionOptions {
@@ -28,12 +29,14 @@ export async function createCheckoutSession(options: CreateCheckoutSessionOption
     });
 
     if (error) {
-      console.error("Error creating checkout session:", error);
-      // Check if it's an authentication error
-      if (error.message?.includes("Unauthorized") || error.message?.includes("401")) {
-        throw new Error("You must be logged in to create a checkout session. Please sign in and try again.");
+      if (error instanceof FunctionsHttpError) {
+        const context = await error.context.json();
+        const message = error.message;
+        console.log(error.context.status, context);
+
+      } else {
+        throw error;
       }
-      throw new Error(`Failed to create checkout session: ${error.message}`);
     }
 
     if (!data?.url) {

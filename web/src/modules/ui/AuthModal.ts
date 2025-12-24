@@ -211,16 +211,16 @@ export class AuthModal {
   }
 
   async onAuthSuccess(user: any): Promise<void> {
-    
     this.setLoading(false);
-    this.hide();
 
-    // Resolve the promise if there's one waiting
+    // Resolve the promise before hiding, so hide() doesn't reject it
     if (this.resolveAuth) {
       this.resolveAuth(user);
       this.resolveAuth = null;
       this.rejectAuth = null;
     }
+
+    this.hide();
   }
 
   show(): Promise<any> {

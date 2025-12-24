@@ -8,6 +8,7 @@ import { onAuthStateChange, getCurrentUser } from './modules/utils/auth.ts';
 import { supabase } from './modules/utils/api.ts';
 import { testCheckout, createCheckoutSession } from './modules/utils/stripe.ts';
 import * as auth from './modules/utils/auth.ts'
+import { purchaseDailyWeeklyArchive } from './modules/core/shop.ts';
 
 // Global configuration
 window.config = config;
@@ -20,11 +21,24 @@ window.algo = algo;
 // Expose functions and modules for testing
 window.testCheckout = testCheckout;
 window.createCheckoutSession = createCheckoutSession;
+window.purchaseDailyWeeklyArchive = purchaseDailyWeeklyArchive;
+window.auth = auth;
 window.supabase = supabase;
-window.auth = auth
+
 
 // Parse custom level if present in URL
 let openedCustom = checkAndOpenCustomLevel();
+
+
+const url = new URL(window.location.href);
+const continuations = url.searchParams.get("continuations");
+if (continuations) {
+  continuations.split(",").forEach(continuation => {
+    if (continuation === "purchaseDailyWeeklyArchive") {
+      purchaseDailyWeeklyArchive();
+    }
+  });
+}
 
 // Remove utm parameters from the url
 window.addEventListener('load',

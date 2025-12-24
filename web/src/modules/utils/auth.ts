@@ -45,7 +45,10 @@ export async function signInWithOAuth(provider: 'google' = 'google'): Promise<{ 
   const { error } = await supabase.auth.signInWithOAuth({
     provider,
     options: {
-      redirectTo: window.location.origin,
+      redirectTo: window.location.origin + "?continuations=purchaseDailyWeeklyArchive",
+      queryParams: {
+        continuations: "purchaseDailyWeeklyArchive"
+      },
     },
   });
 

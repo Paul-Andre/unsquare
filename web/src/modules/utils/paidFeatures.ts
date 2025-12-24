@@ -23,6 +23,7 @@ export async function ensureAuthenticated() {
     const user = await appContext.authModal.show();
     return user;
   } catch (error) {
+    console.error('Authentication required for this feature', error);
     throw new Error('Authentication required for this feature');
   }
 }
