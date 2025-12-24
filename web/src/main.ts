@@ -6,6 +6,8 @@ import * as algo from './modules/core/algo';
 import { assert, cast, generate_id } from './modules/utils/helpers.ts';
 import { onAuthStateChange, getCurrentUser } from './modules/utils/auth.ts';
 import { supabase } from './modules/utils/api.ts';
+import { testCheckout, createCheckoutSession } from './modules/utils/stripe.ts';
+import * as auth from './modules/utils/auth.ts'
 
 // Global configuration
 window.config = config;
@@ -14,6 +16,12 @@ window.config = config;
 window.appContext = appContext;
 
 window.algo = algo;
+
+// Expose Stripe functions for testing
+window.testCheckout = testCheckout;
+window.createCheckoutSession = createCheckoutSession;
+window.supabase = supabase;
+window.auth = auth
 
 // Parse custom level if present in URL
 let openedCustom = checkAndOpenCustomLevel();

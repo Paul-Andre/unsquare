@@ -5,6 +5,7 @@ import { AppContext } from './modules/core/AppContext.ts';
 import { checkAndOpenCustomLevel } from './modules/ui/customParse.ts';
 import * as config from './modules/utils/config.ts';
 import * as algo from './modules/core/algo.ts';
+import { testCheckout, createCheckoutSession, CreateCheckoutSessionOptions } from './modules/utils/stripe.ts';
 
 declare global {
   interface Window {
@@ -15,7 +16,8 @@ declare global {
       capture: (event: string, properties?: Record<string, any>) => void;
     };
     algo: typeof algo;
-        
+    testCheckout: typeof testCheckout;
+    createCheckoutSession: typeof createCheckoutSession;
   }
 }
 

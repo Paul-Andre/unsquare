@@ -82,6 +82,10 @@ export function getDailyLevelsBook(): Book {
     title: "Daily Levels",
     source: "daily",
     levels: selectedLevels,
+    previous: {
+      type: "purchaseArchive"
+    },
+    fullAmount: allLevels.length,
   };
 }
 
@@ -159,6 +163,10 @@ export function getWeeklyChallengesBook(): Book {
     title: "Weekly Challenges",
     source: "challenge",
     levels: lastTwoLevels,
+    previous: {
+      type: "purchaseArchive"
+    },
+    fullAmount: allLevels.length,
   };
 }
 
