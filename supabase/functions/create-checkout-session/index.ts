@@ -1,9 +1,6 @@
 // create-checkout-session/index.ts
 // Supabase Edge Function (Deno) — Create a Stripe checkout session
 
-// @ts-ignore: Deno is available in Supabase Edge Function runtime
-declare const Deno: any;
-
 const STRIPE_SECRET_KEY = Deno.env.get("STRIPE_SECRET_KEY");
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
 const SUPABASE_ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY");
@@ -16,7 +13,7 @@ if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
 }
 
 // Import Stripe SDK and Supabase client for Deno
-import Stripe from "https://esm.sh/stripe@latest?target=deno";
+import Stripe from "stripe";
 import { createClient } from "@supabase/supabase-js";
 
 const corsHeaders = {
@@ -91,7 +88,7 @@ Deno.serve(async (req) => {
     }
 
     const stripe = new Stripe(STRIPE_SECRET_KEY, {
-      apiVersion: "2024-12-18.acacia",
+      apiVersion: "2025-02-24.acacia",
     });
 
     const body = await req.json().catch(() => null) as RequestBody | null;

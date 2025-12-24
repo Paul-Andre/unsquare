@@ -1,9 +1,6 @@
 // stripe-webhook/index.ts
 // Supabase Edge Function (Deno) — Handle Stripe webhook events
 
-// @ts-ignore: Deno is available in Supabase Edge Function runtime
-declare const Deno: any;
-
 const STRIPE_SECRET_KEY = Deno.env.get("STRIPE_SECRET_KEY");
 const STRIPE_WEBHOOK_SECRET = Deno.env.get("STRIPE_WEBHOOK_SECRET");
 
@@ -15,7 +12,7 @@ if (!STRIPE_WEBHOOK_SECRET) {
 }
 
 // Import Stripe SDK for Deno
-import Stripe from "https://esm.sh/stripe@latest?target=deno";
+import Stripe from "stripe";
 
 function errorResponse(message: string, status: number = 400, details?: unknown): Response {
   return new Response(
@@ -48,7 +45,7 @@ Deno.serve(async (req) => {
     }
 
     const stripe = new Stripe(STRIPE_SECRET_KEY, {
-      apiVersion: "2024-12-18.acacia",
+      apiVersion: "2025-02-24.acacia",
     });
 
     // Get the raw body and signature header for webhook verification
@@ -89,7 +86,7 @@ Deno.serve(async (req) => {
           currency: session.currency,
         });
         
-        let userId = session.metadata.user_id;
+        const userId = session.metadata?.user_id;
         console.log("User that purchased was:", userId);
         // TODO: Update your database here
         // Example: Mark user as having paid, grant access to premium features, etc.
