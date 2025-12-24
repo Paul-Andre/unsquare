@@ -264,3 +264,7 @@ Refactor (full typescript) and Weekly challenge #5
 24 Dec 2025
 0.12.1
 Lot of refact and integrations behind the scene + Christmas present level
+
+24 Dec 2025
+0.12.2
+Fix Weekly Challenge icon shrinking
