@@ -413,6 +413,136 @@ button.drawModeActive:hover {
   animation: fadeIn 0.2s ease-out forwards;
 }
 
+/* Auth Modal Overlay */
+.authModalOverlay {
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.authModalOverlay.showing {
+  animation: fadeIn 0.2s ease-out forwards;
+  pointer-events: auto;
+}
+
+.authModalBackdrop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(2px);
+}
+
+.authModalContent {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90%;
+  max-width: 400px;
+  background-color: #fdfdfd;
+  border: solid 3px #bdbcbc;
+  border-radius: 20px;
+  padding: 2em;
+  z-index: 1001;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.authCloseButton {
+  position: absolute;
+  top: 0.5em;
+  right: 0.5em;
+  background: none;
+  border: none;
+  font-size: 2em;
+  line-height: 1;
+  cursor: pointer;
+  color: #666;
+  padding: 0;
+  width: 1.5em;
+  height: 1.5em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.authCloseButton:hover {
+  color: var(--black);
+}
+
+.authModalContent h1 {
+  font-size: 2em;
+  margin-top: 0;
+  /* margin-bottom: 1em; */
+  text-align: center;
+}
+
+.authModalContent label {
+  font-weight: 500;
+}
+
+.authModalContent input[type="email"],
+.authModalContent input[type="password"] {
+   width: 100%;
+  padding: 0.5em;
+  font-size: 1em;
+  border: 2px solid #c1bbaf;
+  border-radius: 5px;
+  margin-bottom: 0.5em;
+}
+
+.authModalContent input[type="email"]:focus,
+.authModalContent input[type="password"]:focus {
+  outline: none;
+  border-color: #2da6fd;
+}
+
+.authModalContent button[type="submit"] {
+  margin-top: 0.5em;
+  font-size: 1.25em;
+}
+
+.authModalContent button[type="submit"]{
+  margin-top: 0.5em;
+  padding: 0.6em;
+  width: 100%;
+  font-size: 1.1em;
+  border: 3px solid #aeaba5;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+  font-weight: 500;
+}
+
+.authModalContent button[type="submit"]:hover:not(:disabled),
+ {
+  border-color: #444241;
+}
+
+.authModalContent button[type="submit"]:disabled,
+ {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.authModalContent #authToggleLink {
+  color: #2da6fd;
+  text-decoration: underline;
+  cursor: pointer;
+  font-size: 0.95em;
+}
+
+.authModalContent #authToggleLink:hover {
+  color: #006bc9;
+}
+
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -495,7 +625,10 @@ button.drawModeActive:hover {
 .finishedLevel button,
 .finishedLevelPerfect button,
 .finishedChallengeHistogram button,
-.viewHistogramOverlay button {
+.viewHistogramOverlay button,
+/* .modal button, */
+adsfadsfasd
+ {
   font-size: 1.6em;
   padding: 0.3em 0.8em;
   /* min-width: 120px; */
@@ -509,7 +642,10 @@ button.drawModeActive:hover {
 .finishedLevel button:hover,
 .finishedLevelPerfect button:hover,
 .finishedChallengeHistogram button:hover,
-.viewHistogramOverlay button:hover {
+.viewHistogramOverlay button:hover,
+/* .modal button:hover, */
+adfadfadsa
+ {
   border-color: #444241;
 }
 
@@ -932,4 +1068,120 @@ button.discord_button_simple {
 .center_text {
   text-align: center;
 
+}
+
+button.gsi-material-button {
+  all: revert;
+  display: inline;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  -webkit-appearance: none;
+  background-color: WHITE;
+  background-image: none;
+  border: 1px solid #747775;
+  -webkit-border-radius: 100px;
+  border-radius: 100px;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  color: #1f1f1f;
+  cursor: pointer;
+  font-family: 'Roboto', arial, sans-serif;
+  font-size: 20px;
+  height: 3em;
+  letter-spacing: 0.25px;
+  outline: none;
+  overflow: hidden;
+  padding: 0 12px;
+  position: relative;
+  text-align: center;
+  -webkit-transition: background-color .218s, border-color .218s, box-shadow .218s;
+  transition: background-color .218s, border-color .218s, box-shadow .218s;
+  vertical-align: middle;
+  white-space: nowrap;
+  width: 100%;
+  max-width: 400px;
+  min-width: min-content;
+}
+
+button.gsi-material-button .gsi-material-button-icon {
+
+  all: revert;
+  height: 1.2em;
+  margin-right: 0.55em;
+  min-width: 20px;
+  width: 1.2em;
+  overflow: visible;
+}
+
+button.gsi-material-button .gsi-material-button-content-wrapper {
+
+  all: revert;
+  -webkit-align-items: center;
+  align-items: center;
+  display: flex;
+  -webkit-flex-direction: row;
+  flex-direction: row;
+  -webkit-flex-wrap: nowrap;
+  flex-wrap: nowrap;
+  height: 100%;
+  justify-content: center;
+  position: relative;
+  width: 100%;
+}
+
+button.gsi-material-button .gsi-material-button-contents {
+
+  all: revert;
+  -webkit-flex-grow: 0;
+  flex-grow: 0;
+  font-family: 'Roboto', arial, sans-serif;
+  font-weight: 500;
+  /* overflow: hidden; */
+  text-overflow: ellipsis;
+  vertical-align: top;
+}
+
+button.gsi-material-button .gsi-material-button-state {
+
+  all: revert;
+  -webkit-transition: opacity .218s;
+  transition: opacity .218s;
+  bottom: 0;
+  left: 0;
+  opacity: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+
+button.gsi-material-button:disabled {
+  cursor: default;
+  background-color: #ffffff61;
+  border-color: #1f1f1f1f;
+}
+
+button.gsi-material-button:disabled .gsi-material-button-contents {
+  opacity: 38%;
+}
+
+button.gsi-material-button:disabled .gsi-material-button-icon {
+  opacity: 38%;
+}
+
+button.gsi-material-button:not(:disabled):active .gsi-material-button-state, 
+button.gsi-material-button:not(:disabled):focus .gsi-material-button-state {
+  background-color: #303030;
+  opacity: 12%;
+}
+
+button.gsi-material-button:not(:disabled):hover {
+  -webkit-box-shadow: 0 1px 2px 0 rgba(60, 64, 67, .30), 0 1px 3px 1px rgba(60, 64, 67, .15);
+  box-shadow: 0 1px 2px 0 rgba(60, 64, 67, .30), 0 1px 3px 1px rgba(60, 64, 67, .15);
+}
+
+button.gsi-material-button:not(:disabled):hover .gsi-material-button-state {
+  background-color: #303030;
+  opacity: 8%;
 }
