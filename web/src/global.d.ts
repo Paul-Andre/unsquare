@@ -6,6 +6,8 @@ import { checkAndOpenCustomLevel } from './modules/ui/customParse.ts';
 import * as config from './modules/utils/config.ts';
 import * as algo from './modules/core/algo.ts';
 import { testCheckout, createCheckoutSession, CreateCheckoutSessionOptions } from './modules/utils/stripe.ts';
+import { supabase } from './modules/utils/api.ts';
+import { auth } from './modules/utils/auth.ts';
 
 declare global {
   interface Window {
@@ -18,6 +20,8 @@ declare global {
     algo: typeof algo;
     testCheckout: typeof testCheckout;
     createCheckoutSession: typeof createCheckoutSession;
+    supabase: typeof supabase;
+    auth: typeof auth;
   }
 }
 

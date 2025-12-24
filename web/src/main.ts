@@ -17,7 +17,7 @@ window.appContext = appContext;
 
 window.algo = algo;
 
-// Expose Stripe functions for testing
+// Expose functions and modules for testing
 window.testCheckout = testCheckout;
 window.createCheckoutSession = createCheckoutSession;
 window.supabase = supabase;
