@@ -260,3 +260,7 @@ Weekly #4 (also a lot of TypeScript stuff)
 20 Dec 2025
 0.12.0
 Refactor (full typescript) and Weekly challenge #5
+
+24 Dec 2025
+0.12.1
+Lot of refact and integrations behind the scene + Christmas present level
