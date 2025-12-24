@@ -33,7 +33,7 @@ export function createWeeklyChallengeCard(props: WeeklyChallengeCardProps): HTML
   ) as any as HTMLHeadingElement;
 
   const iconSlot = (
-    <div className="icon_slot"></div>
+    <div className="icon_slot" style={{flexShrink: 0}}></div>
   ) as any as HTMLDivElement;
 
   const statYou = (
