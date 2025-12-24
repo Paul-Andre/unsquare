@@ -5,7 +5,7 @@ import { Level } from './Level.ts';
 import { book_reviver, reindexLevels } from './bookUtils.ts';
 import { DAILY_UNLOCK_HOUR, DAILY_LEVELS_START_DATE } from '../utils/config.ts';
 import mainBookData from '../../data/2025_nov_11_reordered_solved_fixed_all_solutions.json';
-import dailyLevelsData from '../../data/daily_submitting_07_dec_exhaustive.json';
+import dailyLevelsData from '../../data/daily_levels_24_dec_2025_exhaustive.json';
 import { assert } from '../utils/helpers.ts';
 
 /**

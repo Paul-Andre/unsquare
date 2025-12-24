@@ -125,6 +125,8 @@ def validate_level(level, force):
         return False, "No tiles"
     # if not force and level.get('solutionType') == 'minizinc':
     #     return False, "Already solved (minizinc)"
+    if not force and level.get('hidden'):
+        return False, "Hidden level"
     return True, None
 
 
