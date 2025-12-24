@@ -13,6 +13,7 @@ export interface LevelIconProps {
   glow?: boolean;
   isEditor?: boolean;
   iconDisplayType?: IconDisplayType;
+  nonHiddenIndex?: number | null;
   onClick?: (level: Level, element: HTMLElement) => void;
 }
 
@@ -21,7 +22,7 @@ export interface LevelIconProps {
  * Handles icon image display, state-based CSS classes, and optional metric display.
  */
 export function createLevelIcon(props: LevelIconProps): HTMLDivElement {
-  const { level, state, glow = false, isEditor = false, iconDisplayType = "none", onClick } = props;
+  const { level, state, glow = false, isEditor = false, iconDisplayType = "none", nonHiddenIndex = null, onClick } = props;
 
   // Get cached or generate icon dataURL
   const dataURL = getCachedLevelIconDataUrl(level);
@@ -55,14 +56,19 @@ export function createLevelIcon(props: LevelIconProps): HTMLDivElement {
 
   if (isEditor) {
     // Editor mode: show display value and apply editor-specific classes
-    const displayValue = calculateIconDisplayValue(level, iconDisplayType);
+    const displayValue = calculateIconDisplayValue(level, iconDisplayType, nonHiddenIndex);
 
     if (displayValue !== null) {
       parDisplay.innerText = String(displayValue);
     }
 
+    // Make font smaller for daily display type
+    if (iconDisplayType === "daily") {
+      parDisplay.style.fontSize = "12px";
+    }
+
     // Only apply colors when using par mode
-    if (iconDisplayType === "par" && displayValue !== null) {
+    if (iconDisplayType === "par" && displayValue !== null && typeof displayValue === "number") {
       const color = getParDisplayColor(displayValue);
       parDisplay.style.color = color;
       element.style.borderColor = color;

@@ -66,12 +66,23 @@ export class LevelIconGrid {
     
     const iconDisplayType = this.getIconDisplayType ? this.getIconDisplayType() : "none";
     
+    let nonHiddenIndex = 0;
     for (let i = 0; i < this.book.levels.length; i++) {
       const level = this.book.levels[i];
       
       // Filter out hidden levels in normal menu
       if (!this.isEditorMode && level.hidden) {
         continue;
+      }
+      
+      // In editor mode, only count non-hidden levels for the index
+      // In player mode, all levels shown are non-hidden (already filtered)
+      if (this.isEditorMode) {
+        if (!level.hidden) {
+          nonHiddenIndex++;
+        }
+      } else {
+        nonHiddenIndex++;
       }
       
       const state = states ? states[i] : LEVEL_STATES.UNSOLVED;
@@ -83,6 +94,7 @@ export class LevelIconGrid {
         glow,
         isEditor: this.isEditorMode,
         iconDisplayType,
+        nonHiddenIndex: this.isEditorMode ? (level.hidden ? null : nonHiddenIndex - 1) : nonHiddenIndex - 1,
         onClick: this.onIconClick,
       });
       

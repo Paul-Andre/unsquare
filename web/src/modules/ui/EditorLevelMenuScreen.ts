@@ -106,6 +106,7 @@ export class EditorLevelMenuScreen {
     );
     this.reindexLevels();
     this.updateLevelCounter();
+    this.levelMenu.displayIcons(); // Refresh icons to update nonHiddenIndex values
     this.saveBook();
   }
 
@@ -217,7 +218,7 @@ export class EditorLevelMenuScreen {
   }
 
   setIconDisplayType(type: string): void {
-    if (type === "par" || type === "eric" || type === "obv" || type === "eric/par" || type === "obv/par" || type === "none") {
+    if (type === "par" || type === "eric" || type === "obv" || type === "eric/par" || type === "obv/par" || type === "daily" || type === "none") {
       this.iconDisplayType = type;
       this.levelMenu.displayIcons();
     }

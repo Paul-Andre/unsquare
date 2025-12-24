@@ -2,8 +2,9 @@
 
 import { vector_sum, ericTilesNumber, obviousScore } from '../core/algo.ts';
 import { Level } from '../core/Level.ts';
+import { DAILY_LEVELS_START_DATE } from '../utils/config.ts';
 
-export type IconDisplayType = "par" | "eric" | "obv" | "eric/par" | "obv/par" | "none";
+export type IconDisplayType = "par" | "eric" | "obv" | "eric/par" | "obv/par" | "daily" | "none";
 
 /**
  * Calculate the minimum value across all solutions using a calculation function.
@@ -27,9 +28,20 @@ function calculateMinValue(
  * Calculate the display value for a level icon based on the display type.
  * Returns null if no value should be displayed.
  */
-export function calculateIconDisplayValue(level: Level, displayType: IconDisplayType): number | null {
+export function calculateIconDisplayValue(level: Level, displayType: IconDisplayType, nonHiddenIndex: number | null = null): number | string | null {
   if (displayType === "none") {
     return null;
+  }
+
+  if (displayType === "daily") {
+    if (nonHiddenIndex === null) {
+      return null;
+    }
+    const date = new Date(DAILY_LEVELS_START_DATE.getTime() + nonHiddenIndex * 24 * 60 * 60 * 1000);
+    const monthAbbr = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+    const month = monthAbbr[date.getMonth()];
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${month}${day}`;
   }
 
   if (!level.solutions || level.solutions.length === 0) {
