@@ -16,7 +16,7 @@ export function userHasArchiveAccess(): boolean {
   return false;
 }
 
-const NUM_DAILY_LEVELS_PREVIEW = 7;
+const NUM_DAILY_LEVELS_PREVIEW = 3;
 const NUM_WEEKLY_CHALLENGES_PREVIEW = 2;
 
 /**
@@ -88,7 +88,7 @@ export function getDailyLevelsBook(): Book {
         "goToDailyArchive",
       ],
     },
-    fullAmount: allLevels.length,
+    fullAmount: currentIndex + 1,
   };
 }
 

@@ -122,10 +122,10 @@ export class MainLevelMenuScreen {
     
     iconSlot.appendChild(iconElement);
 
-    // const seeAllButton = this.createSeeAllButton("See previous daily", () => {
-    //   appContext.gridLevelMenu.openBook(this.dailyLevelsBook);
-    //   appContext.screenManager.switchTo("gridLevelMenu");
-    // });
-    // iconSlot.appendChild(seeAllButton);
+    const seeAllButton = this.createSeeAllButton("See previous daily", () => {
+      appContext.gridLevelMenu.openBook(this.dailyLevelsBook);
+      appContext.screenManager.switchTo("gridLevelMenu");
+    });
+    iconSlot.appendChild(seeAllButton);
   }
 }

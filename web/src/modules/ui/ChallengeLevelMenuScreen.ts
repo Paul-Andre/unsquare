@@ -3,28 +3,33 @@
 import { cast } from '../utils/helpers.ts';
 import { Book } from '../core/Book.ts';
 import { createWeeklyChallengeCard } from './WeeklyChallengeCard.tsx';
+import { createUnlockAllSection } from './UnlockAllSection.tsx';
 
 export class ChallengeLevelMenuScreen {
   root: HTMLElement;
   container: HTMLElement;
   titleElement: HTMLElement;
+  unlockSectionContainer: HTMLElement;
   book: Book | null = null;
 
   constructor(root: HTMLElement) {
     this.root = root;
     this.container = cast(root.querySelector("#challengeLevelContainer"), HTMLElement);
     this.titleElement = cast(root.querySelector("h1"), HTMLElement);
+    this.unlockSectionContainer = cast(root.querySelector(".footer"), HTMLElement);
   }
 
   openBook(book: Book): void {
     this.book = book;
     this.titleElement.textContent = book.title;
     this.displayChallengeCards();
+    this.updateUnlockSection();
   }
 
   onShow(): void {
     if (this.book) {
       this.displayChallengeCards();
+      this.updateUnlockSection();
     }
   }
 
@@ -55,6 +60,15 @@ export class ChallengeLevelMenuScreen {
         level,
         book: this.book,
         container: cardContainer,
+      });
+    }
+  }
+
+  updateUnlockSection(): void {
+    if (this.book) {
+      createUnlockAllSection({
+        book: this.book,
+        container: this.unlockSectionContainer,
       });
     }
   }
