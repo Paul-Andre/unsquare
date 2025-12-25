@@ -82,12 +82,32 @@ export async function testCheckout() {
 }
 
 export async function purchaseDailyWeeklyArchive(continuations: Continuation[]) {
-  // Note, here we authenticate, and on page reload we will call this same function again.
-  await ensureAuthenticated(["purchaseDailyWeeklyArchive", ...continuations]);
-  console.log(await getCurrentUser());
-  createCheckoutSession({
-    price: "price_1ShNdwAVJE8pXXhAfdf3SHTY",
-    success_url: buildUrl(continuations),
-  });
+  // Check if user is already authenticated
+  const user = await getCurrentUser();
+  
+  if (!user) {
+    // If not authenticated, show auth modal and wait for authentication
+    // After auth, the continuations will be processed, which will call this function again
+    await ensureAuthenticated(["purchaseDailyWeeklyArchive", ...continuations]);
+    return;
+  }
+  
+  // User is authenticated, proceed directly to checkout
+  // The success_url should include the navigation continuations (not purchaseDailyWeeklyArchive)
+  // since the purchase will be complete after Stripe redirects back
+  try {
+    // Show redirecting screen
+    appContext.redirectingToPaymentModal.show();
+    
+    await createCheckoutSession({
+      price: "price_1ShNdwAVJE8pXXhAfdf3SHTY",
+      success_url: buildUrl(continuations),
+    });
+  } catch (error) {
+    // Hide redirecting screen on error
+    appContext.redirectingToPaymentModal.hide();
+    console.error("Error creating checkout session:", error);
+    throw error;
+  }
 }
 

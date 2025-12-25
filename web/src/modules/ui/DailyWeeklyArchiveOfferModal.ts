@@ -49,9 +49,14 @@ export class DailyWeeklyArchiveOfferModal {
   async handleFiveDollarPurchase(): Promise<void> {
     this.fiveDollarButton.disabled = true;
     try {
+      // Hide the offer modal before showing auth modal (if needed)
+      // This prevents the offer modal from covering the auth modal
+      this.hide();
       await purchaseDailyWeeklyArchive(this.continuations);
     } catch (error) {
       console.error('Purchase failed:', error);
+      // Re-show the offer modal if purchase failed
+      this.show(this.continuations);
       this.fiveDollarButton.disabled = false;
     }
   }

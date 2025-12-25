@@ -710,6 +710,55 @@ button.drawModeActive:hover {
   cursor: not-allowed;
 }
 
+/* Redirecting to Payment Modal Overlay */
+.redirectingToPaymentModalOverlay {
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1002;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.redirectingToPaymentModalOverlay.showing {
+  animation: fadeIn 0.2s ease-out forwards;
+  pointer-events: auto;
+}
+
+.redirectingToPaymentModalBackdrop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(2px);
+}
+
+.redirectingToPaymentModalContent {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90%;
+  max-width: 400px;
+  background-color: #fdfdfd;
+  border: solid 3px #bdbcbc;
+  border-radius: 20px;
+  padding: 2em;
+  z-index: 1003;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  text-align: center;
+}
+
+.redirectingToPaymentModalContent h1 {
+  font-size: 1.8em;
+  margin: 0;
+  text-align: center;
+}
+
 @keyframes fadeInWithGoldenGlow {
   from {
     opacity: 0;

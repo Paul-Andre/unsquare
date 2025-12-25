@@ -46,16 +46,26 @@ function parseContinuation(s:string):Continuation {
     switch (s) {
         case "purchaseDailyWeeklyArchive":
             return "purchaseDailyWeeklyArchive";
+        case "goToDailyArchive":
+            return "goToDailyArchive";
+        case "goToWeeklyArchive":
+            return "goToWeeklyArchive";
         default:
             throw new Error(`Unknown continuation: ${s}`);
     }
 }
 
 function serializeContinuation(c:Continuation):string {
-    if (c === "purchaseDailyWeeklyArchive") {
-        return "purchaseDailyWeeklyArchive";
+    switch (c) {
+        case "purchaseDailyWeeklyArchive":
+            return "purchaseDailyWeeklyArchive";
+        case "goToDailyArchive":
+            return "goToDailyArchive";
+        case "goToWeeklyArchive":
+            return "goToWeeklyArchive";
+        default:
+            throw new Error(`Unknown continuation: ${c}`);
     }
-    throw new Error(`Unknown continuation: ${c}`);
 }
 
 export function getUrlContinuations():Continuation[] {

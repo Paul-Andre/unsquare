@@ -14,6 +14,7 @@ import { ChallengeLevelMenuScreen } from '../ui/ChallengeLevelMenuScreen.ts';
 import { GridLevelMenuScreen } from '../ui/GridLevelMenuScreen.ts';
 import { AuthModal } from '../ui/AuthModal.ts';
 import { DailyWeeklyArchiveOfferModal } from '../ui/DailyWeeklyArchiveOfferModal.ts';
+import { RedirectingToPaymentModal } from '../ui/RedirectingToPaymentModal.ts';
 import { getDailyLevelsBook, getWeeklyChallengesBook } from './loadBook.ts';
 
 export class AppContext {
@@ -29,6 +30,7 @@ export class AppContext {
   openingInstructions: OpeningInstructionsScreen;
   authModal: AuthModal;
   dailyWeeklyArchiveOfferModal: DailyWeeklyArchiveOfferModal;
+  redirectingToPaymentModal: RedirectingToPaymentModal;
 
   constructor() {    
     // Create screenManager first (no DOM queries needed)
@@ -66,6 +68,10 @@ export class AppContext {
     const dailyWeeklyArchiveOfferModalRoot = ensureNotNull(document.getElementById("dailyWeeklyArchiveOfferModal"));
     this.dailyWeeklyArchiveOfferModal = new DailyWeeklyArchiveOfferModal(dailyWeeklyArchiveOfferModalRoot);
     console.log("DailyWeeklyArchiveOfferModal initialized:", this.dailyWeeklyArchiveOfferModal);
+
+    const redirectingToPaymentModalRoot = ensureNotNull(document.getElementById("redirectingToPaymentModal"));
+    this.redirectingToPaymentModal = new RedirectingToPaymentModal(redirectingToPaymentModalRoot);
+    console.log("RedirectingToPaymentModal initialized:", this.redirectingToPaymentModal);
 
     this.screenManager.additionalFunctions.mainLevelMenu = this.mainLevelMenu;
     this.screenManager.additionalFunctions.editorLevelMenu = this.editorLevelMenu;
