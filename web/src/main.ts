@@ -27,6 +27,9 @@ window.supabase = supabase;
 window.showDailyWeeklyArchiveOfferModal = () => {
   appContext.dailyWeeklyArchiveOfferModal.show([]);
 };
+window.showSignInModal = () => {
+  appContext.authModal.show([]);
+};
 
 
 // Remove utm parameters from the url
