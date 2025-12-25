@@ -13,6 +13,7 @@ import { EditorLevelMenuScreen } from '../ui/EditorLevelMenuScreen.ts';
 import { ChallengeLevelMenuScreen } from '../ui/ChallengeLevelMenuScreen.ts';
 import { GridLevelMenuScreen } from '../ui/GridLevelMenuScreen.ts';
 import { AuthModal } from '../ui/AuthModal.ts';
+import { DailyWeeklyArchiveOfferModal } from '../ui/DailyWeeklyArchiveOfferModal.ts';
 import { getDailyLevelsBook, getWeeklyChallengesBook } from './loadBook.ts';
 
 export class AppContext {
@@ -27,6 +28,7 @@ export class AppContext {
   gridLevelMenu: GridLevelMenuScreen;
   openingInstructions: OpeningInstructionsScreen;
   authModal: AuthModal;
+  dailyWeeklyArchiveOfferModal: DailyWeeklyArchiveOfferModal;
 
   constructor() {    
     // Create screenManager first (no DOM queries needed)
@@ -60,6 +62,10 @@ export class AppContext {
     const authModalRoot = ensureNotNull(document.getElementById("authModal"));
     this.authModal = new AuthModal(authModalRoot);
     console.log("AuthModal initialized:", this.authModal);
+
+    const dailyWeeklyArchiveOfferModalRoot = ensureNotNull(document.getElementById("dailyWeeklyArchiveOfferModal"));
+    this.dailyWeeklyArchiveOfferModal = new DailyWeeklyArchiveOfferModal(dailyWeeklyArchiveOfferModalRoot);
+    console.log("DailyWeeklyArchiveOfferModal initialized:", this.dailyWeeklyArchiveOfferModal);
 
     this.screenManager.additionalFunctions.mainLevelMenu = this.mainLevelMenu;
     this.screenManager.additionalFunctions.editorLevelMenu = this.editorLevelMenu;

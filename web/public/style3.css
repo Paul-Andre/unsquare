@@ -552,6 +552,144 @@ button.drawModeActive:hover {
   }
 }
 
+.dailyWeeklyArchiveOfferModalOverlay {
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.dailyWeeklyArchiveOfferModalOverlay.showing {
+  animation: fadeIn 0.2s ease-out forwards;
+  pointer-events: auto;
+}
+
+.dailyWeeklyArchiveOfferModalBackdrop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(2px);
+}
+
+.dailyWeeklyArchiveOfferModalContent {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90%;
+  max-width: 400px;
+  background-color: #fdfdfd;
+  border: solid 3px #bdbcbc;
+  border-radius: 20px;
+  padding: 2em;
+  z-index: 1001;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.dailyWeeklyArchiveOfferCloseButton {
+  position: absolute;
+  top: 0.5em;
+  right: 0.5em;
+  background: none;
+  border: none;
+  font-size: 2em;
+  line-height: 1;
+  cursor: pointer;
+  color: #666;
+  padding: 0;
+  width: 1.5em;
+  height: 1.5em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dailyWeeklyArchiveOfferCloseButton:hover {
+  color: var(--black);
+}
+
+.dailyWeeklyArchiveOfferModalContent h1 {
+  font-size: 2em;
+  margin-top: 0;
+  text-align: center;
+}
+
+.dailyWeeklyArchiveOfferCards {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5em;
+  margin-top: 1.5em;
+}
+
+.dailyWeeklyArchiveOfferCard {
+  border: 3px solid #aeaba5;
+  border-radius: 12px;
+  padding: 1.5em;
+  background-color: #fdfdfd;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.dailyWeeklyArchiveOfferCard:hover {
+  border-color: #6b6762;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.dailyWeeklyArchiveOfferCardHeader {
+  margin-bottom: 1em;
+}
+
+.dailyWeeklyArchiveOfferCardPrice {
+  font-size: 2.5em;
+  font-weight: 600;
+  color: var(--black);
+  line-height: 1;
+  margin-bottom: 0.3em;
+}
+
+.dailyWeeklyArchiveOfferCardTitle {
+  font-size: 1.3em;
+  font-weight: 500;
+  color: var(--black);
+  margin-bottom: 0.5em;
+}
+
+.dailyWeeklyArchiveOfferCardDescription {
+  font-size: 1em;
+  color: #666;
+  line-height: 1.4;
+  margin-bottom: 1.5em;
+}
+
+.dailyWeeklyArchiveOfferCardButton {
+  width: 100%;
+  padding: 0.7em;
+  font-size: 1.1em;
+  border: 3px solid #aeaba5;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+  font-weight: 500;
+  background: white;
+  color: var(--black);
+}
+
+.dailyWeeklyArchiveOfferCardButton:hover:not(:disabled) {
+  border-color: #444241;
+  background-color: #f5f5f5;
+}
+
+.dailyWeeklyArchiveOfferCardButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 @keyframes fadeInWithGoldenGlow {
   from {
     opacity: 0;

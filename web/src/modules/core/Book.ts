@@ -1,7 +1,7 @@
 import { Level } from './Level.ts';
 
 export type BookPrevious = {
-  type: "purchaseArchive"
+  action: "offerDailyWeeklyArchive"
 }
 
 export type Book = {

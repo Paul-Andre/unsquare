@@ -21,9 +21,12 @@ window.algo = algo;
 // Expose functions and modules for testing
 window.testCheckout = testCheckout;
 window.createCheckoutSession = createCheckoutSession;
-//window.purchaseDailyWeeklyArchive = purchaseDailyWeeklyArchive;
+window.purchaseDailyWeeklyArchive = purchaseDailyWeeklyArchive;
 window.auth = auth;
 window.supabase = supabase;
+window.showDailyWeeklyArchiveOfferModal = () => {
+  appContext.dailyWeeklyArchiveOfferModal.show([]);
+};
 
 
 // Remove utm parameters from the url
