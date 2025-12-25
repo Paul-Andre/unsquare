@@ -17,6 +17,7 @@
     "@types/node": "^20.10.0",
     "@types/sortablejs": "^1.15.9",
     "typescript": "^5.3.3",
-    "vite": "^5.0.8"
+    "vite": "^5.0.8",
+    "vite-tsconfig-paths": "^6.0.3"
   }
 }
