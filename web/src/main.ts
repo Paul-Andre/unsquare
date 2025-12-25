@@ -1,14 +1,14 @@
 // Main entry point for the application
 import { appContext } from './modules/core/AppContext.ts';
-import { checkAndOpenCustomLevel } from './modules/ui/customParse.ts';
+import { checkAndOpenCustomLevel, setupInitialScreen } from './modules/ui/openInitial.ts';
 import * as config from './modules/utils/config.ts';
 import * as algo from './modules/core/algo';
 import { assert, cast, generate_id } from './modules/utils/helpers.ts';
 import { onAuthStateChange, getCurrentUser } from './modules/utils/auth.ts';
 import { supabase } from './modules/utils/api.ts';
-import { testCheckout, createCheckoutSession } from './modules/utils/stripe.ts';
+import { testCheckout, createCheckoutSession, purchaseDailyWeeklyArchive } from './modules/utils/stripe.ts';
 import * as auth from './modules/utils/auth.ts'
-import { purchaseDailyWeeklyArchive } from './modules/core/shop.ts';
+import { processContinuations, getUrlContinuations } from 'modules/core/continuations.ts';
 
 // Global configuration
 window.config = config;
@@ -21,24 +21,10 @@ window.algo = algo;
 // Expose functions and modules for testing
 window.testCheckout = testCheckout;
 window.createCheckoutSession = createCheckoutSession;
-window.purchaseDailyWeeklyArchive = purchaseDailyWeeklyArchive;
+//window.purchaseDailyWeeklyArchive = purchaseDailyWeeklyArchive;
 window.auth = auth;
 window.supabase = supabase;
 
-
-// Parse custom level if present in URL
-let openedCustom = checkAndOpenCustomLevel();
-
-
-const url = new URL(window.location.href);
-const continuations = url.searchParams.get("continuations");
-if (continuations) {
-  continuations.split(",").forEach(continuation => {
-    if (continuation === "purchaseDailyWeeklyArchive") {
-      purchaseDailyWeeklyArchive();
-    }
-  });
-}
 
 // Remove utm parameters from the url
 window.addEventListener('load',
@@ -54,27 +40,7 @@ window.addEventListener('load',
     }, 5000);
   });
 
-
-// Initial screen selection based on user experience
-(function setupInitialScreen() {
-  let num_levels_done = 0;
-  for (let key in localStorage) {
-    if (key.startsWith("level_") && key.endsWith("bestNumMoves")) {
-      num_levels_done += 1;
-    }
-  }
-
-  let had_experience = num_levels_done >= 5;
-
-  if (openedCustom) {
-    // pass; It was already opened by the checkAndOpenCustomLevel function.
-  } else if (had_experience) {
-    appContext.openingInstructions.hasAlreadyWentToFirstLevel = true;
-    appContext.screenManager.switchTo('mainLevelMenu');
-  } else {
-    appContext.screenManager.switchTo('opening_instructions');
-  }
-})();
+setupInitialScreen();
 
 if (localStorage.getItem("player_id") === null) {
   let player_id = generate_id("anon");

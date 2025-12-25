@@ -2,6 +2,9 @@
 
 import { FunctionsHttpError } from '@supabase/supabase-js';
 import { supabase } from './api.ts';
+import { getCurrentUser } from './auth.ts';
+import { appContext } from '../core/AppContext.ts';
+import { Continuation, processContinuations, buildUrl } from '../core/continuations.ts';
 
 export interface CreateCheckoutSessionOptions {
   price?: string;
@@ -10,13 +13,26 @@ export interface CreateCheckoutSessionOptions {
   cancel_url?: string;
 }
 
-/**
- * Creates a Stripe checkout session and redirects to it.
- * 
- * @param options - Optional parameters for the checkout session
- * @returns Promise that resolves when the redirect is initiated
- * @throws Error if the checkout session creation fails
- */
+
+export async function ensureAuthenticated(continuations: Continuation[]): Promise<void> {
+  // Check if already authenticated
+  const user = await getCurrentUser();
+  if (user) {
+    processContinuations(continuations);
+    return;
+  }
+
+  // If no user authenticated, show auth modal and wait for authentication
+  try {
+    const user = await appContext.authModal.show(continuations);
+    return;
+  } catch (error) {
+    console.error('Authentication required for this feature', error);
+    throw new Error('Authentication required for this feature');
+  }
+}
+
+
 export async function createCheckoutSession(options: CreateCheckoutSessionOptions = {}): Promise<void> {
   try {
     const { data, error } = await supabase.functions.invoke('create-checkout-session', {
@@ -63,5 +79,15 @@ export async function testCheckout() {
     console.error("Test checkout failed:", error);
     alert(`Checkout failed: ${error instanceof Error ? error.message : String(error)}`);
   }
+}
+
+export async function purchaseDailyWeeklyArchive(continuations: Continuation[]) {
+  // Note, here we authenticate, and on page reload we will call this same function again.
+  await ensureAuthenticated(["purchaseDailyWeeklyArchive", ...continuations]);
+  console.log(await getCurrentUser());
+  createCheckoutSession({
+    price: "price_1ShNdwAVJE8pXXhAfdf3SHTY",
+    success_url: buildUrl(continuations),
+  });
 }
 

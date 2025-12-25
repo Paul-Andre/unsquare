@@ -13,6 +13,7 @@ import { EditorLevelMenuScreen } from '../ui/EditorLevelMenuScreen.ts';
 import { ChallengeLevelMenuScreen } from '../ui/ChallengeLevelMenuScreen.ts';
 import { GridLevelMenuScreen } from '../ui/GridLevelMenuScreen.ts';
 import { AuthModal } from '../ui/AuthModal.ts';
+import { getDailyLevelsBook, getWeeklyChallengesBook } from './loadBook.ts';
 
 export class AppContext {
 
@@ -68,6 +69,16 @@ export class AppContext {
     this.screenManager.additionalFunctions.editor = this.editor;
     this.screenManager.additionalFunctions.game = this.game;
     this.screenManager.additionalFunctions.opening_instructions = this.openingInstructions;
+  }
+
+  goToWeeklyArchive(): void {
+    this.challengeLevelMenu.openBook(getWeeklyChallengesBook());
+    this.screenManager.switchTo("challengeLevelMenu");
+  }
+
+  goToDailyArchive(): void {
+    this.gridLevelMenu.openBook(getDailyLevelsBook());
+    this.screenManager.switchTo("gridLevelMenu");
   }
 
   openEditor(): void {

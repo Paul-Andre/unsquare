@@ -2,6 +2,7 @@
 
 import { cast, ensureNotNull } from '../utils/helpers.ts';
 import * as auth from '../utils/auth.ts';
+import { Continuation } from 'modules/core/continuations.ts';
 
 export class AuthModal {
   root: HTMLElement;
@@ -20,6 +21,7 @@ export class AuthModal {
   googleButton: HTMLButtonElement;
   resolveAuth: ((user: any) => void) | null = null;
   rejectAuth: ((error: any) => void) | null = null;
+  continuations: Continuation[] = [];
 
   constructor(root: HTMLElement) {
     this.root = root;
@@ -42,12 +44,12 @@ export class AuthModal {
 
   setupEventListeners(): void {
     // Close button
-    this.closeButton.addEventListener('click', () => this.hide());
+    this.closeButton.addEventListener('click', () => this.close());
 
     // Backdrop click to close
     this.backdrop.addEventListener('click', (e) => {
       if (e.target === this.backdrop) {
-        this.hide();
+        this.close();
       }
     });
 
@@ -198,7 +200,7 @@ export class AuthModal {
     this.clearError();
     this.setLoading(true);
     try {
-      const { error } = await auth.signInWithOAuth('google');
+      const { error } = await auth.signInWithOAuth('google', this.continuations);
       if (error) {
         this.showError(error.message || 'Google sign in failed. Please try again.');
         this.setLoading(false);
@@ -211,23 +213,25 @@ export class AuthModal {
   }
 
   async onAuthSuccess(user: any): Promise<void> {
+    
     this.setLoading(false);
+    this.hide();
 
-    // Resolve the promise before hiding, so hide() doesn't reject it
+    // Resolve the promise if there's one waiting
     if (this.resolveAuth) {
       this.resolveAuth(user);
       this.resolveAuth = null;
       this.rejectAuth = null;
     }
 
-    this.hide();
   }
 
-  show(): Promise<any> {
+  show(continuations:Continuation[]): Promise<any> {
     console.log('AuthModal.show() called', this.root);
     this.clearError();
     this.isSignInMode = true;
     this.updateFormVisibility();
+    this.continuations = continuations;
     
     // Clear form inputs
     this.signInEmailInput.value = '';
@@ -250,11 +254,8 @@ export class AuthModal {
     });
   }
 
-  hide(): void {
-    this.root.classList.remove('showing');
-    setTimeout(() => {
-      this.root.style.display = 'none';
-    }, 200); // Match animation duration
+  close(): void {
+    this.hide();
 
     // Reject the promise if it's still pending
     if (this.rejectAuth) {
@@ -262,6 +263,13 @@ export class AuthModal {
       this.resolveAuth = null;
       this.rejectAuth = null;
     }
+  }
+
+  hide(): void {
+    this.root.classList.remove('showing');
+    setTimeout(() => {
+      this.root.style.display = 'none';
+    }, 200); // Match animation duration
   }
 
   isVisible(): boolean {

@@ -2,7 +2,7 @@
 // These are set in main.ts and used from HTML onclick handlers and console
 
 import { AppContext } from './modules/core/AppContext.ts';
-import { checkAndOpenCustomLevel } from './modules/ui/customParse.ts';
+import { checkAndOpenCustomLevel } from './modules/ui/openInitial.ts';
 import * as config from './modules/utils/config.ts';
 import * as algo from './modules/core/algo.ts';
 import { testCheckout, createCheckoutSession, CreateCheckoutSessionOptions } from './modules/utils/stripe.ts';

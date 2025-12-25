@@ -1,5 +1,6 @@
 "use strict";
 
+import { buildUrl, Continuation } from '../core/continuations.ts';
 import { supabase } from './api.ts';
 import type { User, AuthError } from '@supabase/supabase-js';
 
@@ -41,14 +42,11 @@ export async function signUpWithEmail(email: string, password: string): Promise<
 /**
  * Sign in with OAuth provider (Google)
  */
-export async function signInWithOAuth(provider: 'google' = 'google'): Promise<{ error: AuthError | null }> {
+export async function signInWithOAuth(provider: 'google' = 'google', continuations:Continuation[]): Promise<{ error: AuthError | null }> {
   const { error } = await supabase.auth.signInWithOAuth({
     provider,
     options: {
-      redirectTo: window.location.origin + "?continuations=purchaseDailyWeeklyArchive",
-      queryParams: {
-        continuations: "purchaseDailyWeeklyArchive"
-      },
+      redirectTo: buildUrl(continuations),
     },
   });
 
