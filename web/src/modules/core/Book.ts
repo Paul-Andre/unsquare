@@ -1,7 +1,9 @@
+import { Continuation } from './continuations.ts';
 import { Level } from './Level.ts';
 
-export type BookPrevious = {
-  action: "offerDailyWeeklyArchive"
+export type BookNavigation = {
+  action: "offerDailyWeeklyArchive",
+  continuations: Continuation[],
 }
 
 export type Book = {
@@ -9,6 +11,7 @@ export type Book = {
   title: string;
   levels: Level[];
   source?: string;
-  previous?: BookPrevious
+  previous?: BookNavigation;
+  next?: BookNavigation;
   fullAmount?: number
 };

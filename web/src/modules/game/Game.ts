@@ -13,7 +13,7 @@ import { supabase } from '../utils/api.ts';
 import { assert, bezierBlend, cast, ensureNotNull, interpolate } from '../utils/helpers.ts';
 import { appContext } from '../core/AppContext.ts';
 import { Level } from '../core/Level.ts';
-import { Book } from '../core/Book.ts';
+import { Book, BookNavigation } from '../core/Book.ts';
 import { Move } from './GameBase.ts';
 
 const firstDemoDrag = {
@@ -789,7 +789,12 @@ export class Game extends GameBase {
       let dis = true;
       if (currentArrayIndex !== null) {
         const prevArrayIndex = this.findPrevVisibleLevel(currentArrayIndex);
-        dis = prevArrayIndex < 0 || states[prevArrayIndex] <= LEVEL_STATES.LOCKED;
+        if (prevArrayIndex >= 0) {
+          dis = states[prevArrayIndex] <= LEVEL_STATES.LOCKED;
+        } else if (currentArrayIndex === 0 && this.book?.previous) {
+          // On first level, enable if book has previous field
+          dis = false;
+        }
       }
       prevButton.toggleAttribute("disabled", dis);
     }
@@ -799,7 +804,12 @@ export class Game extends GameBase {
       let dis = true;
       if (currentArrayIndex !== null) {
         const nextArrayIndex = this.findNextVisibleLevel(currentArrayIndex);
-        dis = nextArrayIndex < 0 || states[nextArrayIndex] <= LEVEL_STATES.LOCKED
+        if (nextArrayIndex >= 0) {
+          dis = states[nextArrayIndex] <= LEVEL_STATES.LOCKED;
+        } else if (this.book?.next) {
+          // On last visible level, enable if book has next field
+          dis = false;
+        }
       }
       nextButton.toggleAttribute("disabled", dis);
     }
@@ -833,6 +843,12 @@ export class Game extends GameBase {
     if (currentArrayIndex === null) return;
     
     const nextArrayIndex = this.findNextVisibleLevel(currentArrayIndex);
+    // If on last visible level and book has next field, show modal
+    if (nextArrayIndex < 0 && this.book.next) {
+      appContext.processBookNavigation(this.book.next);
+      return;
+    }
+    
     if (nextArrayIndex >= 0) {
       this.navigateToLevel(this.book.levels[nextArrayIndex]);
     }
@@ -844,6 +860,12 @@ export class Game extends GameBase {
     }
     const currentArrayIndex = this.getLevelArrayIndex(this.level);
     if (currentArrayIndex === null) return;
+    
+    // If on first level and book has previous field, show modal
+    if (currentArrayIndex === 0 && this.book.previous) {
+      appContext.processBookNavigation(this.book.previous);
+      return;
+    }
     
     const prevArrayIndex = this.findPrevVisibleLevel(currentArrayIndex);
     if (prevArrayIndex >= 0) {

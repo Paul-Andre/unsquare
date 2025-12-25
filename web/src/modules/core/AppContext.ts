@@ -8,7 +8,7 @@ import { BookMenuScreen } from '../ui/BookMenuScreen.ts';
 import { MainLevelMenuScreen } from '../ui/MainLevelMenuScreen.tsx';
 import { OpeningInstructionsScreen } from '../ui/OpeningInstructionsScreen.ts';
 import { Level } from '../core/Level.ts';
-import { Book } from '../core/Book.ts';
+import { Book, BookNavigation } from '../core/Book.ts';
 import { EditorLevelMenuScreen } from '../ui/EditorLevelMenuScreen.ts';
 import { ChallengeLevelMenuScreen } from '../ui/ChallengeLevelMenuScreen.ts';
 import { GridLevelMenuScreen } from '../ui/GridLevelMenuScreen.ts';
@@ -100,6 +100,12 @@ export class AppContext {
       id: "playerEditor",
       title: "Player Editor",
     });
+  }
+
+  processBookNavigation(bookNavigation: BookNavigation): void {
+    if (bookNavigation.action === "offerDailyWeeklyArchive") {
+      this.dailyWeeklyArchiveOfferModal.show(bookNavigation.continuations);
+    }
   }
 
   playLevel(level: Level, book: Book): void {
