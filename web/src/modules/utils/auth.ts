@@ -94,4 +94,35 @@ export function onAuthStateChange(callback: (user: User | null) => void) {
   });
 }
 
+/**
+ * Sign in with magic link (OTP) via email
+ */
+export async function signInWithMagicLink(email: string, continuations: Continuation[]): Promise<{ error: AuthError | null }> {
+  const redirectUrl = buildUrl(continuations);
+  const { error } = await supabase.auth.signInWithOtp({
+    email,
+    options: {
+      emailRedirectTo: redirectUrl,
+    },
+  });
+
+  return { error };
+}
+
+/**
+ * Verify OTP code
+ */
+export async function verifyOTP(email: string, token: string): Promise<AuthResult> {
+  const { data, error } = await supabase.auth.verifyOtp({
+    email,
+    token,
+    type: 'email',
+  });
+
+  return {
+    user: data.user,
+    error: error,
+  };
+}
+
 

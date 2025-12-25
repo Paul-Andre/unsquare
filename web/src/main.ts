@@ -53,6 +53,28 @@ if (localStorage.getItem("player_id") === null) {
   localStorage.setItem("player_id", player_id);
 }
 
+// Handle magic link redirects - check for continuations in URL after auth
+onAuthStateChange(async (user) => {
+  if (user) {
+    // User just authenticated, check for continuations in URL
+    const continuations = getUrlContinuations();
+    if (continuations.length > 0) {
+      // Process continuations after a short delay to ensure session is fully established
+      setTimeout(() => {
+        processContinuations(continuations);
+        // Clean up URL
+        const url = new URL(window.location.href);
+        url.searchParams.delete('continuations');
+        // Also clean up hash if it contains auth tokens
+        if (url.hash.includes('access_token') || url.hash.includes('type=recovery')) {
+          url.hash = '';
+        }
+        window.history.replaceState({}, '', url.toString());
+      }, 100);
+    }
+  }
+});
+
 // 8-click to get into editor mode.
 (function setupTitleEasterEgg() {
   const titleElement = document.getElementById("homeTitle");

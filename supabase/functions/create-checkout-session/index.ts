@@ -28,6 +28,7 @@ interface RequestBody {
   quantity?: number;
   success_url?: string;
   cancel_url?: string;
+  customer_email?: string;
 }
 
 function errorResponse(message: string, status: number = 400, details?: unknown): Response {
@@ -68,25 +69,24 @@ Deno.serve(async (req) => {
       return errorResponse("Server misconfiguration: missing required environment variables", 500);
     }
 
-    // Initialize Supabase client with the Authorization header from the request
+    // Initialize Supabase client - authentication is optional
     const authHeader = req.headers.get("Authorization");
-    if (!authHeader) {
-      return errorResponse("Unauthorized: Missing authorization header", 401);
+    let user = null;
+    
+    if (authHeader) {
+      const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+        global: {
+          headers: { Authorization: authHeader },
+        },
+      });
+
+      // Try to get user if auth header is provided
+      const { data: { user: authUser }, error: authError } = await supabase.auth.getUser();
+      if (!authError && authUser) {
+        user = authUser;
+        console.log("Authenticated user email", user.email);
+      }
     }
-
-    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-      global: {
-        headers: { Authorization: authHeader },
-      },
-    });
-
-    // Verify user authentication
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-
-    if (authError || !user) {
-      return errorResponse("Unauthorized: User not authenticated", 401);
-    }
-    console.log("User email", user.email);
 
     const stripe = new Stripe(STRIPE_SECRET_KEY, {
       apiVersion: "2025-02-24.acacia",
@@ -104,23 +104,36 @@ Deno.serve(async (req) => {
     const successUrl = body?.success_url || `${baseUrl}/success.html`;
     const cancelUrl = body?.cancel_url || `${baseUrl}/cancel.html`;
 
-    // Create checkout session with user ID in metadata
-    const session = await stripe.checkout.sessions.create({
+    // Determine customer email - use authenticated user's email, or from request body, or let Stripe collect it
+    const customerEmail = user?.email || body?.customer_email || undefined;
+
+    // Create checkout session
+    const sessionConfig: Stripe.Checkout.SessionCreateParams = {
       line_items: [
         {
           price: priceId,
           quantity: quantity,
         },
       ],
-      customer_email: user.email,
       mode: "payment",
       success_url: successUrl,
       cancel_url: cancelUrl,
       automatic_tax: { enabled: true },
-      metadata: {
+    };
+
+    // Add customer email if available
+    if (customerEmail) {
+      sessionConfig.customer_email = customerEmail;
+    }
+
+    // Add user ID to metadata if authenticated
+    if (user) {
+      sessionConfig.metadata = {
         user_id: user.id,
-      },
-    });
+      };
+    }
+
+    const session = await stripe.checkout.sessions.create(sessionConfig);
 
     // Return the session URL (client can redirect to it)
     return jsonResponse({ url: session.url }, 200);

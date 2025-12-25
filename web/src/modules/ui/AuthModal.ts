@@ -2,43 +2,61 @@
 
 import { cast, ensureNotNull } from '../utils/helpers.ts';
 import * as auth from '../utils/auth.ts';
-import { Continuation } from 'modules/core/continuations.ts';
+import { Continuation, processContinuations } from 'modules/core/continuations.ts';
+import type { User } from '@supabase/supabase-js';
+
+export interface AuthResult {
+  user: User | null;
+  skipped: boolean;
+}
+
+type ModalView = 'initial' | 'emailEntry' | 'codeEntry';
 
 export class AuthModal {
   root: HTMLElement;
   backdrop: HTMLElement;
   modalContent: HTMLElement;
-  signInForm: HTMLFormElement;
-  signUpForm: HTMLFormElement;
-  signInEmailInput: HTMLInputElement;
-  signInPasswordInput: HTMLInputElement;
-  signUpEmailInput: HTMLInputElement;
-  signUpPasswordInput: HTMLInputElement;
+  initialView: HTMLElement;
+  emailForm: HTMLFormElement;
+  otpForm: HTMLFormElement;
+  emailInput: HTMLInputElement;
+  otpInput: HTMLInputElement;
   errorMessage: HTMLElement;
-  toggleLink: HTMLElement;
-  isSignInMode: boolean;
+  emailErrorMessage: HTMLElement;
+  otpErrorMessage: HTMLElement;
   closeButton: HTMLButtonElement;
   googleButton: HTMLButtonElement;
-  resolveAuth: ((user: any) => void) | null = null;
+  emailButton: HTMLButtonElement;
+  skipLink: HTMLElement;
+  emailBackLink: HTMLElement;
+  otpBackLink: HTMLElement;
+  otpResendLink: HTMLElement;
+  currentView: ModalView = 'initial';
+  resolveAuth: ((result: AuthResult) => void) | null = null;
   rejectAuth: ((error: any) => void) | null = null;
   continuations: Continuation[] = [];
+  pendingEmail: string = '';
 
   constructor(root: HTMLElement) {
     this.root = root;
     this.backdrop = cast(ensureNotNull(root.querySelector('.authModalBackdrop')), HTMLElement);
     this.modalContent = cast(ensureNotNull(root.querySelector('.authModalContent')), HTMLElement);
-    this.signInForm = cast(ensureNotNull(root.querySelector('#authSignInForm')), HTMLFormElement);
-    this.signUpForm = cast(ensureNotNull(root.querySelector('#authSignUpForm')), HTMLFormElement);
-    this.signInEmailInput = cast(ensureNotNull(root.querySelector('#authSignInEmail')), HTMLInputElement);
-    this.signInPasswordInput = cast(ensureNotNull(root.querySelector('#authSignInPassword')), HTMLInputElement);
-    this.signUpEmailInput = cast(ensureNotNull(root.querySelector('#authSignUpEmail')), HTMLInputElement);
-    this.signUpPasswordInput = cast(ensureNotNull(root.querySelector('#authSignUpPassword')), HTMLInputElement);
+    this.initialView = cast(ensureNotNull(root.querySelector('#authInitialView')), HTMLElement);
+    this.emailForm = cast(ensureNotNull(root.querySelector('#authEmailForm')), HTMLFormElement);
+    this.otpForm = cast(ensureNotNull(root.querySelector('#authOTPForm')), HTMLFormElement);
+    this.emailInput = cast(ensureNotNull(root.querySelector('#authEmailInput')), HTMLInputElement);
+    this.otpInput = cast(ensureNotNull(root.querySelector('#authOTPInput')), HTMLInputElement);
     this.errorMessage = cast(ensureNotNull(root.querySelector('#authErrorMessage')), HTMLElement);
-    this.toggleLink = cast(ensureNotNull(root.querySelector('#authToggleLink')), HTMLElement);
+    this.emailErrorMessage = cast(ensureNotNull(root.querySelector('#authEmailErrorMessage')), HTMLElement);
+    this.otpErrorMessage = cast(ensureNotNull(root.querySelector('#authOTPErrorMessage')), HTMLElement);
     this.closeButton = cast(ensureNotNull(root.querySelector('#authCloseButton')), HTMLButtonElement);
     this.googleButton = cast(ensureNotNull(root.querySelector('#authGoogleButton')), HTMLButtonElement);
+    this.emailButton = cast(ensureNotNull(root.querySelector('#authEmailButton')), HTMLButtonElement);
+    this.skipLink = cast(ensureNotNull(root.querySelector('#authSkipLink')), HTMLElement);
+    this.emailBackLink = cast(ensureNotNull(root.querySelector('#authEmailBackLink')), HTMLElement);
+    this.otpBackLink = cast(ensureNotNull(root.querySelector('#authOTPBackLink')), HTMLElement);
+    this.otpResendLink = cast(ensureNotNull(root.querySelector('#authOTPResendLink')), HTMLElement);
     
-    this.isSignInMode = true;
     this.setupEventListeners();
   }
 
@@ -53,151 +71,114 @@ export class AuthModal {
       }
     });
 
-    // Toggle between sign in and sign up
-    this.toggleLink.addEventListener('click', (e) => {
-      e.preventDefault();
-      this.toggleMode();
-    });
-
-    // Sign in form submission
-    this.signInForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      await this.handleSignIn();
-    });
-
-    // Sign up form submission
-    this.signUpForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      await this.handleSignUp();
-    });
-
     // Google OAuth button
     this.googleButton.addEventListener('click', async (e) => {
       e.preventDefault();
       await this.handleGoogleSignIn();
     });
+
+    // Email button
+    this.emailButton.addEventListener('click', (e) => {
+      e.preventDefault();
+      this.showEmailEntry();
+    });
+
+    // Skip link
+    this.skipLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      this.handleSkip();
+    });
+
+    // Email form submission
+    this.emailForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      await this.handleEmailSubmit();
+    });
+
+    // OTP form submission
+    this.otpForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      await this.handleOTPSubmit();
+    });
+
+    // Back links
+    this.emailBackLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      this.showInitial();
+    });
+
+    this.otpBackLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      this.showEmailEntry();
+    });
+
+    // Resend OTP link
+    this.otpResendLink.addEventListener('click', async (e) => {
+      e.preventDefault();
+      await this.handleResendOTP();
+    });
   }
 
-  toggleMode(): void {
-    this.isSignInMode = !this.isSignInMode;
-    this.updateFormVisibility();
-    this.clearError();
+  showInitial(): void {
+    this.currentView = 'initial';
+    this.initialView.style.display = 'block';
+    this.emailForm.style.display = 'none';
+    this.otpForm.style.display = 'none';
+    this.clearAllErrors();
   }
 
-  updateFormVisibility(): void {
-    if (this.isSignInMode) {
-      this.signInForm.style.display = 'block';
-      this.signUpForm.style.display = 'none';
-      const toggleText = this.toggleLink.querySelector('span');
-      if (toggleText) {
-        toggleText.textContent = "Don't have an account? Sign up";
-      }
-    } else {
-      this.signInForm.style.display = 'none';
-      this.signUpForm.style.display = 'block';
-      const toggleText = this.toggleLink.querySelector('span');
-      if (toggleText) {
-        toggleText.textContent = 'Already have an account? Sign in';
-      }
-    }
+  showEmailEntry(): void {
+    this.currentView = 'emailEntry';
+    this.initialView.style.display = 'none';
+    this.emailForm.style.display = 'block';
+    this.otpForm.style.display = 'none';
+    this.clearAllErrors();
   }
 
-  showError(message: string): void {
-    this.errorMessage.textContent = message;
-    this.errorMessage.style.display = 'block';
+  showCodeEntry(): void {
+    this.currentView = 'codeEntry';
+    this.initialView.style.display = 'none';
+    this.emailForm.style.display = 'none';
+    this.otpForm.style.display = 'block';
+    this.clearAllErrors();
   }
 
-  clearError(): void {
+  showError(message: string, target?: 'initial' | 'email' | 'otp'): void {
+    const targetElement = target === 'email' ? this.emailErrorMessage : 
+                         target === 'otp' ? this.otpErrorMessage : 
+                         this.errorMessage;
+    targetElement.textContent = message;
+    targetElement.style.display = 'block';
+  }
+
+  clearAllErrors(): void {
     this.errorMessage.textContent = '';
     this.errorMessage.style.display = 'none';
+    this.emailErrorMessage.textContent = '';
+    this.emailErrorMessage.style.display = 'none';
+    this.otpErrorMessage.textContent = '';
+    this.otpErrorMessage.style.display = 'none';
   }
 
   setLoading(loading: boolean): void {
-    const buttons = this.root.querySelectorAll('button[type="submit"]');
+    const buttons = this.root.querySelectorAll('button[type="submit"], #authEmailButton, #authGoogleButton');
     buttons.forEach((btn) => {
       if (btn instanceof HTMLButtonElement) {
         btn.disabled = loading;
-        if (loading) {
+        if (loading && btn.type === 'submit') {
+          const originalText = btn.textContent;
+          btn.dataset.originalText = originalText || '';
           btn.textContent = 'Loading...';
-        } else {
-          if (this.isSignInMode) {
-            const signInBtn = this.signInForm.querySelector('button[type="submit"]');
-            if (signInBtn) signInBtn.textContent = 'Sign In';
-          } else {
-            const signUpBtn = this.signUpForm.querySelector('button[type="submit"]');
-            if (signUpBtn) signUpBtn.textContent = 'Sign Up';
-          }
+        } else if (!loading && btn.dataset.originalText) {
+          btn.textContent = btn.dataset.originalText;
+          delete btn.dataset.originalText;
         }
       }
     });
   }
 
-  async handleSignIn(): Promise<void> {
-    this.clearError();
-    const email = this.signInEmailInput.value.trim();
-    const password = this.signInPasswordInput.value;
-
-    if (!email || !password) {
-      this.showError('Please enter both email and password');
-      return;
-    }
-
-    this.setLoading(true);
-    try {
-      const { user, error } = await auth.signInWithEmail(email, password);
-      if (error) {
-        this.showError(error.message || 'Sign in failed. Please try again.');
-        this.setLoading(false);
-      } else if (user) {
-        await this.onAuthSuccess(user);
-      }
-    } catch (err) {
-      this.showError('An unexpected error occurred. Please try again.');
-      this.setLoading(false);
-    }
-  }
-
-  async handleSignUp(): Promise<void> {
-    this.clearError();
-    const email = this.signUpEmailInput.value.trim();
-    const password = this.signUpPasswordInput.value;
-
-    if (!email || !password) {
-      this.showError('Please enter both email and password');
-      return;
-    }
-
-    if (password.length < 6) {
-      this.showError('Password must be at least 6 characters');
-      return;
-    }
-
-    this.setLoading(true);
-    try {
-      const { user, error } = await auth.signUpWithEmail(email, password);
-      if (error) {
-        this.showError(error.message || 'Sign up failed. Please try again.');
-        this.setLoading(false);
-      } else if (user) {
-        // Check if email confirmation is required
-        if (!user.email_confirmed_at) {
-          this.showError('Please check your email to confirm your account before signing in.');
-          this.setLoading(false);
-          // Switch to sign in mode
-          this.isSignInMode = true;
-          this.updateFormVisibility();
-        } else {
-          await this.onAuthSuccess(user);
-        }
-      }
-    } catch (err) {
-      this.showError('An unexpected error occurred. Please try again.');
-      this.setLoading(false);
-    }
-  }
-
   async handleGoogleSignIn(): Promise<void> {
-    this.clearError();
+    this.clearAllErrors();
     this.setLoading(true);
     try {
       const { error } = await auth.signInWithOAuth('google', this.continuations);
@@ -212,32 +193,122 @@ export class AuthModal {
     }
   }
 
-  async onAuthSuccess(user: any): Promise<void> {
+  async handleEmailSubmit(): Promise<void> {
+    this.clearAllErrors();
+    const email = this.emailInput.value.trim();
+
+    if (!email) {
+      this.showError('Please enter your email', 'email');
+      return;
+    }
+
+    this.setLoading(true);
+    try {
+      const { error } = await auth.signInWithMagicLink(email, this.continuations);
+      if (error) {
+        this.showError(error.message || 'Failed to send magic link. Please try again.', 'email');
+        this.setLoading(false);
+      } else {
+        // Success - show code entry form
+        this.pendingEmail = email;
+        this.showCodeEntry();
+        this.setLoading(false);
+      }
+    } catch (err) {
+      this.showError('An unexpected error occurred. Please try again.', 'email');
+      this.setLoading(false);
+    }
+  }
+
+  async handleOTPSubmit(): Promise<void> {
+    this.clearAllErrors();
+    const token = this.otpInput.value.trim();
+
+    if (!token) {
+      this.showError('Please enter the verification code', 'otp');
+      return;
+    }
+
+    if (!this.pendingEmail) {
+      this.showError('Email not found. Please start over.', 'otp');
+      this.showInitial();
+      return;
+    }
+
+    this.setLoading(true);
+    try {
+      const { user, error } = await auth.verifyOTP(this.pendingEmail, token);
+      if (error) {
+        this.showError(error.message || 'Invalid code. Please try again.', 'otp');
+        this.setLoading(false);
+      } else if (user) {
+        await this.onAuthSuccess(user);
+      }
+    } catch (err) {
+      this.showError('An unexpected error occurred. Please try again.', 'otp');
+      this.setLoading(false);
+    }
+  }
+
+  async handleResendOTP(): Promise<void> {
+    if (!this.pendingEmail) {
+      this.showError('Email not found. Please start over.', 'otp');
+      this.showInitial();
+      return;
+    }
+
+    this.setLoading(true);
+    try {
+      const { error } = await auth.signInWithMagicLink(this.pendingEmail, this.continuations);
+      if (error) {
+        this.showError(error.message || 'Failed to resend code. Please try again.', 'otp');
+      } else {
+        this.showError('Code resent! Check your email.', 'otp');
+        this.otpErrorMessage.style.color = '#2da6fd';
+      }
+      this.setLoading(false);
+    } catch (err) {
+      this.showError('An unexpected error occurred. Please try again.', 'otp');
+      this.setLoading(false);
+    }
+  }
+
+  handleSkip(): void {
+    this.hide();
     
+    // Resolve with skipped = true
+    // Don't process continuations here - let the caller (ensureAuthenticated) handle it
+    // to avoid double-processing
+    if (this.resolveAuth) {
+      this.resolveAuth({ user: null, skipped: true });
+      this.resolveAuth = null;
+      this.rejectAuth = null;
+    }
+  }
+
+  async onAuthSuccess(user: User): Promise<void> {
     this.setLoading(false);
     this.hide();
 
     // Resolve the promise if there's one waiting
     if (this.resolveAuth) {
-      this.resolveAuth(user);
+      this.resolveAuth({ user, skipped: false });
       this.resolveAuth = null;
       this.rejectAuth = null;
     }
-
   }
 
-  show(continuations:Continuation[]): Promise<any> {
+  show(continuations: Continuation[]): Promise<AuthResult> {
     console.log('AuthModal.show() called', this.root);
-    this.clearError();
-    this.isSignInMode = true;
-    this.updateFormVisibility();
+    this.clearAllErrors();
     this.continuations = continuations;
+    this.currentView = 'initial';
+    this.pendingEmail = '';
     
     // Clear form inputs
-    this.signInEmailInput.value = '';
-    this.signInPasswordInput.value = '';
-    this.signUpEmailInput.value = '';
-    this.signUpPasswordInput.value = '';
+    this.emailInput.value = '';
+    this.otpInput.value = '';
+    this.showInitial();
 
     // Show the overlay
     this.root.style.display = 'block';
@@ -247,7 +318,7 @@ export class AuthModal {
       console.log('Showing class added, modal should be visible now');
     });
 
-    // Return a promise that resolves when user authenticates
+    // Return a promise that resolves when user authenticates or skips
     return new Promise((resolve, reject) => {
       this.resolveAuth = resolve;
       this.rejectAuth = reject;
@@ -276,4 +347,3 @@ export class AuthModal {
     return this.root.style.display !== 'none' && this.root.classList.contains('showing');
   }
 }
-

@@ -5,6 +5,8 @@ import { supabase } from './api.ts';
 import { getCurrentUser } from './auth.ts';
 import { appContext } from '../core/AppContext.ts';
 import { Continuation, processContinuations, buildUrl } from '../core/continuations.ts';
+import type { AuthResult } from '../ui/AuthModal.ts';
+import type { User } from '@supabase/supabase-js';
 
 export interface CreateCheckoutSessionOptions {
   price?: string;
@@ -14,21 +16,25 @@ export interface CreateCheckoutSessionOptions {
 }
 
 
-export async function ensureAuthenticated(continuations: Continuation[]): Promise<void> {
+export async function ensureAuthenticated(continuations: Continuation[]): Promise<{ user: User | null; skipped: boolean }> {
   // Check if already authenticated
   const user = await getCurrentUser();
   if (user) {
     processContinuations(continuations);
-    return;
+    return { user, skipped: false };
   }
 
-  // If no user authenticated, show auth modal and wait for authentication
+  // If no user authenticated, show auth modal and wait for authentication or skip
   try {
-    const user = await appContext.authModal.show(continuations);
-    return;
+    const result = await appContext.authModal.show(continuations);
+    // Process continuations after auth or skip
+    processContinuations(continuations);
+    return result;
   } catch (error) {
-    console.error('Authentication required for this feature', error);
-    throw new Error('Authentication required for this feature');
+    console.error('Authentication cancelled', error);
+    // If cancelled, treat as skipped
+    processContinuations(continuations);
+    return { user: null, skipped: true };
   }
 }
 
@@ -81,18 +87,27 @@ export async function testCheckout() {
   }
 }
 
+// Track if we're currently handling authentication to avoid recursion
+let isHandlingAuth = false;
+
 export async function purchaseDailyWeeklyArchive(continuations: Continuation[]) {
   // Check if user is already authenticated
   const user = await getCurrentUser();
   
-  if (!user) {
-    // If not authenticated, show auth modal and wait for authentication
-    // After auth, the continuations will be processed, which will call this function again
-    await ensureAuthenticated(["purchaseDailyWeeklyArchive", ...continuations]);
-    return;
+  if (!user && !isHandlingAuth) {
+    // If not authenticated and not already handling auth, show auth modal
+    isHandlingAuth = true;
+    try {
+      await ensureAuthenticated(["purchaseDailyWeeklyArchive", ...continuations]);
+    } finally {
+      isHandlingAuth = false;
+    }
+    // After ensureAuthenticated returns (whether authenticated or skipped), proceed to checkout
+    // Note: If user skipped, continuations were processed which may call this function again
+    // But isHandlingAuth will prevent showing the modal again
   }
   
-  // User is authenticated, proceed directly to checkout
+  // Proceed directly to checkout (works for both authenticated and skipped users)
   // The success_url should include the navigation continuations (not purchaseDailyWeeklyArchive)
   // since the purchase will be complete after Stripe redirects back
   try {

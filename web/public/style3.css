@@ -489,7 +489,8 @@ button.drawModeActive:hover {
 }
 
 .authModalContent input[type="email"],
-.authModalContent input[type="password"] {
+.authModalContent input[type="password"],
+.authModalContent input[type="text"] {
    width: 100%;
   padding: 0.5em;
   font-size: 1em;
@@ -499,7 +500,8 @@ button.drawModeActive:hover {
 }
 
 .authModalContent input[type="email"]:focus,
-.authModalContent input[type="password"]:focus {
+.authModalContent input[type="password"]:focus,
+.authModalContent input[type="text"]:focus {
   outline: none;
   border-color: #2da6fd;
 }
@@ -541,6 +543,49 @@ button.drawModeActive:hover {
 
 .authModalContent #authToggleLink:hover {
   color: #006bc9;
+}
+
+.authModalContent #authEmailButton {
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.authModalContent #authEmailButton:hover:not(:disabled) {
+  border-color: #444241;
+}
+
+.authModalContent #authEmailButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.authModalContent #authSkipLink {
+  color: #2da6fd;
+  text-decoration: underline;
+  cursor: pointer;
+  font-size: 0.95em;
+}
+
+.authModalContent #authSkipLink:hover {
+  color: #006bc9;
+}
+
+.authModalContent #authEmailBackLink,
+.authModalContent #authOTPBackLink,
+.authModalContent #authOTPResendLink {
+  color: #2da6fd;
+  text-decoration: underline;
+  cursor: pointer;
+  font-size: 0.9em;
+}
+
+.authModalContent #authEmailBackLink:hover,
+.authModalContent #authOTPBackLink:hover,
+.authModalContent #authOTPResendLink:hover {
+  color: #006bc9;
+}
+
+.authModalContent #authGoogleButton {
+  margin-bottom: 1em;
 }
 
 @keyframes fadeIn {
