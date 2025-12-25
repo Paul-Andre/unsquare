@@ -12,7 +12,7 @@ export function checkAndOpenCustomLevel(): boolean {
     customLevel.isCustom = true;
     console.log("Switching to customLevel", customLevel);
 
-    appContext.screenManager.switchTo("gameLevelMenu");
+    appContext.screenManager.switchTo("mainLevelMenu");
     appContext.playLevel(customLevel, {
       levels: [customLevel],
       source: customLevelString,

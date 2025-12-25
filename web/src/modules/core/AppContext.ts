@@ -20,7 +20,7 @@ export class AppContext {
   editor: Editor;
   screenManager: ScreenManager;
   bookMenu: BookMenuScreen;
-  gameLevelMenu: MainLevelMenuScreen;
+  mainLevelMenu: MainLevelMenuScreen;
   editorLevelMenu: EditorLevelMenuScreen;
   challengeLevelMenu: ChallengeLevelMenuScreen;
   gridLevelMenu: GridLevelMenuScreen;
@@ -42,8 +42,8 @@ export class AppContext {
     const bookMenuRoot = ensureNotNull(document.getElementById("bookMenu"));
     this.bookMenu = new BookMenuScreen(bookMenuRoot);
 
-    const gameLevelMenuRoot = ensureNotNull(document.getElementById("gameLevelMenu"));
-    this.gameLevelMenu = new MainLevelMenuScreen(gameLevelMenuRoot);
+    const mainLevelMenuRoot = ensureNotNull(document.getElementById("mainLevelMenu"));
+    this.mainLevelMenu = new MainLevelMenuScreen(mainLevelMenuRoot);
 
     const openingInstructionsRoot = ensureNotNull(document.getElementById("opening_instructions"));
     this.openingInstructions = new OpeningInstructionsScreen(openingInstructionsRoot);
@@ -60,7 +60,7 @@ export class AppContext {
     this.authModal = new AuthModal(authModalRoot);
     console.log("AuthModal initialized:", this.authModal);
 
-    this.screenManager.additionalFunctions.gameLevelMenu = this.gameLevelMenu;
+    this.screenManager.additionalFunctions.mainLevelMenu = this.mainLevelMenu;
     this.screenManager.additionalFunctions.editorLevelMenu = this.editorLevelMenu;
     this.screenManager.additionalFunctions.challengeLevelMenu = this.challengeLevelMenu;
     this.screenManager.additionalFunctions.gridLevelMenu = this.gridLevelMenu;

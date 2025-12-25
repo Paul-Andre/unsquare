@@ -70,7 +70,7 @@ window.addEventListener('load',
     // pass; It was already opened by the checkAndOpenCustomLevel function.
   } else if (had_experience) {
     appContext.openingInstructions.hasAlreadyWentToFirstLevel = true;
-    appContext.screenManager.switchTo('gameLevelMenu');
+    appContext.screenManager.switchTo('mainLevelMenu');
   } else {
     appContext.screenManager.switchTo('opening_instructions');
   }

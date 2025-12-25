@@ -48,13 +48,13 @@ export class OpeningInstructionsScreen {
   next(): void {
     if (this.currentSlideIndex === this.slides.length - 1) {
       if (this.hasAlreadyWentToFirstLevel) {
-        appContext.screenManager.switchTo('gameLevelMenu');
+        appContext.screenManager.switchTo('mainLevelMenu');
       } else {
-        // Switch to gameLevelMenu and then right after to game in order to have it
+        // Switch to mainLevelMenu and then right after to game in order to have it
         // in the history stack.
-        appContext.screenManager.switchTo('gameLevelMenu');
+        appContext.screenManager.switchTo('mainLevelMenu');
 
-        let book = appContext.gameLevelMenu.levelMenu.book;
+        let book = appContext.mainLevelMenu.levelMenu.book;
         assert(book !== null);
         appContext.playLevel(book.levels[0], book);
         this.hasAlreadyWentToFirstLevel = true;
