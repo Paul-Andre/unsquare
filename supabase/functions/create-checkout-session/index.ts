@@ -69,24 +69,25 @@ Deno.serve(async (req) => {
       return errorResponse("Server misconfiguration: missing required environment variables", 500);
     }
 
-    // Initialize Supabase client - authentication is optional
+    // Initialize Supabase client with the Authorization header from the request
     const authHeader = req.headers.get("Authorization");
-    let user = null;
-    
-    if (authHeader) {
-      const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-        global: {
-          headers: { Authorization: authHeader },
-        },
-      });
-
-      // Try to get user if auth header is provided
-      const { data: { user: authUser }, error: authError } = await supabase.auth.getUser();
-      if (!authError && authUser) {
-        user = authUser;
-        console.log("Authenticated user email", user.email);
-      }
+    if (!authHeader) {
+      return errorResponse("Unauthorized: Missing authorization header", 401);
     }
+
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+      global: {
+        headers: { Authorization: authHeader },
+      },
+    });
+
+    // Verify user authentication
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+
+    if (authError || !user) {
+      return errorResponse("Unauthorized: User not authenticated", 401);
+    }
+    console.log("User email", user.email);
 
     const stripe = new Stripe(STRIPE_SECRET_KEY, {
       apiVersion: "2025-02-24.acacia",

@@ -2,7 +2,7 @@
 
 import { FunctionsHttpError } from '@supabase/supabase-js';
 import { supabase } from './api.ts';
-import { getCurrentUser } from './auth.ts';
+import { getCurrentUser, isAnonymousUser } from './auth.ts';
 import { appContext } from '../core/AppContext.ts';
 import { Continuation, processContinuations, buildUrl } from '../core/continuations.ts';
 import type { AuthResult } from '../ui/AuthModal.ts';
@@ -16,15 +16,29 @@ export interface CreateCheckoutSessionOptions {
 }
 
 
-export async function ensureAuthenticated(continuations: Continuation[]): Promise<{ user: User | null; skipped: boolean }> {
+export async function ensureAuthenticated(continuations: Continuation[]): Promise<{ user: User | null }> {
   // Check if already authenticated
   const user = await getCurrentUser();
   if (user) {
+    // Check if user is anonymous - if so, still show auth modal to allow account linking
+    if (isAnonymousUser(user)) {
+      // Anonymous user - show auth modal to allow linking
+      try {
+        const result = await appContext.authModal.show(continuations);
+        processContinuations(continuations);
+        return result;
+      } catch (error) {
+        console.error('Authentication cancelled', error);
+        processContinuations(continuations);
+        return { user };
+      }
+    }
+    // Non-anonymous authenticated user - proceed
     processContinuations(continuations);
-    return { user, skipped: false };
+    return { user };
   }
 
-  // If no user authenticated, show auth modal and wait for authentication or skip
+  // If no user authenticated, show auth modal and wait for authentication
   try {
     const result = await appContext.authModal.show(continuations);
     // Process continuations after auth or skip
@@ -32,9 +46,9 @@ export async function ensureAuthenticated(continuations: Continuation[]): Promis
     return result;
   } catch (error) {
     console.error('Authentication cancelled', error);
-    // If cancelled, treat as skipped
+    // If cancelled, return null user
     processContinuations(continuations);
-    return { user: null, skipped: true };
+    return { user: null };
   }
 }
 
@@ -87,28 +101,29 @@ export async function testCheckout() {
   }
 }
 
-// Track if we're currently handling authentication to avoid recursion
-let isHandlingAuth = false;
+/**
+ * Authenticate (if needed) and then proceed to purchase.
+ * This function handles authentication and then calls purchaseDailyWeeklyArchive.
+ * It should be used when starting a purchase flow from the UI.
+ */
+export async function authenticateAndPurchaseDailyWeeklyArchive(continuations: Continuation[]): Promise<void> {
+  // Always call ensureAuthenticated to handle:
+  // - No user: shows auth modal
+  // - Anonymous user: shows auth modal for account linking
+  // - Authenticated user: proceeds without modal
+  // Note: We pass only the navigation continuations (not "purchaseDailyWeeklyArchive")
+  // to avoid recursion when continuations are processed
+  await ensureAuthenticated(["purchaseDailyWeeklyArchive", ...continuations]);
+  
+  await purchaseDailyWeeklyArchive(continuations);
+}
 
-export async function purchaseDailyWeeklyArchive(continuations: Continuation[]) {
-  // Check if user is already authenticated
-  const user = await getCurrentUser();
-  
-  if (!user && !isHandlingAuth) {
-    // If not authenticated and not already handling auth, show auth modal
-    isHandlingAuth = true;
-    try {
-      await ensureAuthenticated(["purchaseDailyWeeklyArchive", ...continuations]);
-    } finally {
-      isHandlingAuth = false;
-    }
-    // After ensureAuthenticated returns (whether authenticated or skipped), proceed to checkout
-    // Note: If user skipped, continuations were processed which may call this function again
-    // But isHandlingAuth will prevent showing the modal again
-  }
-  
-  // Proceed directly to checkout (works for both authenticated and skipped users)
-  // The success_url should include the navigation continuations (not purchaseDailyWeeklyArchive)
+/**
+ * Initiates purchase. Does not handle authentication.
+ */
+export async function purchaseDailyWeeklyArchive(continuations: Continuation[]): Promise<void> {
+  // Proceed directly to checkout
+  // The success_url should include the navigation continuations
   // since the purchase will be complete after Stripe redirects back
   try {
     // Show redirecting screen

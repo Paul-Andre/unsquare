@@ -2,7 +2,7 @@
 
 import { cast, ensureNotNull } from '../utils/helpers.ts';
 import { Continuation } from 'modules/core/continuations.ts';
-import { purchaseDailyWeeklyArchive } from '../utils/stripe.ts';
+import { authenticateAndPurchaseDailyWeeklyArchive } from '../utils/stripe.ts';
 
 export class DailyWeeklyArchiveOfferModal {
   root: HTMLElement;
@@ -52,7 +52,7 @@ export class DailyWeeklyArchiveOfferModal {
       // Hide the offer modal before showing auth modal (if needed)
       // This prevents the offer modal from covering the auth modal
       this.hide();
-      await purchaseDailyWeeklyArchive(this.continuations);
+      await authenticateAndPurchaseDailyWeeklyArchive(this.continuations);
     } catch (error) {
       console.error('Purchase failed:', error);
       // Re-show the offer modal if purchase failed

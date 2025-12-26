@@ -125,4 +125,51 @@ export async function verifyOTP(email: string, token: string): Promise<AuthResul
   };
 }
 
+/**
+ * Sign in anonymously
+ */
+export async function signInAnonymously(): Promise<AuthResult> {
+  const { data, error } = await supabase.auth.signInAnonymously();
+
+  return {
+    user: data.user,
+    error: error,
+  };
+}
+
+/**
+ * Check if a user is anonymous
+ */
+export function isAnonymousUser(user: User | null): boolean {
+  if (!user) return false;
+  // Check if user is anonymous - anonymous users have is_anonymous flag or no email/identities
+  return user.is_anonymous === true || (user.email === null && (!user.identities || user.identities.length === 0));
+}
+
+/**
+ * Link an OAuth identity to the current user (for anonymous users)
+ */
+export async function linkIdentity(provider: 'google' = 'google', continuations: Continuation[]): Promise<{ error: AuthError | null }> {
+  const redirectUrl = buildUrl(continuations);
+  const { error } = await supabase.auth.linkIdentity({
+    provider,
+    options: {
+      redirectTo: redirectUrl,
+    },
+  });
+
+  return { error };
+}
+
+/**
+ * Update the current user's email (for linking email to anonymous users)
+ */
+export async function updateUserEmail(email: string): Promise<{ error: AuthError | null }> {
+  const { error } = await supabase.auth.updateUser({
+    email,
+  });
+
+  return { error };
+}
+
 

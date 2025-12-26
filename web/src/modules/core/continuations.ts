@@ -9,6 +9,9 @@ type ContinuationFunction = (rest:Continuation[])=>void;
 
 const continuationFunctions: Record<Continuation, ContinuationFunction> = {
     purchaseDailyWeeklyArchive: (rest:Continuation[]) => {
+        // When this continuation is processed (e.g., after auth redirect),
+        // directly call purchaseDailyWeeklyArchive without authentication
+        // since authentication has already been handled
         purchaseDailyWeeklyArchive(rest);
     },
     goToWeeklyArchive: (rest:Continuation[]) => {

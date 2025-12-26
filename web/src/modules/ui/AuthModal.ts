@@ -7,8 +7,10 @@ import type { User } from '@supabase/supabase-js';
 
 export interface AuthResult {
   user: User | null;
-  skipped: boolean;
 }
+
+// TODO: clarify the API of when a null user is returned, and when an
+// error is thrown instead.
 
 type ModalView = 'initial' | 'emailEntry' | 'codeEntry';
 
@@ -166,12 +168,12 @@ export class AuthModal {
       if (btn instanceof HTMLButtonElement) {
         btn.disabled = loading;
         if (loading && btn.type === 'submit') {
-          const originalText = btn.textContent;
-          btn.dataset.originalText = originalText || '';
-          btn.textContent = 'Loading...';
-        } else if (!loading && btn.dataset.originalText) {
-          btn.textContent = btn.dataset.originalText;
-          delete btn.dataset.originalText;
+          const originalContent = btn.innerHTML;
+          btn.dataset.originalContent = originalContent || '';
+          btn.innerHTML = 'Loading...';
+        } else if (!loading && btn.dataset.originalContent) {
+          btn.innerHTML = btn.dataset.originalContent;
+          delete btn.dataset.originalContent;
         }
       }
     });
@@ -181,12 +183,27 @@ export class AuthModal {
     this.clearAllErrors();
     this.setLoading(true);
     try {
-      const { error } = await auth.signInWithOAuth('google', this.continuations);
-      if (error) {
-        this.showError(error.message || 'Google sign in failed. Please try again.');
-        this.setLoading(false);
+      // Check if current user is anonymous
+      const currentUser = await auth.getCurrentUser();
+      const isAnonymous = auth.isAnonymousUser(currentUser);
+      
+      if (isAnonymous) {
+        // Link OAuth identity to anonymous account
+        const { error } = await auth.linkIdentity('google', this.continuations);
+        if (error) {
+          this.showError(error.message || 'Failed to link Google account. Please try again.');
+          this.setLoading(false);
+        }
+        // OAuth redirects away, so we don't need to handle success here
+      } else {
+        // Regular OAuth sign-in
+        const { error } = await auth.signInWithOAuth('google', this.continuations);
+        if (error) {
+          this.showError(error.message);
+          this.setLoading(false);
+        }
+        // OAuth redirects away, so we don't need to handle success here
       }
-      // OAuth redirects away, so we don't need to handle success here
     } catch (err) {
       this.showError('An unexpected error occurred. Please try again.');
       this.setLoading(false);
@@ -204,9 +221,37 @@ export class AuthModal {
 
     this.setLoading(true);
     try {
+      // Check if current user is anonymous
+      const currentUser = await auth.getCurrentUser();
+      const isAnonymous = auth.isAnonymousUser(currentUser);
+      
+      if (isAnonymous) {
+        // For anonymous users, update email first, then send OTP
+        // This will link the email identity to the anonymous account
+        const { error: updateError } = await auth.updateUserEmail(email);
+        if (updateError) {
+          // If email is already registered, skip the update and send sign-in link directly
+          const errorMessage = updateError.message || '';
+          const isEmailAlreadyRegistered = errorMessage.toLowerCase().includes('already been registered') ||
+                                         errorMessage.toLowerCase().includes('already registered') ||
+                                         errorMessage.toLowerCase().includes('user already exists');
+          
+          if (isEmailAlreadyRegistered) {
+            // Email is already registered - send sign-in link instead of showing error
+            // Continue to send magic link below
+          } else {
+            // Other errors - show them
+            this.showError(updateError.message, 'email');
+            this.setLoading(false);
+            return;
+          }
+        }
+      }
+      
+      // Send OTP (works for both new users and anonymous users with updated email)
       const { error } = await auth.signInWithMagicLink(email, this.continuations);
       if (error) {
-        this.showError(error.message || 'Failed to send magic link. Please try again.', 'email');
+        this.showError(error.message, 'email');
         this.setLoading(false);
       } else {
         // Success - show code entry form
@@ -273,16 +318,49 @@ export class AuthModal {
     }
   }
 
-  handleSkip(): void {
-    this.hide();
-    
-    // Resolve with skipped = true
-    // Don't process continuations here - let the caller (ensureAuthenticated) handle it
-    // to avoid double-processing
-    if (this.resolveAuth) {
-      this.resolveAuth({ user: null, skipped: true });
-      this.resolveAuth = null;
-      this.rejectAuth = null;
+  async handleSkip(): Promise<void> {
+    // Check if user is already anonymous
+    const currentUser = await auth.getCurrentUser();
+    if (auth.isAnonymousUser(currentUser)) {
+      // Already anonymous - just return the existing user
+      if (this.resolveAuth) {
+        this.resolveAuth({ user: currentUser });
+        this.resolveAuth = null;
+        this.rejectAuth = null;
+      }
+      this.hide();
+      return;
+    }
+
+    // Not anonymous - create anonymous sign-in
+    this.setLoading(true);
+    try {
+      const { user, error } = await auth.signInAnonymously();
+      this.setLoading(false);
+      
+      if (error) {
+        console.error(error);
+        this.hide();
+        if (this.resolveAuth) {
+          let rejectHandler = this.rejectAuth;  
+          this.resolveAuth = null;
+          this.rejectAuth = null;
+          rejectHandler?.(new Error('Anonymous sign-in failed'));
+        }
+      } else if (user) {
+        // Success - resolve with anonymous user
+        await this.onAuthSuccess(user);
+      }
+    } catch (err) {
+      console.error(err);
+      this.setLoading(false);
+      this.hide();
+      if (this.resolveAuth) {
+        let rejectHandler = this.rejectAuth;
+        this.resolveAuth = null;
+        this.rejectAuth = null;
+        rejectHandler?.(new Error('An unexpected error occurred'));
+      }
     }
   }
 
@@ -292,7 +370,7 @@ export class AuthModal {
 
     // Resolve the promise if there's one waiting
     if (this.resolveAuth) {
-      this.resolveAuth({ user, skipped: false });
+      this.resolveAuth({ user });
       this.resolveAuth = null;
       this.rejectAuth = null;
     }
