@@ -119,6 +119,7 @@ export class MainLevelMenuScreen {
         appContext.playLevel(dailyLevel, this.dailyLevelsBook);
       },
     });
+    iconElement.style.flexShrink = "0";
     
     iconSlot.appendChild(iconElement);
 
