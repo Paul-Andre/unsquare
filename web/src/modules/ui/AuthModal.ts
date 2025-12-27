@@ -143,6 +143,18 @@ export class AuthModal {
     this.clearAllErrors();
   }
 
+  private getErrorMessage(err: unknown, fallback: string = 'An unexpected error occurred. Please try again.'): string {
+    return err instanceof Error ? err.message : fallback;
+  }
+
+  private cleanupAuthPromise(rejectWithError?: Error): void {
+    if (rejectWithError && this.rejectAuth) {
+      this.rejectAuth(rejectWithError);
+    }
+    this.resolveAuth = null;
+    this.rejectAuth = null;
+  }
+
   showError(message: string, target?: 'initial' | 'email' | 'otp'): void {
     console.error('Auth error:', message);
     const targetElement = target === 'email' ? this.emailErrorMessage : 
@@ -166,14 +178,6 @@ export class AuthModal {
     buttons.forEach((btn) => {
       if (btn instanceof HTMLButtonElement) {
         btn.disabled = loading;
-        if (loading && btn.type === 'submit') {
-          const originalContent = btn.innerHTML;
-          btn.dataset.originalContent = originalContent || '';
-          btn.innerHTML = 'Loading...';
-        } else if (!loading && btn.dataset.originalContent) {
-          btn.innerHTML = btn.dataset.originalContent;
-          delete btn.dataset.originalContent;
-        }
       }
     });
   }
@@ -189,8 +193,7 @@ export class AuthModal {
       }
       // OAuth redirects away, so we don't need to handle success here
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'An unexpected error occurred. Please try again.';
-      this.showError(errorMessage);
+      this.showError(this.getErrorMessage(err));
       this.setLoading(false);
     }
   }
@@ -217,8 +220,7 @@ export class AuthModal {
         this.setLoading(false);
       }
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'An unexpected error occurred. Please try again.';
-      this.showError(errorMessage, 'email');
+      this.showError(this.getErrorMessage(err), 'email');
       this.setLoading(false);
     }
   }
@@ -248,7 +250,7 @@ export class AuthModal {
         await this.onAuthSuccess(user);
       }
     } catch (err) {
-      this.showError('An unexpected error occurred. Please try again.', 'otp');
+      this.showError(this.getErrorMessage(err), 'otp');
       this.setLoading(false);
     }
   }
@@ -262,7 +264,7 @@ export class AuthModal {
 
     this.setLoading(true);
     try {
-      const { error } = await auth.handleResendOTPFlow(this.pendingEmail, this.continuations);
+      const { error } = await auth.signInWithMagicLink(this.pendingEmail, this.continuations);
       if (error) {
         this.showError(error.message || 'Failed to resend code. Please try again.', 'otp');
       } else {
@@ -271,8 +273,7 @@ export class AuthModal {
       }
       this.setLoading(false);
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'An unexpected error occurred. Please try again.';
-      this.showError(errorMessage, 'otp');
+      this.showError(this.getErrorMessage(err), 'otp');
       this.setLoading(false);
     }
   }
@@ -285,25 +286,14 @@ export class AuthModal {
       
       if (error) {
         this.hide();
-        if (this.resolveAuth) {
-          const rejectHandler = this.rejectAuth;
-          this.resolveAuth = null;
-          this.rejectAuth = null;
-          rejectHandler?.(new Error('Anonymous sign-in failed'));
-        }
+        this.cleanupAuthPromise(new Error('Anonymous sign-in failed'));
       } else if (user) {
         await this.onAuthSuccess(user);
       }
     } catch (err) {
       this.setLoading(false);
       this.hide();
-      if (this.resolveAuth) {
-        const rejectHandler = this.rejectAuth;
-        this.resolveAuth = null;
-        this.rejectAuth = null;
-        const errorMessage = err instanceof Error ? err.message : 'An unexpected error occurred';
-        rejectHandler?.(new Error(errorMessage));
-      }
+      this.cleanupAuthPromise(new Error(this.getErrorMessage(err, 'An unexpected error occurred')));
     }
   }
 
@@ -311,11 +301,9 @@ export class AuthModal {
     this.setLoading(false);
     this.hide();
 
-    // Resolve the promise if there's one waiting
     if (this.resolveAuth) {
       this.resolveAuth({ user });
-      this.resolveAuth = null;
-      this.rejectAuth = null;
+      this.cleanupAuthPromise();
     }
   }
 
@@ -345,13 +333,7 @@ export class AuthModal {
 
   close(): void {
     this.hide();
-
-    // Reject the promise if it's still pending
-    if (this.rejectAuth) {
-      this.rejectAuth(new Error('Authentication cancelled'));
-      this.resolveAuth = null;
-      this.rejectAuth = null;
-    }
+    this.cleanupAuthPromise(new Error('Authentication cancelled'));
   }
 
   hide(): void {
