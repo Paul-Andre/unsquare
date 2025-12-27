@@ -82,12 +82,12 @@ export function getDailyLevelsBook(): Book {
     title: "Daily Levels",
     source: "daily",
     levels: selectedLevels,
-    previous: {
-      action: "offerDailyWeeklyArchive",
-      continuations: [
-        "goToDailyArchive",
-      ],
-    },
+    // previous: {
+    //   action: "offerDailyWeeklyArchive",
+    //   continuations: [
+    //     "goToDailyArchive",
+    //   ],
+    // },
     fullAmount: currentIndex + 1,
   };
 }
@@ -166,12 +166,12 @@ export function getWeeklyChallengesBook(): Book {
     title: "Weekly Challenges",
     source: "challenge",
     levels: lastTwoLevels,
-    previous: {
-      action: "offerDailyWeeklyArchive",
-      continuations: [
-        "goToWeeklyArchive",
-      ],
-    },
+    // previous: {
+    //   action: "offerDailyWeeklyArchive",
+    //   continuations: [
+    //     "goToWeeklyArchive",
+    //   ],
+    // },
     fullAmount: allLevels.length,
   };
 }
