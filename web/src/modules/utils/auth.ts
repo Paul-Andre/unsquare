@@ -138,10 +138,9 @@ export async function signInAnonymously(): Promise<AuthResult> {
 }
 
 /**
- * Check if a user is anonymous
+ * Check if a given user is anonymous
  */
-export function isAnonymousUser(user: User | null): boolean {
-  if (!user) return false;
+export function isAnonymousUser(user: User): boolean {
   // Check if user is anonymous - anonymous users have is_anonymous flag or no email/identities
   return user.is_anonymous === true || (user.email === null && (!user.identities || user.identities.length === 0));
 }
@@ -189,10 +188,9 @@ export function isEmailAlreadyRegisteredError(error: AuthError | null): boolean 
 }
 
 export async function handleGoogleSignInFlow(continuations: Continuation[]): Promise<{ error: AuthError | null }> {
-  const currentUser = await getCurrentUser();
-  const isAnonymous = isAnonymousUser(currentUser);
-  
-  if (isAnonymous) {
+  const user = await getCurrentUser(); 
+
+  if (user && isAnonymousUser(user)) {
     return await linkIdentity('google', continuations);
   }
   return await signInWithOAuth('google', continuations);
@@ -204,10 +202,8 @@ export interface EmailSignInResult {
 }
 
 export async function handleEmailSignInFlow(email: string, continuations: Continuation[]): Promise<EmailSignInResult> {
-  const currentUser = await getCurrentUser();
-  const isAnonymous = isAnonymousUser(currentUser);
-  
-  if (isAnonymous) {
+  const user = await getCurrentUser();
+  if (user && isAnonymousUser(user)) {
     const { error: updateError } = await updateUserEmail(email);
     if (updateError && !isEmailAlreadyRegisteredError(updateError)) {
       return {
@@ -229,9 +225,9 @@ export async function handleEmailSignInFlow(email: string, continuations: Contin
 }
 
 export async function handleSkipFlow(): Promise<AuthResult> {
-  const currentUser = await getCurrentUser();
-  if (isAnonymousUser(currentUser)) {
-    return { user: currentUser, error: null };
+  const user = await getCurrentUser();
+  if (user && isAnonymousUser(user)) {
+    return { user: user, error: null };
   }
   return await signInAnonymously();
 }
