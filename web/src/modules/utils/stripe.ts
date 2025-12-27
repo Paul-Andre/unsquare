@@ -9,7 +9,7 @@ import type { AuthResult } from '../ui/AuthModal.ts';
 import type { User } from '@supabase/supabase-js';
 
 export interface CreateCheckoutSessionOptions {
-  price?: string;
+  product: string;
   quantity?: number;
   success_url?: string;
   cancel_url?: string;
@@ -53,11 +53,11 @@ export async function ensureAuthenticated(continuations: Continuation[]): Promis
 }
 
 
-export async function createCheckoutSession(options: CreateCheckoutSessionOptions = {}): Promise<void> {
+export async function createCheckoutSession(options: CreateCheckoutSessionOptions): Promise<void> {
   try {
     const { data, error } = await supabase.functions.invoke('create-checkout-session', {
       body: {
-        price: options.price,
+        product: options.product,
         quantity: options.quantity,
         success_url: options.success_url,
         cancel_url: options.cancel_url,
@@ -69,10 +69,17 @@ export async function createCheckoutSession(options: CreateCheckoutSessionOption
         const context = await error.context.json();
         const message = error.message;
         console.log(error.context.status, context);
-
+        throw new Error(context.error || message);
       } else {
         throw error;
       }
+    }
+
+    // Check if user already has access
+    if (data?.hasAccess && Array.isArray(data.hasAccess) && data.hasAccess.includes(options.product)) {
+      console.log(`User already has access to ${options.product}`);
+      // Don't redirect - user already has access
+      return;
     }
 
     if (!data?.url) {
@@ -94,7 +101,9 @@ export async function createCheckoutSession(options: CreateCheckoutSessionOption
 export async function testCheckout() {
   console.log("Creating test checkout session...");
   try {
-    await createCheckoutSession();
+    await createCheckoutSession({
+      product: "dailyWeeklyArchive",
+    });
   } catch (error) {
     console.error("Test checkout failed:", error);
     alert(`Checkout failed: ${error instanceof Error ? error.message : String(error)}`);
@@ -130,9 +139,12 @@ export async function purchaseDailyWeeklyArchive(continuations: Continuation[]):
     appContext.redirectingToPaymentModal.show();
     
     await createCheckoutSession({
-      price: "price_1ShNdwAVJE8pXXhAfdf3SHTY",
+      product: "dailyWeeklyArchive",
       success_url: buildUrl(continuations),
     });
+    
+    // If we get here without redirecting, user already has access
+    appContext.redirectingToPaymentModal.hide();
   } catch (error) {
     // Hide redirecting screen on error
     appContext.redirectingToPaymentModal.hide();

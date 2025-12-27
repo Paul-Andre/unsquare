@@ -4,6 +4,7 @@
 const STRIPE_SECRET_KEY = Deno.env.get("STRIPE_SECRET_KEY");
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
 const SUPABASE_ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY");
+const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
 
 if (!STRIPE_SECRET_KEY) {
   console.error("Missing STRIPE_SECRET_KEY environment variable.");
@@ -11,6 +12,15 @@ if (!STRIPE_SECRET_KEY) {
 if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
   console.error("Missing SUPABASE_URL or SUPABASE_ANON_KEY environment variables.");
 }
+if (!SUPABASE_SERVICE_ROLE_KEY) {
+  console.error("Missing SUPABASE_SERVICE_ROLE_KEY environment variable.");
+}
+
+// Product to Stripe Price ID mapping
+const PRODUCT_PRICES: Record<string, string> = {
+  dailyWeeklyArchive: "price_1ShNdwAVJE8pXXhAfdf3SHTY",
+  fullAccess: "<stripe_price_id_for_full_access>", // TODO: Replace with actual price ID
+};
 
 // Import Stripe SDK and Supabase client for Deno
 import Stripe from "npm:stripe@^17";
@@ -24,7 +34,8 @@ const corsHeaders = {
 };
 
 interface RequestBody {
-  price?: string;
+  product?: string;
+  products?: string[];
   quantity?: number;
   success_url?: string;
   cancel_url?: string;
@@ -65,7 +76,7 @@ Deno.serve(async (req) => {
       return errorResponse("Method not allowed", 405);
     }
 
-    if (!STRIPE_SECRET_KEY || !SUPABASE_URL || !SUPABASE_ANON_KEY) {
+    if (!STRIPE_SECRET_KEY || !SUPABASE_URL || !SUPABASE_ANON_KEY || !SUPABASE_SERVICE_ROLE_KEY) {
       return errorResponse("Server misconfiguration: missing required environment variables", 500);
     }
 
@@ -87,7 +98,10 @@ Deno.serve(async (req) => {
     if (authError || !user) {
       return errorResponse("Unauthorized: User not authenticated", 401);
     }
-    console.log("User email", user.email);
+    console.log("User", user, user.email, user.is_anonymous, user.id);
+
+    // Create Supabase client with service role key for purchase checks
+    const supabaseService = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
     const stripe = new Stripe(STRIPE_SECRET_KEY, {
       apiVersion: "2025-02-24.acacia",
@@ -95,9 +109,70 @@ Deno.serve(async (req) => {
 
     const body = await req.json().catch(() => null) as RequestBody | null;
 
-    // Default values from the Express example
-    const priceId = body?.price || "price_1ShNdwAVJE8pXXhAfdf3SHTY";
-    const quantity = body?.quantity || 1;
+    // Normalize products: support both single product and products array
+    let requestedProducts: string[] = [];
+    if (body?.products) {
+      requestedProducts = body.products;
+    } else if (body?.product) {
+      requestedProducts = [body.product];
+    } else {
+      return errorResponse("Missing required field: product or products", 400);
+    }
+
+    // Validate all products exist
+    for (const product of requestedProducts) {
+      if (!PRODUCT_PRICES[product]) {
+        return errorResponse(`Invalid product: ${product}`, 400);
+      }
+    }
+
+    // Check for existing purchases
+    const isAnonymous = user.is_anonymous === true || (user.email === null && (!user.identities || user.identities.length === 0));
+    const hasAccess: string[] = [];
+    const needsPurchase: string[] = [];
+
+    for (const product of requestedProducts) {
+      // Build query: check by user_id always, and by email if non-anonymous
+      let query = supabaseService
+        .from("purchases")
+        .select("id")
+        .eq("product", product);
+
+      if (!isAnonymous && user.email) {
+        // For non-anonymous users, check by user_id OR email
+        query = query.or(`user_id.eq.${user.id},email.eq.${user.email}`);
+      } else {
+        // For anonymous users, only check by user_id
+        query = query.eq("user_id", user.id);
+      }
+
+      const { data: existingPurchases, error: purchaseError } = await query;
+
+      if (purchaseError) {
+        console.error("Error checking purchase:", purchaseError);
+        // Continue to next product on error (assume no access)
+        needsPurchase.push(product);
+        continue;
+      }
+
+      if (existingPurchases && existingPurchases.length > 0) {
+        hasAccess.push(product);
+      } else {
+        needsPurchase.push(product);
+      }
+    }
+
+    // If user already has access to all requested products, return confirmation
+    if (needsPurchase.length === 0) {
+      return jsonResponse({ hasAccess, needsPurchase: [] }, 200);
+    }
+
+    // If user has some products but not all, return partial access info
+    // (Client can decide how to handle this - for now we'll proceed with checkout for missing products)
+    if (hasAccess.length > 0) {
+      // Log partial access but continue with checkout for missing products
+      console.log(`User already has access to: ${hasAccess.join(", ")}`);
+    }
     
     // Get the domain from the request or use a default
     const origin = req.headers.get("origin") || req.headers.get("referer") || "http://localhost:8000";
@@ -108,14 +183,21 @@ Deno.serve(async (req) => {
     // Determine customer email - use authenticated user's email, or from request body, or let Stripe collect it
     const customerEmail = user?.email || body?.customer_email || undefined;
 
+    // Create line items for products that need purchase
+    // Note: When using existing price IDs, we can't add metadata directly to line items during creation
+    // We'll store products array in session metadata and match by index in webhook
+    const lineItems = needsPurchase.map(product => ({
+      price: PRODUCT_PRICES[product],
+      quantity: body?.quantity || 1,
+      metadata: {
+        product: product,
+      },
+    }));
+
     // Create checkout session
     const sessionConfig: Stripe.Checkout.SessionCreateParams = {
-      line_items: [
-        {
-          price: priceId,
-          quantity: quantity,
-        },
-      ],
+      customer_email: customerEmail,
+      line_items: lineItems,
       mode: "payment",
       success_url: successUrl,
       cancel_url: cancelUrl,
@@ -127,17 +209,21 @@ Deno.serve(async (req) => {
       sessionConfig.customer_email = customerEmail;
     }
 
-    // Add user ID to metadata if authenticated
-    if (user) {
-      sessionConfig.metadata = {
-        user_id: user.id,
-      };
-    }
+    // Add metadata: user_id, email
+    const metadata: Record<string, string> = {
+      user_id: user.id,
+    };
+
+    sessionConfig.metadata = metadata;
 
     const session = await stripe.checkout.sessions.create(sessionConfig);
 
-    // Return the session URL (client can redirect to it)
-    return jsonResponse({ url: session.url }, 200);
+    // Return the session URL and access info
+    return jsonResponse({ 
+      url: session.url,
+      hasAccess: hasAccess.length > 0 ? hasAccess : undefined,
+      needsPurchase: needsPurchase.length > 0 ? needsPurchase : undefined,
+    }, 200);
 
   } catch (err) {
     console.error("Unhandled error in create-checkout-session:", err);

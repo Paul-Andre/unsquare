@@ -187,12 +187,16 @@ export function isEmailAlreadyRegisteredError(error: AuthError | null): boolean 
          message.includes('email address is already registered');
 }
 
+
+// TODO: because or redirects, we need to check if the accounts has been successfully linked after the redirect
+// TODO: also, in the case where linking fails, I will need to sign into
+// the google account and manually link the accounts by updating the database
 export async function handleGoogleSignInFlow(continuations: Continuation[]): Promise<{ error: AuthError | null }> {
   const user = await getCurrentUser(); 
 
-  if (user && isAnonymousUser(user)) {
-    return await linkIdentity('google', continuations);
-  }
+  // if (user && isAnonymousUser(user)) {
+  //   return await linkIdentity('google', continuations);
+  // }
   return await signInWithOAuth('google', continuations);
 }
 
