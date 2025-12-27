@@ -2,7 +2,7 @@
 
 import { cast, ensureNotNull } from '../utils/helpers.ts';
 import * as auth from '../utils/auth.ts';
-import { Continuation, processContinuations } from 'modules/core/continuations.ts';
+import { Continuation } from 'modules/core/continuations.ts';
 import type { User } from '@supabase/supabase-js';
 
 export interface AuthResult {
@@ -17,7 +17,6 @@ type ModalView = 'initial' | 'emailEntry' | 'codeEntry';
 export class AuthModal {
   root: HTMLElement;
   backdrop: HTMLElement;
-  modalContent: HTMLElement;
   initialView: HTMLElement;
   emailForm: HTMLFormElement;
   otpForm: HTMLFormElement;
@@ -42,7 +41,6 @@ export class AuthModal {
   constructor(root: HTMLElement) {
     this.root = root;
     this.backdrop = cast(ensureNotNull(root.querySelector('.authModalBackdrop')), HTMLElement);
-    this.modalContent = cast(ensureNotNull(root.querySelector('.authModalContent')), HTMLElement);
     this.initialView = cast(ensureNotNull(root.querySelector('#authInitialView')), HTMLElement);
     this.emailForm = cast(ensureNotNull(root.querySelector('#authEmailForm')), HTMLFormElement);
     this.otpForm = cast(ensureNotNull(root.querySelector('#authOTPForm')), HTMLFormElement);
@@ -146,6 +144,7 @@ export class AuthModal {
   }
 
   showError(message: string, target?: 'initial' | 'email' | 'otp'): void {
+    console.error('Auth error:', message);
     const targetElement = target === 'email' ? this.emailErrorMessage : 
                          target === 'otp' ? this.otpErrorMessage : 
                          this.errorMessage;
@@ -183,29 +182,15 @@ export class AuthModal {
     this.clearAllErrors();
     this.setLoading(true);
     try {
-      // Check if current user is anonymous
-      const currentUser = await auth.getCurrentUser();
-      const isAnonymous = auth.isAnonymousUser(currentUser);
-      
-      if (isAnonymous) {
-        // Link OAuth identity to anonymous account
-        const { error } = await auth.linkIdentity('google', this.continuations);
-        if (error) {
-          this.showError(error.message || 'Failed to link Google account. Please try again.');
-          this.setLoading(false);
-        }
-        // OAuth redirects away, so we don't need to handle success here
-      } else {
-        // Regular OAuth sign-in
-        const { error } = await auth.signInWithOAuth('google', this.continuations);
-        if (error) {
-          this.showError(error.message);
-          this.setLoading(false);
-        }
-        // OAuth redirects away, so we don't need to handle success here
+      const { error } = await auth.handleGoogleSignInFlow(this.continuations);
+      if (error) {
+        this.showError(error.message || 'Failed to sign in with Google. Please try again.');
+        this.setLoading(false);
       }
+      // OAuth redirects away, so we don't need to handle success here
     } catch (err) {
-      this.showError('An unexpected error occurred. Please try again.');
+      const errorMessage = err instanceof Error ? err.message : 'An unexpected error occurred. Please try again.';
+      this.showError(errorMessage);
       this.setLoading(false);
     }
   }
@@ -221,37 +206,9 @@ export class AuthModal {
 
     this.setLoading(true);
     try {
-      // Check if current user is anonymous
-      const currentUser = await auth.getCurrentUser();
-      const isAnonymous = auth.isAnonymousUser(currentUser);
-      
-      if (isAnonymous) {
-        // For anonymous users, update email first, then send OTP
-        // This will link the email identity to the anonymous account
-        const { error: updateError } = await auth.updateUserEmail(email);
-        if (updateError) {
-          // If email is already registered, skip the update and send sign-in link directly
-          const errorMessage = updateError.message || '';
-          const isEmailAlreadyRegistered = errorMessage.toLowerCase().includes('already been registered') ||
-                                         errorMessage.toLowerCase().includes('already registered') ||
-                                         errorMessage.toLowerCase().includes('user already exists');
-          
-          if (isEmailAlreadyRegistered) {
-            // Email is already registered - send sign-in link instead of showing error
-            // Continue to send magic link below
-          } else {
-            // Other errors - show them
-            this.showError(updateError.message, 'email');
-            this.setLoading(false);
-            return;
-          }
-        }
-      }
-      
-      // Send OTP (works for both new users and anonymous users with updated email)
-      const { error } = await auth.signInWithMagicLink(email, this.continuations);
-      if (error) {
-        this.showError(error.message, 'email');
+      const result = await auth.handleEmailSignInFlow(email, this.continuations);
+      if (!result.success) {
+        this.showError(result.error?.message || 'Failed to send verification code. Please try again.', 'email');
         this.setLoading(false);
       } else {
         // Success - show code entry form
@@ -260,7 +217,8 @@ export class AuthModal {
         this.setLoading(false);
       }
     } catch (err) {
-      this.showError('An unexpected error occurred. Please try again.', 'email');
+      const errorMessage = err instanceof Error ? err.message : 'An unexpected error occurred. Please try again.';
+      this.showError(errorMessage, 'email');
       this.setLoading(false);
     }
   }
@@ -304,7 +262,7 @@ export class AuthModal {
 
     this.setLoading(true);
     try {
-      const { error } = await auth.signInWithMagicLink(this.pendingEmail, this.continuations);
+      const { error } = await auth.handleResendOTPFlow(this.pendingEmail, this.continuations);
       if (error) {
         this.showError(error.message || 'Failed to resend code. Please try again.', 'otp');
       } else {
@@ -313,53 +271,38 @@ export class AuthModal {
       }
       this.setLoading(false);
     } catch (err) {
-      this.showError('An unexpected error occurred. Please try again.', 'otp');
+      const errorMessage = err instanceof Error ? err.message : 'An unexpected error occurred. Please try again.';
+      this.showError(errorMessage, 'otp');
       this.setLoading(false);
     }
   }
 
   async handleSkip(): Promise<void> {
-    // Check if user is already anonymous
-    const currentUser = await auth.getCurrentUser();
-    if (auth.isAnonymousUser(currentUser)) {
-      // Already anonymous - just return the existing user
-      if (this.resolveAuth) {
-        this.resolveAuth({ user: currentUser });
-        this.resolveAuth = null;
-        this.rejectAuth = null;
-      }
-      this.hide();
-      return;
-    }
-
-    // Not anonymous - create anonymous sign-in
     this.setLoading(true);
     try {
-      const { user, error } = await auth.signInAnonymously();
+      const { user, error } = await auth.handleSkipFlow();
       this.setLoading(false);
       
       if (error) {
-        console.error(error);
         this.hide();
         if (this.resolveAuth) {
-          let rejectHandler = this.rejectAuth;  
+          const rejectHandler = this.rejectAuth;
           this.resolveAuth = null;
           this.rejectAuth = null;
           rejectHandler?.(new Error('Anonymous sign-in failed'));
         }
       } else if (user) {
-        // Success - resolve with anonymous user
         await this.onAuthSuccess(user);
       }
     } catch (err) {
-      console.error(err);
       this.setLoading(false);
       this.hide();
       if (this.resolveAuth) {
-        let rejectHandler = this.rejectAuth;
+        const rejectHandler = this.rejectAuth;
         this.resolveAuth = null;
         this.rejectAuth = null;
-        rejectHandler?.(new Error('An unexpected error occurred'));
+        const errorMessage = err instanceof Error ? err.message : 'An unexpected error occurred';
+        rejectHandler?.(new Error(errorMessage));
       }
     }
   }
@@ -377,7 +320,6 @@ export class AuthModal {
   }
 
   show(continuations: Continuation[]): Promise<AuthResult> {
-    console.log('AuthModal.show() called', this.root);
     this.clearAllErrors();
     this.continuations = continuations;
     this.currentView = 'initial';
@@ -390,10 +332,8 @@ export class AuthModal {
 
     // Show the overlay
     this.root.style.display = 'block';
-    console.log('Modal display set to block, adding showing class');
     requestAnimationFrame(() => {
       this.root.classList.add('showing');
-      console.log('Showing class added, modal should be visible now');
     });
 
     // Return a promise that resolves when user authenticates or skips
