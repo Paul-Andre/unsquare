@@ -48,6 +48,7 @@ export class GridLevelMenuScreen {
       createUnlockAllSection({
         book: this.book,
         container: this.unlockSectionContainer,
+        showText: true,
       });
     }
   }
