@@ -53,16 +53,6 @@ export class LevelIconGrid {
     this.container.innerHTML = "";
 
     const states: LevelState[] | null = !this.isEditorMode ? calculateStates(this.book) : null;
-
-    let firstVisibleIndex = -1;
-    if (!this.isEditorMode) {
-      for (let i = 0; i < this.book.levels.length; i++) {
-        if (!this.book.levels[i].hidden) {
-          firstVisibleIndex = i;
-          break;
-        }
-      }
-    }
     
     const iconDisplayType = this.getIconDisplayType ? this.getIconDisplayType() : "none";
     
@@ -86,12 +76,10 @@ export class LevelIconGrid {
       }
       
       const state = states ? states[i] : LEVEL_STATES.UNSOLVED;
-      const glow = !this.isEditorMode && firstVisibleIndex >= 0 && i == firstVisibleIndex && state == LEVEL_STATES.UNSOLVED;
       
       const iconElement = createLevelIcon({
         level,
         state,
-        glow,
         isEditor: this.isEditorMode,
         iconDisplayType,
         nonHiddenIndex: this.isEditorMode ? (level.hidden ? null : nonHiddenIndex - 1) : nonHiddenIndex - 1,

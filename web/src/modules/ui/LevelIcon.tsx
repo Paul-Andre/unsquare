@@ -10,7 +10,6 @@ import { IconDisplayType, calculateIconDisplayValue, getParDisplayColor } from '
 export interface LevelIconProps {
   level: Level;
   state: LevelState;
-  glow?: boolean;
   isEditor?: boolean;
   iconDisplayType?: IconDisplayType;
   nonHiddenIndex?: number | null;
@@ -22,7 +21,7 @@ export interface LevelIconProps {
  * Handles icon image display, state-based CSS classes, and optional metric display.
  */
 export function createLevelIcon(props: LevelIconProps): HTMLDivElement {
-  const { level, state, glow = false, isEditor = false, iconDisplayType = "none", nonHiddenIndex = null, onClick } = props;
+  const { level, state, isEditor = false, iconDisplayType = "none", nonHiddenIndex = null, onClick } = props;
 
   // Get cached or generate icon dataURL
   const dataURL = getCachedLevelIconDataUrl(level);
@@ -81,11 +80,8 @@ export function createLevelIcon(props: LevelIconProps): HTMLDivElement {
       element.classList.add("icon_hidden");
     }
   } else {
-    // Player mode: apply state class and glow
+    // Player mode: apply state class
     applyStateClass(element, state);
-    if (glow) {
-      element.classList.add("icon_glow");
-    }
   }
 
   return element;
@@ -95,12 +91,7 @@ export function createLevelIcon(props: LevelIconProps): HTMLDivElement {
  * Updates an existing level icon element with new state/display.
  * Useful for refreshing icons without recreating them.
  */
-export function updateLevelIconState(element: HTMLElement, state: LevelState, glow: boolean = false): void {
+export function updateLevelIconState(element: HTMLElement, state: LevelState): void {
   applyStateClass(element, state);
-  if (glow) {
-    element.classList.add("icon_glow");
-  } else {
-    element.classList.remove("icon_glow");
-  }
 }
 

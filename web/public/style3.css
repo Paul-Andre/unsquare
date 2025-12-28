@@ -212,13 +212,6 @@ section#resetScreen .header {
 .icon_unsolved {
 }
 
-.icon_glow {
-  border-color: var(--selection);
-  animation: pulse-animation 2s infinite;
-}
-.icon_glow:before {
-}
-
 .icon_suboptimal {
   border: solid 2px var(--bronze);
 }
