@@ -268,3 +268,7 @@ Lot of refact and integrations behind the scene + Christmas present level
 24 Dec 2025
 0.12.2
 Fix Weekly Challenge icon shrinking
+
+27 Dec 2025
+0.12.3
+Weekly Level #6 (Also lots of behind the scenes auth/checkout stuff)

@@ -448,26 +448,38 @@ button.drawModeActive:hover {
   width: 90%;
   max-width: 400px;
   background-color: #fdfdfd;
-  border: solid 3px #bdbcbc;
-  border-radius: 20px;
-  padding: 2em;
+  border: solid 2px #bdbcbc;
+  border-radius: 16px;
+  padding: 1.2em 1em;
   z-index: 1001;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  animation: modalSlideIn 0.3s ease-out;
 }
+/* 
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) translateY(-20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) translateY(0) scale(1);
+  }
+} */
 
 .authCloseButton {
   position: absolute;
-  top: 0.5em;
-  right: 0.5em;
+  top: 0.3em;
+  right: 0.3em;
   background: none;
   border: none;
-  font-size: 2em;
+  font-size: 1.5em;
   line-height: 1;
   cursor: pointer;
   color: #666;
   padding: 0;
-  width: 1.5em;
-  height: 1.5em;
+  width: 1.2em;
+  height: 1.2em;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -478,69 +490,221 @@ button.drawModeActive:hover {
 }
 
 .authModalContent h1 {
-  font-size: 2em;
-  margin-top: 0;
-  /* margin-bottom: 1em; */
+  font-size: 1.8em;
+  margin: 0 0 0.6em 0;
   text-align: center;
+  font-weight: 600;
 }
 
 .authModalContent label {
   font-weight: 500;
+  color: #333;
+  font-size: 0.9em;
 }
 
 .authModalContent input[type="email"],
-.authModalContent input[type="password"] {
-   width: 100%;
-  padding: 0.5em;
-  font-size: 1em;
-  border: 2px solid #c1bbaf;
-  border-radius: 5px;
-  margin-bottom: 0.5em;
+.authModalContent input[type="password"],
+.authModalContent input[type="text"] {
+  width: 100%;
+  padding: 0.6em 0.8em;
+  font-size: 0.95em;
+  border: 2px solid #d0cbc1;
+  border-radius: 8px;
+  margin-bottom: 0;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  background-color: #fff;
+  box-sizing: border-box;
 }
 
 .authModalContent input[type="email"]:focus,
-.authModalContent input[type="password"]:focus {
+.authModalContent input[type="password"]:focus,
+.authModalContent input[type="text"]:focus {
   outline: none;
   border-color: #2da6fd;
+  box-shadow: 0 0 0 3px rgba(45, 166, 253, 0.1);
 }
 
 .authModalContent button[type="submit"] {
-  margin-top: 0.5em;
-  font-size: 1.25em;
-}
-
-.authModalContent button[type="submit"]{
-  margin-top: 0.5em;
-  padding: 0.6em;
   width: 100%;
-  font-size: 1.1em;
-  border: 3px solid #aeaba5;
-  border-radius: 10px;
+  padding: 0.6em;
+  font-size: 0.95em;
+  border: 2px solid #aeaba5;
+  border-radius: 8px;
   cursor: pointer;
   transition: border-color 0.2s ease, background-color 0.2s ease;
   font-weight: 500;
+  background: white;
+  color: var(--black);
 }
 
-.authModalContent button[type="submit"]:hover:not(:disabled),
- {
+.authModalContent button[type="submit"]:hover:not(:disabled) {
   border-color: #444241;
+  background-color: #f5f5f5;
 }
 
-.authModalContent button[type="submit"]:disabled,
- {
+.authModalContent button[type="submit"]:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
 
 .authModalContent #authToggleLink {
   color: #2da6fd;
-  text-decoration: underline;
+  text-decoration: none;
   cursor: pointer;
-  font-size: 0.95em;
+  font-size: 0.85em;
+  transition: color 0.2s ease;
+  border-bottom: 1px solid transparent;
 }
 
 .authModalContent #authToggleLink:hover {
-  color: #006bc9;
+  color: #1565c0;
+  border-bottom-color: #1565c0;
+}
+
+.authModalContent #authEmailButton {
+  width: 100%;
+  padding: 0.6em;
+  font-size: 0.95em;
+  border: 2px solid #aeaba5;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+  font-weight: 500;
+  background: white;
+  color: var(--black);
+}
+
+.authModalContent #authEmailButton:hover:not(:disabled) {
+  border-color: #444241;
+  background-color: #f5f5f5;
+}
+
+.authModalContent #authEmailButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.authModalContent #authSkipLink {
+  color: #2da6fd;
+  text-decoration: none;
+  cursor: pointer;
+  font-size: 0.85em;
+  transition: color 0.2s ease;
+  border-bottom: 1px solid transparent;
+  display: inline-block;
+  padding: 0.2em 0;
+}
+
+.authModalContent #authSkipLink:hover {
+  color: #1565c0;
+  border-bottom-color: #1565c0;
+}
+
+.authModalContent #authEmailBackLink,
+.authModalContent #authOTPBackLink,
+.authModalContent #authOTPResendLink {
+  color: #2da6fd;
+  text-decoration: none;
+  cursor: pointer;
+  font-size: 0.85em;
+  transition: color 0.2s ease;
+  border-bottom: 1px solid transparent;
+  display: inline-block;
+  padding: 0.2em 0;
+}
+
+.authModalContent #authEmailBackLink:hover,
+.authModalContent #authOTPBackLink:hover,
+.authModalContent #authOTPResendLink:hover {
+  color: #1565c0;
+  border-bottom-color: #1565c0;
+}
+
+.authModalContent #authGoogleButton {
+  transition: all 0.2s ease;
+}
+
+/* Error message styling */
+.authModalContent #authErrorMessage,
+.authModalContent #authEmailErrorMessage,
+.authModalContent #authOTPErrorMessage {
+  padding: 0.6em 0.8em;
+  margin-bottom: 0.8em;
+  border-radius: 6px;
+  background-color: #ffebee;
+  border-left: 4px solid #d32f2f;
+  color: #c62828;
+  font-size: 0.85em;
+  line-height: 1.4;
+}
+
+/* Form sections with nice spacing */
+.authModalContent form {
+  animation: slideIn 0.3s ease-out;
+}
+
+.authModalContent #authInitialView {
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Better paragraph styling in OTP form */
+.authModalContent form p {
+  color: #666;
+  line-height: 1.5;
+  font-size: 0.85em;
+  margin: 0 0 0.8em 0;
+}
+
+/* Improved OTP input styling */
+.authModalContent #authOTPInput {
+  font-family: 'Courier New', monospace;
+  font-size: 1.2em;
+  letter-spacing: 0.3em;
+  text-align: center;
+  font-weight: 600;
+}
+
+/* Divider styling */
+.authDivider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin: 0.8em 0;
+  color: #999;
+  font-size: 0.85em;
+}
+
+.authDivider::before,
+.authDivider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid #d0cbc1;
+}
+
+.authDivider span {
+  padding: 0 0.8em;
+  font-weight: 500;
+}
+
+/* Input placeholder styling */
+.authModalContent input::placeholder {
+  color: #aaa;
+  opacity: 1;
+}
+
+.authModalContent input:focus::placeholder {
+  color: #ccc;
 }
 
 @keyframes fadeIn {
@@ -550,6 +714,213 @@ button.drawModeActive:hover {
   to {
     opacity: 1;
   }
+}
+
+.dailyWeeklyArchiveOfferModalOverlay {
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.dailyWeeklyArchiveOfferModalOverlay.showing {
+  animation: fadeIn 0.2s ease-out forwards;
+  pointer-events: auto;
+}
+
+.dailyWeeklyArchiveOfferModalBackdrop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(2px);
+}
+
+.dailyWeeklyArchiveOfferModalContent {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90%;
+  max-width: 400px;
+  max-height: 85vh;
+  overflow-y: auto;
+  background-color: #fdfdfd;
+  border: solid 2px #bdbcbc;
+  border-radius: 16px;
+  padding: 1.2em 1em;
+  z-index: 1001;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.dailyWeeklyArchiveOfferCloseButton {
+  position: absolute;
+  top: 0.3em;
+  right: 0.3em;
+  background: none;
+  border: none;
+  font-size: 1.5em;
+  line-height: 1;
+  cursor: pointer;
+  color: #666;
+  padding: 0;
+  width: 1.2em;
+  height: 1.2em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dailyWeeklyArchiveOfferCloseButton:hover {
+  color: var(--black);
+}
+
+.dailyWeeklyArchiveOfferModalContent h1 {
+  font-size: 1.4em;
+  margin: 0 0 0.3em 0;
+  text-align: center;
+  font-weight: 600;
+}
+
+.dailyWeeklyArchiveOfferSubtitle {
+  text-align: center;
+  margin: 0 0 1em 0;
+  font-size: 0.85em;
+  color: #666;
+}
+
+.dailyWeeklyArchiveOfferCards {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8em;
+}
+
+.dailyWeeklyArchiveOfferCard {
+  border: 2px solid #aeaba5;
+  border-radius: 10px;
+  padding: 0.9em;
+  background-color: #fdfdfd;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.dailyWeeklyArchiveOfferCard:hover {
+  border-color: #6b6762;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.dailyWeeklyArchiveOfferCardHeader {
+  margin-bottom: 0.6em;
+  display: flex;
+  align-items: baseline;
+  gap: 0.5em;
+}
+
+.dailyWeeklyArchiveOfferCardPrice {
+  font-size: 1.6em;
+  font-weight: 600;
+  color: var(--black);
+  line-height: 1;
+}
+
+.dailyWeeklyArchiveOfferCardTitle {
+  font-size: 1em;
+  font-weight: 500;
+  color: var(--black);
+}
+
+.dailyWeeklyArchiveOfferCardDescription {
+  font-size: 0.85em;
+  color: #666;
+  line-height: 1.3;
+  margin: 0 0 0.8em 0;
+  padding-left: 1.2em;
+  list-style-position: outside;
+}
+
+.dailyWeeklyArchiveOfferCardDescription li {
+  margin-bottom: 0.3em;
+}
+
+.dailyWeeklyArchiveOfferCardDescription li:last-child {
+  margin-bottom: 0;
+}
+
+.dailyWeeklyArchiveOfferCardButton {
+  width: 100%;
+  padding: 0.6em;
+  font-size: 0.95em;
+  border: 2px solid #aeaba5;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+  font-weight: 500;
+  background: white;
+  color: var(--black);
+}
+
+.dailyWeeklyArchiveOfferCardButton:hover:not(:disabled) {
+  border-color: #444241;
+  background-color: #f5f5f5;
+}
+
+.dailyWeeklyArchiveOfferCardButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Redirecting to Payment Modal Overlay */
+.redirectingToPaymentModalOverlay {
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1002;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.redirectingToPaymentModalOverlay.showing {
+  animation: fadeIn 0.2s ease-out forwards;
+  pointer-events: auto;
+}
+
+.redirectingToPaymentModalBackdrop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(2px);
+}
+
+.redirectingToPaymentModalContent {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90%;
+  max-width: 400px;
+  background-color: #fdfdfd;
+  border: solid 3px #bdbcbc;
+  border-radius: 20px;
+  padding: 2em;
+  z-index: 1003;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  text-align: center;
+}
+
+.redirectingToPaymentModalContent h1 {
+  font-size: 1.8em;
+  margin: 0;
+  text-align: center;
 }
 
 @keyframes fadeInWithGoldenGlow {

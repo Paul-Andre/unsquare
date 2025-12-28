@@ -28,7 +28,8 @@
   <meta name="twitter:url" content="https://unflipgame.com/" />
 
   <link rel="canonical" href="https://unflipgame.com/" />
-  <meta name="description" content="Flip square areas (2x2 or larger) to invert the colors. Make all tiles white to win." />
+  <meta name="description"
+    content="Flip square areas (2x2 or larger) to invert the colors. Make all tiles white to win." />
 
   <link rel="stylesheet" type="text/css" href="/style3.css" />
 
@@ -59,7 +60,7 @@
 
   <link rel="manifest" href="/manifest.json">
 
-  <script type="module" crossorigin src="/assets/main-Dv0cFjlZ.js"></script>
+  <script type="module" crossorigin src="/assets/main-CvxbqrC-.js"></script>
 </head>
 
 <body>
@@ -73,33 +74,36 @@
         <div class="content">
           <div class="variant_container" id="onboardingSlides">
             <div class="variant_shown">
-          <p> Instructions: </p> 
+              <p> Instructions: </p>
               <img class="instruction_image" src="/drag.gif" alt="Drag to flip" />
               <p>Select <strong>square areas</strong> (2x2 or larger) to flip the tiles.</p>
               <div class="footer">
                 <!-- <button id="onboardingPrevBtn" onclick="appContext.openingInstructions.prev();">&#60; Previous</button> -->
-                <button id="onboardingNextBtn" onclick="appContext.openingInstructions.next();" style="float: right">Next &#62;</button>
+                <button id="onboardingNextBtn" onclick="appContext.openingInstructions.next();"
+                  style="float: right">Next &#62;</button>
               </div>
 
             </div>
             <div>
-          <p> Instructions: </p>
+              <p> Instructions: </p>
               <img class="instruction_image" src="/flip.gif" alt="Colors flip" />
               <p>White tiles flip to black. Black tiles flip to white.</p>
               <div class="footer">
                 <button id="onboardingPrevBtn" onclick="appContext.openingInstructions.prev();">&#60; Prev</button>
-                <button id="onboardingNextBtn" onclick="appContext.openingInstructions.next();" style="float: right">Next &#62;</button>
+                <button id="onboardingNextBtn" onclick="appContext.openingInstructions.next();"
+                  style="float: right">Next &#62;</button>
               </div>
 
             </div>
             <div>
-          <p> Instructions: </p>
+              <p> Instructions: </p>
               <img class="instruction_image" src="/to_win.png" alt="Make all white"
                 style="display: block; margin: 0 auto;" />
               <p>Make all tiles white to win!</p>
               <div class="footer">
                 <button id="onboardingPrevBtn" onclick="appContext.openingInstructions.prev();">&#60; Prev</button>
-                <button id="onboardingNextBtn" onclick="appContext.openingInstructions.next();" style="float: right">Play!</button>
+                <button id="onboardingNextBtn" onclick="appContext.openingInstructions.next();"
+                  style="float: right">Play!</button>
               </div>
 
             </div>
@@ -145,13 +149,14 @@
             </div>
             <div class="indicator parContentInclusive" id="ParIndicator">
               <span class="parText">par:</span>
-              <span class="histogramViewIcon" id="histogramViewIcon" onclick="appContext.game.showHistogramView();" style="display: none; cursor: pointer; margin-left: 0.5em;" title="View histogram">
+              <span class="histogramViewIcon" id="histogramViewIcon" onclick="appContext.game.showHistogramView();"
+                style="display: none; cursor: pointer; margin-left: 0.5em;" title="View histogram">
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-                  <rect x="1" y="12" width="2" height="3"/>
-                  <rect x="4" y="9" width="2" height="6"/>
-                  <rect x="7" y="6" width="2" height="9"/>
-                  <rect x="10" y="3" width="2" height="12"/>
-                  <rect x="13" y="8" width="2" height="7"/>
+                  <rect x="1" y="12" width="2" height="3" />
+                  <rect x="4" y="9" width="2" height="6" />
+                  <rect x="7" y="6" width="2" height="9" />
+                  <rect x="10" y="3" width="2" height="12" />
+                  <rect x="13" y="8" width="2" height="7" />
                 </svg>
               </span>
             </div>
@@ -178,101 +183,101 @@
           <div class="hint_blocking_overlay" style="display: none;"></div>
           <div class="hint_arrow_overlay" style="display: none;">
             <svg width="100" height="100" viewBox="0 0 100 100">
-              <path d="M 20 50 L 80 50 M 70 40 L 80 50 L 70 60" stroke="#ff0000" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M 20 50 L 80 50 M 70 40 L 80 50 L 70 60" stroke="#ff0000" stroke-width="4" fill="none"
+                stroke-linecap="round" stroke-linejoin="round" />
             </svg>
           </div>
           <div class="finishedLevel" style="display: none; ">
             <!-- TODO: Check if this works properly on different devices -->
             <div class="finishedLevelInside">
-            <h1> Solved! </h1>
-            <h2 class="finishedLevelMoves"> 40/3 moves</h2>
-            <div class="finishedLevelButtons">
-              <button class="finishedLevelRestartButton" onclick="appContext.game.restart();"
-                style="touch-action: none">
-                ⟳ Redo
-              </button>
-              <button class="finishedLevelNextButton" onclick="appContext.game.nextLevel();"
-                style="touch-action: none">
-                Next →
-              </button>
-            </div>
+              <h1> Solved! </h1>
+              <h2 class="finishedLevelMoves"> 40/3 moves</h2>
+              <div class="finishedLevelButtons">
+                <button class="finishedLevelRestartButton" onclick="appContext.game.restart();"
+                  style="touch-action: none">
+                  ⟳ Redo
+                </button>
+                <button class="finishedLevelNextButton" onclick="appContext.game.nextLevel();"
+                  style="touch-action: none">
+                  Next →
+                </button>
+              </div>
             </div>
           </div>
 
           <div class="finishedLevelPerfect" style="display: none">
             <!-- TODO: Check if this works properly on different devices -->
             <div class="finishedLevelInside">
-            <h1> Perfect! </h1>
-            <h2 class="finishedLevelMoves"> 40/3 moves</h2>
-            <div class="finishedLevelButtons">
-              <button class="finishedLevelNextButton" onclick="appContext.game.nextLevel();"
-                style="touch-action: none">
-                Next →
-              </button>
-            </div>
+              <h1> Perfect! </h1>
+              <h2 class="finishedLevelMoves"> 40/3 moves</h2>
+              <div class="finishedLevelButtons">
+                <button class="finishedLevelNextButton" onclick="appContext.game.nextLevel();"
+                  style="touch-action: none">
+                  Next →
+                </button>
+              </div>
             </div>
           </div>
 
           <div class="finishedChallengeHistogram" style="display: none">
             <div class="finishedLevelInside">
-            <div class="finishedChallengeHeader">
-              <img class="challengeLevelPreview level_icon_image"></img>
-              <h1> Solved! </h1>
-            </div>
-
-
-
-            <div class="histogramContainer" >
- 
-              <div class="histogramBars" id="histogramBars"></div>
-              <div class="histogramControls">
-                <select id="histogramTypeSelect" class="histogramTypeSelect">
-                  <option value="allSolutions">All Solutions</option>
-                  <option value="bestPerPlayer">Best Per Player</option>
-                  <option value="uniqueSolutions">Unique Solutions</option>
-                </select>
+              <div class="finishedChallengeHeader">
+                <img class="challengeLevelPreview level_icon_image"></img>
+                <h1> Solved! </h1>
               </div>
-            </div>
 
-            <h2 class="finishedLevelMoves"> 3 moves</h2>
-            <div class="finishedLevelButtons challengeFinishedButtons">
-              <button class="finishedLevelRestartButton" onclick="appContext.game.restart();"
-                style="touch-action: none">
-                ⟳ Redo
-              </button>
-              <button class="finishedLevelNextButton" onclick="appContext.game.nextLevel();"
-                style="touch-action: none">
-                Next →
-              </button>
-            </div>
+
+
+              <div class="histogramContainer">
+
+                <div class="histogramBars" id="histogramBars"></div>
+                <div class="histogramControls">
+                  <select id="histogramTypeSelect" class="histogramTypeSelect">
+                    <option value="allSolutions">All Solutions</option>
+                    <option value="bestPerPlayer">Best Per Player</option>
+                    <option value="uniqueSolutions">Unique Solutions</option>
+                  </select>
+                </div>
+              </div>
+
+              <h2 class="finishedLevelMoves"> 3 moves</h2>
+              <div class="finishedLevelButtons challengeFinishedButtons">
+                <button class="finishedLevelRestartButton" onclick="appContext.game.restart();"
+                  style="touch-action: none">
+                  ⟳ Redo
+                </button>
+                <button class="finishedLevelNextButton" onclick="appContext.game.nextLevel();"
+                  style="touch-action: none">
+                  Next →
+                </button>
+              </div>
             </div>
           </div>
 
           <div class="viewHistogramOverlay" style="display: none">
             <div class="finishedLevelInside">
-            <div class="finishedChallengeHeader">
-              <img class="challengeLevelPreview level_icon_image"></img>
-              <h1> Stats </h1>
-            </div>
-
-            <div class="histogramContainer" >
- 
-              <div class="histogramBars" id="viewHistogramBars"></div>
-              <div class="histogramControls">
-                <select id="viewHistogramTypeSelect" class="histogramTypeSelect">
-                  <option value="allSolutions">All Solutions</option>
-                  <option value="bestPerPlayer">Best Per Player</option>
-                  <option value="uniqueSolutions">Unique Solutions</option>
-                </select>
+              <div class="finishedChallengeHeader">
+                <img class="challengeLevelPreview level_icon_image"></img>
+                <h1> Stats </h1>
               </div>
-            </div>
 
-            <div class="finishedLevelButtons challengeFinishedButtons">
-              <button class="" onclick="appContext.game.hideHistogramView();"
-                style="touch-action: none">
-                Close
-              </button>
-            </div>
+              <div class="histogramContainer">
+
+                <div class="histogramBars" id="viewHistogramBars"></div>
+                <div class="histogramControls">
+                  <select id="viewHistogramTypeSelect" class="histogramTypeSelect">
+                    <option value="allSolutions">All Solutions</option>
+                    <option value="bestPerPlayer">Best Per Player</option>
+                    <option value="uniqueSolutions">Unique Solutions</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="finishedLevelButtons challengeFinishedButtons">
+                <button class="" onclick="appContext.game.hideHistogramView();" style="touch-action: none">
+                  Close
+                </button>
+              </div>
             </div>
           </div>
 
@@ -282,8 +287,11 @@
             <p>I'm going to create more levels, including daily and weekly challenge levels.
             </p>
             <p>
-            Join our <a href="https://discord.gg/Hg6zVmTJeP" target="_blank">Discord</a> (or leave your <a target="_blank" href="https://docs.google.com/forms/d/e/1FAIpQLScP4Zjl6wjjH4YeN9yJp8zOenAsAky9dKaZ97kCb9kIUrdHSw/viewform">email</a>) to stay up to date.
-            <br />
+              Join our <a href="https://discord.gg/Hg6zVmTJeP" target="_blank">Discord</a> (or leave your <a
+                target="_blank"
+                href="https://docs.google.com/forms/d/e/1FAIpQLScP4Zjl6wjjH4YeN9yJp8zOenAsAky9dKaZ97kCb9kIUrdHSw/viewform">email</a>)
+              to stay up to date.
+              <br />
             </p>
 
           </div>
@@ -352,7 +360,8 @@
               Play
             </button>
 
-            <img id="editorPreviewIcon" style="float: right; margin-right: 0.5em; vertical-align: middle; border: solid 2px var(--border_gray); background: white;" />
+            <img id="editorPreviewIcon"
+              style="float: right; margin-right: 0.5em; vertical-align: middle; border: solid 2px var(--border_gray); background: white;" />
 
             <select id="levelModeSelect" onchange="editor.setMode(this.value);">
               <option value="normal">normal</option>
@@ -397,7 +406,8 @@
           <button onclick="appContext.editorLevelMenu.changeBookTitle();" style="float: right">
             Change Book Title
           </button>
-          <select id="iconDisplayTypeSelect" onchange="appContext.editorLevelMenu.setIconDisplayType(this.value);" style="float: right; margin-right: 0.5em;">
+          <select id="iconDisplayTypeSelect" onchange="appContext.editorLevelMenu.setIconDisplayType(this.value);"
+            style="float: right; margin-right: 0.5em;">
             <option value="par">par</option>
             <option value="eric">eric</option>
             <option value="obv">obv</option>
@@ -414,10 +424,10 @@
         <div class="footer"></div>
       </section>
 
-      <section id="gameLevelMenu" class="screen">
+      <section id="mainLevelMenu" class="screen">
         <div class="header">
           <div class="header">
-            <h1  id="homeTitle" style="text-align: center;">Unflip</h1>
+            <h1 id="homeTitle" style="text-align: center;">Unflip</h1>
 
 
             <div style="display: flex; justify-content: center; gap: 1em; margin-bottom: 1em;">
@@ -428,7 +438,7 @@
               <form style="display: inline" target="_blank" action="https://discord.gg/Hg6zVmTJeP" method="get">
                 <button class="discord_button">Discord</button>
               </form>
-              <button onclick="appContext.openPlayerEditor()">Level Editor</button>
+              <button onclick="appContext.openEditor()">Level Editor</button>
               <!-- Temporary test button - remove after testing -->
               <!-- <button onclick="appContext.authModal.show();" style="background-color: #ff6b6b; color: white;">Test Auth</button> -->
             </div>
@@ -446,7 +456,7 @@
 
         <div id="weeklyChallengCardContainer"></div>
 
-          <h2>Main Levels:</h2>
+        <h2>Main Levels:</h2>
         <div id="iconContainer" class="content"></div>
         <footer>
           <!-- <a href="previous_versions"> -->
@@ -531,69 +541,146 @@
     <div class="authModalBackdrop"></div>
     <div class="authModalContent">
       <button id="authCloseButton" class="authCloseButton" aria-label="Close">×</button>
-      
-      <form id="authSignInForm" style=" margin-bottom: 0.5em">
+
+      <div id="authInitialView">
         <h1>Sign In</h1>
+        <div id="authErrorMessage" style="display: none;"></div>
 
-        <div>
-          <label for="authSignInEmail" style="display: block;">Email:</label>
-          <input type="email" id="authSignInEmail" required style="">
+        <div style="margin-bottom: 0.5em;">
+          <button id="authGoogleButton" class="gsi-material-button">
+            <div class="gsi-material-button-state"></div>
+            <div class="gsi-material-button-content-wrapper">
+              <div class="gsi-material-button-icon">
+                <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"
+                  xmlns:xlink="http://www.w3.org/1999/xlink" style="display: block; overflow:visible;">
+                  <path fill="#EA4335"
+                    d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z">
+                  </path>
+                  <path fill="#4285F4"
+                    d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z">
+                  </path>
+                  <path fill="#FBBC05"
+                    d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z">
+                  </path>
+                  <path fill="#34A853"
+                    d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z">
+                  </path>
+                  <path fill="none" d="M0 0h48v48H0z"></path>
+                </svg>
+              </div>
+              <span class="gsi-material-button-contents">Sign in with Google</span>
+              <span style="display: none;">Sign in with Google</span>
+            </div>
+          </button>
+        </div>
+<!-- 
+        <div class="authDivider">
+          <span>or</span>
+        </div> -->
+
+        <div style="margin-bottom: 0.6em;">
+          <button id="authEmailButton" type="button">
+            Sign in with Email
+          </button>
+        </div>
+
+        <div style="margin-top: 0.6em; text-align: center;">
+          <a href="#" id="authSkipLink">
+            Skip
+          </a>
+        </div>
+      </div>
+
+      <form id="authEmailForm" style="display: none;">
+        <h1>Sign In with Email</h1>
+        <div id="authEmailErrorMessage" style="display: none;"></div>
+
+        <div style="margin-bottom: 0.6em;">
+          <label for="authEmailInput" style="display: block; margin-bottom: 0.3em;">Email</label>
+          <input type="email" id="authEmailInput" required placeholder="you@example.com">
         </div>
         <div>
-          <label for="authSignInPassword" style="display: block;">Password:</label>
-          <input type="password" id="authSignInPassword" required style="">
+          <button type="submit">Continue</button>
         </div>
-        <div style="text-align: center;"> 
-
-        <button type="submit">Sign In</button>
+        <div style="margin-top: 0.8em; text-align: center;">
+          <a href="#" id="authEmailBackLink">← Back to sign in</a>
         </div>
       </form>
 
-      <form id="authSignUpForm" style="display: none; margin-bottom: 0.5em">
-        <h1>Sign Up</h1>
+      <form id="authOTPForm" style="display: none;">
+        <h1>Enter Code</h1>
+        <div id="authOTPErrorMessage" style="display: none;"></div>
+        <p>
+          Check your email for a link to continue.
+        </p>
 
-        <div>
-          <label for="authSignUpEmail" style="display: block;">Email:</label>
-          <input type="email" id="authSignUpEmail" required style="">
+        <div style="margin-bottom: 0.6em;">
+          <label for="authOTPInput" style="display: block; margin-bottom: 0.3em;">Verification Code</label>
+          <input type="text" id="authOTPInput" required maxlength="6" placeholder="000000">
         </div>
         <div>
-          <label for="authSignUpPassword" style="display: block;">Password:</label>
-          <input type="password" id="authSignUpPassword" required minlength="6" style="">
+          <button type="submit">Verify Code</button>
         </div>
-        <div style="text-align: center;"> 
-        <button type="submit">Sign Up</button>
+        <div style="margin-top: 0.8em; text-align: center;">
+          <a href="#" id="authOTPResendLink">Resend Code</a>
+          <span style="color: #ccc; margin: 0 0.4em;">|</span>
+          <a href="#" id="authOTPBackLink">← Back</a>
         </div>
       </form>
-      <div id="authErrorMessage" style="display: none; color: #d32f2f; margin-bottom: 1em; font-size: 0.9em;"></div>
-
-
-      <div style="margin: 1em 0; text-align: center;">
-        <a href="#" id="authToggleLink" style="color: #2da6fd; text-decoration: underline; cursor: pointer;">
-          <span>Don't have an account? Sign up</span>
-        </a>
-      </div>
-
-      <div style="margin: 0 0; text-align: center; position: relative;">
-        <div style="border-top: 1px solid var(--border_gray, #c1bbaf); margin: 1em 0;"></div>
-        <span style="background: #fdfdfd; padding: 0 0.1em; position: relative; top: -0.7em;"></span>
-      </div>
-
-<button id="authGoogleButton" class="gsi-material-button">
-  <div class="gsi-material-button-state"></div>
-  <div class="gsi-material-button-content-wrapper">
-    <div class="gsi-material-button-icon">
-      <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" xmlns:xlink="http://www.w3.org/1999/xlink" style="display: block; overflow:visible;">
-        <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"></path>
-        <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"></path>
-        <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"></path>
-        <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"></path>
-        <path fill="none" d="M0 0h48v48H0z"></path>
-      </svg>
     </div>
-    <span class="gsi-material-button-contents">Sign in with Google</span>
-    <span style="display: none;">Sign in with Google</span>
   </div>
-</button>
+
+  <!-- Daily Weekly Archive Offer Modal - placed at body level to overlay any screen -->
+  <div id="dailyWeeklyArchiveOfferModal" class="dailyWeeklyArchiveOfferModalOverlay modal" style="display: none">
+    <div class="dailyWeeklyArchiveOfferModalBackdrop"></div>
+    <div class="dailyWeeklyArchiveOfferModalContent">
+      <button id="dailyWeeklyArchiveOfferCloseButton" class="dailyWeeklyArchiveOfferCloseButton"
+        aria-label="Close">×</button>
+
+      <h1>Unlock Archive</h1>
+      <p class="dailyWeeklyArchiveOfferSubtitle">Play all past daily & weekly levels</p>
+
+      <div class="dailyWeeklyArchiveOfferCards">
+        <div class="dailyWeeklyArchiveOfferCard">
+          <div class="dailyWeeklyArchiveOfferCardHeader">
+            <div class="dailyWeeklyArchiveOfferCardPrice">$4.99</div>
+            <div class="dailyWeeklyArchiveOfferCardTitle">Daily/Weekly Archive</div>
+          </div>
+          <ul class="dailyWeeklyArchiveOfferCardDescription">
+            <li>Get all past daily and weekly levels</li>
+            <!-- <li>Lifetime access</li> -->
+            <li>Lifetime access + future levels as they come out</li>
+          </ul>
+          <button id="dailyWeeklyArchiveOfferFiveDollarButton" type="button" class="dailyWeeklyArchiveOfferCardButton">
+            Purchase
+          </button>
+        </div>
+
+        <div class="dailyWeeklyArchiveOfferCard">
+          <div class="dailyWeeklyArchiveOfferCardHeader">
+            <div class="dailyWeeklyArchiveOfferCardPrice">$19.99</div>
+            <div class="dailyWeeklyArchiveOfferCardTitle">Full Access&nbsp;!</div>
+          </div>
+          <ul class="dailyWeeklyArchiveOfferCardDescription">
+            <li>Everything + future features and content</li>
+            <li>Early access to hint system</li>
+            <li>Support development</li>
+          </ul>
+          <button id="dailyWeeklyArchiveOfferTwentyDollarButton" type="button"
+            class="dailyWeeklyArchiveOfferCardButton">
+            Purchase
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Redirecting to Payment Modal - placed at body level to overlay any screen -->
+  <div id="redirectingToPaymentModal" class="redirectingToPaymentModalOverlay modal" style="display: none">
+    <div class="redirectingToPaymentModalBackdrop"></div>
+    <div class="redirectingToPaymentModalContent">
+      <h1>Redirecting to payment</h1>
+      <p style="text-align: center; margin-top: 1em;">...</p>
     </div>
   </div>
 </body>
