@@ -53,6 +53,7 @@ if (localStorage.getItem("player_id") === null) {
   localStorage.setItem("player_id", player_id);
 }
 
+// TODO: I'm not sure what this block does (was added/changed by AI and I missed reviewing it)
 // Handle magic link redirects - check for continuations in URL after auth
 onAuthStateChange(async (user) => {
   if (user) {
