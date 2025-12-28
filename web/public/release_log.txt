@@ -272,3 +272,7 @@ Fix Weekly Challenge icon shrinking
 27 Dec 2025
 0.12.3
 Weekly Level #6 (Also lots of behind the scenes auth/checkout stuff)
+
+27 Dec 2025
+0.12.4
+"Showing last 7 levels" and remove first icon "glow"
