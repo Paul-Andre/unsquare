@@ -15,7 +15,7 @@ import { GridLevelMenuScreen } from '../ui/GridLevelMenuScreen.ts';
 import { AuthModal } from '../ui/AuthModal.ts';
 import { DailyWeeklyArchiveOfferModal } from '../ui/DailyWeeklyArchiveOfferModal.ts';
 import { RedirectingToPaymentModal } from '../ui/RedirectingToPaymentModal.ts';
-import { getDailyLevelsBook, getWeeklyChallengesBook } from './loadBook.ts';
+import { weeklyChallengesBookSignal, dailyLevelsBookSignal } from './loadBook.ts';
 
 export class AppContext {
 
@@ -84,12 +84,14 @@ export class AppContext {
   }
 
   goToWeeklyArchive(): void {
-    this.challengeLevelMenu.openBook(getWeeklyChallengesBook());
+    this.challengeLevelMenu.bindBookSignal(weeklyChallengesBookSignal);
+    this.challengeLevelMenu.openBook(weeklyChallengesBookSignal.get());
     this.screenManager.switchTo("challengeLevelMenu");
   }
 
   goToDailyArchive(): void {
-    this.gridLevelMenu.openBook(getDailyLevelsBook());
+    this.gridLevelMenu.bindBookSignal(dailyLevelsBookSignal);
+    this.gridLevelMenu.openBook(dailyLevelsBookSignal.get());
     this.screenManager.switchTo("gridLevelMenu");
   }
 

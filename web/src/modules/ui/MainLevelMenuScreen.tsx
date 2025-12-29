@@ -9,7 +9,7 @@ import { appContext } from '../core/AppContext.ts';
 import { Level } from '../core/Level.ts';
 import { Book } from '../core/Book.ts';
 import { createWeeklyChallengeCard } from './WeeklyChallengeCard.tsx';
-import { getDailyLevelsBook, getWeeklyChallengesBook, getMainBook } from '../core/loadBook.ts';
+import { weeklyChallengesBookSignal, getMainBook, dailyLevelsBookSignal } from '../core/loadBook.ts';
 import { MouseEventHandler } from 'react';
 
 export class MainLevelMenuScreen {
@@ -23,10 +23,10 @@ export class MainLevelMenuScreen {
     this.root = root;
     
     // Load daily levels
-    this.dailyLevelsBook = getDailyLevelsBook();
+    this.dailyLevelsBook = dailyLevelsBookSignal.get();
 
     // Load weekly challenge book
-    this.weeklyChallengesBook = getWeeklyChallengesBook();
+    this.weeklyChallengesBook = weeklyChallengesBookSignal.get();
 
     const iconContainer = cast(root.querySelector("#iconContainer"), HTMLElement);
     this.levelMenu = new LevelIconGrid(iconContainer, false, {
@@ -76,7 +76,8 @@ export class MainLevelMenuScreen {
       if (this.weeklyChallengeCardContainer) {
         const seeAllButton = this.createSeeAllButton("See previous weekly",
           () => {
-            this.weeklyChallengesBook = getWeeklyChallengesBook();
+            this.weeklyChallengesBook = weeklyChallengesBookSignal.get();
+            appContext.challengeLevelMenu.bindBookSignal(weeklyChallengesBookSignal);
             appContext.challengeLevelMenu.openBook(this.weeklyChallengesBook);
             appContext.screenManager.switchTo("challengeLevelMenu");
           }
@@ -125,8 +126,9 @@ export class MainLevelMenuScreen {
     iconSlot.appendChild(iconElement);
 
     const seeAllButton = this.createSeeAllButton("See previous daily", () => {
-      this.dailyLevelsBook = getDailyLevelsBook();
-      appContext.gridLevelMenu.openBook(this.dailyLevelsBook);
+      this.dailyLevelsBook = dailyLevelsBookSignal.get();
+      appContext.gridLevelMenu.bindBookSignal(dailyLevelsBookSignal);
+      appContext.gridLevelMenu.openBook(dailyLevelsBookSignal.get());
       appContext.screenManager.switchTo("gridLevelMenu");
     });
     iconSlot.appendChild(seeAllButton);

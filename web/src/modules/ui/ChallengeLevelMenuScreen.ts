@@ -4,6 +4,7 @@ import { cast } from '../utils/helpers.ts';
 import { Book } from '../core/Book.ts';
 import { createWeeklyChallengeCard } from './WeeklyChallengeCard.tsx';
 import { createUnlockAllSection } from './UnlockAllSection.tsx';
+import { Signal, SingleSignalConsumer } from 'modules/utils/Signal.ts';
 
 export class ChallengeLevelMenuScreen {
   root: HTMLElement;
@@ -12,11 +13,19 @@ export class ChallengeLevelMenuScreen {
   unlockSectionContainer: HTMLElement;
   book: Book | null = null;
 
+  bookSignalConsumer: SingleSignalConsumer<Book>;
+
   constructor(root: HTMLElement) {
     this.root = root;
     this.container = cast(root.querySelector("#challengeLevelContainer"), HTMLElement);
     this.titleElement = cast(root.querySelector("h1"), HTMLElement);
     this.unlockSectionContainer = cast(root.querySelector(".footer"), HTMLElement);
+
+    this.bookSignalConsumer = new SingleSignalConsumer((book) => this.openBook(book));
+  }
+
+  bindBookSignal(signal: Signal<Book>): void {
+    this.bookSignalConsumer.bind(signal);
   }
 
   openBook(book: Book): void {

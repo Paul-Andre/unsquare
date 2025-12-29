@@ -9,10 +9,8 @@ import dailyLevelsData from '../../data/daily_levels_24_dec_2025_exhaustive.json
 import { assert } from '../utils/helpers.ts';
 import { getPurchasedProducts } from 'modules/utils/stripe.ts';
 import { onAuthStateChange } from 'modules/utils/auth.ts';
-import { arch } from 'os';
+import { Signal } from 'modules/utils/Signal.ts';
 
-
-let archiveAccess = false;
 
 async function refreshArchiveAccess(): Promise<void> {
   let products;
@@ -23,7 +21,7 @@ async function refreshArchiveAccess(): Promise<void> {
     return;
   }
   if (products.dailyWeeklyArchive || products.fullAccess) {
-    archiveAccess = true;
+    archiveAccessSignal.set(true);
   }
 }
 
@@ -31,16 +29,23 @@ onAuthStateChange((user) => {
   refreshArchiveAccess();
 });
 
-/**
- * Placeholder function for future authorization logic
- * Returns whether the user has purchased access to the archive
- */
-export function userHasArchiveAccess(): boolean {
-  return archiveAccess;
-}
 
 const NUM_DAILY_LEVELS_PREVIEW = 7;
 const NUM_WEEKLY_CHALLENGES_PREVIEW = 2;
+
+const archiveAccessSignal = new Signal(false);
+
+export const dailyLevelsBookSignal = new Signal(getDailyLevelsBook());
+export const weeklyChallengesBookSignal = new Signal(getWeeklyChallengesBook());
+
+
+archiveAccessSignal.on(_ => {
+  console.log("setting books", archiveAccessSignal.get());
+  dailyLevelsBookSignal.set(getDailyLevelsBook());
+  weeklyChallengesBookSignal.set(getWeeklyChallengesBook());
+});
+
+
 
 /**
  * Calculate which daily level index to show based on current date and unlock time
@@ -73,7 +78,7 @@ function getDailyLevelIndex(totalLevels: number): number {
 }
 
 function getDailyLevelsFirstIndex(lastIndex:number): number {
-  if (userHasArchiveAccess()) return 0;
+  if (archiveAccessSignal.get()) return 0;
   return Math.max(0, lastIndex-NUM_DAILY_LEVELS_PREVIEW+1);
 }
 
@@ -81,7 +86,7 @@ function getDailyLevelsFirstIndex(lastIndex:number): number {
  * Get the daily levels book
  * Returns last 7 levels including today's, or all levels if user has archive access
  */
-export function getDailyLevelsBook(): Book {
+function getDailyLevelsBook(): Book {
   // Load all daily levels
   const allLevels = (JSON.parse(JSON.stringify(dailyLevelsData), book_reviver) as Book).levels;
   const numLevels = allLevels.length;
@@ -119,7 +124,7 @@ export function getDailyLevelsBook(): Book {
  * Get the weekly challenge levels book
  * Returns last 2 weekly levels, or all levels if user has archive access
  */
-export function getWeeklyChallengesBook(): Book {
+function getWeeklyChallengesBook(): Book {
   // Embedded weekly levels data
   const challengeBookJson = {
     levels: [
@@ -185,7 +190,7 @@ export function getWeeklyChallengesBook(): Book {
   
   const weeklyBook = JSON.parse(JSON.stringify(challengeBookJson), book_reviver);
   
-  if (userHasArchiveAccess()) {
+  if (archiveAccessSignal.get()) {
     return weeklyBook;
   }
   
