@@ -1,5 +1,5 @@
 import { appContext } from "./AppContext";
-import { purchaseDailyWeeklyArchive } from "../utils/stripe";
+import { purchaseDailyWeeklyArchive, purchaseFullAccess } from "../utils/stripe";
 
 // a Continuation is basically a intent or location that is serializable on the URL, and is
 // used to redirect or do the correct action after authentication or payment flows.
@@ -14,6 +14,9 @@ const continuationFunctions: Record<Continuation, ContinuationFunction> = {
         // since authentication has already been handled
         purchaseDailyWeeklyArchive(rest);
     },
+    purchaseFullAccess: (rest:Continuation[]) => {
+        purchaseFullAccess(rest);
+    },
     goToWeeklyArchive: (rest:Continuation[]) => {
         if (appContext.screenManager.currentScreenName !== "challengeLevelMenu") {
             appContext.goToWeeklyArchive();
@@ -23,9 +26,9 @@ const continuationFunctions: Record<Continuation, ContinuationFunction> = {
         if (appContext.screenManager.currentScreenName !== "gridLevelMenu") {
             appContext.goToDailyArchive();
         }
-    }
+    },
 };
-export type Continuation = "purchaseDailyWeeklyArchive" | "goToWeeklyArchive" | "goToDailyArchive";
+export type Continuation = "purchaseDailyWeeklyArchive" | "purchaseFullAccess" | "goToWeeklyArchive" | "goToDailyArchive";
 
 
 export function buildUrl(continuations:Continuation[]):string {
@@ -48,12 +51,14 @@ function parseContinuation(s:string):Continuation {
     switch (s) {
         case "purchaseDailyWeeklyArchive":
             return "purchaseDailyWeeklyArchive";
+        case "purchaseFullAccess":
+            return "purchaseFullAccess";
         case "goToDailyArchive":
             return "goToDailyArchive";
         case "goToWeeklyArchive":
             return "goToWeeklyArchive";
         default:
-            throw new Error(`Unknown continuation: ${s}`);
+            throw new Error(`Unknown continuation during parsing: ${s}`);
     }
 }
 
@@ -61,12 +66,14 @@ function serializeContinuation(c:Continuation):string {
     switch (c) {
         case "purchaseDailyWeeklyArchive":
             return "purchaseDailyWeeklyArchive";
+        case "purchaseFullAccess":
+            return "purchaseFullAccess";
         case "goToDailyArchive":
             return "goToDailyArchive";
         case "goToWeeklyArchive":
             return "goToWeeklyArchive";
         default:
-            throw new Error(`Unknown continuation: ${c}`);
+            throw new Error(`Unknown continuation during serialization: ${c}`);
     }
 }
 

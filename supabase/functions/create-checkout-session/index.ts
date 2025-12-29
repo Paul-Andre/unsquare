@@ -19,8 +19,12 @@ if (!SUPABASE_SERVICE_ROLE_KEY) {
 // Product to Stripe Price ID mapping
 const PRODUCT_PRICES: Record<string, string> = {
   dailyWeeklyArchive: "price_1ShNdwAVJE8pXXhAfdf3SHTY",
-  fullAccess: "<stripe_price_id_for_full_access>", // TODO: Replace with actual price ID
+  fullAccess: "price_1SjhqoAVJE8pXXhAjfUFsyYR",
 };
+
+function getPriceId(product: string): string|null {
+    return PRODUCT_PRICES[product]??null;
+}
 
 // Import Stripe SDK and Supabase client for Deno
 import Stripe from "npm:stripe@^17";
@@ -121,7 +125,7 @@ Deno.serve(async (req) => {
 
     // Validate all products exist
     for (const product of requestedProducts) {
-      if (!PRODUCT_PRICES[product]) {
+      if (getPriceId(product) === null) {
         return errorResponse(`Invalid product: ${product}`, 400);
       }
     }
@@ -186,13 +190,19 @@ Deno.serve(async (req) => {
     // Create line items for products that need purchase
     // Note: When using existing price IDs, we can't add metadata directly to line items during creation
     // We'll store products array in session metadata and match by index in webhook
-    const lineItems = needsPurchase.map(product => ({
-      price: PRODUCT_PRICES[product],
-      quantity: body?.quantity || 1,
-      metadata: {
-        product: product,
-      },
-    }));
+    const lineItems = needsPurchase.map(product => {
+      const priceId = getPriceId(product);
+      if (priceId===null) {
+        throw("priceId is null. Normally this shouldn't happen because it was tested earlier");
+      }
+      return {
+        price: priceId,
+        quantity: body?.quantity || 1,
+        metadata: {
+          product: product,
+        },
+      }
+    });
 
     // Create checkout session
     const sessionConfig: Stripe.Checkout.SessionCreateParams = {

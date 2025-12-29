@@ -9,8 +9,11 @@ import type { AuthResult } from '../ui/AuthModal.ts';
 import type { User } from '@supabase/supabase-js';
 import { assert } from './helpers.ts';
 
+type ProductName = "dailyWeeklyArchive" | "fullAccess";
+
+
 export interface CreateCheckoutSessionOptions {
-  product: string;
+  product: ProductName;
   quantity?: number;
   success_url?: string;
   cancel_url?: string;
@@ -74,6 +77,7 @@ export async function createCheckoutSession(options: CreateCheckoutSessionOption
     if (data?.hasAccess && Array.isArray(data.hasAccess) && data.hasAccess.includes(options.product)) {
       console.log(`User already has access to ${options.product}`);
       // Don't redirect - user already has access
+      //  TODO: display some nice looking modal.
       return;
     }
 
@@ -122,6 +126,13 @@ export async function authenticateAndPurchaseDailyWeeklyArchive(continuations: C
   await purchaseDailyWeeklyArchive(continuations);
 }
 
+export async function authenticateAndPurchaseFullAccess(continuations: Continuation[]): Promise<void> {
+
+  await ensureAuthenticated(["purchaseFullAccess", ...continuations]);
+  
+  await purchaseFullAccess(continuations);
+}
+
 /**
  * Initiates purchase. Does not handle authentication.
  */
@@ -148,8 +159,30 @@ export async function purchaseDailyWeeklyArchive(continuations: Continuation[]):
   }
 }
 
+export async function purchaseFullAccess(continuations: Continuation[]): Promise<void> {
+  // Proceed directly to checkout
+  // The success_url should include the navigation continuations
+  // since the purchase will be complete after Stripe redirects back
+  try {
+    // Show redirecting screen
+    appContext.redirectingToPaymentModal.show();
+    
+    await createCheckoutSession({
+      product: "fullAccess",
+      success_url: buildUrl(continuations),
+    });
+    
+    // If we get here without redirecting, user already has access
+    appContext.redirectingToPaymentModal.hide();
+  } catch (error) {
+    // Hide redirecting screen on error
+    appContext.redirectingToPaymentModal.hide();
+    console.error("Error creating checkout session:", error);
+    throw error;
+  }
+}
 
-type PossibleProducts = "dailyWeeklyArchive" | "fullAccess";
+
 
 export async function getPurchasedProducts():Promise<Record<string, boolean>>{
   let user = await getCurrentUser();

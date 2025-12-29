@@ -2,7 +2,7 @@
 
 import { cast, ensureNotNull } from '../utils/helpers.ts';
 import { Continuation } from 'modules/core/continuations.ts';
-import { authenticateAndPurchaseDailyWeeklyArchive } from '../utils/stripe.ts';
+import { authenticateAndPurchaseDailyWeeklyArchive, authenticateAndPurchaseFullAccess } from '../utils/stripe.ts';
 
 export class DailyWeeklyArchiveOfferModal {
   root: HTMLElement;
@@ -41,10 +41,12 @@ export class DailyWeeklyArchiveOfferModal {
     });
 
     // $20 button (placeholder)
-    this.twentyDollarButton.addEventListener('click', () => {
-      this.handleTwentyDollarPurchase();
+    this.twentyDollarButton.addEventListener('click', async () => {
+      await this.handleTwentyDollarPurchase();
     });
   }
+
+  // TODO: 
 
   async handleFiveDollarPurchase(): Promise<void> {
     this.fiveDollarButton.disabled = true;
@@ -57,13 +59,21 @@ export class DailyWeeklyArchiveOfferModal {
       console.error('Purchase failed:', error);
       // Re-show the offer modal if purchase failed
       this.show(this.continuations);
-      this.fiveDollarButton.disabled = false;
     }
   }
 
-  handleTwentyDollarPurchase(): void {
-    // Placeholder for future implementation
-    console.log('$20 purchase option clicked (not yet implemented)');
+  async handleTwentyDollarPurchase(): Promise<void> {
+    this.twentyDollarButton.disabled = true;
+    try {
+      // Hide the offer modal before showing auth modal (if needed)
+      // This prevents the offer modal from covering the auth modal
+      this.hide();
+      await authenticateAndPurchaseFullAccess(this.continuations);
+    } catch (error) {
+      console.error('Purchase failed:', error);
+      // Re-show the offer modal if purchase failed
+      this.show(this.continuations);
+    }
   }
 
   show(continuations: Continuation[]): void {
