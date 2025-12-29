@@ -608,23 +608,23 @@
       </form>
 
       <form id="authOTPForm" style="display: none;">
-        <h1>Enter Code</h1>
+        <h1>Link Sent</h1>
         <div id="authOTPErrorMessage" style="display: none;"></div>
         <p>
-          Check your email for a link to continue.
+          Check your email for a link to sign in.
         </p>
 
-        <div style="margin-bottom: 0.6em;">
+        <div style="margin-bottom: 0.6em;" hidden>
           <label for="authOTPInput" style="display: block; margin-bottom: 0.3em;">Verification Code</label>
           <input type="text" id="authOTPInput" required maxlength="6" placeholder="000000">
         </div>
-        <div>
+        <div hidden>
           <button type="submit">Verify Code</button>
         </div>
         <div style="margin-top: 0.8em; text-align: center;">
-          <a href="#" id="authOTPResendLink">Resend Code</a>
-          <span style="color: #ccc; margin: 0 0.4em;">|</span>
           <a href="#" id="authOTPBackLink">← Back</a>
+          <span style="color: #ccc; margin: 0 0.4em;">|</span>
+          <a href="#" id="authOTPResendLink">Resend</a>
         </div>
       </form>
     </div>

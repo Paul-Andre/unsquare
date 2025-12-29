@@ -657,6 +657,7 @@ button.drawModeActive:hover {
   line-height: 1.5;
   font-size: 0.85em;
   margin: 0 0 0.8em 0;
+  text-align: center;
 }
 
 /* Improved OTP input styling */
