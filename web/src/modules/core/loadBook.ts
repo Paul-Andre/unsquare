@@ -110,12 +110,12 @@ function getDailyLevelsBook(): Book {
     title: "Daily Levels",
     source: "daily",
     levels: selectedLevels,
-    previous: {
+    ...(firstIndex==0)?{}:{previous: {
       action: "offerDailyWeeklyArchive",
       continuations: [
         "goToDailyArchive",
       ],
-    },
+    }},
     fullAmount: currentIndex + 1,
   };
 }

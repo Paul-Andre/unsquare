@@ -21,11 +21,16 @@ export function createUnlockAllSection(props: UnlockAllSectionProps): HTMLElemen
   container.innerHTML = "";
 
   let text: HTMLDivElement | null = null;
-    if (props.showText && (book.fullAmount !== undefined) && book.levels.length < book.fullAmount) {
+    if (props.showText) {
+        let label;
+        if( (book.fullAmount !== undefined) && book.levels.length < book.fullAmount) {
+          label = `Showing last ${book.levels.length} levels out of ${book.fullAmount}`
+        } else {
+          label = "Showing all levels";
+        }
       text = (
       <div style={{ textAlign: 'center', marginBottom: '10px', fontSize: '0.8em' }}>
-        Showing last {book.levels.length} levels
-         levels out of {book.fullAmount}
+        {label}
       </div>
     ) as any as HTMLDivElement;
   };
