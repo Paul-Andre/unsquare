@@ -145,31 +145,6 @@ export function isAnonymousUser(user: User): boolean {
   return user.is_anonymous === true || (user.email === null && (!user.identities || user.identities.length === 0));
 }
 
-/**
- * Link an OAuth identity to the current user (for anonymous users)
- */
-export async function linkIdentity(provider: 'google' = 'google', continuations: Continuation[]): Promise<{ error: AuthError | null }> {
-  const redirectUrl = buildUrl(continuations);
-  const { error } = await supabase.auth.linkIdentity({
-    provider,
-    options: {
-      redirectTo: redirectUrl,
-    },
-  });
-
-  return { error };
-}
-
-/**
- * Update the current user's email (for linking email to anonymous users)
- */
-export async function updateUserEmail(email: string): Promise<{ error: AuthError | null }> {
-  const { error } = await supabase.auth.updateUser({
-    email,
-  });
-
-  return { error };
-}
 
 /**
  * Check if an error indicates that an email is already registered
@@ -194,9 +169,11 @@ export function isEmailAlreadyRegisteredError(error: AuthError | null): boolean 
 export async function handleGoogleSignInFlow(continuations: Continuation[]): Promise<{ error: AuthError | null }> {
   const user = await getCurrentUser(); 
 
-  // if (user && isAnonymousUser(user)) {
-  //   return await linkIdentity('google', continuations);
-  // }
+  if (user && isAnonymousUser(user)) {
+    // TODO: implement manual linking. Supabase has a function to link, but it only works if the non-anonymous identity
+    // hasn't yet been created, so it doesn't always work.
+    console.warn("Linking of anonymous users not implemented. New sign-in will overwrite anonymous identity.");
+  }
   return await signInWithOAuth('google', continuations);
 }
 
@@ -208,13 +185,8 @@ export interface EmailSignInResult {
 export async function handleEmailSignInFlow(email: string, continuations: Continuation[]): Promise<EmailSignInResult> {
   const user = await getCurrentUser();
   if (user && isAnonymousUser(user)) {
-    const { error: updateError } = await updateUserEmail(email);
-    if (updateError && !isEmailAlreadyRegisteredError(updateError)) {
-      return {
-        success: false,
-        error: updateError,
-      };
-    }
+    // TODO: handle linking of anonymous
+    console.warn("Linking of anonymous users not implemented. New sign-in will overwrite anonymous identity.");
   }
   
   const { error } = await signInWithMagicLink(email, continuations);

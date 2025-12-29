@@ -7,13 +7,36 @@ import { DAILY_UNLOCK_HOUR, DAILY_LEVELS_START_DATE } from '../utils/config.ts';
 import mainBookData from '../../data/2025_nov_11_reordered_solved_fixed_all_solutions.json';
 import dailyLevelsData from '../../data/daily_levels_24_dec_2025_exhaustive.json';
 import { assert } from '../utils/helpers.ts';
+import { getPurchasedProducts } from 'modules/utils/stripe.ts';
+import { onAuthStateChange } from 'modules/utils/auth.ts';
+import { arch } from 'os';
+
+
+let archiveAccess = false;
+
+async function refreshArchiveAccess(): Promise<void> {
+  let products;
+  try {
+    products = await getPurchasedProducts();
+  } catch (error) {
+    console.log("Failed to fetch purchased products.", error);
+    return;
+  }
+  if (products.dailyWeeklyArchive || products.fullAccess) {
+    archiveAccess = true;
+  }
+}
+
+onAuthStateChange((user) => {
+  refreshArchiveAccess();
+});
 
 /**
  * Placeholder function for future authorization logic
  * Returns whether the user has purchased access to the archive
  */
 export function userHasArchiveAccess(): boolean {
-  return false;
+  return archiveAccess;
 }
 
 const NUM_DAILY_LEVELS_PREVIEW = 7;
@@ -82,12 +105,12 @@ export function getDailyLevelsBook(): Book {
     title: "Daily Levels",
     source: "daily",
     levels: selectedLevels,
-    // previous: {
-    //   action: "offerDailyWeeklyArchive",
-    //   continuations: [
-    //     "goToDailyArchive",
-    //   ],
-    // },
+    previous: {
+      action: "offerDailyWeeklyArchive",
+      continuations: [
+        "goToDailyArchive",
+      ],
+    },
     fullAmount: currentIndex + 1,
   };
 }
@@ -175,12 +198,12 @@ export function getWeeklyChallengesBook(): Book {
     title: "Weekly Challenges",
     source: "challenge",
     levels: lastTwoLevels,
-    // previous: {
-    //   action: "offerDailyWeeklyArchive",
-    //   continuations: [
-    //     "goToWeeklyArchive",
-    //   ],
-    // },
+    previous: {
+      action: "offerDailyWeeklyArchive",
+      continuations: [
+        "goToWeeklyArchive",
+      ],
+    },
     fullAmount: allLevels.length,
   };
 }

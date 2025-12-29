@@ -4,9 +4,10 @@ import { FunctionsHttpError } from '@supabase/supabase-js';
 import { supabase } from './api.ts';
 import { getCurrentUser, isAnonymousUser } from './auth.ts';
 import { appContext } from '../core/AppContext.ts';
-import { Continuation, processContinuations, buildUrl } from '../core/continuations.ts';
+import { Continuation, buildUrl } from '../core/continuations.ts';
 import type { AuthResult } from '../ui/AuthModal.ts';
 import type { User } from '@supabase/supabase-js';
+import { assert } from './helpers.ts';
 
 export interface CreateCheckoutSessionOptions {
   product: string;
@@ -25,29 +26,23 @@ export async function ensureAuthenticated(continuations: Continuation[]): Promis
       // Anonymous user - show auth modal to allow linking
       try {
         const result = await appContext.authModal.show(continuations);
-        processContinuations(continuations);
         return result;
       } catch (error) {
         console.error('Authentication cancelled', error);
-        processContinuations(continuations);
         return { user };
       }
     }
     // Non-anonymous authenticated user - proceed
-    processContinuations(continuations);
     return { user };
   }
 
   // If no user authenticated, show auth modal and wait for authentication
   try {
     const result = await appContext.authModal.show(continuations);
-    // Process continuations after auth or skip
-    processContinuations(continuations);
     return result;
   } catch (error) {
     console.error('Authentication cancelled', error);
     // If cancelled, return null user
-    processContinuations(continuations);
     return { user: null };
   }
 }
@@ -153,3 +148,33 @@ export async function purchaseDailyWeeklyArchive(continuations: Continuation[]):
   }
 }
 
+
+type PossibleProducts = "dailyWeeklyArchive" | "fullAccess";
+
+export async function getPurchasedProducts():Promise<Record<string, boolean>>{
+  let user = await getCurrentUser();
+  if (!user) {
+    console.log("User is null, therefore no products purchased.");
+    return {};
+  }
+  let request = {
+    p_user_id: user.id,
+    p_email: (user.email??null),
+  };
+  console.log(request);
+
+  let {data, error} = await supabase.rpc("get_purchased_products", request );
+  if (error) {
+    throw error;
+  }
+  let ret: Record<string, boolean> = {};
+  for (let row of data) {
+    
+    let product = row.product;
+    assert( typeof product == "string");
+    ret[product] = true;
+  }
+  console.log(data, error);
+
+  return ret;
+}

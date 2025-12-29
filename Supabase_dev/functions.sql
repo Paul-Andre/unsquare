@@ -172,3 +172,25 @@ $$;
 -- TODO: figure out how to use the readonly_role
 ALTER FUNCTION get_player_level_summary(text,text) OWNER TO postgres;
 ALTER FUNCTION get_player_level_histograms_and_summary(text,text) OWNER TO postgres;
+
+
+-- TODO: I might need to work on the RLS to get the matching by email work.
+create or replace function public.get_purchased_products(
+  p_user_id uuid,
+  p_email text default null
+)
+returns table (
+  product text
+)
+language sql
+stable
+as $$
+  select distinct p.product
+  from public.purchases p
+  where
+    p.user_id = p_user_id
+    or (
+      p_email is not null
+      and p.email = p_email
+    );
+$$;

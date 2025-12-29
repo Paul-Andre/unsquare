@@ -18,13 +18,11 @@ const continuationFunctions: Record<Continuation, ContinuationFunction> = {
         if (appContext.screenManager.currentScreenName !== "challengeLevelMenu") {
             appContext.goToWeeklyArchive();
         }
-        processContinuations(rest);
     },
     goToDailyArchive: (rest:Continuation[]) => {
         if (appContext.screenManager.currentScreenName !== "gridLevelMenu") {
             appContext.goToDailyArchive();
         }
-        processContinuations(rest);
     }
 };
 export type Continuation = "purchaseDailyWeeklyArchive" | "goToWeeklyArchive" | "goToDailyArchive";
@@ -43,6 +41,7 @@ export function processContinuations(a:Continuation[]) {
         throw new Error(`Unknown continuation: ${name}`);
     }
     cont(rest);
+    processContinuations(rest);
 }
 
 function parseContinuation(s:string):Continuation {

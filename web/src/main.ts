@@ -6,7 +6,7 @@ import * as algo from './modules/core/algo';
 import { assert, cast, generate_id } from './modules/utils/helpers.ts';
 import { onAuthStateChange, getCurrentUser } from './modules/utils/auth.ts';
 import { supabase } from './modules/utils/api.ts';
-import { testCheckout, createCheckoutSession, purchaseDailyWeeklyArchive } from './modules/utils/stripe.ts';
+import { testCheckout, createCheckoutSession, purchaseDailyWeeklyArchive, getPurchasedProducts } from './modules/utils/stripe.ts';
 import * as auth from './modules/utils/auth.ts'
 import { processContinuations, getUrlContinuations } from 'modules/core/continuations.ts';
 
@@ -31,6 +31,7 @@ window.showSignInModal = () => {
   appContext.authModal.show([]);
 };
 
+window.getPurchasedProducts = getPurchasedProducts;
 
 // Remove utm parameters from the url
 window.addEventListener('load',
@@ -55,23 +56,23 @@ if (localStorage.getItem("player_id") === null) {
 
 // TODO: I'm not sure what this block does (was added/changed by AI and I missed reviewing it)
 // Handle magic link redirects - check for continuations in URL after auth
-onAuthStateChange(async (user) => {
-  if (user) {
-    // User just authenticated, check for continuations in URL
-    const continuations = getUrlContinuations();
-    if (continuations.length > 0) {
-      // Process continuations after a short delay to ensure session is fully established
-      setTimeout(() => {
-        processContinuations(continuations);
-        // Clean up URL
-        const url = new URL(window.location.href);
-        url.searchParams.delete('continuations');
-        // Also clean up hash if it contains auth tokens
-        if (url.hash.includes('access_token') || url.hash.includes('type=recovery')) {
-          url.hash = '';
-        }
-        window.history.replaceState({}, '', url.toString());
-      }, 100);
-    }
-  }
-});
+// onAuthStateChange(async (user) => {
+//   if (user) {
+//     // User just authenticated, check for continuations in URL
+//     const continuations = getUrlContinuations();
+//     if (continuations.length > 0) {
+//       // Process continuations after a short delay to ensure session is fully established
+//       setTimeout(() => {
+//         processContinuations(continuations);
+//         // Clean up URL
+//         const url = new URL(window.location.href);
+//         url.searchParams.delete('continuations');
+//         // Also clean up hash if it contains auth tokens
+//         if (url.hash.includes('access_token') || url.hash.includes('type=recovery')) {
+//           url.hash = '';
+//         }
+//         window.history.replaceState({}, '', url.toString());
+//       }, 100);
+//     }
+//   }
+// });

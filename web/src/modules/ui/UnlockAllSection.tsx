@@ -25,18 +25,19 @@ export function createUnlockAllSection(props: UnlockAllSectionProps): HTMLElemen
       text = (
       <div style={{ textAlign: 'center', marginBottom: '10px', fontSize: '0.8em' }}>
         Showing last {book.levels.length} levels
-         {/* levels out of {book.fullAmount} */}
+         levels out of {book.fullAmount}
       </div>
     ) as any as HTMLDivElement;
   };
 
+  console.log("book in sectin", book);
   let button = null;
   if (book.previous) {
-    const button = (
+    button = (
       <button
         style={{ display: 'block', margin: '0 auto', fontSize: '1.1em' }}
       >
-        Unlock All Past Levels
+        Unlock All
       </button>
     ) as any as HTMLButtonElement;
     

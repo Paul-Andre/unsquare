@@ -76,6 +76,7 @@ export class MainLevelMenuScreen {
       if (this.weeklyChallengeCardContainer) {
         const seeAllButton = this.createSeeAllButton("See previous weekly",
           () => {
+            this.weeklyChallengesBook = getWeeklyChallengesBook();
             appContext.challengeLevelMenu.openBook(this.weeklyChallengesBook);
             appContext.screenManager.switchTo("challengeLevelMenu");
           }
@@ -124,6 +125,7 @@ export class MainLevelMenuScreen {
     iconSlot.appendChild(iconElement);
 
     const seeAllButton = this.createSeeAllButton("See previous daily", () => {
+      this.dailyLevelsBook = getDailyLevelsBook();
       appContext.gridLevelMenu.openBook(this.dailyLevelsBook);
       appContext.screenManager.switchTo("gridLevelMenu");
     });
