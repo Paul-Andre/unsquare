@@ -20,33 +20,34 @@ export interface CreateCheckoutSessionOptions {
 }
 
 
-export async function ensureAuthenticated(continuations: Continuation[]): Promise<{ user: User | null }> {
+export async function ensureAuthenticated(continuations: Continuation[]): Promise<User | null> {
   // Check if already authenticated
   const user = await getCurrentUser();
   if (user) {
     // Check if user is anonymous - if so, still show auth modal to allow account linking
     if (isAnonymousUser(user)) {
+      console.warn("User is anonymous... not currently fully supported.")
       // Anonymous user - show auth modal to allow linking
       try {
         const result = await appContext.authModal.show(continuations);
-        return result;
+        return result.user;
       } catch (error) {
         console.error('Authentication cancelled', error);
-        return { user };
+        return  user ;
       }
     }
     // Non-anonymous authenticated user - proceed
-    return { user };
+    return  user ;
   }
 
   // If no user authenticated, show auth modal and wait for authentication
   try {
     const result = await appContext.authModal.show(continuations);
-    return result;
+    return result.user;
   } catch (error) {
     console.error('Authentication cancelled', error);
     // If cancelled, return null user
-    return { user: null };
+    return null;
   }
 }
 
@@ -121,16 +122,20 @@ export async function authenticateAndPurchaseDailyWeeklyArchive(continuations: C
   // - Authenticated user: proceeds without modal
   // Note: We pass only the navigation continuations (not "purchaseDailyWeeklyArchive")
   // to avoid recursion when continuations are processed
-  await ensureAuthenticated(["purchaseDailyWeeklyArchive", ...continuations]);
+  let user = await ensureAuthenticated(["purchaseDailyWeeklyArchive", ...continuations]);
   
-  await purchaseDailyWeeklyArchive(continuations);
+  if (user != null) {
+    await purchaseDailyWeeklyArchive(continuations);
+  }
 }
 
 export async function authenticateAndPurchaseFullAccess(continuations: Continuation[]): Promise<void> {
 
-  await ensureAuthenticated(["purchaseFullAccess", ...continuations]);
+  let user = await ensureAuthenticated(["purchaseFullAccess", ...continuations]);
   
-  await purchaseFullAccess(continuations);
+  if (user != null) {
+    await purchaseFullAccess(continuations);
+  }
 }
 
 /**

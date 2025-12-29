@@ -2,7 +2,9 @@
 
 import { cast, ensureNotNull } from '../utils/helpers.ts';
 import { Continuation } from 'modules/core/continuations.ts';
-import { authenticateAndPurchaseDailyWeeklyArchive, authenticateAndPurchaseFullAccess } from '../utils/stripe.ts';
+import { authenticateAndPurchaseDailyWeeklyArchive, authenticateAndPurchaseFullAccess, ensureAuthenticated } from '../utils/stripe.ts';
+import { getCurrentUser } from 'modules/utils/auth.ts';
+import { appContext } from 'modules/core/AppContext.ts';
 
 export class DailyWeeklyArchiveOfferModal {
   root: HTMLElement;
@@ -11,16 +13,21 @@ export class DailyWeeklyArchiveOfferModal {
   closeButton: HTMLButtonElement;
   fiveDollarButton: HTMLButtonElement;
   twentyDollarButton: HTMLButtonElement;
+  alreadyPurchasedSection: HTMLElement;
+  logInButton: HTMLElement;
+
   continuations: Continuation[] = [];
 
   constructor(root: HTMLElement) {
     this.root = root;
-    this.backdrop = cast(ensureNotNull(root.querySelector('.dailyWeeklyArchiveOfferModalBackdrop')), HTMLElement);
-    this.modalContent = cast(ensureNotNull(root.querySelector('.dailyWeeklyArchiveOfferModalContent')), HTMLElement);
-    this.closeButton = cast(ensureNotNull(root.querySelector('#dailyWeeklyArchiveOfferCloseButton')), HTMLButtonElement);
-    this.fiveDollarButton = cast(ensureNotNull(root.querySelector('#dailyWeeklyArchiveOfferFiveDollarButton')), HTMLButtonElement);
-    this.twentyDollarButton = cast(ensureNotNull(root.querySelector('#dailyWeeklyArchiveOfferTwentyDollarButton')), HTMLButtonElement);
-    
+    this.backdrop = cast((root.querySelector('.dailyWeeklyArchiveOfferModalBackdrop')), HTMLElement);
+    this.modalContent = cast((root.querySelector('.dailyWeeklyArchiveOfferModalContent')), HTMLElement);
+    this.closeButton = cast((root.querySelector('#dailyWeeklyArchiveOfferCloseButton')), HTMLButtonElement);
+    this.fiveDollarButton = cast((root.querySelector('#dailyWeeklyArchiveOfferFiveDollarButton')), HTMLButtonElement);
+    this.twentyDollarButton = cast((root.querySelector('#dailyWeeklyArchiveOfferTwentyDollarButton')), HTMLButtonElement);
+    this.alreadyPurchasedSection = cast((root.querySelector('.dailyWeeklyArchiveOfferAlreadyPurchased')), HTMLElement);
+    this.logInButton = cast((root.querySelector('.dailyWeeklyArchiveOfferAlreadyPurchased a')), HTMLElement);
+
     this.setupEventListeners();
   }
 
@@ -44,12 +51,20 @@ export class DailyWeeklyArchiveOfferModal {
     this.twentyDollarButton.addEventListener('click', async () => {
       await this.handleTwentyDollarPurchase();
     });
+
+    this.logInButton.addEventListener('click', async () => {
+      this.hide();
+      let user = await ensureAuthenticated(this.continuations);
+      if (user === null) {
+        this.show(this.continuations);
+      }
+    });
   }
 
   // TODO: 
 
   async handleFiveDollarPurchase(): Promise<void> {
-    this.fiveDollarButton.disabled = true;
+    // this.fiveDollarButton.disabled = true;
     try {
       // Hide the offer modal before showing auth modal (if needed)
       // This prevents the offer modal from covering the auth modal
@@ -63,7 +78,7 @@ export class DailyWeeklyArchiveOfferModal {
   }
 
   async handleTwentyDollarPurchase(): Promise<void> {
-    this.twentyDollarButton.disabled = true;
+    // this.twentyDollarButton.disabled = true;
     try {
       // Hide the offer modal before showing auth modal (if needed)
       // This prevents the offer modal from covering the auth modal
@@ -84,6 +99,14 @@ export class DailyWeeklyArchiveOfferModal {
     requestAnimationFrame(() => {
       this.root.classList.add('showing');
     });
+    (async () =>{
+      let user = await getCurrentUser();
+      if (user === null) {
+        this.alreadyPurchasedSection.hidden = false;
+      } else {
+        this.alreadyPurchasedSection.hidden = true;
+      }
+    })();
   }
 
   close(): void {

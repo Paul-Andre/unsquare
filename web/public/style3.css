@@ -753,6 +753,13 @@ button.drawModeActive:hover {
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 
+.dailyWeeklyArchiveOfferAlreadyPurchased p {
+  text-align: center;
+  font-size: 1em;
+  margin-top: 1em;
+  margin-bottom: 0;
+}
+
 .dailyWeeklyArchiveOfferCloseButton {
   position: absolute;
   top: 0.3em;
