@@ -26,7 +26,7 @@ export function createUnlockAllSection(props: UnlockAllSectionProps): HTMLElemen
         if( (book.fullAmount !== undefined) && book.levels.length < book.fullAmount) {
           label = `Showing last ${book.levels.length} levels out of ${book.fullAmount}`
         } else {
-          label = "Showing all levels";
+          label = "All levels unlocked";
         }
       text = (
       <div style={{ textAlign: 'center', marginBottom: '10px', fontSize: '0.8em' }}>

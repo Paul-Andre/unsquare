@@ -179,6 +179,7 @@ Deno.serve(async (req) => {
     }
     
     // Get the domain from the request or use a default
+    console.log(req.headers);
     const origin = req.headers.get("origin") || req.headers.get("referer") || "http://localhost:8000";
     const baseUrl = new URL(origin).origin;
     const successUrl = body?.success_url || `${baseUrl}/success.html`;
