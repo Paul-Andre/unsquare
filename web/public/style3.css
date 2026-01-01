@@ -269,6 +269,7 @@ button,
   margin: 2px;
   /*box-shadow: 1px 1px #9b9b9b;*/
   color: var(--black);
+  flex-shrink: 0;
 }
 
 .level_icon {
