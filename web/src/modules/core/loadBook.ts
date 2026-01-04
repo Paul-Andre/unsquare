@@ -1,6 +1,6 @@
 "use strict";
 
-import { Book } from './Book.ts';
+import { Book, BookNavigation } from './Book.ts';
 import { Level } from './Level.ts';
 import { book_reviver, reindexLevels } from './bookUtils.ts';
 import { DAILY_UNLOCK_HOUR, DAILY_LEVELS_START_DATE } from '../utils/config.ts';
@@ -11,6 +11,13 @@ import { getPurchasedProducts } from 'modules/utils/stripe.ts';
 import { onAuthStateChange } from 'modules/utils/auth.ts';
 import { Signal } from 'modules/utils/Signal.ts';
 
+// const PREVIOUS_OBJECT: BookNavigation = {
+//       action: "offerDailyWeeklyArchive",
+//       continuations: [
+//         "goToWeeklyArchive",
+//       ],
+//     }
+const PREVIOUS_OBJECT = undefined; 
 
 async function refreshArchiveAccess(): Promise<void> {
   let products;
@@ -110,12 +117,7 @@ function getDailyLevelsBook(): Book {
     title: "Daily Levels",
     source: "daily",
     levels: selectedLevels,
-    ...(firstIndex==0)?{}:{previous: {
-      action: "offerDailyWeeklyArchive",
-      continuations: [
-        "goToDailyArchive",
-      ],
-    }},
+    ...(firstIndex==0)?{}:{previous: PREVIOUS_OBJECT},
     fullAmount: currentIndex + 1,
   };
 }
@@ -182,6 +184,15 @@ function getWeeklyChallengesBook(): Book {
         title: "Weekly #6",
         __type__: "Level",
       },
+      {
+        "colorScheme":"BW",
+        "tileShape":"square",
+        "tiles":[[1,1,1,2,1,1,2,1,1,1],[1,2,1,1,2,2,1,1,2,1],[1,1,2,2,1,1,2,2,1,1],[2,1,2,1,2,2,1,2,1,2],[1,2,1,2,2,2,2,1,2,1],[1,2,1,2,2,2,2,1,2,1],[2,1,2,1,2,2,1,2,1,2],[1,1,2,2,1,1,2,2,1,1],[1,2,1,1,2,2,1,1,2,1],[1,1,1,2,1,1,2,1,1,1]],
+        "mode":"challenge",
+        "id":"level_562439116575121",
+        "__type__":"Level",
+        title: "Weekly #7",
+      }
     ],
     source: "challenge",
     id: "weekly",
@@ -203,12 +214,7 @@ function getWeeklyChallengesBook(): Book {
     title: "Weekly Challenges",
     source: "challenge",
     levels: lastTwoLevels,
-    previous: {
-      action: "offerDailyWeeklyArchive",
-      continuations: [
-        "goToWeeklyArchive",
-      ],
-    },
+    previous: PREVIOUS_OBJECT,
     fullAmount: allLevels.length,
   };
 }
