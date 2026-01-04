@@ -269,6 +269,7 @@ button,
   margin: 2px;
   /*box-shadow: 1px 1px #9b9b9b;*/
   color: var(--black);
+  flex-shrink: 0;
 }
 
 .level_icon {
@@ -657,6 +658,7 @@ button.drawModeActive:hover {
   line-height: 1.5;
   font-size: 0.85em;
   margin: 0 0 0.8em 0;
+  text-align: center;
 }
 
 /* Improved OTP input styling */
@@ -750,6 +752,13 @@ button.drawModeActive:hover {
   padding: 1.2em 1em;
   z-index: 1001;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.dailyWeeklyArchiveOfferAlreadyPurchased p {
+  text-align: center;
+  font-size: 1em;
+  margin-top: 1em;
+  margin-bottom: 0;
 }
 
 .dailyWeeklyArchiveOfferCloseButton {

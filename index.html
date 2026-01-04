@@ -60,7 +60,7 @@
 
   <link rel="manifest" href="/manifest.json">
 
-  <script type="module" crossorigin src="/assets/main-DDQbpE9u.js"></script>
+  <script type="module" crossorigin src="/assets/main-D0tM4IHs.js"></script>
 </head>
 
 <body>
@@ -363,7 +363,7 @@
             <img id="editorPreviewIcon"
               style="float: right; margin-right: 0.5em; vertical-align: middle; border: solid 2px var(--border_gray); background: white;" />
 
-            <select id="levelModeSelect" onchange="editor.setMode(this.value);">
+            <select id="levelModeSelect" onchange="appContext.editor.setMode(this.value);">
               <option value="normal">normal</option>
               <option value="challenge">challenge</option>
             </select>
@@ -418,7 +418,7 @@
           </select>
         </div>
 
-        <div id="iconContainer" class="content" style="width:500px"></div>
+        <div id="iconContainer" class="content"></div>
         <p>--- </p>
         <div id="iconContainer2" class="content2" style="min-height: 50px;"></div>
         <div class="footer"></div>
@@ -584,7 +584,7 @@
           </button>
         </div>
 
-        <div style="margin-top: 0.6em; text-align: center;">
+        <div style="margin-top: 0.6em; text-align: center;" hidden>
           <a href="#" id="authSkipLink">
             Skip
           </a>
@@ -608,23 +608,23 @@
       </form>
 
       <form id="authOTPForm" style="display: none;">
-        <h1>Enter Code</h1>
+        <h1>Link Sent</h1>
         <div id="authOTPErrorMessage" style="display: none;"></div>
         <p>
-          Check your email for a link to continue.
+          Check your email for a link to sign in.
         </p>
 
-        <div style="margin-bottom: 0.6em;">
+        <div style="margin-bottom: 0.6em;" hidden>
           <label for="authOTPInput" style="display: block; margin-bottom: 0.3em;">Verification Code</label>
           <input type="text" id="authOTPInput" required maxlength="6" placeholder="000000">
         </div>
-        <div>
+        <div hidden>
           <button type="submit">Verify Code</button>
         </div>
         <div style="margin-top: 0.8em; text-align: center;">
-          <a href="#" id="authOTPResendLink">Resend Code</a>
-          <span style="color: #ccc; margin: 0 0.4em;">|</span>
           <a href="#" id="authOTPBackLink">← Back</a>
+          <span style="color: #ccc; margin: 0 0.4em;">|</span>
+          <a href="#" id="authOTPResendLink">Resend</a>
         </div>
       </form>
     </div>
@@ -671,6 +671,11 @@
             Purchase
           </button>
         </div>
+      </div>
+
+      <div class="dailyWeeklyArchiveOfferAlreadyPurchased">
+        <p>Already purchased? <a href="#"> Log in.</a></p>
+
       </div>
     </div>
   </div>
