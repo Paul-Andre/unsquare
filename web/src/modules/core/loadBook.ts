@@ -114,7 +114,7 @@ function getDailyLevelsBook(): Book {
   
   return {
     id: "daily",
-    title: "Daily Levels",
+    title: "Unflip Daily Levels",
     source: "daily",
     levels: selectedLevels,
     ...(firstIndex==0)?{}:{previous: PREVIOUS_OBJECT},
@@ -219,7 +219,7 @@ function getWeeklyChallengesBook(): Book {
 
   return {
     id: "weekly",
-    title: "Weekly Challenges",
+    title: "Unflip Weekly Challenges",
     source: "challenge",
     levels: lastTwoLevels,
     previous: PREVIOUS_OBJECT,
