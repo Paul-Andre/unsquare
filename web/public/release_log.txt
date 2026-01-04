@@ -284,3 +284,7 @@ Weekly Challenge 7
 03 Jan 2026
 0.12.6
 Simpler version of the firework challenge up
+
+03 Jan 2026
+0.12.7
+"unflip" appear in daily and weekly screens
