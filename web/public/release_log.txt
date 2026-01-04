@@ -276,3 +276,7 @@ Weekly Level #6 (Also lots of behind the scenes auth/checkout stuff)
 27 Dec 2025
 0.12.4
 "Showing last 7 levels" and remove first icon "glow"
+
+03 Jan 2026
+0.12.5
+Weekly Challenge 7
