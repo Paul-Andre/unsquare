@@ -3,7 +3,7 @@
 import { cast, ensureNotNull } from '../utils/helpers.ts';
 import { Continuation } from 'modules/core/continuations.ts';
 import { authenticateAndPurchaseDailyWeeklyArchive, authenticateAndPurchaseFullAccess, ensureAuthenticated } from '../utils/stripe.ts';
-import { getCurrentUser } from 'modules/utils/auth.ts';
+import { getCurrentUser, signOut } from 'modules/utils/auth.ts';
 import { appContext } from 'modules/core/AppContext.ts';
 
 export class DailyWeeklyArchiveOfferModal {
@@ -15,6 +15,10 @@ export class DailyWeeklyArchiveOfferModal {
   twentyDollarButton: HTMLButtonElement;
   alreadyPurchasedSection: HTMLElement;
   logInButton: HTMLElement;
+  emailSpan: HTMLElement;
+  loggedInAsSection: HTMLElement;
+  logOutButton: HTMLElement;
+
 
   continuations: Continuation[] = [];
 
@@ -26,7 +30,10 @@ export class DailyWeeklyArchiveOfferModal {
     this.fiveDollarButton = cast((root.querySelector('#dailyWeeklyArchiveOfferFiveDollarButton')), HTMLButtonElement);
     this.twentyDollarButton = cast((root.querySelector('#dailyWeeklyArchiveOfferTwentyDollarButton')), HTMLButtonElement);
     this.alreadyPurchasedSection = cast((root.querySelector('.dailyWeeklyArchiveOfferAlreadyPurchased')), HTMLElement);
-    this.logInButton = cast((root.querySelector('.dailyWeeklyArchiveOfferAlreadyPurchased a')), HTMLElement);
+    this.logInButton = cast((root.querySelector('#dailyWeeklyArchiveOfferLogIn')), HTMLElement);
+    this.logOutButton = cast((root.querySelector('#dailyWeeklyArchiveOfferLogOut')), HTMLElement);
+    this.emailSpan = cast((root.querySelector('#dailyWeeklyArchiveOfferLoggedInAs')), HTMLElement);
+    this.loggedInAsSection = cast((root.querySelector('.dailyWeeklyArchiveOfferLoggedInAs')), HTMLElement);
 
     this.setupEventListeners();
   }
@@ -59,6 +66,11 @@ export class DailyWeeklyArchiveOfferModal {
         this.show(this.continuations);
       }
     });
+
+    this.logOutButton.addEventListener('click', async () => {
+      await signOut();
+      this.show(this.continuations);
+    })
   }
 
   // TODO: 
@@ -101,10 +113,21 @@ export class DailyWeeklyArchiveOfferModal {
     });
     (async () =>{
       let user = await getCurrentUser();
-      if (user === null) {
+      let email = null;
+      if (user !== null) {
+        if (user.email === undefined) {
+          console.warn("Logged in as user without email");
+        } else {
+          email = user.email;
+        }
+      }
+      if (email === null) {
         this.alreadyPurchasedSection.hidden = false;
+        this.loggedInAsSection.hidden = true;
       } else {
         this.alreadyPurchasedSection.hidden = true;
+        this.loggedInAsSection.hidden = false;
+        this.emailSpan.innerText = email;
       }
     })();
   }
