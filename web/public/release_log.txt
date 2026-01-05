@@ -308,3 +308,7 @@ on cont. nav, put mainLevelMenu into stack
 04 Jan 2026
 0.12.12
 Show only last 3 daily levels
+
+04 Jan 2026
+0.12.13
+some flex stuff
