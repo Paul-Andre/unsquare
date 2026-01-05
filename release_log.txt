@@ -292,3 +292,7 @@ Simpler version of the firework challenge up
 04 Jan 2026
 0.12.8
 Hide email sign-in
+
+04 Jan 2026
+0.12.9
+Test deploy.sh production branch
