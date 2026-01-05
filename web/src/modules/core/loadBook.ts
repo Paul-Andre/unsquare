@@ -37,7 +37,7 @@ onAuthStateChange((user) => {
 });
 
 
-const NUM_DAILY_LEVELS_PREVIEW = 7;
+const NUM_DAILY_LEVELS_PREVIEW = 3;
 const NUM_WEEKLY_CHALLENGES_PREVIEW = 3;
 
 const archiveAccessSignal = new Signal(false);
