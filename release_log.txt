@@ -291,4 +291,4 @@ Simpler version of the firework challenge up
 
 04 Jan 2026
 0.12.8
-Test production branch deploy
+Hide email sign-in
