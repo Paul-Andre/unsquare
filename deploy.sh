@@ -5,6 +5,9 @@ set -e
 # Handle Ctrl+C gracefully
 trap 'echo -e "\n\nDeployment cancelled."; exit 130' INT
 
+ORIGINAL_BRANCH=$(git branch --show-current)
+trap 'git switch "$ORIGINAL_BRANCH" >/dev/null 2>&1 || true' EXIT
+
 SOURCE_DIR="web/dist"
 SOURCE_WWW="web/public"
 DEPLOY_DIR="$HOME/Programming/unflip_deploy"
@@ -157,11 +160,4 @@ echo "Updating production branch to match master..."
 
 
 # Switch to production and fast-forward to master
-git switch production
-git merge --ff-only master
-
-# Push production
-git push origin production
-
-# Switch back to master
-git switch master
+git switch production && git reset --hard master && git push --force-with-lease origin production
