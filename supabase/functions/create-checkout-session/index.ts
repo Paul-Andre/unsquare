@@ -16,10 +16,16 @@ if (!SUPABASE_SERVICE_ROLE_KEY) {
   console.error("Missing SUPABASE_SERVICE_ROLE_KEY environment variable.");
 }
 
-// Product to Stripe Price ID mapping
+// Product to Stripe Price ID mapping, test
+// const PRODUCT_PRICES: Record<string, string> = {
+//   dailyWeeklyArchive: "price_1ShNdwAVJE8pXXhAfdf3SHTY",
+//   fullAccess: "price_1SjhqoAVJE8pXXhAjfUFsyYR",
+// };
+
+// Product to Stripe Price ID mapping, live
 const PRODUCT_PRICES: Record<string, string> = {
-  dailyWeeklyArchive: "price_1ShNdwAVJE8pXXhAfdf3SHTY",
-  fullAccess: "price_1SjhqoAVJE8pXXhAjfUFsyYR",
+  dailyWeeklyArchive: "price_1Sh0uIAVJE8pXXhAr3FKBzLs",
+  fullAccess: "price_1SjhctAVJE8pXXhAdOwqL4Y6",
 };
 
 function getPriceId(product: string): string|null {
@@ -182,8 +188,8 @@ Deno.serve(async (req) => {
     console.log(req.headers);
     const origin = req.headers.get("origin") || req.headers.get("referer") || "http://localhost:8000";
     const baseUrl = new URL(origin).origin;
-    const successUrl = body?.success_url || `${baseUrl}/success.html`;
-    const cancelUrl = body?.cancel_url || `${baseUrl}/cancel.html`;
+    const successUrl = body?.success_url || baseUrl;
+    const cancelUrl = body?.cancel_url || baseUrl
 
     // Determine customer email - use authenticated user's email, or from request body, or let Stripe collect it
     const customerEmail = user?.email || body?.customer_email || undefined;
