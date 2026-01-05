@@ -296,3 +296,7 @@ Hide email sign-in
 04 Jan 2026
 0.12.9
 Test deploy.sh production branch
+
+04 Jan 2026
+0.12.10
+test deploy.sh to production branch again
