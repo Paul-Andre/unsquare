@@ -288,3 +288,7 @@ Simpler version of the firework challenge up
 03 Jan 2026
 0.12.7
 "unflip" appear in daily and weekly screens
+
+04 Jan 2026
+0.12.8
+Hide email sign-in
