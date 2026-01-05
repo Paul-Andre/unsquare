@@ -23,10 +23,22 @@ if (!SUPABASE_SERVICE_ROLE_KEY) {
 // };
 
 // Product to Stripe Price ID mapping, live
-const PRODUCT_PRICES: Record<string, string> = {
+const live_500_multi: Record<string, string> = {
   dailyWeeklyArchive: "price_1Sh0uIAVJE8pXXhAr3FKBzLs",
   fullAccess: "price_1SjhctAVJE8pXXhAdOwqL4Y6",
 };
+
+const live_499_usd: Record<string, string> = {
+  dailyWeeklyArchive: "price_1Sm5asAVJE8pXXhAgJiy6Pzz",
+  fullAccess: "price_1Sm5YoAVJE8pXXhADtfq1Rbo",
+}
+
+const live_499_multi: Record<string, string> = {
+  dailyWeeklyArchive: "price_1Sm5eUAVJE8pXXhA7XkdzdFi",
+  fullAccess: "price_1Sm5h3AVJE8pXXhAs9EgsPb7",
+}
+
+const PRODUCT_PRICES: Record<string, string> = live_499_multi;
 
 function getPriceId(product: string): string|null {
     return PRODUCT_PRICES[product]??null;
