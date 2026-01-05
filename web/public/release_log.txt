@@ -300,3 +300,7 @@ Test deploy.sh production branch
 04 Jan 2026
 0.12.10
 test deploy.sh to production branch again
+
+04 Jan 2026
+0.12.11
+on cont. nav, put mainLevelMenu into stack
