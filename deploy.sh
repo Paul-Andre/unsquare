@@ -157,11 +157,11 @@ echo "Updating production branch to match master..."
 
 
 # Switch to production and fast-forward to master
-git checkout production
+git switch production
 git merge --ff-only master
 
 # Push production
 git push origin production
 
 # Switch back to master
-git checkout master
+git switch master
