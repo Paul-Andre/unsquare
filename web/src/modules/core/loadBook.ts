@@ -11,13 +11,13 @@ import { getPurchasedProducts } from 'modules/utils/stripe.ts';
 import { onAuthStateChange } from 'modules/utils/auth.ts';
 import { Signal } from 'modules/utils/Signal.ts';
 
-const PREVIOUS_OBJECT: BookNavigation = {
-      action: "offerDailyWeeklyArchive",
-      continuations: [
-        "goToWeeklyArchive",
-      ],
-    }
-// const PREVIOUS_OBJECT = undefined; 
+// const PREVIOUS_OBJECT: BookNavigation = {
+//       action: "offerDailyWeeklyArchive",
+//       continuations: [
+//         "goToWeeklyArchive",
+//       ],
+//     }
+const PREVIOUS_OBJECT = undefined; 
 
 async function refreshArchiveAccess(): Promise<void> {
   let products;
