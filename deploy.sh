@@ -10,28 +10,13 @@ trap 'git switch "$ORIGINAL_BRANCH" >/dev/null 2>&1 || true' EXIT
 
 SOURCE_DIR="web/dist"
 SOURCE_WWW="web/public"
-DEPLOY_DIR="$HOME/Programming/unflip_deploy"
 RELEASE_LOG="$SOURCE_WWW/release_log.txt"
-
-# Check if deploy directory exists
-if [ ! -d "$DEPLOY_DIR" ]; then
-    echo "Error: Deploy directory $DEPLOY_DIR does not exist"
-    exit 1
-fi
 
 # Check for uncommitted changes in source repo
 if ! git diff-index --quiet HEAD --; then
     echo "Error: Uncommitted changes in source repo. Please commit or stash them first."
     exit 1
 fi
-
-# Check for uncommitted changes in deploy repo
-cd "$DEPLOY_DIR"
-if ! git diff-index --quiet HEAD --; then
-    echo "Error: Uncommitted changes in deploy repo. Please commit or stash them first."
-    exit 1
-fi
-cd - > /dev/null
 
 # Get current version from git log (look for version pattern in commit messages)
 CURRENT_VERSION=$(git log --oneline | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
@@ -111,53 +96,18 @@ with open('$SOURCE_WWW/manifest.json', 'w') as f:
 EOF
 fi
 
-# Build with Vite
-echo "Building with Vite..."
-cd web
-npm run build
-cd - > /dev/null
-
-# Copy files to deploy directory (exclude .git, delete files not in source)
-rsync -av --delete --exclude='.git' "$SOURCE_DIR/" "$DEPLOY_DIR/"
-
-# Update manifest.json in deploy repo
-if command -v jq > /dev/null 2>&1; then
-    jq ". + {version: \"$NEW_VERSION\"}" "$DEPLOY_DIR/manifest.json" > "$DEPLOY_DIR/manifest.json.tmp"
-    mv "$DEPLOY_DIR/manifest.json.tmp" "$DEPLOY_DIR/manifest.json"
-else
-    python3 << EOF
-import json
-with open('$DEPLOY_DIR/manifest.json', 'r') as f:
-    data = json.load(f)
-data['version'] = '$NEW_VERSION'
-with open('$DEPLOY_DIR/manifest.json', 'w') as f:
-    json.dump(data, f, indent=4)
-EOF
-fi
 
 # Commit in source repo
 git add "$RELEASE_LOG" "$SOURCE_WWW/manifest.json"
 git commit -m "v$NEW_VERSION: $RELEASE_NOTES"
 
-# Commit in deploy repo
-cd "$DEPLOY_DIR"
-git add -A
-git commit -m "v$NEW_VERSION: $RELEASE_NOTES"
-cd - > /dev/null
 
 # Push both repos
 echo "Pushing source repo..."
 git push origin master
 
-echo "Pushing deploy repo..."
-cd "$DEPLOY_DIR"
-git push origin gh-pages
-cd - > /dev/null
+echo "Updating production branch to match master and pushing..."
+git switch production && git reset --hard master && git push --force-with-lease origin production
+
 
 echo "Deployment complete! Version $NEW_VERSION has been deployed."
-
-echo "Updating production branch to match master..."
-
-
-# Switch to production and fast-forward to master
-git switch production && git reset --hard master && git push --force-with-lease origin production
