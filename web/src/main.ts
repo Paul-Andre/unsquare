@@ -8,7 +8,6 @@ import { onAuthStateChange, getCurrentUser } from './modules/utils/auth.ts';
 import { supabase } from './modules/utils/api.ts';
 import { testCheckout, createCheckoutSession, purchaseDailyWeeklyArchive, getPurchasedProducts } from './modules/utils/stripe.ts';
 import * as auth from './modules/utils/auth.ts'
-import { processContinuations, getUrlContinuations } from 'modules/core/continuations.ts';
 
 // Global configuration
 window.config = config;

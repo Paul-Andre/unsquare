@@ -18,14 +18,12 @@ const continuationFunctions: Record<Continuation, ContinuationFunction> = {
         purchaseFullAccess(rest);
     },
     goToWeeklyArchive: (rest:Continuation[]) => {
-        if (appContext.screenManager.currentScreenName !== "challengeLevelMenu") {
-            appContext.goToWeeklyArchive();
-        }
+        appContext.screenManager.switchTo("mainLevelMenu");
+        appContext.goToWeeklyArchive();
     },
     goToDailyArchive: (rest:Continuation[]) => {
-        if (appContext.screenManager.currentScreenName !== "gridLevelMenu") {
-            appContext.goToDailyArchive();
-        }
+        appContext.screenManager.switchTo("mainLevelMenu");
+        appContext.goToDailyArchive();
     },
 };
 export type Continuation = "purchaseDailyWeeklyArchive" | "purchaseFullAccess" | "goToWeeklyArchive" | "goToDailyArchive";
