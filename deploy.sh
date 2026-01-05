@@ -153,3 +153,15 @@ cd - > /dev/null
 
 echo "Deployment complete! Version $NEW_VERSION has been deployed."
 
+echo "Updating production branch to match master..."
+
+
+# Switch to production and fast-forward to master
+git checkout production
+git merge --ff-only master
+
+# Push production
+git push origin production
+
+# Switch back to master
+git checkout master
