@@ -38,7 +38,7 @@ onAuthStateChange((user) => {
 
 
 const NUM_DAILY_LEVELS_PREVIEW = 3;
-const NUM_WEEKLY_CHALLENGES_PREVIEW = 3;
+const NUM_WEEKLY_CHALLENGES_PREVIEW = 2;
 
 const archiveAccessSignal = new Signal(false);
 
@@ -191,8 +191,9 @@ function getWeeklyChallengesBook(): Book {
         "id":"level_6629065214232752",
         "__type__":"Level",
          mode: "challenge",
-      title: "Weekly #6B",},
-        {
+      title: "Weekly #6B",
+      },
+      {
         "colorScheme":"BW",
         "tileShape":"square",
         "tiles":[[1,1,1,2,1,1,2,1,1,1],[1,2,1,1,2,2,1,1,2,1],[1,1,2,2,1,1,2,2,1,1],[2,1,2,1,2,2,1,2,1,2],[1,2,1,2,2,2,2,1,2,1],[1,2,1,2,2,2,2,1,2,1],[2,1,2,1,2,2,1,2,1,2],[1,1,2,2,1,1,2,2,1,1],[1,2,1,1,2,2,1,1,2,1],[1,1,1,2,1,1,2,1,1,1]],
@@ -201,6 +202,23 @@ function getWeeklyChallengesBook(): Book {
         "__type__":"Level",
         title: "Weekly #7",
       }, 
+      {"colorScheme":"BW",
+        "tileShape":"square",
+        "tiles":[[1,2,2,1,1,1,2,1,2,1],[1,2,2,2,2,1,2,2,1,2],[2,2,1,2,2,1,1,2,2,2],[2,2,1,2,1,2,1,1,1,2],[2,2,1,2,2,1,1,2,1,2],[2,1,2,1,1,2,2,1,2,2],[2,1,1,1,2,1,2,1,2,2],[2,2,2,1,1,2,2,1,2,2],[2,1,2,2,1,2,2,2,2,1],[1,2,1,2,1,1,1,2,2,1]],
+        "id":"level_5292801711134756",
+        "__type__":"Level",
+        mode: "challenge",
+        title: "Weekly #8",
+      },
+      // {"colorScheme":"BW",
+      //   "tileShape":"square",
+      //   "tiles":[[1,2,2,2,1,1,1,2,2,2],[1,2,2,2,1,1,1,2,2,2],[1,2,1,2,2,1,1,1,2,1],[1,2,1,2,2,1,1,1,2,1],[1,2,1,1,2,2,1,1,2,1],[1,2,1,1,2,2,1,1,2,1],[1,2,1,1,1,2,2,1,2,1],[1,2,1,1,1,2,2,1,2,1],[2,2,2,1,1,1,2,2,2,1],[2,2,2,1,1,1,2,2,2,1]],
+      //   "id":"level_92155856201666",
+      //   "__type__":"Level",
+      //   mode: "challenge",
+      //   title: "Weekly #8",
+      // }
+
     ],
     source: "challenge",
     id: "weekly",
