@@ -7,6 +7,7 @@ import { appContext } from '../core/AppContext.ts';
 import { save_editor_book, book_reviver, reindexLevels } from '../core/bookUtils.ts';
 import { book_replacer } from '../core/bookUtils.ts';
 import { clearBestNumMoves } from '../core/levelUtils.ts';
+import { level_check_solution } from '../core/algo.ts';
 import { LevelIconGrid } from './LevelIconGrid.tsx';
 import { showJsonModal } from './JsonModal.tsx';
 import { IconDisplayType } from './iconDisplayCalculations.ts';
@@ -241,6 +242,82 @@ export class EditorLevelMenuScreen {
       clearBestNumMoves(this.levelMenu.book.levels[i]);
     }
     this.levelMenu.displayIcons();
+  }
+
+  bulkImportSolutions(): void {
+    const jsonString = window.prompt("Paste JSON containing solutions");
+    if (!jsonString) {
+      return;
+    }
+
+    let parsed;
+    try {
+      parsed = JSON.parse(jsonString, book_reviver);
+    } catch (e: unknown) {
+      alert("Error parsing JSON: " + (e as Error).message);
+      return;
+    }
+
+    let levelsData: Level[];
+
+    // Handle both book object and array of levels
+    if (Array.isArray(parsed)) {
+      levelsData = parsed;
+    } else if (parsed && parsed.levels && Array.isArray(parsed.levels)) {
+      levelsData = parsed.levels;
+    } else {
+      alert("Invalid format: expected a book object with 'levels' property or an array of levels");
+      return;
+    }
+
+    let indexedLevelsData: { [id: string]: Level } = {};
+    for (let levelData of levelsData) {
+      if (levelData.id) {
+        indexedLevelsData[levelData.id] = levelData;
+      }
+    }
+
+    assert(this.levelMenu.book !== null);
+    
+    let updatedCount = 0;
+    let someInvalid = false;
+
+    // Iterate through provided levels and update solutions by ID
+    for (let originalLevel of this.levelMenu.book.levels) {
+      if (!originalLevel.id) {
+        continue;
+      }
+
+      const importedLevel = indexedLevelsData[originalLevel.id];
+
+      // If solutions exist and are valid, import them
+      if (importedLevel && importedLevel.solutions && Array.isArray(importedLevel.solutions)) {
+        const validSolutions = importedLevel.solutions.filter((sol: number[]) => 
+          level_check_solution(originalLevel, sol)
+        );
+
+        if (validSolutions.length < importedLevel.solutions.length) {
+          console.warn(`Some solutions for level ID ${originalLevel.id} were invalid and have been skipped`);
+          someInvalid = true;
+        }
+        
+        if (validSolutions.length > 0) {
+          originalLevel.solutions = validSolutions;
+          if (importedLevel.solutionType) {
+            originalLevel.solutionType = importedLevel.solutionType;
+          }
+          updatedCount++;
+        }
+      }
+    }
+
+    if (updatedCount > 0) {
+      this.saveBook();
+      this.levelMenu.displayIcons();
+      alert(`Updated solutions for ${updatedCount} level(s)`);
+    } else {
+      alert("No valid solutions found to import");
+    }
   }
 
   openBook(book: Book) {

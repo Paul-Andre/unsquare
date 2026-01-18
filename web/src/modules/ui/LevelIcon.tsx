@@ -67,11 +67,11 @@ export function createLevelIcon(props: LevelIconProps): HTMLDivElement {
     }
 
     // Only apply colors when using par mode
-    if (iconDisplayType === "par" && displayValue !== null && typeof displayValue === "number") {
-      const color = getParDisplayColor(displayValue);
-      parDisplay.style.color = color;
-      element.style.borderColor = color;
-    }
+    // if (iconDisplayType === "par" && displayValue !== null && typeof displayValue === "number") {
+    //   const color = getParDisplayColor(displayValue);
+    //   parDisplay.style.color = color;
+    //   element.style.borderColor = color;
+    // }
 
     if (level.isIcon) {
       element.classList.add("bookIconRepresentative");
