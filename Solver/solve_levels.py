@@ -155,6 +155,7 @@ def validate_level(level, force):
     return True, None
 
 
+
 def solve_level(level, solver_dir, force=False):
     """Solve a single level"""
     level_id = level.get('id', 'unknown')
@@ -170,12 +171,13 @@ def solve_level(level, solver_dir, force=False):
         return SolveResult(None, reason, False)
     
     # Verify existing solution if present
-    existing_solution = level.get('solutionVector')
-    existing_ops = sum(existing_solution) if existing_solution else None
-    if existing_solution:
-        print(f"    Verifying existing solution ({existing_ops} operations)...", end=' ', flush=True)
+    existing_solutions = level_get_solutions(level);
+    print(f"There are {len(existing_solutions)} existing solutions.");
+    existing_ops = sum(existing_solutions[0]) if existing_solutions else None
+    for i, solution in enumerate(existing_solutions):
+        print(f"    Verifying existing solution {i+1} ({sum(solution)} operations)...", end=' ', flush=True)
         try:
-            verify_solution(tiles, existing_solution)
+            verify_solution(tiles, solution)
             print("✓ PASSED")
         except AssertionError as e:
             print("✗ FAILED")
@@ -258,6 +260,18 @@ def solve_level(level, solver_dir, force=False):
             return SolveResult(solution_vector, "Solved", improved)
             
 
+def level_get_solutions(level):
+    solutions = level.get("solutions");
+    if solutions:
+        return solutions;
+    single_solution = level.get("solutionVector");
+    if single_solution:
+        return [single_solution]
+    return []
+
+def enrich_solutions(solutions): 
+    # TODO: use symmetric (or whatever else) to enrich solution set
+    return solutions;
 
 def solve_json_file(input_path, output_path, solver_dir, force=False):
     """Process all levels in a JSON file"""
@@ -280,8 +294,8 @@ def solve_json_file(input_path, output_path, solver_dir, force=False):
     for i, level in enumerate(levels):
         print(f"[{i+1}/{len(levels)}]", end=' ')
         
-        old_solution = level.get('solutionVector')
-        old_ops = sum(old_solution) if old_solution else None
+        old_solutions = level_get_solutions(level);
+        old_ops = sum(old_solutions[0]) if old_solutions else None
         
         start_time = time.perf_counter()
         result = solve_level(level, solver_dir, force)
@@ -290,8 +304,8 @@ def solve_json_file(input_path, output_path, solver_dir, force=False):
         print(f"    Time: {elapsed_time * 1000:.1f}ms")
         
         if result.solution_vector:
-            level['solutionVector'] = result.solution_vector
-            level['solutionType'] = 'minizinc'
+            level['solutions'] = enrich_solutions([result.solution_vector])
+            level['solutionType'] = 'optimal'
             solved_count += 1
             if result.improved:
                 improved_levels.append((level, old_ops, sum(result.solution_vector), i))
@@ -304,6 +318,7 @@ def solve_json_file(input_path, output_path, solver_dir, force=False):
     if book_data:
         output_data = book_data.copy()
         output_data['levels'] = levels
+        output_data['title'] = output_data['title']+ " minizinc";
     else:
         output_data = levels
     
@@ -312,11 +327,10 @@ def solve_json_file(input_path, output_path, solver_dir, force=False):
     
     print(f"\nSummary: {solved_count} solved, {skipped_count} skipped")
     
-    if improved_levels:
-        print(f"\n✨ {len(improved_levels)} level(s) with improved solutions:")
-        for level, old_ops, new_ops, index in improved_levels:
-            level_id = level.get('id', 'unknown')
-            print(f"   - Level {index+1} ({level_id}): {old_ops} → {new_ops} operations (saved {old_ops - new_ops})")
+    print(f"\n✨ {len(improved_levels)} level(s) with improved solutions:")
+    for level, old_ops, new_ops, index in improved_levels:
+        level_id = level.get('id', 'unknown')
+        print(f"   - Level {index+1} ({level_id}): {old_ops} → {new_ops} operations (saved {old_ops - new_ops})")
     
     print(f"Output written to: {output_path}")
 

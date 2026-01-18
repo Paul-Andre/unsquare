@@ -28,7 +28,8 @@ export class Level {
   mode: "normal"|"challenge";
   id: string;
   solutions: number[][];
-  solutionType: "running"|"submitted"|"gaussian"|"impossible"|"exhaustive"|"manual"|"custom";
+  // TODO: split this into multiple fields, like solutionMethod, isOptimal, etc.
+  solutionType: "running"|"submitted"|"gaussian"|"impossible"|"optimal"|"exhaustive"|"manual"|"custom";
   book: Book | null;
   geometry: Geometry | null;
 
