@@ -23,8 +23,8 @@
       "*": ["src/*"]
     },
     "jsx": "react",
-    "jsxFactory": "h",
-    "jsxFragmentFactory": "DocumentFragment"
+    "jsxFactory": "React.createElement",
+    "jsxFragmentFactory": "React.Fragment"
   },
   "include": [
     "src/**/*"

@@ -11,10 +11,14 @@
   "dependencies": {
     "@supabase/supabase-js": "^2.89.0",
     "dom-chef": "^5.1.1",
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3",
     "sortablejs": "^1.15.0"
   },
   "devDependencies": {
     "@types/node": "^20.10.0",
+    "@types/react": "^19.2.9",
+    "@types/react-dom": "^19.2.3",
     "@types/sortablejs": "^1.15.9",
     "typescript": "^5.3.3",
     "vite": "^5.0.8",

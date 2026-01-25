@@ -194,3 +194,10 @@ as $$
       and p.email = p_email
     );
 $$;
+
+-- CREATE OR REPLACE FUNCTION asf (p_hashid text)
+-- RETURNS 
+
+
+
+

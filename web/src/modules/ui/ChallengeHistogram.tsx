@@ -1,3 +1,4 @@
+/** @jsx h */
 "use strict";
 
 import { h } from 'dom-chef';

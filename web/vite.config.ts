@@ -13,6 +13,7 @@ export default defineConfig({
       input: {
         main: resolve(__dirname, 'index.html'),
         qr: resolve(__dirname, 'qr.html'),
+        leaderboard: resolve(__dirname, 'leaderboard.html'),
       },
     },
   },
@@ -27,8 +28,6 @@ export default defineConfig({
     // Allow JS files to be processed and type-checked
     include: /\.(js|ts|tsx|jsx)$/,
     jsx: 'transform',
-    jsxFactory: 'h',
-    jsxFragment: 'DocumentFragment',
   },
   plugins: [
     tsconfigPaths(),
