@@ -1,4 +1,5 @@
-/** @jsx h */
+// @jsx h
+// @jsxFrag Fragment
 "use strict";
 
 import { h } from 'dom-chef';
@@ -51,7 +52,7 @@ export function createJsonModal(props: JsonModalProps): HTMLDivElement {
       }}
     >
       <p style={{ marginBottom: "10px" }}>{message}</p>
-      {textarea}
+      {textarea as any}
       <button
         onClick={onClose}
         style={{
