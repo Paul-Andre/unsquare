@@ -2,42 +2,56 @@
 /** @jsxFrag React.Fragment */
 import React, { useState, useEffect } from 'react';
 
-interface LeaderboardEntry {
+interface LeaderboardRow {
   rank: number;
-  username: string;
-  score: number;
-  time?: string;
+  name: string;
+  levels_solved: number;
+  total_moves: string;
+  final_timestamp: string;
+}
+
+interface LeaderboardTableRowProps {
+  row: LeaderboardRow;
+  styles: Record<string, React.CSSProperties>;
+}
+
+const LeaderboardTableRow: React.FC<LeaderboardTableRowProps> = ({ row, styles }) => (
+  <tr key={row.rank} style={styles.tr}>
+    <td style={styles.td}>{row.rank}</td>
+    <td style={styles.td}>{row.name}</td>
+    <td style={styles.td}>{row.levels_solved}</td>
+    <td style={styles.td}>{row.total_moves}</td>
+    <td style={styles.td}>{row.final_timestamp}</td>
+  </tr>
+);
+
+function fetchLeaderboardData(): Promise<LeaderboardRow[]> {
+  // This function should fetch data from an API endpoint.
+  // Here we return mock data for demonstration purposes.
+  return Promise.resolve([
+    { rank: 1, name: 'Alice', levels_solved: 10, total_moves: '150', final_timestamp: '00:25:30' },
+    { rank: 2, name: 'Bob', levels_solved: 9, total_moves: '160', final_timestamp: '00:30:45' },
+    { rank: 3, name: 'Charlie', levels_solved: 8, total_moves: '170', final_timestamp: '00:35:20' },
+  ]);
 }
 
 export const Leaderboard: React.FC = () => {
-  const [entries, setEntries] = useState<LeaderboardEntry[]>([]);
+  const [rows, setRows] = useState<LeaderboardRow[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Fetch leaderboard data
-    const fetchLeaderboard = async () => {
+    const fetchLeaderboardAndUpdate = async () => {
       try {
-        // Replace with actual API call when available
-        // const response = await fetch('/api/leaderboard');
-        // const data = await response.json();
-        // setEntries(data);
-
-        // Mock data for now
-        setEntries([
-          { rank: 1, username: 'Player1', score: 9999, time: '2 hours ago' },
-          { rank: 2, username: 'Player2', score: 9500, time: '3 hours ago' },
-          { rank: 3, username: 'Player3', score: 9200, time: '1 day ago' },
-          { rank: 4, username: 'Player4', score: 8800, time: '2 days ago' },
-          { rank: 5, username: 'Player5', score: 8500, time: '3 days ago' },
-        ]);
+        const data = await fetchLeaderboardData();
+        setRows(data);
       } catch (error) {
         console.error('Failed to fetch leaderboard:', error);
       } finally {
         setLoading(false);
       }
     };
-
-    fetchLeaderboard();
+    const id = setInterval(fetchLeaderboardAndUpdate, 500);
+    return () => clearInterval(id);
   }, []);
 
   return (
@@ -54,18 +68,14 @@ export const Leaderboard: React.FC = () => {
                 <tr>
                   <th style={styles.th}>Rank</th>
                   <th style={styles.th}>Player</th>
-                  <th style={styles.th}>Score</th>
-                  <th style={styles.th}>Time</th>
+                    <th style={styles.th}>Levels Solved</th>
+                    <th style={styles.th}>Total Moves</th>
+                    <th style={styles.th}>Final Timestamp</th>
                 </tr>
               </thead>
               <tbody>
-                {entries.map((entry) => (
-                  <tr key={entry.rank} style={styles.tr}>
-                    <td style={styles.td}>{entry.rank}</td>
-                    <td style={styles.td}>{entry.username}</td>
-                    <td style={styles.td}>{entry.score.toLocaleString()}</td>
-                    <td style={styles.td}>{entry.time}</td>
-                  </tr>
+                {rows.map((row) => (
+                  <LeaderboardTableRow key={row.rank} row={row} styles={styles} />
                 ))}
               </tbody>
             </table>
