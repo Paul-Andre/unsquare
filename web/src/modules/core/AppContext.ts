@@ -12,7 +12,8 @@ import { Book, BookNavigation } from '../core/Book.ts';
 import { EditorLevelMenuScreen } from '../ui/EditorLevelMenuScreen.ts';
 import { ChallengeLevelMenuScreen } from '../ui/ChallengeLevelMenuScreen.ts';
 import { GridLevelMenuScreen } from '../ui/GridLevelMenuScreen.ts';
-import { AuthModal } from '../ui/AuthModal.ts';
+import { AuthModal, AuthResult, showAuthModal } from '../ui/AuthModal.tsx';
+import { Continuation } from '../core/continuations.ts';
 import { DailyWeeklyArchiveOfferModal } from '../ui/DailyWeeklyArchiveOfferModal.ts';
 import { RedirectingToPaymentModal } from '../ui/RedirectingToPaymentModal.ts';
 import { weeklyChallengesBookSignal, dailyLevelsBookSignal } from './loadBook.ts';
@@ -28,7 +29,6 @@ export class AppContext {
   challengeLevelMenu: ChallengeLevelMenuScreen;
   gridLevelMenu: GridLevelMenuScreen;
   openingInstructions: OpeningInstructionsScreen;
-  authModal: AuthModal;
   dailyWeeklyArchiveOfferModal: DailyWeeklyArchiveOfferModal;
   redirectingToPaymentModal: RedirectingToPaymentModal;
 
@@ -61,9 +61,7 @@ export class AppContext {
     const gridLevelMenuRoot = ensureNotNull(document.getElementById("gridLevelMenu"));
     this.gridLevelMenu = new GridLevelMenuScreen(gridLevelMenuRoot);
 
-    const authModalRoot = ensureNotNull(document.getElementById("authModal"));
-    this.authModal = new AuthModal(authModalRoot);
-    console.log("AuthModal initialized:", this.authModal);
+
 
     const dailyWeeklyArchiveOfferModalRoot = ensureNotNull(document.getElementById("dailyWeeklyArchiveOfferModal"));
     this.dailyWeeklyArchiveOfferModal = new DailyWeeklyArchiveOfferModal(dailyWeeklyArchiveOfferModalRoot);
@@ -81,6 +79,10 @@ export class AppContext {
     this.screenManager.additionalFunctions.editor = this.editor;
     this.screenManager.additionalFunctions.game = this.game;
     this.screenManager.additionalFunctions.opening_instructions = this.openingInstructions;
+  }
+
+  async showAuthModal(continuations: Continuation[]): Promise<AuthResult> {
+    return showAuthModal(continuations);
   }
 
   goToWeeklyArchive(): void {

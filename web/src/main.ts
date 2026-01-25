@@ -27,7 +27,7 @@ window.showDailyWeeklyArchiveOfferModal = () => {
   appContext.dailyWeeklyArchiveOfferModal.show([]);
 };
 window.showSignInModal = () => {
-  appContext.authModal.show([]);
+  appContext.showAuthModal([])
 };
 
 window.getPurchasedProducts = getPurchasedProducts;
