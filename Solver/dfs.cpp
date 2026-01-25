@@ -253,7 +253,7 @@ void solve2(State &state, int move_ptr, int moves_done) {
     runningSolution.pop_back();
 }
 
-int main() {
+int main(int __argc, char** __argv) {
   int w,h;
   cin>>w>>h;
   assert (w*h <= N*N);
@@ -344,8 +344,16 @@ int main() {
     //cerr<<gap[i]<<endl;
   }
 
+
+
   State state = target;
-  for (moves_target = 1; moves_target<20 && !found_solution; moves_target++) {
+
+  int initial_moves_target = 0;
+  if (__argc >= 2) {
+    initial_moves_target = atoi(__argv[1]);
+  }
+
+  for (moves_target = initial_moves_target; moves_target<20 && !found_solution; moves_target++) {
     cerr<<"trying with "<<moves_target<<" moves."<<endl;
     solve1(state, 0, 0);
   }

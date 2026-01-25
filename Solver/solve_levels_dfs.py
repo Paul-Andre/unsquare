@@ -24,6 +24,7 @@ from pathlib import Path
 
 # Constants
 MINIZINC_TIMEOUT = 300
+DFS_TIMEOUT = 300
 CPP_SOURCE = 'dfs.cpp'
 CPP_EXECUTABLE = 'dfs'
 
@@ -41,7 +42,7 @@ def tiles_to_binary_string(tiles):
     return [''.join('1' if cell == 2 else '0' for cell in row) for row in tiles]
 
 
-def compile_and_run_toZnDual(input_file, solver_dir):
+def compile_and_run_toZnDual(input_file, solver_dir, cli_args=None):
     """Compile toZnDual.cpp (if needed) and run it with the input file"""
     solver_path = Path(solver_dir)
     cpp_file = solver_path / CPP_SOURCE
@@ -58,9 +59,16 @@ def compile_and_run_toZnDual(input_file, solver_dir):
             return None, None
         print("✓ Done")
     
-    # Run
+    # Run with 5 minute timeout
     with open(input_file, 'r') as f:
-        run_result = subprocess.run([str(exe_file)], stdin=f, capture_output=True, text=True)
+        cmd = [str(exe_file)]
+        if cli_args:
+            cmd.extend(cli_args)
+        try:
+            run_result = subprocess.run(cmd, stdin=f, capture_output=True, text=True, timeout=DFS_TIMEOUT)
+        except subprocess.TimeoutExpired:
+            print(f"dfs.cpp timeout (exceeded {DFS_TIMEOUT} seconds)", file=sys.stderr)
+            return None, "timeout"
     
     if run_result.returncode != 0:
         print(f"toZnDual error: {run_result.stderr}", file=sys.stderr)
@@ -169,7 +177,15 @@ def solve_level(level, solver_dir, force=False):
         input_file.flush()
         # Run toZnDual.cpp
         print("    Running dfs.cpp...")
-        data, stderr_output = compile_and_run_toZnDual(str(input_path), solver_dir)
+        cli_args = None
+        if (level.get('solutionType') == 'optimal' or level.get('solutionType') == 'exhaustive') and existing_ops is not None:
+            cli_args = [str(existing_ops)]
+        data, stderr_output = compile_and_run_toZnDual(str(input_path), solver_dir, cli_args)
+
+        # Handle timeout
+        if stderr_output == "timeout":
+            print("    ✗ Timeout exceeded")
+            return SolveResult(None, "timeout", False)
 
         print("\n    dfs output:")
         print(data.strip())

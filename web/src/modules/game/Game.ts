@@ -986,12 +986,11 @@ export class Game extends GameBase {
         const newSolution = remainingSolution.slice();
         newSolution[i] -= 1;
         //const partition = ericTilesNumber(this.level, newSolution);
-        //const partition = eric_partition_with_borders_number(this.level, newSolution);
        // const partition = obviousScore(this.level, newSolution);
         //const partition = ericUnionWeightedNumber(this.level, newSolution, 1, 0);
-        //const partition = ericUnionWeightedNumber(this.level, newSolution, 1, 1);
+        const partition = ericUnionWeightedNumber(this.level, newSolution, 1, 1);
 
-        const partition = obviousScore(this.level, newSolution);
+        // const partition = obviousScore(this.level, newSolution);
         //const partition = boundingBoxAreaScore(this.level, newSolution);
         //const partition = fractionBlackScore(this.level, newSolution);
         //const partition = involvedScore(this.level, newSolution);
