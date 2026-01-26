@@ -1,4 +1,4 @@
-import { Continuation } from './continuations.ts';
+import { Continuation } from './Continuation.ts';
 import { Level } from './Level.ts';
 
 export type BookNavigation = {

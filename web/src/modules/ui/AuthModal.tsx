@@ -4,7 +4,7 @@
 import { h } from 'dom-chef';
 import { cast, ensureNotNull } from '../utils/helpers.ts';
 import * as auth from '../utils/auth.ts';
-import { Continuation } from 'modules/core/continuations.ts';
+import { Continuation } from 'modules/core/Continuation.ts';
 import type { User } from '@supabase/supabase-js';
 
 export interface AuthResult {

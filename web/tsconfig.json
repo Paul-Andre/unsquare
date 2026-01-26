@@ -22,10 +22,10 @@
     "paths": {
       "*": ["src/*"]
     },
-    "jsx": "react-jsx",
-    "jsxFactory": "React.createElement",
-    "jsxFragmentFactory": "React.Fragment",
-    "jsxImportSource": "react"
+
+    "jsx": "react",
+    "jsxFactory": "h",
+    "jsxFragmentFactory": "DocumentFragment"
   },
   "include": [
     "src/**/*"

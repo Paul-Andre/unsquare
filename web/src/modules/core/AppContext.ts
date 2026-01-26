@@ -13,7 +13,7 @@ import { EditorLevelMenuScreen } from '../ui/EditorLevelMenuScreen.ts';
 import { ChallengeLevelMenuScreen } from '../ui/ChallengeLevelMenuScreen.ts';
 import { GridLevelMenuScreen } from '../ui/GridLevelMenuScreen.ts';
 import { AuthModal, AuthResult, showAuthModal } from '../ui/AuthModal.tsx';
-import { Continuation } from '../core/continuations.ts';
+import { Continuation } from './Continuation.ts';
 import { DailyWeeklyArchiveOfferModal } from '../ui/DailyWeeklyArchiveOfferModal.ts';
 import { RedirectingToPaymentModal } from '../ui/RedirectingToPaymentModal.ts';
 import { weeklyChallengesBookSignal, dailyLevelsBookSignal } from './loadBook.ts';

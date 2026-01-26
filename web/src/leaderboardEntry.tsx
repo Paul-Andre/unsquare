@@ -3,7 +3,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { Leaderboard } from './Leaderboard';
-import showSignInModal from './modules/ui/SignInModal';
+import {showAuthModal} from './modules/ui/AuthModal.tsx';
+import * as auth from './modules/utils/auth.ts';
+
+// Expose auth module for testing
+window.auth = auth;
 
 const root = document.getElementById('root');
 if (root) {

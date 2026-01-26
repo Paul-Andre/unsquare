@@ -1,7 +1,7 @@
 "use strict";
 
 import { cast, ensureNotNull } from '../utils/helpers.ts';
-import { Continuation } from 'modules/core/continuations.ts';
+import { Continuation } from 'modules/core/Continuation.ts';
 import { authenticateAndPurchaseDailyWeeklyArchive, authenticateAndPurchaseFullAccess, ensureAuthenticated } from '../utils/stripe.ts';
 import { getCurrentUser, signOut } from 'modules/utils/auth.ts';
 import { appContext } from 'modules/core/AppContext.ts';

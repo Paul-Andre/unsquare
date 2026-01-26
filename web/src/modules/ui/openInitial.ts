@@ -1,6 +1,7 @@
 import { Level } from '../core/Level.ts';
 import { appContext } from '../core/AppContext.ts';
-import { getUrlContinuations, processContinuations } from 'modules/core/continuations.ts';
+import { getUrlContinuations } from 'modules/core/Continuation.ts';
+import { processContinuations } from 'modules/core/processContinuations.ts';
 import { reindexLevels } from 'modules/core/bookUtils.ts';
 import { Book } from 'modules/core/Book.ts';
 

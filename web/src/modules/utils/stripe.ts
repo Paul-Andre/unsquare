@@ -4,7 +4,7 @@ import { FunctionsHttpError } from '@supabase/supabase-js';
 import { supabase } from './api.ts';
 import { getCurrentUser, isAnonymousUser } from './auth.ts';
 import { appContext } from '../core/AppContext.ts';
-import { Continuation, buildUrl } from '../core/continuations.ts';
+import { Continuation, buildUrl } from '../core/Continuation.ts';
 import type { AuthResult } from '../ui/AuthModal.ts';
 import type { User } from '@supabase/supabase-js';
 import { assert } from './helpers.ts';
