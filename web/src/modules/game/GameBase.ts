@@ -9,6 +9,7 @@ import { assert, cancelEvent, ensureNotNull } from '../utils/helpers.ts';
 import { Book } from 'modules/core/Book.ts';
 import { Level } from 'modules/core/Level.ts';
 import { supabase } from 'modules/utils/api.ts';
+import { saveLevelToSupabase } from 'modules/core/levelUtils.ts';
 
 export type Move = {
   x: number;
@@ -582,29 +583,8 @@ export abstract class GameBase {
 
   async saveLevelToSupabase(saveWithSolution: boolean = false): Promise<void> {
     assert(this.level !== null);
-    const json = this.level.toJsonObject();
-    if (!saveWithSolution) {
-      delete json.solutions;
-      delete json.solutionType;
-      delete json.par;
-    }
-    delete json.index;
-
-    const { data, error } = await supabase
-      .from('levels')
-      .insert({
-        level_id: this.level.id,
-        full_identifier: this.level.getFullIdentifier(),
-        data_json: this.level.toJsonObject(),
-        user_generated: false
-      })
-
-    if (error) {
-      throw error;
-    }
-
-    console.log('Inserted:', data)
-}
+    saveLevelToSupabase(this.level, saveWithSolution);
+  }
 
   // Hook for subclasses to implement game-specific logic after a move
   postMove(): void {

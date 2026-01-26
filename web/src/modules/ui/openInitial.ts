@@ -59,7 +59,7 @@ function getUrlCustomLevelBook(): Book | null {
 function hasUserExperience(): boolean {
   let num_levels_done = 0;
   for (let key in localStorage) {
-    if (key.startsWith("level_") && key.endsWith("bestNumMoves")) {
+    if (key.endsWith("bestNumMoves")) {
       num_levels_done += 1;
     }
   }

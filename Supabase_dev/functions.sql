@@ -195,9 +195,19 @@ as $$
     );
 $$;
 
--- CREATE OR REPLACE FUNCTION asf (p_hashid text)
--- RETURNS 
+CREATE OR REPLACE FUNCTION encode_contest_hashid (p_hashid bigint)
+RETURNS text
+LANGUAGE sql
+STABLE
+AS $$
+  SELECT id_encode(p_hashid, 'Lobster contest', 4);
+$$
 
-
-
+CREATE OR REPLACE FUNCTION decode_contest_hashid (p_id text)
+RETURNS bigint
+LANGUAGE sql
+STABLE
+AS $$
+  SELECT id_decode(p_id, 'Lobster contest', 4);
+$$;
 

@@ -8,6 +8,8 @@ import { onAuthStateChange, getCurrentUser } from './modules/utils/auth.ts';
 import { supabase } from './modules/utils/api.ts';
 import { testCheckout, createCheckoutSession, purchaseDailyWeeklyArchive, getPurchasedProducts } from './modules/utils/stripe.ts';
 import * as auth from './modules/utils/auth.ts'
+import { saveLevelToSupabase } from 'modules/core/levelUtils.ts';
+import { Level } from 'modules/core/Level.ts';
 
 // Global configuration
 window.config = config;
@@ -31,6 +33,36 @@ window.showSignInModal = () => {
 };
 
 window.getPurchasedProducts = getPurchasedProducts;
+
+window.saveLevelToSupabase = saveLevelToSupabase;
+
+window.saveLevelsToSupabase = async (levels: Level[]) => {
+  for (let level of levels) {
+    console.log("submitting", level);
+    try {await saveLevelToSupabase(level, true);}
+    catch(e){console.error(e)}
+  }
+};
+
+window.checkDuplicateLevelIds = (levels: Level[]) => {
+  let seen = new Map<string, Level>();
+  for (let level of levels) {
+    if (seen.has(level.id)) {
+      console.log("Duplicate level id found:", level.id);
+      console.log("Level A:", seen.get(level.id));
+      console.log("Level B:", level);
+    } else {
+      seen.set(level.id, level);
+    }
+  }
+};
+
+// patch duplicate level_id
+if (localStorage.getItem("level_1692766116470$s_6_6$m_2$t$1_1_1_1_1_1_1_2_2_1_1_1_1_1_1_1_2_1_1_2_2_1_2_1_1_2_2_2_1_1_1_1_1_1_1_1 bestNumMoves") === null 
+&& localStorage.getItem("level_1692766116468$s_6_6$m_2$t$1_1_1_1_1_1_1_2_2_1_1_1_1_1_1_1_2_1_1_2_2_1_2_1_1_2_2_2_1_1_1_1_1_1_1_1 bestNumMoves") !== null) {
+  localStorage.setItem("level_1692766116470$s_6_6$m_2$t$1_1_1_1_1_1_1_2_2_1_1_1_1_1_1_1_2_1_1_2_2_1_2_1_1_2_2_2_1_1_1_1_1_1_1_1 bestNumMoves",
+     localStorage.getItem("level_1692766116468$s_6_6$m_2$t$1_1_1_1_1_1_1_2_2_1_1_1_1_1_1_1_2_1_1_2_2_1_2_1_1_2_2_2_1_1_1_1_1_1_1_1 bestNumMoves")!);
+}
 
 // Remove utm parameters from the url
 window.addEventListener('load',
