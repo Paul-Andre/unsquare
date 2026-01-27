@@ -15,6 +15,7 @@ import { appContext } from '../core/AppContext.ts';
 import { Level } from '../core/Level.ts';
 import { Book, BookNavigation } from '../core/Book.ts';
 import { Move } from './GameBase.ts';
+import { getCurrentContestId } from 'modules/core/contests.ts';
 
 const firstDemoDrag = {
   start: { x: 0.33, y: 0.33 },
@@ -196,6 +197,7 @@ export class Game extends GameBase {
           solution: solution,
           player_id: player_id,
           level_full_identifier: level.getFullIdentifier(),
+          contest_hashid: getCurrentContestId(),
         }
       });
     
@@ -385,7 +387,7 @@ export class Game extends GameBase {
 
     assert(this.book !== null);
     trackLevelEnd(this.level, this.book);
-    if (this.level.mode === "challenge") {
+    if (this.level.mode === "challenge" || (getCurrentContestId() !== null && this.isInBasicBook())) {
       this.postSolutionToServer(
         ()=>{
           this.renderHistogram();

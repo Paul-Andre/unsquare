@@ -72,7 +72,8 @@ CREATE OR REPLACE FUNCTION insert_solution_and_get_histogram(
   p_player_id text,
   p_level_id text,
   p_solution jsonb,
-  p_num_moves integer
+  p_num_moves integer,
+  p_contest_hashid text DEFAULT null
 )
 RETURNS jsonb
 LANGUAGE plpgsql
@@ -84,8 +85,12 @@ DECLARE
   v_combined jsonb;
 BEGIN
   -- Insert the solution
-  INSERT INTO solutions (player_id, level_id, solution, num_moves)
-  VALUES (p_player_id, p_level_id, p_solution, p_num_moves)
+  INSERT INTO solutions (player_id, level_id, solution, num_moves, contest)
+  VALUES (p_player_id, p_level_id, p_solution, p_num_moves, 
+    CASE 
+      WHEN p_contest_hashid IS NOT NULL THEN decode_contest_hashid(p_contest_hashid)
+      ELSE NULL
+    END)
   RETURNING to_jsonb(solutions.*) INTO v_inserted_row;
 
   -- Get histogram and player summary together

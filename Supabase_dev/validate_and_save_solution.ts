@@ -238,6 +238,7 @@ interface RequestBody {
   player_id: string;
   level_id: string;
   solution: unknown;
+  contest_hashid?: string;
 }
 
 // Sanity check:
@@ -266,7 +267,7 @@ interface RequestBody {
 // Main handler
 // ============================================================================
 
-Deno.serve(async (req) => {
+Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
@@ -281,6 +282,7 @@ Deno.serve(async (req) => {
       return errorResponse("Request must be application/json");
     }
 
+    // TODO: better parsing/validation
     const body = await req.json().catch(() => null) as RequestBody | null;
     if (!body?.player_id || !body?.level_id || body.solution === undefined) {
       return errorResponse("Missing or invalid fields: player_id, level_id, solution are required");
@@ -343,7 +345,8 @@ Deno.serve(async (req) => {
         p_player_id: body.player_id,
         p_level_id: body.level_id,
         p_solution: solutionArray,
-        p_num_moves: vector_sum(solutionArray)
+        p_num_moves: vector_sum(solutionArray),
+        p_contest_hashid: body.contest_hashid ?? null
       })
     });
 
