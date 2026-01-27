@@ -28,17 +28,6 @@ const LeaderboardTableRow: React.FC<LeaderboardTableRowProps> = ({ row, styles }
 
 async function fetchLeaderboardData(contest_hashid: string): Promise<LeaderboardRow[]> {
   // Fetch leaderboard data from the server, using the supabase api
-  /*
-  CREATE OR REPLACE FUNCTION public.get_contest_leaderboard(
-  p_contest_hashid text
-)
-RETURNS TABLE (
-  player_id text,
-  name text,
-  levels_solved bigint,
-  total_moves bigint,
-  last_improvement_at timestamptz
-)*/
   let {data, error} = await supabase
     .rpc('get_contest_leaderboard', { p_contest_hashid: contest_hashid });
 
@@ -86,6 +75,7 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({contest_hashid}) => {
     <div style={styles.container}>
       <div style={styles.content}>
         <h1 style={styles.title}>Unflip EvolveUX Leaderboard</h1>
+        <p>Participate at <a href="/ux">unflipgame.com/ux</a>.</p>
         
         {loading ? (
           <div style={styles.loading}>Loading...</div>
