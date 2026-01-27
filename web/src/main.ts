@@ -78,12 +78,13 @@ window.addEventListener('load',
     }, 5000);
   });
 
-setupInitialScreen();
 
 if (localStorage.getItem("player_id") === null) {
   let player_id = generate_id("anon");
   localStorage.setItem("player_id", player_id);
 }
+
+setupInitialScreen();
 
 // TODO: I'm not sure what this block does (was added/changed by AI and I missed reviewing it)
 // Handle magic link redirects - check for continuations in URL after auth

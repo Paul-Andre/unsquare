@@ -4,6 +4,7 @@ import { getUrlContinuations } from 'modules/core/Continuation.ts';
 import { processContinuations } from 'modules/core/processContinuations.ts';
 import { reindexLevels } from 'modules/core/bookUtils.ts';
 import { Book } from 'modules/core/Book.ts';
+import { getCurrentContestId, getParticipantName } from 'modules/core/contests.ts';
 
 export function checkAndOpenCustomLevel(): boolean {
   let customLevelString = new URLSearchParams(location.search).get("custom");
@@ -81,6 +82,14 @@ export function setupInitialScreen() {
     processContinuations(continuations);  
     return;
   }
-  // Show namePicking first for testing purposes
-  appContext.screenManager.switchTo('namePicking');
+  if (getCurrentContestId() !== null && getParticipantName() === null) {
+    appContext.screenManager.switchTo('namePicking');
+  } else {
+    if (hasUserExperience()) {
+      appContext.openingInstructions.hasAlreadyWentToFirstLevel = true;
+      appContext.screenManager.switchTo('mainLevelMenu');
+    } else {
+      appContext.screenManager.switchTo('opening_instructions');
+    }
+  }
 }

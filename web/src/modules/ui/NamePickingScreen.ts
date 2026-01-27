@@ -2,6 +2,7 @@
 
 import { cast, ensureNotNull } from '../utils/helpers.ts';
 import { appContext } from '../core/AppContext.ts';
+import { submitParticipantName } from 'modules/core/contests.ts';
 
 export class NamePickingScreen {
   root: HTMLElement;
@@ -26,12 +27,12 @@ export class NamePickingScreen {
     // this.inputField.value = '';
   }
 
-  private onEnterClick(): void {
+  private async onEnterClick(): Promise<void> {
     const playerName = this.inputField.value.trim();
+    console.log("Player entered name:", playerName);
     
     if (playerName.length > 0) {
-      // Store the name in localStorage for later use
-      localStorage.setItem('playerName', playerName);
+      await submitParticipantName(playerName);
       
       // Proceed to opening instructions
       appContext.screenManager.switchTo('opening_instructions');

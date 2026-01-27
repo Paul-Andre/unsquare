@@ -201,13 +201,48 @@ LANGUAGE sql
 STABLE
 AS $$
   SELECT id_encode(p_hashid, 'Lobster contest', 4);
-$$
+$$;
 
 CREATE OR REPLACE FUNCTION decode_contest_hashid (p_id text)
 RETURNS bigint
 LANGUAGE sql
 STABLE
 AS $$
-  SELECT id_decode(p_id, 'Lobster contest', 4);
+  SELECT id_decode_once(p_id, 'Lobster contest', 4);
 $$;
 
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1
+    FROM pg_constraint
+    WHERE conname = 'participants_contest_player_key'
+  ) THEN
+    ALTER TABLE public.participants
+    ADD CONSTRAINT participants_contest_player_key
+    UNIQUE (contest, player_id);
+  END IF;
+END
+$$;
+
+
+
+CREATE OR REPLACE FUNCTION submit_participant_name(
+  p_contest_hashid text,
+  p_player_id text,
+  p_name text
+) RETURNS void
+SECURITY DEFINER
+LANGUAGE sql
+AS $$
+  INSERT INTO participants (contest, player_id, name)
+  VALUES (
+    decode_contest_hashid(p_contest_hashid),
+    p_player_id,
+    p_name
+  )
+  ON CONFLICT (contest, player_id) DO UPDATE
+  SET name = EXCLUDED.name;
+$$;
+
+ALTER FUNCTION submit_participant_name(text,text,text) OWNER TO postgres;
