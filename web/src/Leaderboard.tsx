@@ -22,7 +22,7 @@ const LeaderboardTableRow: React.FC<LeaderboardTableRowProps> = ({ row, styles }
     <td style={styles.td}>{row.name}</td>
     <td style={styles.td}>{row.levels_solved}</td>
     <td style={styles.td}>{row.total_moves}</td>
-    <td style={styles.td}>{row.final_timestamp}</td>
+    <td style={styles.td_small}>{row.final_timestamp}</td>
   </tr>
 );
 
@@ -85,7 +85,7 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({contest_hashid}) => {
   return (
     <div style={styles.container}>
       <div style={styles.content}>
-        <h1 style={styles.title}>Leaderboard</h1>
+        <h1 style={styles.title}>Unflip EvolveUX Leaderboard</h1>
         
         {loading ? (
           <div style={styles.loading}>Loading...</div>
@@ -169,5 +169,10 @@ const styles = {
   td: {
     padding: '12px',
     color: '#555',
+  } as React.CSSProperties,
+  td_small: {
+    padding: '12px',
+    color: '#555',
+    fontSize: '0.8em',
   } as React.CSSProperties,
 };
