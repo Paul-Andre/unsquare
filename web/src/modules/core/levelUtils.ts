@@ -3,6 +3,7 @@
 
 import { supabase } from "modules/utils/api";
 import { Level } from "./Level";
+import { getCurrentContestId } from "./contests";
 
 export type ChallengeStatistics = {
   player_best: number;
@@ -13,22 +14,39 @@ export type ChallengeStatistics = {
 
 // "lsk" = local storage key
 // Best moves storage methods
-export function getLskForBestNumMoves(level: Level): string {
-  return level.getFullIdentifier() + " bestNumMoves";
+export function getLskForBestNumMoves(level: Level, contest_id: string | null): string {
+  if (contest_id !== null) {
+    return `contest_${contest_id} ${level.getFullIdentifier()} bestNumMoves`;
+  }
+  return `${level.getFullIdentifier()} bestNumMoves`;
 }
 
 export function getBestNumMoves(level: Level): number | null {
-  let sol = localStorage.getItem(getLskForBestNumMoves(level));
+  let sol = localStorage.getItem(getLskForBestNumMoves(level, getCurrentContestId()));
   if (sol === null) return null;
   return Number(sol);
 }
 
+function localStorageSetMin(key: string, num: number): void {
+  let prev = localStorage.getItem(key);
+  if (prev !== null) {
+    let prevNum = Number(prev);
+    if (prevNum <= num) {
+      // Do not overwrite better previous score
+      return;
+    }
+  }
+  localStorage.setItem(key, num.toString());
+}
+
 export function setBestNumMoves(level: Level, num: number): void {
-  localStorage.setItem(getLskForBestNumMoves(level), num.toString());
+  localStorageSetMin(getLskForBestNumMoves(level, getCurrentContestId()), num);
+  localStorageSetMin(getLskForBestNumMoves(level, null), num);
 }
 
 export function clearBestNumMoves(level: Level): void {
-  localStorage.removeItem(getLskForBestNumMoves(level));
+  localStorage.removeItem(getLskForBestNumMoves(level, getCurrentContestId()));
+  localStorage.removeItem(getLskForBestNumMoves(level, null));
 }
 
 // Challenge statistics storage methods
