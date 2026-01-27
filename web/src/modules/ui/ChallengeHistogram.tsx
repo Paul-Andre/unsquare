@@ -106,7 +106,7 @@ export function renderHistogram(container: HTMLElement, histogramData: Record<nu
         {bar}
         {isPlayerBar && <div className="playerTriangle" />}
       </div>
-    );
+    ) as HTMLElement;
 
     // Set up event handlers for bars with data
     if (shouldShow && tooltip) {
