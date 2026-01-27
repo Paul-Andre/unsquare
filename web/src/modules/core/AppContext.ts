@@ -7,6 +7,7 @@ import { ScreenManager } from '../ui/ScreenManager.ts';
 import { BookMenuScreen } from '../ui/BookMenuScreen.ts';
 import { MainLevelMenuScreen } from '../ui/MainLevelMenuScreen.tsx';
 import { OpeningInstructionsScreen } from '../ui/OpeningInstructionsScreen.ts';
+import { NamePickingScreen } from '../ui/NamePickingScreen.ts';
 import { Level } from '../core/Level.ts';
 import { Book, BookNavigation } from '../core/Book.ts';
 import { EditorLevelMenuScreen } from '../ui/EditorLevelMenuScreen.ts';
@@ -29,6 +30,7 @@ export class AppContext {
   challengeLevelMenu: ChallengeLevelMenuScreen;
   gridLevelMenu: GridLevelMenuScreen;
   openingInstructions: OpeningInstructionsScreen;
+  namePicking: NamePickingScreen;
   dailyWeeklyArchiveOfferModal: DailyWeeklyArchiveOfferModal;
   redirectingToPaymentModal: RedirectingToPaymentModal;
 
@@ -52,6 +54,9 @@ export class AppContext {
 
     const openingInstructionsRoot = ensureNotNull(document.getElementById("opening_instructions"));
     this.openingInstructions = new OpeningInstructionsScreen(openingInstructionsRoot);
+
+    const namePickingRoot = ensureNotNull(document.getElementById("namePicking"));
+    this.namePicking = new NamePickingScreen(namePickingRoot);
 
     const editorLevelMenuRoot = ensureNotNull(document.getElementById("editorLevelMenu"));
     this.editorLevelMenu = new EditorLevelMenuScreen(editorLevelMenuRoot);
@@ -79,6 +84,7 @@ export class AppContext {
     this.screenManager.additionalFunctions.editor = this.editor;
     this.screenManager.additionalFunctions.game = this.game;
     this.screenManager.additionalFunctions.opening_instructions = this.openingInstructions;
+    this.screenManager.additionalFunctions.namePicking = this.namePicking;
   }
 
   async showAuthModal(continuations: Continuation[]): Promise<AuthResult> {

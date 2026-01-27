@@ -112,6 +112,29 @@
 
       </section>
 
+      <section id="namePicking" class="screen">
+        <div class="header">
+          <h1 style="text-align: center;">Choose Your Name</h1>
+        </div>
+        <div class="content">
+          <p style="text-align: center; margin-bottom: 20px;">Enter a name to participate in the EvolveUX contest:</p>
+          <div style="display: flex; flex-direction: column; gap: 15px; max-width: 300px; margin: 0 auto;">
+            <input 
+              id="nameInput" 
+              type="text" 
+              placeholder="Name" 
+              style="padding: 10px; font-size: 16px; border: 2px solid #ccc; border-radius: 5px;"
+            />
+            <button 
+              id="nameEnterBtn" 
+              style="padding: 10px 20px; font-size: 16px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer;"
+            >
+              Enter
+            </button>
+          </div>
+        </div>
+      </section>
+
       <section id="options">
         <button onclick="appContext.goBack();" style="float: left">
           Back

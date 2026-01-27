@@ -81,10 +81,6 @@ export function setupInitialScreen() {
     processContinuations(continuations);  
     return;
   }
-  if (hasUserExperience()) {
-    appContext.openingInstructions.hasAlreadyWentToFirstLevel = true;
-    appContext.screenManager.switchTo('mainLevelMenu');
-  } else {
-    appContext.screenManager.switchTo('opening_instructions');
-  }
+  // Show namePicking first for testing purposes
+  appContext.screenManager.switchTo('namePicking');
 }
