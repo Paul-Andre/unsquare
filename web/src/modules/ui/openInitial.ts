@@ -72,6 +72,8 @@ function hasUserExperience(): boolean {
 export function setupInitialScreen() {
   let continuations = getUrlContinuations();
   let customLevelBook = getUrlCustomLevelBook();
+
+  const forcedOnboarding = new URLSearchParams(location.search).get("ob") !== null;
   if (customLevelBook !== null) {
     appContext.screenManager.switchTo("mainLevelMenu");
     appContext.playLevel(customLevelBook.levels[0], customLevelBook);
@@ -85,7 +87,7 @@ export function setupInitialScreen() {
   if (getCurrentContestId() !== null && getParticipantName() === null) {
     appContext.screenManager.switchTo('namePicking');
   } else {
-    if (hasUserExperience()) {
+    if (hasUserExperience()&& !forcedOnboarding) {
       appContext.openingInstructions.hasAlreadyWentToFirstLevel = true;
       appContext.screenManager.switchTo('mainLevelMenu');
     } else {
