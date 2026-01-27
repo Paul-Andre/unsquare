@@ -169,10 +169,17 @@ const styles = {
   td: {
     padding: '12px',
     color: '#555',
+    maxWidth: '200px',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    // whiteSpace: 'nowrap',
+
+
   } as React.CSSProperties,
   td_small: {
     padding: '12px',
     color: '#555',
     fontSize: '0.8em',
+
   } as React.CSSProperties,
 };
