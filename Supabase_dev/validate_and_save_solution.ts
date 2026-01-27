@@ -295,6 +295,34 @@ Deno.serve(async (req: Request) => {
       return errorResponse(e instanceof Error ? e.message : "Invalid solution format");
     }
 
+    // If part of a contest, check if the contest is still running
+    if (body.contest_hashid) {
+      // Decode the hashid using an rpc call to decode_contest_hashid
+      const contestResp = await supabaseFetch(`/rpc/decode_contest_hashid`, {
+        method: "POST",
+        body: JSON.stringify({ p_hashid: body.contest_hashid })
+      });
+      if (!contestResp.ok) {
+        return errorResponse("Failed to decode contest hashid", contestResp.status, `HTTP ${contestResp.status}`);
+      }
+      const contestData = await contestResp.json().catch(() => null) as { contest_id: string } | null;
+      if (!contestData || !contestData.contest_id) {
+        return errorResponse("Invalid contest hashid", 400);
+      }
+
+      // Fetch contest details
+      const contestDetailsResp = await supabaseFetch(`/contests?id=eq.${encodeURIComponent(contestData.contest_id)}&select=running`);
+      if (!contestDetailsResp.ok) {
+        return errorResponse("Failed to fetch contest details", contestDetailsResp.status, `HTTP ${contestDetailsResp.status}`);
+      }
+      const contestDetails = await contestDetailsResp.json().catch(() => null) as Array<{ running: boolean }>;
+      if (!Array.isArray(contestDetails) || contestDetails.length === 0) {
+        return errorResponse("Contest not found", 404);
+      }
+      if (!contestDetails[0].running) {
+        return errorResponse("Contest is not running", 403);
+      }
+    }
     // Fetch level data from Supabase
     const levelResp = await supabaseFetch(
       `/levels?level_id=eq.${encodeURIComponent(body.level_id)}&select=data_json`
