@@ -12,6 +12,7 @@ import { Book } from '../core/Book.ts';
 import { createWeeklyChallengeCard } from './WeeklyChallengeCard.tsx';
 import { weeklyChallengesBookSignal, getMainBook, dailyLevelsBookSignal } from '../core/loadBook.ts';
 import { MouseEventHandler } from 'react';
+import { getCurrentContestId } from 'modules/core/contests.ts';
 
 export class MainLevelMenuScreen {
   root: HTMLElement;
@@ -41,6 +42,16 @@ export class MainLevelMenuScreen {
     this.weeklyChallengeCardContainer = root.querySelector("#weeklyChallengCardContainer");
 
     this.loadBook();
+
+    if (getCurrentContestId() !== null) {
+      const dailyContainer = cast(this.root.querySelector("#dailyIconContainer"), HTMLElement);
+      dailyContainer.hidden = true;
+      const weeklyContainer = cast(this.root.querySelector("#weeklyChallengCardContainer"), HTMLElement);
+      weeklyContainer.hidden = true;
+      const mainLevelsTitle = cast(this.root.querySelector("#mainLevelsTitle"), HTMLHeadingElement);
+      mainLevelsTitle.innerText = "Contest Levels:"
+    }
+
   }
 
   onShow() {

@@ -34,7 +34,7 @@ export async function submitParticipantName(name: string): Promise<void> {
         console.warn("No current contest ID; cannot submit participant name.");
         return;
     }
-    //localStorage.setItem(participantNameLsk, name);
+
 
     // Submit to Supabase using the SQL function
     const playerId = ensureNotNull(localStorage.getItem("player_id"));
@@ -45,7 +45,8 @@ export async function submitParticipantName(name: string): Promise<void> {
     });
     if (error) {
         console.error("Error submitting participant name:", error);
+        throw error;
     }
-    
 
+    localStorage.setItem(participantNameLsk, name);
 }
