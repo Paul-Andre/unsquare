@@ -251,3 +251,84 @@ AS $$
 $$;
 
 ALTER FUNCTION submit_participant_name(text,text,text) OWNER TO postgres;
+
+CREATE OR REPLACE FUNCTION public.get_contest_leaderboard(
+  p_contest_id bigint
+)
+RETURNS TABLE (
+  player_id text,
+  name text,
+  levels_solved bigint,
+  total_moves bigint,
+  last_improvement_at timestamptz
+)
+LANGUAGE sql
+STABLE
+SECURITY DEFINER
+AS $$
+WITH ranked_solutions AS (
+  SELECT
+    s.player_id,
+    s.level_id,
+    s.num_moves,
+    s.created_at,
+    ROW_NUMBER() OVER (
+      PARTITION BY s.player_id, s.level_id
+      ORDER BY s.num_moves ASC, s.created_at ASC
+    ) AS rn
+  FROM public.solutions s
+  WHERE s.contest = p_contest_id
+),
+best_solutions AS (
+  SELECT
+    player_id,
+    level_id,
+    num_moves  AS best_moves,
+    created_at AS best_time
+  FROM ranked_solutions
+  WHERE rn = 1
+),
+player_scores AS (
+  SELECT
+    player_id,
+    COUNT(*)           AS levels_solved,
+    SUM(best_moves)    AS total_moves,
+    MAX(best_time)     AS last_improvement_at
+  FROM best_solutions
+  GROUP BY player_id
+)
+SELECT
+  p.player_id,
+  p.name,
+  COALESCE(ps.levels_solved, 0) AS levels_solved,
+  COALESCE(ps.total_moves, 0)   AS total_moves,
+  ps.last_improvement_at
+FROM public.participants p
+LEFT JOIN player_scores ps
+  ON ps.player_id = p.player_id
+WHERE p.contest = p_contest_id
+ORDER BY
+  levels_solved DESC,
+  total_moves ASC,
+  last_improvement_at ASC NULLS LAST;
+$$;
+ALTER FUNCTION public.get_contest_leaderboard(bigint) OWNER TO postgres;
+
+CREATE OR REPLACE FUNCTION public.get_contest_leaderboard(
+  p_contest_hashid text
+)
+RETURNS TABLE (
+  player_id text,
+  name text,
+  levels_solved bigint,
+  total_moves bigint,
+  last_improvement_at timestamptz
+)
+LANGUAGE sql
+STABLE
+AS $$
+  SELECT *
+  FROM public.get_contest_leaderboard(
+    decode_contest_hashid(p_contest_hashid)
+  );
+$$;

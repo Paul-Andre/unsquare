@@ -1,5 +1,6 @@
 /** @jsx React.createElement */
 /** @jsxFrag React.Fragment */
+import { supabase } from 'modules/utils/api';
 import React, { useState, useEffect } from 'react';
 
 interface LeaderboardRow {
@@ -25,24 +26,51 @@ const LeaderboardTableRow: React.FC<LeaderboardTableRowProps> = ({ row, styles }
   </tr>
 );
 
-function fetchLeaderboardData(): Promise<LeaderboardRow[]> {
-  // This function should fetch data from an API endpoint.
-  // Here we return mock data for demonstration purposes.
-  return Promise.resolve([
-    { rank: 1, name: 'Alice', levels_solved: 10, total_moves: '150', final_timestamp: '00:25:30' },
-    { rank: 2, name: 'Bob', levels_solved: 9, total_moves: '160', final_timestamp: '00:30:45' },
-    { rank: 3, name: 'Charlie', levels_solved: 8, total_moves: '170', final_timestamp: '00:35:20' },
-  ]);
+async function fetchLeaderboardData(contest_hashid: string): Promise<LeaderboardRow[]> {
+  // Fetch leaderboard data from the server, using the supabase api
+  /*
+  CREATE OR REPLACE FUNCTION public.get_contest_leaderboard(
+  p_contest_hashid text
+)
+RETURNS TABLE (
+  player_id text,
+  name text,
+  levels_solved bigint,
+  total_moves bigint,
+  last_improvement_at timestamptz
+)*/
+  let {data, error} = await supabase
+    .rpc('get_contest_leaderboard', { p_contest_hashid: contest_hashid });
+
+    if (error) {
+      console.error('Error fetching leaderboard data:', error);
+      return [];
+    }
+    if (!data) {
+      return [];
+    }
+    // Map data to LeaderboardRow[]
+    return data.map((entry, index) => ({
+      rank: index + 1,
+      name: entry.name,
+      levels_solved: Number(entry.levels_solved),
+      total_moves: entry.total_moves.toString(),
+      final_timestamp: new Date(entry.last_improvement_at).toLocaleString(),
+    }));
 }
 
-export const Leaderboard: React.FC = () => {
+interface LeaderboardProps {
+  contest_hashid: string;
+} 
+
+export const Leaderboard: React.FC<LeaderboardProps> = ({contest_hashid}) => {
   const [rows, setRows] = useState<LeaderboardRow[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchLeaderboardAndUpdate = async () => {
       try {
-        const data = await fetchLeaderboardData();
+        const data = await fetchLeaderboardData(contest_hashid);
         setRows(data);
       } catch (error) {
         console.error('Failed to fetch leaderboard:', error);
