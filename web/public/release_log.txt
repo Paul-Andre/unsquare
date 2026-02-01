@@ -336,3 +336,7 @@ EvolveUX contest demo draft
 27 Jan 2026
 0.12.19
 EvolveUX leaderboard tweaking.
+
+31 Jan 2026
+0.12.20
+Weekly Challenge 11
