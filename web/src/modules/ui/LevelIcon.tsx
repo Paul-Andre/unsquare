@@ -68,11 +68,18 @@ export function createLevelIcon(props: LevelIconProps): HTMLDivElement {
     }
 
     // Only apply colors when using par mode
-    // if (iconDisplayType === "par" && displayValue !== null && typeof displayValue === "number") {
-    //   const color = getParDisplayColor(displayValue);
-    //   parDisplay.style.color = color;
-    //   element.style.borderColor = color;
-    // }
+    if (iconDisplayType === "par" && displayValue !== null && typeof displayValue === "number") {
+      // Color by solution type: exhaustive -> green, optimal -> yellow, otherwise -> red.
+      // Use color variants that contrast against black/white icon tiles.
+      let color = "#ee3232ff"; // red as default
+      if (level.solutionType === "exhaustive") {
+        color = "#16a34a"; // green (emerald-600)
+      } else if (level.solutionType === "optimal") {
+        color = "#f59e0b"; // amber/yellow (amber-500)
+      }
+      parDisplay.style.color = color;
+      //element.style.borderColor = color;
+    }
 
     if (level.isIcon) {
       element.classList.add("bookIconRepresentative");
