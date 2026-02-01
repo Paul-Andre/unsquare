@@ -296,22 +296,24 @@ Deno.serve(async (req: Request) => {
     }
 
     // If part of a contest, check if the contest is still running
+
     if (body.contest_hashid) {
       // Decode the hashid using an rpc call to decode_contest_hashid
       const contestResp = await supabaseFetch(`/rpc/decode_contest_hashid`, {
         method: "POST",
-        body: JSON.stringify({ p_hashid: body.contest_hashid })
+        body: JSON.stringify({ p_id: body.contest_hashid })
       });
       if (!contestResp.ok) {
         return errorResponse("Failed to decode contest hashid", contestResp.status, `HTTP ${contestResp.status}`);
       }
-      const contestData = await contestResp.json().catch(() => null) as { contest_id: string } | null;
-      if (!contestData || !contestData.contest_id) {
+      const contestData = Number(await contestResp.json().catch(() => null));
+      console.log("Decoded contest data:", contestData);
+      if (!contestData) {
         return errorResponse("Invalid contest hashid", 400);
       }
 
       // Fetch contest details
-      const contestDetailsResp = await supabaseFetch(`/contests?id=eq.${encodeURIComponent(contestData.contest_id)}&select=running`);
+      const contestDetailsResp = await supabaseFetch(`/contests?id=eq.${encodeURIComponent(contestData)}&select=running`);
       if (!contestDetailsResp.ok) {
         return errorResponse("Failed to fetch contest details", contestDetailsResp.status, `HTTP ${contestDetailsResp.status}`);
       }
