@@ -1,17 +1,10 @@
 import { supabase } from "modules/utils/api";
 import { ensureNotNull } from "modules/utils/helpers";
 
-const UX_CONTEST_ID = "5ap1";
-
 function getCurrentContestIdFromUrl(): string | null {
   const contestId = new URLSearchParams(window.location.search).get("contest")?.trim() ?? null;
   if (contestId !== null && contestId.length > 0) {
     return contestId;
-  }
-  // if the route is /ux (in any casing), return "ux"
-  const path = window.location.pathname.toLowerCase();
-  if (path === "/ux" || path === "/ux/") {
-    return UX_CONTEST_ID;
   }
   return null;
 }
