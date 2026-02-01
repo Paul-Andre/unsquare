@@ -21,6 +21,7 @@ export class EditorLevelMenuScreen {
   togglingHidden: boolean;
   defaultSize: number;
   iconDisplayType: IconDisplayType = "none";
+  undoStack: { book: Book; action: string }[] = [];
 
   constructor(root: HTMLElement) {
     this.root = root;
@@ -40,14 +41,17 @@ export class EditorLevelMenuScreen {
     });
 
     this.setupSortable();
+    this.setupKeyboardListeners();
   }
 
   handleIconClick(level: Level, element: HTMLElement): void {
     if (this.deleting) {
+      this.saveUndoState("delete_level");
       element.remove();
       this.saveIconOrder();
     } else if (this.selectingIcon) {
       assert(this.levelMenu.book !== null);
+      this.saveUndoState("set_icon");
       this.levelMenu.book.levels.forEach((a) => {
         a.isIcon = false;
       });
@@ -57,6 +61,7 @@ export class EditorLevelMenuScreen {
       this.levelMenu.displayIcons();
       this.saveBook();
     } else if (this.togglingHidden) {
+      this.saveUndoState("toggle_hidden");
       level.hidden = !level.hidden;
       this.reindexLevels();
       this.levelMenu.displayIcons();
@@ -99,6 +104,7 @@ export class EditorLevelMenuScreen {
     // The way it works is by looking through the DOM and getting the associated level object from each level_icon element.
     // TODO: see if Sortable.js provides an alternative way to do this. 
     assert(this.levelMenu.book !== null);
+    this.saveUndoState("reorder_levels");
     this.levelMenu.book.levels = Array.from(this.levelMenu.container.children).map(
       (element: Element): Level => {
         // XXX: using any to access property on the element
@@ -153,6 +159,8 @@ export class EditorLevelMenuScreen {
     }
     assert(this.levelMenu.book !== null);
 
+    this.saveUndoState("append_levels");
+
     // Append levels to the book
     for (let level of levelsToAppend) {
       // Preserve original ID from JSON (Level.fromJsonObject handles ID generation if missing)
@@ -170,6 +178,7 @@ export class EditorLevelMenuScreen {
   newLevel() {
     const level = Level.empty(this.defaultSize);
     assert(this.levelMenu.book !== null);
+    this.saveUndoState("new_level");
     level.book = this.levelMenu.book;
     this.levelMenu.book.levels.push(level);
     this.levelMenu.displayIcons();
@@ -231,6 +240,7 @@ export class EditorLevelMenuScreen {
     const new_title = prompt("Set book title", this.levelMenu.book.title);
 
     if (new_title) {
+      this.saveUndoState("change_title");
       this.levelMenu.book.title = new_title;
     }
     save_editor_book(this.levelMenu.book);
@@ -238,6 +248,7 @@ export class EditorLevelMenuScreen {
 
   clearAllBests(): void {
     assert(this.levelMenu.book !== null);
+    this.saveUndoState("clear_bests");
     for (let i = 0; i < this.levelMenu.book.levels.length; i++) {
       clearBestNumMoves(this.levelMenu.book.levels[i]);
     }
@@ -312,6 +323,7 @@ export class EditorLevelMenuScreen {
     }
 
     if (updatedCount > 0) {
+      this.saveUndoState("import_solutions");
       this.saveBook();
       this.levelMenu.displayIcons();
       alert(`Updated solutions for ${updatedCount} level(s)`);
@@ -337,6 +349,44 @@ export class EditorLevelMenuScreen {
       group: "editor",
       onEnd: () => {
         this.saveIconOrder();
+      }
+    });
+  }
+
+  saveUndoState(action: string): void {
+    if (!this.levelMenu.book) {
+      return;
+    }
+    // Deep clone the book using serialization
+    // TODO: optimize if performance becomes an issue
+    const bookJson = JSON.stringify(this.levelMenu.book, book_replacer);
+    const bookClone = JSON.parse(bookJson, book_reviver);
+    this.undoStack.push({
+      book: bookClone,
+      action: action,
+    });
+  }
+
+  undo(): boolean {
+    const undoEntry = this.undoStack.pop();
+    if (!undoEntry) {
+      return false;
+    }
+    // Restore the book state
+    this.levelMenu.book = undoEntry.book;
+    // Refresh the UI
+    this.levelMenu.displayIcons();
+    this.updateLevelCounter();
+    this.saveBook();
+    return true;
+  }
+
+  setupKeyboardListeners(): void {
+    document.addEventListener("keydown", (e: KeyboardEvent) => {
+      // Handle Ctrl+Z or Cmd+Z for undo
+      if ((e.ctrlKey || e.metaKey) && e.key === "z") {
+        e.preventDefault();
+        this.undo();
       }
     });
   }
