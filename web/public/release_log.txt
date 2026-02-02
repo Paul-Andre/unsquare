@@ -340,3 +340,7 @@ EvolveUX leaderboard tweaking.
 31 Jan 2026
 0.12.20
 Weekly Challenge 11
+
+01 Feb 2026
+0.12.21
+More daily levels.
