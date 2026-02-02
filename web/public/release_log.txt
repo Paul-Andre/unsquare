@@ -344,3 +344,7 @@ Weekly Challenge 11
 01 Feb 2026
 0.12.21
 More daily levels.
+
+01 Feb 2026
+0.12.22
+slightly reorder daily levels + unhide one
