@@ -348,3 +348,7 @@ More daily levels.
 01 Feb 2026
 0.12.22
 slightly reorder daily levels + unhide one
+
+05 Feb 2026
+0.12.23
+Add my name more prominently
