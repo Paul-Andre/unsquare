@@ -19,6 +19,9 @@ import { Signal } from 'modules/utils/Signal.ts';
 //     }
 const PREVIOUS_OBJECT = undefined; 
 
+const NUM_DAILY_LEVELS_PREVIEW = 3;
+const NUM_WEEKLY_CHALLENGES_PREVIEW = 3;
+
 async function refreshArchiveAccess(): Promise<void> {
   let products;
   try {
@@ -37,8 +40,6 @@ onAuthStateChange((user) => {
 });
 
 
-const NUM_DAILY_LEVELS_PREVIEW = 3;
-const NUM_WEEKLY_CHALLENGES_PREVIEW = 2;
 
 const archiveAccessSignal = new Signal(false);
 
@@ -234,6 +235,14 @@ function getWeeklyChallengesBook(): Book {
         "__type__":"Level",
         "mode": "challenge",
         "title": "Weekly #11",
+      },
+      {"colorScheme":"BW",
+        "tileShape":"square",
+        "tiles":[[1,1,1,1,1,2,2,1,1],[1,1,2,2,2,1,1,2,1],[1,2,1,1,1,2,1,1,2],[2,1,1,1,1,2,1,1,2],[2,1,1,1,2,1,1,1,2],[2,1,1,2,1,1,1,1,2],[2,1,1,2,1,1,1,2,1],[1,2,1,1,2,2,2,1,1],[1,1,2,2,1,1,1,1,1]],
+        "id":"level_3912477766135358",
+        "__type__":"Level",
+        "mode": "challenge",
+        "title": "Weekly #12",
       }
 
     ],
