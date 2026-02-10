@@ -38,7 +38,7 @@ const live_499_multi: Record<string, string> = {
   fullAccess: "price_1Sm5h3AVJE8pXXhAs9EgsPb7",
 }
 
-const PRODUCT_PRICES: Record<string, string> = live_499_multi;
+const PRODUCT_PRICES: Record<string, string> = live_499_usd;
 
 function getPriceId(product: string): string|null {
     return PRODUCT_PRICES[product]??null;
