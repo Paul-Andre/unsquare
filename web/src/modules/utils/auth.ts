@@ -44,7 +44,6 @@ export async function signUpWithEmail(email: string, password: string): Promise<
  */
 export async function signInWithOAuth(provider: 'google' = 'google', continuations:Continuation[]): Promise<{ error: AuthError | null }> {
   const redirectUrl = buildUrl(continuations);
-  alert(redirectUrl);
   const { error } = await supabase.auth.signInWithOAuth({
     provider,
     options: {

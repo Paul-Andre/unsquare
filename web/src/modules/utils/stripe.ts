@@ -29,7 +29,7 @@ export async function ensureAuthenticated(continuations: Continuation[]): Promis
       console.warn("User is anonymous... not currently fully supported.")
       // Anonymous user - show auth modal to allow linking
       try {
-        const result = await appContext.authModal.show(continuations);
+        const result = await appContext.showAuthModal(continuations);
         return result.user;
       } catch (error) {
         console.error('Authentication cancelled', error);
@@ -42,7 +42,7 @@ export async function ensureAuthenticated(continuations: Continuation[]): Promis
 
   // If no user authenticated, show auth modal and wait for authentication
   try {
-    const result = await appContext.authModal.show(continuations);
+    const result = await appContext.showAuthModal(continuations);
     return result.user;
   } catch (error) {
     console.error('Authentication cancelled', error);
