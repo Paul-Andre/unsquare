@@ -120,16 +120,10 @@
         <div class="content">
           <p style="text-align: center; margin-bottom: 20px;">Choose a name to participate in the contest:</p>
           <div style="display: flex; flex-direction: column; gap: 15px; max-width: 300px; margin: 0 auto;">
-            <input 
-              id="nameInput" 
-              type="text" 
-              placeholder="Name" 
-              style="padding: 10px; font-size: 16px; border: 2px solid #ccc; border-radius: 5px;"
-            />
-            <button 
-              id="nameEnterBtn" 
-              style="padding: 10px 20px; font-size: 16px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer;"
-            >
+            <input id="nameInput" type="text" placeholder="Name"
+              style="padding: 10px; font-size: 16px; border: 2px solid #ccc; border-radius: 5px;" />
+            <button id="nameEnterBtn"
+              style="padding: 10px 20px; font-size: 16px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer;">
               Enter
             </button>
           </div>
@@ -458,15 +452,16 @@
             <p style="text-align: center; margin-top: 0em; font-size: 1.1em; opacity: 0.9;">by Paul-Andre Henegar</p>
 
 
-            <div style="display: flex; justify-content: center; gap: 0.5em; margin-bottom: 1em; align-items: flex-start;">
+            <div
+              style="display: flex; justify-content: center; gap: 0.5em; margin-bottom: 1em; align-items: flex-start;">
 
               <button onclick="appContext.screenManager.switchTo('opening_instructions');">Instructions</button>
 
 
-   
+
               <button onclick="appContext.openEditor()">Level Editor</button>
               <button onclick="appContext.dailyWeeklyArchiveOfferModal.show([])">Unlock Archive</button>
-                         <form style="display: inline" target="_blank" action="https://discord.gg/Hg6zVmTJeP" method="get">
+              <form style="display: inline" target="_blank" action="https://discord.gg/Hg6zVmTJeP" method="get">
                 <button class="discord_button_simple_grey">&nbsp;</button>
               </form>
               <!-- Temporary test button - remove after testing -->
@@ -486,7 +481,7 @@
 
         <div id="weeklyChallengCardContainer"></div>
 
-        <h2 id = "mainLevelsTitle">Main Levels:</h2>
+        <h2 id="mainLevelsTitle">Main Levels:</h2>
         <div id="iconContainer" class="content"></div>
         <footer>
           <!-- <a href="previous_versions"> -->
@@ -615,7 +610,8 @@
       </div>
 
       <div class="dailyWeeklyArchiveOfferLoggedInAs" hidden>
-              <p>Logged in as <span style="font-style: italic" id="dailyWeeklyArchiveOfferLoggedInAs"></span>. <a  id="dailyWeeklyArchiveOfferLogOut" href="#"> Log out</a></p>
+        <p>Logged in as <span style="font-style: italic" id="dailyWeeklyArchiveOfferLoggedInAs"></span>. <a
+            id="dailyWeeklyArchiveOfferLogOut" href="#"> Log out</a></p>
       </div>
 
     </div>
