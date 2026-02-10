@@ -368,3 +368,7 @@ Fix auth live
 10 Feb 2026
 0.12.27
 Stripe works + "unlock archive" on main screen
+
+10 Feb 2026
+0.12.28
+Fix redirecting when URL had hash
