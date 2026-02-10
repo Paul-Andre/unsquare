@@ -360,3 +360,7 @@ Weekly challenge #12
 09 Feb 2026
 0.12.25
 Reactivate stripe archive offer.
+
+09 Feb 2026
+0.12.26
+Fix auth live
