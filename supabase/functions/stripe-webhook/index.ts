@@ -63,17 +63,14 @@ Deno.serve(async (req) => {
       return errorResponse("Missing stripe-signature header", 400);
     }
 
-    // Get raw body as bytes for signature verification (CRITICAL for Stripe)
-    // Stripe requires the exact bytes, decoded to string for constructEventAsync
-    const body = await req.arrayBuffer();
-    const bodyString = new TextDecoder().decode(body);
+    const body = await req.text();
     
     let event: Stripe.Event;
     try {
       // Verify webhook signature
       // constructEventAsync expects the raw body string
       event = await stripe.webhooks.constructEventAsync(
-        bodyString,
+        body,
         signature,
         STRIPE_WEBHOOK_SECRET
       ) as Stripe.Event;
