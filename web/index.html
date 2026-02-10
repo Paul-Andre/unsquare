@@ -458,15 +458,17 @@
             <p style="text-align: center; margin-top: 0em; font-size: 1.1em; opacity: 0.9;">by Paul-Andre Henegar</p>
 
 
-            <div style="display: flex; justify-content: center; gap: 1em; margin-bottom: 1em; align-items: flex-start;">
+            <div style="display: flex; justify-content: center; gap: 0.5em; margin-bottom: 1em; align-items: flex-start;">
 
               <button onclick="appContext.screenManager.switchTo('opening_instructions');">Instructions</button>
 
 
-              <form style="display: inline" target="_blank" action="https://discord.gg/Hg6zVmTJeP" method="get">
-                <button class="discord_button">Discord</button>
-              </form>
+   
               <button onclick="appContext.openEditor()">Level Editor</button>
+              <button onclick="appContext.dailyWeeklyArchiveOfferModal.show([])">Unlock Archive</button>
+                         <form style="display: inline" target="_blank" action="https://discord.gg/Hg6zVmTJeP" method="get">
+                <button class="discord_button_simple_grey">&nbsp;</button>
+              </form>
               <!-- Temporary test button - remove after testing -->
               <!-- <button onclick="appContext.showAuthModal([]);" style="background-color: #ff6b6b; color: white;">Test Auth</button> -->
             </div>

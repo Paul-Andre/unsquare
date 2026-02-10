@@ -1425,6 +1425,13 @@ button.discord_button_simple {
   padding-right: 30px;
 }
 
+button.discord_button_simple_grey {
+  background: white url("/discord-mark-grey.svg") no-repeat center right;
+  background-position: center center;
+  background-size: 28px;
+  padding-right: 30px;
+}
+
 .instruction_image {
   display: block;
   margin: 0 auto;
