@@ -8,7 +8,8 @@ export type Continuation = "purchaseDailyWeeklyArchive" | "purchaseFullAccess" |
 
 
 export function buildUrl(continuations:Continuation[]):string {
-    return window.location + "?continuations=" + continuations.map(serializeContinuation).join(",");
+    const base = window.location.origin + window.location.pathname;
+    return base + "?continuations=" + continuations.map(serializeContinuation).join(",");
 }
 
 function parseContinuation(s:string):Continuation {
