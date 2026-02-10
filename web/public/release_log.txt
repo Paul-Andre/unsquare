@@ -364,3 +364,7 @@ Reactivate stripe archive offer.
 09 Feb 2026
 0.12.26
 Fix auth live
+
+10 Feb 2026
+0.12.27
+Stripe works + "unlock archive" on main screen
