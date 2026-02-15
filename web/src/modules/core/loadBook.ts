@@ -243,6 +243,25 @@ function getWeeklyChallengesBook(): Book {
         "__type__":"Level",
         "mode": "challenge",
         "title": "Weekly #12",
+      },
+{
+        "colorScheme": "BW",
+        "tileShape": "square",
+        "tiles": [
+          [1,1,1,1,1,1,2,1,1],
+          [1,2,2,2,2,1,1,2,1],
+          [2,1,1,1,1,2,1,2,1],
+          [1,1,2,2,2,2,1,2,1],
+          [1,2,1,2,2,2,1,2,1],
+          [1,2,1,2,2,2,2,1,1],
+          [1,2,1,2,1,1,1,1,2],
+          [1,2,1,1,2,2,2,2,1],
+          [1,1,2,1,1,1,1,1,1]
+        ],
+        "id": "level_997667935562135",
+        "__type__": "Level",
+        "mode": "challenge",
+        "title": "Weekly #13"
       }
 
     ],
