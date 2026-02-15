@@ -4,6 +4,7 @@
   "typescript.preferences.includePackageJsonAutoImports": "on",
   "files.associations": {
     "*.js": "javascript"
-  }
+  },
+  "kiroAgent.configureMCP": "Disabled"
 }
 
