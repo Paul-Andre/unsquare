@@ -376,3 +376,7 @@ Fix redirecting when URL had hash
 14 Feb 2026
 0.12.29
 Weekly #13
+
+21 Feb 2026
+0.12.30
+Weekly Challenge #14
