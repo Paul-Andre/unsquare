@@ -244,7 +244,7 @@ function getWeeklyChallengesBook(): Book {
         "mode": "challenge",
         "title": "Weekly #12",
       },
-{
+      {
         "colorScheme": "BW",
         "tileShape": "square",
         "tiles": [
@@ -262,8 +262,29 @@ function getWeeklyChallengesBook(): Book {
         "__type__": "Level",
         "mode": "challenge",
         "title": "Weekly #13"
+      },
+      {
+        "colorScheme": "BW",
+        "tileShape": "square",
+        "tiles": [
+          [1,1,1,1,1,2,1,2,1,2,1,2],
+          [1,1,1,1,1,2,1,2,1,2,1,2],
+          [1,1,1,1,2,1,2,1,2,1,2,1],
+          [1,1,1,1,2,1,2,1,2,1,2,1],
+          [1,1,1,2,1,2,1,2,1,2,1,1],
+          [1,1,1,2,1,2,1,2,1,2,1,1],
+          [1,1,2,1,2,1,2,1,2,1,1,1],
+          [1,1,2,1,2,1,2,1,2,1,1,1],
+          [1,2,1,2,1,2,1,2,1,1,1,1],
+          [1,2,1,2,1,2,1,2,1,1,1,1],
+          [2,1,2,1,2,1,2,1,1,1,1,1],
+          [2,1,2,1,2,1,2,1,1,1,1,1]
+        ],
+        "id": "level_798859946391746",
+        "__type__": "Level",
+        "mode": "challenge",
+        "title": "Weekly #14"
       }
-
     ],
     source: "challenge",
     id: "weekly",
