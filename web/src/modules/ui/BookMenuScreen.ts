@@ -100,6 +100,39 @@ export class BookMenuScreen {
     });
   }
 
+  overwriteAllBooksFromJson() {
+    const booksJson = window.prompt("Paste json of all books. This will overwrite and delete all existing books.)");
+    if (booksJson) {
+      try {
+        const books = JSON.parse(booksJson, book_reviver);
+        if (!Array.isArray(books)) {
+          alert("Invalid JSON: expected an array of books");
+          return;
+        }
+        
+        // Clear existing books from localStorage
+        for (let i = 0; i < this.books.length; i++) {
+          let source = this.books[i].source;
+          if (source) {
+            localStorage.removeItem(source);
+          }
+        }
+        
+        // Save new books
+        this.books = books;
+        for (let i = 0; i < this.books.length; i++) {
+          save_editor_book(this.books[i]);
+        }
+        
+        this.showBooks();
+        alert(`Successfully loaded ${books.length} book${books.length !== 1 ? 's' : ''}`);
+      } catch (err) {
+        console.error("Failed to parse JSON:", err);
+        alert("Failed to parse JSON");
+      }
+    }
+  }
+
   loadBooks() {}
 
   prepareBook(book: Book): HTMLElement {
