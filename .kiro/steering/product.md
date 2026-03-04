@@ -1,6 +1,6 @@
 # Product Overview
 
-Unflip is a puzzle game where players flip square areas (2x2 or larger) on a grid to invert tile colors (black ↔ white) with the goal of making all tiles white.
+Unflip is a puzzle game where players flip square areas (2x2 or larger) on a grid to invert tile colors (black ↔ white) with the goal of making all tiles white. Careful attention is put to create puzzles that are intersting to solve, visually interesting, and such that there is a good balance and variety in the types of levels.
 
 ## Core Features
 
