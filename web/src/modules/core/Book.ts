@@ -13,5 +13,6 @@ export type Book = {
   source?: string;
   previous?: BookNavigation;
   next?: BookNavigation;
-  fullAmount?: number
+  fullAmount?: number;
+  collapsedInEditor?: boolean;
 };

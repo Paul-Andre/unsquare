@@ -1352,6 +1352,7 @@ section header {
   margin-bottom: 2px;
   /* clear: both; */
   border: solid 1px darkgray;
+  position: relative;
 }
 .bookSummary:hover {
   border: solid 1px #555555;
@@ -1368,6 +1369,47 @@ section header {
 }
 .bookInfoContainer .bookId {
   opacity: 50%;
+}
+
+.bookHideBtn {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  background: #555;
+  color: white;
+  border: none;
+  padding: 2px 8px;
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 1;
+}
+.bookHideBtn:hover {
+  background: #333;
+}
+
+.bookDeleteBtn {
+  position: absolute;
+  top: 4px;
+  right: 32px;
+  background: #c44;
+  color: white;
+  border: none;
+  padding: 2px 8px;
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 1;
+}
+.bookDeleteBtn:hover {
+  background: #a22;
+}
+
+.bookSummary.collapsed {
+  height: 32px;
+}
+
+.bookSummary.collapsed .bookIconContainer,
+.bookSummary.collapsed .bookInfoContainer {
+  display: none;
 }
 
 .level_icon {

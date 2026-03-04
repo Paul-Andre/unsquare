@@ -109,6 +109,48 @@ export class BookMenuScreen {
       bic.append(icon);
     }
 
+    // Apply collapsed state
+    if (book.collapsedInEditor) {
+      node.classList.add('collapsed');
+    }
+
+    // Hide button
+    let hideBtn = node.getElementsByClassName("bookHideBtn")[0] as HTMLElement;
+    hideBtn.onclick = (e) => {
+      e.stopPropagation();
+      book.collapsedInEditor = !book.collapsedInEditor;
+      save_editor_book(book);
+      node.classList.toggle('collapsed');
+    };
+
+    // Delete button
+    let deleteBtn = node.getElementsByClassName("bookDeleteBtn")[0] as HTMLElement;
+    deleteBtn.onclick = (e) => {
+      e.stopPropagation();
+      const levelCount = book.levels.length;
+      let proceed: boolean;
+      if (levelCount == 0) {
+        proceed = true;
+      } else {
+        proceed =  window.confirm(
+          `Confirm deletion of book "${book.title}" with ${levelCount} level${levelCount !== 1 ? 's' : ''}`
+        );
+      }
+      if (proceed) {
+        // Remove from localStorage
+        if (book.source) {
+          localStorage.removeItem(book.source);
+        }
+        // Remove from books array
+        const index = this.books.indexOf(book);
+        if (index > -1) {
+          this.books.splice(index, 1);
+        }
+        // Remove from DOM
+        node.remove();
+      }
+    };
+
     // node.book = book;
     node.onclick = () => {
       this.openBook(book);
@@ -120,6 +162,8 @@ export class BookMenuScreen {
 
 let bookTemplate =
   "<div class='bookSummary'> \
+  <button class='bookHideBtn'>−</button>\
+  <button class='bookDeleteBtn'>×</button>\
   <div class='bookIconContainer'> \
   \
   \
