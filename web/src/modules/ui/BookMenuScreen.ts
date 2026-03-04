@@ -98,7 +98,7 @@ export class BookMenuScreen {
     }
     {
       let bn = node.getElementsByClassName("bookId")[0];
-      bn.innerHTML = book.id;
+      bn.innerHTML = `${book.id} (${book.levels.length} level${book.levels.length !== 1 ? 's' : ''})`;
     }
 
     let icon_level = select_book_icon_level(book);
