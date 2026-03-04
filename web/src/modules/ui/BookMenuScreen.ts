@@ -4,7 +4,7 @@ import { cast, ensureNotNull, generate_id } from '../utils/helpers.ts';
 import { htmlStringToElement } from '../utils/helpers.ts';
 import { createLevelIconElement } from './icon.ts';
 import { appContext } from '../core/AppContext.ts';
-import { book_reviver, create_empty_book, save_editor_book } from '../core/bookUtils.ts';
+import { book_reviver, book_replacer, create_empty_book, save_editor_book } from '../core/bookUtils.ts';
 import book1OldData from '../../data/book1Old.json';
 import basicBlackWhiteData from '../../data/basicBlackWhite.json';
 import niceLevelsData from '../../data/niceLevels.json';
@@ -86,6 +86,18 @@ export class BookMenuScreen {
 
       this.showBooks();
     }
+  }
+
+  copyAllBooksToClipboard() {
+    let confirmation = window.confirm("Copy all books to clipboard?");
+    if (!confirmation) return;
+    const booksJson = JSON.stringify(this.books, book_replacer);
+    navigator.clipboard.writeText(booksJson).then(() => {
+      alert("All books copied to clipboard");
+    }).catch((err) => {
+      console.error("Failed to copy to clipboard:", err);
+      alert("Failed to copy to clipboard");
+    });
   }
 
   loadBooks() {}
