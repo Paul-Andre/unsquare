@@ -380,7 +380,7 @@ return;
   updateDrawModeButton(): void {
     const button = this.div.querySelector("#drawModeButton");
     if (button) {
-      button.textContent = this.drawMode ? "Draw Mode: ON" : "Draw Mode: OFF";
+      button.textContent = this.drawMode ? "Draw: ON" : "Draw: OFF";
       if (this.drawMode) {
         button.classList.add("drawModeActive");
       } else {
