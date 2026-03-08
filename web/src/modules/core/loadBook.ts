@@ -43,14 +43,31 @@ onAuthStateChange((user) => {
 
 const archiveAccessSignal = new Signal(false);
 
-export const dailyLevelsBookSignal = new Signal(getDailyLevelsBook());
-export const weeklyChallengesBookSignal = new Signal(getWeeklyChallengesBook());
+const weeklyChallengesJsonLSK = "weeklyChallengesJsonCache";
+
+// TODO: correctly treat this once start using Capacitor.
+const weeklyChallengesJsonUrl = window.location.origin + "/api/weekly_challenges.json";
+
+const weeklyChallengesJsonSignal = new Signal(localStorage.getItem(weeklyChallengesJsonLSK));
+
+(async function () {
+  const response = await fetch(weeklyChallengesJsonUrl);
+  const text = await response.text();
+  localStorage.setItem(weeklyChallengesJsonLSK, text);
+  weeklyChallengesJsonSignal.set(text);
+})();
 
 
-archiveAccessSignal.on(_ => {
+export const dailyLevelsBookSignal: Signal<Book> = new Signal(getDailyLevelsBook());
+
+export const weeklyChallengesBookSignal = Signal.pipeline(
+  getWeeklyChallengesBook,
+  [archiveAccessSignal, weeklyChallengesJsonSignal]
+)
+
+archiveAccessSignal.on(async _ => {
   console.log("setting books", archiveAccessSignal.get());
   dailyLevelsBookSignal.set(getDailyLevelsBook());
-  weeklyChallengesBookSignal.set(getWeeklyChallengesBook());
 });
 
 
@@ -123,193 +140,14 @@ function getDailyLevelsBook(): Book {
   };
 }
 
-/**
- * Get the weekly challenge levels book
- * Returns last 2 weekly levels, or all levels if user has archive access
- */
-function getWeeklyChallengesBook(): Book {
-  // Embedded weekly levels data
-  const challengeBookJson = {
-    levels: [
-      {
-        colorScheme: "BW",
-        tileShape: "square",
-        tiles: [[1,2,2,1,2,2,1,2,2,1],[2,1,1,2,1,1,2,1,1,2],[2,1,1,2,1,1,2,1,1,2],[1,2,2,1,2,2,1,2,2,1],[2,1,1,2,1,1,2,1,1,2],[2,1,1,2,1,1,2,1,1,2],[1,2,2,1,2,2,1,2,2,1],[2,1,1,2,1,1,2,1,1,2],[2,1,1,2,1,1,2,1,1,2],[1,2,2,1,2,2,1,2,2,1]],
-        mode: "challenge",
-        title: "Weekly #1",
-        id: "level_1763668451541",
-        __type__: "Level"
-      },
-      {
-        colorScheme: "BW",
-        tileShape: "square",
-        tiles: [[1,1,1,2,2,2,2,1,1,1],[1,1,2,2,2,2,2,2,1,1],[1,1,2,2,2,2,2,2,2,1],[1,2,2,2,2,2,2,1,2,2],[2,2,1,2,2,2,1,2,1,2],[2,1,2,1,2,2,2,1,2,2],[2,2,1,2,2,2,2,2,2,1],[1,2,2,2,2,2,2,2,1,1],[1,1,2,2,2,2,2,2,1,1],[1,1,1,2,2,2,2,1,1,1]],
-        id: "level_1109238056389808",
-        mode: "challenge",
-        title: "Weekly #2",
-        __type__: "Level"
-      },
-      {
-        colorScheme: "BW",
-        tileShape: "square",
-        tiles: [[1,1,1,1,2,2,2,1,1,1,1],[1,1,1,1,1,2,1,1,1,1,1],[1,1,2,2,2,2,2,2,2,1,1],[1,1,1,2,1,1,1,2,1,1,1],[1,1,1,2,1,1,1,2,1,1,1],[1,2,2,2,2,2,2,2,2,2,1],[1,1,2,1,1,2,1,1,2,1,1],[1,1,2,1,1,2,1,1,2,1,1],[1,2,2,2,2,2,2,2,2,2,1],[1,2,1,1,1,2,1,1,1,2,1],[1,2,1,1,1,2,1,1,1,2,1]],
-        mode: "challenge",
-        id: "level_9159232684496334",
-        __type__: "Level",
-        title: "Weekly #3",
-      },
-      {
-        colorScheme: "BW",
-        tileShape: "square",
-        tiles: [[1,1,2,1,1,1,1,1,2,1,1],[1,2,1,2,1,1,1,2,1,2,1],[2,1,2,1,2,1,2,1,2,1,2],[1,2,1,1,1,2,1,1,1,2,1],[1,1,2,1,2,1,2,1,2,1,1],[1,1,1,2,1,2,1,2,1,1,1],[1,1,2,1,2,1,2,1,2,1,1],[1,2,1,1,1,2,1,1,1,2,1],[2,1,2,1,2,1,2,1,2,1,2],[1,2,1,2,1,1,1,2,1,2,1],[1,1,2,1,1,1,1,1,2,1,1]],
-        mode: "challenge",
-        id: "level_1184501746690094",
-        title: "Weekly #4",
-        __type__: "Level",
-      },
-      {
-        colorScheme: "BW",
-        tileShape: "square",
-        tiles: [[1,1,1,1,1,2,1,1,1,1,1],[1,1,1,1,1,2,1,1,1,1,1],[1,1,1,1,2,2,2,1,1,1,1],[1,1,1,1,2,2,2,1,1,1,1],[1,1,1,2,2,2,2,2,1,1,1],[1,1,1,2,2,2,2,2,1,1,1],[1,1,2,2,2,2,2,2,2,1,1],[1,1,2,2,2,2,2,2,2,1,1],[1,2,2,2,2,2,2,2,2,2,1],[1,1,2,2,2,2,2,2,2,1,1],[1,1,1,1,1,2,1,1,1,1,1]],
-        id: "level_3720617583694259",
-        mode: "challenge",
-        title: "Weekly #5",
-        __type__: "Level"
-      },
-      {
-        colorScheme: "BW",
-        tileShape: "square",
-        tiles: [[1,1,1,1,1,2,1,1,1,1,1],[1,1,1,2,1,1,1,2,1,1,1],[1,1,1,1,1,1,1,1,1,1,1],[1,2,1,1,1,1,1,1,1,2,1],[1,1,1,1,1,2,1,1,1,1,1],[2,1,1,1,2,1,2,1,1,1,2],[1,1,1,1,1,2,1,1,1,1,1],[1,2,1,1,1,1,1,1,1,2,1],[1,1,1,1,1,1,1,1,1,1,1],[1,1,1,2,1,1,1,2,1,1,1],[1,1,1,1,1,2,1,1,1,1,1]],
-        id: "level_2022701781412438",
-        mode: "challenge",
-        title: "Weekly #6A",
-        __type__: "Level",
-      },
+function getWeeklyChallengesBook(): Book|null {
+  let weeklyChallengesJson = weeklyChallengesJsonSignal.get(); 
 
-      {"colorScheme":"BW",
-        "tileShape":"square",
-        "tiles":[[1,1,1,1,1,1,1,1,1,1,1],[1,1,1,1,1,2,1,1,1,1,1],[1,1,2,1,1,1,1,1,2,1,1],[1,1,1,1,1,1,1,1,1,1,1],[1,1,1,1,1,2,1,1,1,1,1],[1,2,1,1,2,1,2,1,1,2,1],[1,1,1,1,1,2,1,1,1,1,1],[1,1,1,1,1,1,1,1,1,1,1],[1,1,2,1,1,1,1,1,2,1,1],[1,1,1,1,1,2,1,1,1,1,1],[1,1,1,1,1,1,1,1,1,1,1]],
-        "id":"level_6629065214232752",
-        "__type__":"Level",
-         mode: "challenge",
-      title: "Weekly #6B",
-      },
-      {
-        "colorScheme":"BW",
-        "tileShape":"square",
-        "tiles":[[1,1,1,2,1,1,2,1,1,1],[1,2,1,1,2,2,1,1,2,1],[1,1,2,2,1,1,2,2,1,1],[2,1,2,1,2,2,1,2,1,2],[1,2,1,2,2,2,2,1,2,1],[1,2,1,2,2,2,2,1,2,1],[2,1,2,1,2,2,1,2,1,2],[1,1,2,2,1,1,2,2,1,1],[1,2,1,1,2,2,1,1,2,1],[1,1,1,2,1,1,2,1,1,1]],
-        "mode":"challenge",
-        "id":"level_562439116575121",
-        "__type__":"Level",
-        title: "Weekly #7",
-      }, 
-      {"colorScheme":"BW",
-        "tileShape":"square",
-        "tiles":[[1,2,2,1,1,1,2,1,2,1],[1,2,2,2,2,1,2,2,1,2],[2,2,1,2,2,1,1,2,2,2],[2,2,1,2,1,2,1,1,1,2],[2,2,1,2,2,1,1,2,1,2],[2,1,2,1,1,2,2,1,2,2],[2,1,1,1,2,1,2,1,2,2],[2,2,2,1,1,2,2,1,2,2],[2,1,2,2,1,2,2,2,2,1],[1,2,1,2,1,1,1,2,2,1]],
-        "id":"level_5292801711134756",
-        "__type__":"Level",
-        mode: "challenge",
-        title: "Weekly #8",
-      },
-      {"colorScheme":"BW",
-        "tileShape":"square",
-        "tiles":[[1,2,2,2,1,1,1,2,2,2],[1,2,2,2,1,1,1,2,2,2],[1,2,1,2,2,1,1,1,2,1],[1,2,1,2,2,1,1,1,2,1],[1,2,1,1,2,2,1,1,2,1],[1,2,1,1,2,2,1,1,2,1],[1,2,1,1,1,2,2,1,2,1],[1,2,1,1,1,2,2,1,2,1],[2,2,2,1,1,1,2,2,2,1],[2,2,2,1,1,1,2,2,2,1]],
-        "id":"level_92155856201666",
-        "__type__":"Level",
-        mode: "challenge",
-        title: "Weekly #9",
-      },
-      {
-        "colorScheme":"BW",
-        "tileShape":"square",
-        "tiles":[[1,2,1,2,1,2,1,2,1,2],[2,1,2,1,2,1,2,1,2,1],[1,2,1,2,1,2,1,2,1,2],[2,1,2,1,2,1,2,1,2,1],[1,2,1,2,1,2,1,2,1,2],[2,1,2,1,2,1,2,1,2,1],[1,2,1,2,1,2,1,2,1,2],[2,1,2,1,2,1,2,1,2,1],[1,2,1,2,1,2,1,2,1,2],[2,1,2,1,2,1,2,1,2,1]],
-          "id":"level_7244831124862695",
-          "__type__":"Level",
-        mode: "challenge",
-        title: "Weekly #10",
-      },
-      {"colorScheme":"BW",
-        "tileShape":"square",
-        "tiles":[[1,2,2,1,2,2,1,2,2,1],[2,1,1,2,2,2,2,1,1,2],[2,1,1,2,2,2,2,1,1,2],[1,2,2,1,2,2,1,2,2,1],[2,2,2,2,1,1,2,2,2,2],[2,2,2,2,1,1,2,2,2,2],[1,2,2,1,2,2,1,2,2,1],[2,1,1,2,2,2,2,1,1,2],[2,1,1,2,2,2,2,1,1,2],[1,2,2,1,2,2,1,2,2,1]],
-        "id":"level_1763687518134",
-        "__type__":"Level",
-        "mode": "challenge",
-        "title": "Weekly #11",
-      },
-      {"colorScheme":"BW",
-        "tileShape":"square",
-        "tiles":[[1,1,1,1,1,2,2,1,1],[1,1,2,2,2,1,1,2,1],[1,2,1,1,1,2,1,1,2],[2,1,1,1,1,2,1,1,2],[2,1,1,1,2,1,1,1,2],[2,1,1,2,1,1,1,1,2],[2,1,1,2,1,1,1,2,1],[1,2,1,1,2,2,2,1,1],[1,1,2,2,1,1,1,1,1]],
-        "id":"level_3912477766135358",
-        "__type__":"Level",
-        "mode": "challenge",
-        "title": "Weekly #12",
-      },
-      {
-        "colorScheme": "BW",
-        "tileShape": "square",
-        "tiles": [
-          [1,1,1,1,1,1,2,1,1],
-          [1,2,2,2,2,1,1,2,1],
-          [2,1,1,1,1,2,1,2,1],
-          [1,1,2,2,2,2,1,2,1],
-          [1,2,1,2,2,2,1,2,1],
-          [1,2,1,2,2,2,2,1,1],
-          [1,2,1,2,1,1,1,1,2],
-          [1,2,1,1,2,2,2,2,1],
-          [1,1,2,1,1,1,1,1,1]
-        ],
-        "id": "level_997667935562135",
-        "__type__": "Level",
-        "mode": "challenge",
-        "title": "Weekly #13"
-      },
-      {
-        "colorScheme": "BW",
-        "tileShape": "square",
-        "tiles": [
-          [1,1,1,1,1,2,1,2,1,2,1,2],
-          [1,1,1,1,1,2,1,2,1,2,1,2],
-          [1,1,1,1,2,1,2,1,2,1,2,1],
-          [1,1,1,1,2,1,2,1,2,1,2,1],
-          [1,1,1,2,1,2,1,2,1,2,1,1],
-          [1,1,1,2,1,2,1,2,1,2,1,1],
-          [1,1,2,1,2,1,2,1,2,1,1,1],
-          [1,1,2,1,2,1,2,1,2,1,1,1],
-          [1,2,1,2,1,2,1,2,1,1,1,1],
-          [1,2,1,2,1,2,1,2,1,1,1,1],
-          [2,1,2,1,2,1,2,1,1,1,1,1],
-          [2,1,2,1,2,1,2,1,1,1,1,1]
-        ],
-        "id": "level_798859946391746",
-        "__type__": "Level",
-        "mode": "challenge",
-        "title": "Weekly #14"
-      },
-    {
-      "colorScheme":"BW",
-      "tileShape":"square",
-      "tiles":[[1,1,1,1,1,1,1,1,1,1,1,1],[1,1,1,1,2,1,1,1,1,1,1,1],[1,1,1,1,1,1,2,1,1,1,1,1],[1,1,1,2,1,1,1,1,2,1,1,1],[1,1,1,1,1,2,1,1,1,1,2,1],[1,1,2,1,1,1,1,2,1,1,1,1],[1,1,1,1,2,1,1,1,1,2,1,1],[1,2,1,1,1,1,2,1,1,1,1,1],[1,1,1,2,1,1,1,1,2,1,1,1],[1,1,1,1,1,2,1,1,1,1,1,1],[1,1,1,1,1,1,1,2,1,1,1,1],[1,1,1,1,1,1,1,1,1,1,1,1]],
-      "id":"level_857254589709734",
-      "__type__":"Level",
-      "mode": "challenge",
-      "title": "Weekly #15",
-    },
-    {"colorScheme":"BW",
-      "tileShape":"square",
-      "tiles":[[1,1,1,1,1,1,1,1,1,1,1],[1,2,1,2,1,2,1,2,1,2,1],[1,1,1,1,1,1,1,1,1,1,1],[1,2,1,2,1,2,1,2,1,2,1],[1,1,1,1,1,1,1,1,1,1,1],[1,2,1,2,1,2,1,2,1,2,1],[1,1,1,1,1,1,1,1,1,1,1],[1,2,1,2,1,2,1,2,1,2,1],[1,1,1,1,1,1,1,1,1,1,1],[1,2,1,2,1,2,1,2,1,2,1],[1,1,1,1,1,1,1,1,1,1,1]],
-      "id":"level_3416700787705779",
-      "__type__":"Level",
-        "mode": "challenge",
-        "title": "Weekly #16"
-    }
-
-    ],
-    source: "challenge",
-    id: "weekly",
-    title: "Weekly Challenges",
-  };
+  if (weeklyChallengesJson === null) {
+    return null;
+  }
   
-  const weeklyBook = JSON.parse(JSON.stringify(challengeBookJson), book_reviver);
+  const weeklyBook = JSON.parse(weeklyChallengesJson, book_reviver);
   
   if (archiveAccessSignal.get()) {
     return weeklyBook;

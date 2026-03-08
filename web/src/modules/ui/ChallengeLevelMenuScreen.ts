@@ -13,7 +13,7 @@ export class ChallengeLevelMenuScreen {
   unlockSectionContainer: HTMLElement;
   book: Book | null = null;
 
-  bookSignalConsumer: SingleSignalConsumer<Book>;
+  bookSignalConsumer: SingleSignalConsumer<Book | null>;
 
   constructor(root: HTMLElement) {
     this.root = root;
@@ -21,11 +21,15 @@ export class ChallengeLevelMenuScreen {
     this.titleElement = cast(root.querySelector("h1"), HTMLElement);
     this.unlockSectionContainer = cast(root.querySelector(".footer"), HTMLElement);
 
-    this.bookSignalConsumer = new SingleSignalConsumer((book) => this.openBook(book));
+    this.bookSignalConsumer = new SingleSignalConsumer((book) => {
+      if (book!==null) {
+         this.openBook(book);
+      }
+    });
   }
 
-  bindBookSignal(signal: Signal<Book>): void {
-    this.bookSignalConsumer.bind(signal);
+  bindBookSignal(signal: Signal<Book|null>): void {
+    this.bookSignalConsumer.bindAndFire(signal);
   }
 
   openBook(book: Book): void {

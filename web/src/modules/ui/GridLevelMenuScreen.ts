@@ -35,8 +35,8 @@ export class GridLevelMenuScreen {
     this.unlockSectionContainer = cast(root.querySelector(".footer"), HTMLElement);
     this.bookSignalConsumer = new SingleSignalConsumer((book) => {
       console.log("openeind from consumer");
-      this.openBook(book)}
-    );
+      this.openBook(book);
+    });
   }
 
   bindBookSignal(signal: Signal<Book>){

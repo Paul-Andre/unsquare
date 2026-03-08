@@ -13,22 +13,19 @@ import { createWeeklyChallengeCard } from './WeeklyChallengeCard.tsx';
 import { weeklyChallengesBookSignal, getMainBook, dailyLevelsBookSignal } from '../core/loadBook.ts';
 import { MouseEventHandler } from 'react';
 import { getCurrentContestId } from 'modules/core/contests.ts';
+import { SingleSignalConsumer } from 'modules/utils/Signal.ts';
 
 export class MainLevelMenuScreen {
   root: HTMLElement;
   dailyLevelsBook: Book;
-  weeklyChallengesBook: Book;
+  weeklyChallengesBookSlot: SingleSignalConsumer<Book | null>;
   levelMenu: LevelIconGrid;
-  weeklyChallengeCardContainer: HTMLElement | null = null;
   
   constructor(root: HTMLElement) {
     this.root = root;
     
     // Load daily levels
     this.dailyLevelsBook = dailyLevelsBookSignal.get();
-
-    // Load weekly challenge book
-    this.weeklyChallengesBook = weeklyChallengesBookSignal.get();
 
     const iconContainer = cast(root.querySelector("#iconContainer"), HTMLElement);
     this.levelMenu = new LevelIconGrid(iconContainer, false, {
@@ -39,9 +36,36 @@ export class MainLevelMenuScreen {
       },
     });
 
-    this.weeklyChallengeCardContainer = root.querySelector("#weeklyChallengCardContainer");
 
-    this.loadBook();
+
+    this.loadMainBook();
+
+    this.displayDailyIcon();
+    this.weeklyChallengesBookSlot = new SingleSignalConsumer((book:Book|null) => {
+      if (book === null) {
+        return;
+      }
+      let weeklyChallengeCardContainer = root.querySelector("#weeklyChallengCardContainer");
+
+      if (weeklyChallengeCardContainer instanceof HTMLElement) {
+        const seeAllButton = this.createSeeAllButton("See previous weekly",
+          () => {
+            appContext.challengeLevelMenu.bindBookSignal(weeklyChallengesBookSignal);
+            appContext.screenManager.switchTo("challengeLevelMenu");
+          }
+        );
+
+        createWeeklyChallengeCard({
+          level: book.levels.at(-1)!,
+          book: book,
+          container: weeklyChallengeCardContainer,
+          additionallyAppended: seeAllButton,
+        });
+      }
+    });
+
+    this.weeklyChallengesBookSlot.bindAndFire(weeklyChallengesBookSignal);
+      
 
     if (getCurrentContestId() !== null) {
       const dailyContainer = cast(this.root.querySelector("#dailyIconContainer"), HTMLElement);
@@ -74,7 +98,7 @@ export class MainLevelMenuScreen {
     return button;
   }
 
-  loadBook() {
+  loadMainBook() {
     try {
       // Load main book
       const data = getMainBook();
@@ -82,25 +106,6 @@ export class MainLevelMenuScreen {
       this.levelMenu.openBook(data);
 
       this.levelMenu.displayIcons();
-      this.displayDailyIcon();
-
-      // Create weekly challenge card
-      if (this.weeklyChallengeCardContainer) {
-        const seeAllButton = this.createSeeAllButton("See previous weekly",
-          () => {
-            this.weeklyChallengesBook = weeklyChallengesBookSignal.get();
-            appContext.challengeLevelMenu.bindBookSignal(weeklyChallengesBookSignal);
-            appContext.challengeLevelMenu.openBook(this.weeklyChallengesBook);
-            appContext.screenManager.switchTo("challengeLevelMenu");
-          }
-        );
-        createWeeklyChallengeCard({
-          level: this.weeklyChallengesBook.levels.at(-1)!,
-          book: this.weeklyChallengesBook,
-          container: this.weeklyChallengeCardContainer,
-          additionallyAppended: seeAllButton,
-        });
-      }
     } catch (e) {
       console.error(e);
     }

@@ -97,7 +97,6 @@ export class AppContext {
 
   goToWeeklyArchive(): void {
     this.challengeLevelMenu.bindBookSignal(weeklyChallengesBookSignal);
-    this.challengeLevelMenu.openBook(weeklyChallengesBookSignal.get());
     this.screenManager.switchTo("challengeLevelMenu");
   }
 

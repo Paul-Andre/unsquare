@@ -1,5 +1,3 @@
-import { sign } from "crypto";
-
 type Listener<T> = (value: T) => void;
 type DiffCheck<T> = (a:T, b:T) => boolean;
 function basicStrictNotEqual(a: any, b: any) {
@@ -31,6 +29,18 @@ export class Signal<T> {
     get(): T {
         return this.value;
     }
+
+
+    static pipeline<A>(f: () => A, dependencies: Signal<any>[], diffCheck?: DiffCheck<A>): Signal<A> {
+        let ret = new Signal<A>(f(), diffCheck);
+        for (let d of dependencies) {
+            d.on(() => {
+                ret.set(f());
+            })
+        }
+        return ret;
+    }
+    
 }
 
 export function get<A,B>(a: Signal<A> | B): A|B {
@@ -40,7 +50,7 @@ export function get<A,B>(a: Signal<A> | B): A|B {
     return a;
   }
 
-// An "slot" for signals that enforces a "single producer (signal)" and a "single consumer (listener)"
+// A "slot" for signals that enforces a "single producer (signal)" and a "single consumer (listener)"
 export class SingleSignalConsumer<T> {
     signal: Signal<T> | null = null;
     listener: Listener<T>;
@@ -56,6 +66,10 @@ export class SingleSignalConsumer<T> {
         }
         this.signal = signal;
         this.signal.on(this._innerListener);
+    }
+    bindAndFire(signal: Signal<T>) {
+        this.bind(signal);
+        this.listener(signal.get());
     }
     get(): T|undefined {
         return this.signal?.get();

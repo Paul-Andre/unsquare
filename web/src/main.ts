@@ -10,6 +10,7 @@ import { testCheckout, createCheckoutSession, purchaseDailyWeeklyArchive, getPur
 import * as auth from './modules/utils/auth.ts'
 import { saveLevelToSupabase } from 'modules/core/levelUtils.ts';
 import { Level } from 'modules/core/Level.ts';
+import { weeklyChallengesBookSignal } from 'modules/core/loadBook.ts';
 
 // Global configuration
 window.config = config;
@@ -18,6 +19,8 @@ window.config = config;
 window.appContext = appContext;
 
 window.algo = algo;
+
+window.weeklyChallengesBookSignal = weeklyChallengesBookSignal;
 
 // Expose functions and modules for testing
 window.testCheckout = testCheckout;
