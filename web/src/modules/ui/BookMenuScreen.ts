@@ -28,6 +28,18 @@ export function load_editor_books() {
   }
 }
 
+export function getDailyLevelsSavingTarget(): Book {
+  // TODO: somehow get this storage better;
+  load_editor_books();
+  for (let book of editor_books) {
+    if (book.title.toLowerCase().includes("daily")) {
+      return book;
+    }
+  }
+
+
+}
+
 export class BookMenuScreen {
   books: Book[] = [];
   root: HTMLElement;

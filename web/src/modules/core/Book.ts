@@ -15,4 +15,5 @@ export type Book = {
   next?: BookNavigation;
   fullAmount?: number;
   collapsedInEditor?: boolean;
+  isDailyLevelsSavingTarget?: boolean;
 };

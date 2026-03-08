@@ -4,7 +4,7 @@ import { cast, ensureNotNull } from '../utils/helpers.ts';
 import { Game } from '../game/Game.ts';
 import { Editor } from '../game/Editor.ts';
 import { ScreenManager } from '../ui/ScreenManager.ts';
-import { BookMenuScreen } from '../ui/BookMenuScreen.ts';
+import { BookMenuScreen, getDailyLevelsSavingTarget } from '../ui/BookMenuScreen.ts';
 import { MainLevelMenuScreen } from '../ui/MainLevelMenuScreen.tsx';
 import { OpeningInstructionsScreen } from '../ui/OpeningInstructionsScreen.ts';
 import { NamePickingScreen } from '../ui/NamePickingScreen.ts';
@@ -33,6 +33,8 @@ export class AppContext {
   namePicking: NamePickingScreen;
   dailyWeeklyArchiveOfferModal: DailyWeeklyArchiveOfferModal;
   redirectingToPaymentModal: RedirectingToPaymentModal;
+
+  dailyLevelsSavingTarget: Book;
 
   constructor() {    
     // Create screenManager first (no DOM queries needed)
@@ -85,6 +87,8 @@ export class AppContext {
     this.screenManager.additionalFunctions.game = this.game;
     this.screenManager.additionalFunctions.opening_instructions = this.openingInstructions;
     this.screenManager.additionalFunctions.namePicking = this.namePicking;
+
+    this.dailyLevelsSavingTarget = getDailyLevelsSavingTarget();
   }
 
   async showAuthModal(continuations: Continuation[]): Promise<AuthResult> {
