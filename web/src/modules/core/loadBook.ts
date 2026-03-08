@@ -9,6 +9,7 @@ import { assert } from '../utils/helpers.ts';
 import { getPurchasedProducts } from 'modules/utils/stripe.ts';
 import { onAuthStateChange } from 'modules/utils/auth.ts';
 import { Signal } from 'modules/utils/Signal.ts';
+import { cachedFetchSignal } from '../utils/cachedFetchSignal.ts';
 
 const PREVIOUS_OBJECT: BookNavigation = {
       action: "offerDailyWeeklyArchive",
@@ -44,31 +45,15 @@ const archiveAccessSignal = new Signal(false);
 
 
 
-const weeklyChallengesJsonLSK = "weeklyChallengesJsonCache";
-// TODO: correctly treat this once start using Capacitor:
-const weeklyChallengesJsonUrl = window.location.origin + "/api/weekly_challenges.json";
-const weeklyChallengesJsonSignal = new Signal(localStorage.getItem(weeklyChallengesJsonLSK));
+const weeklyChallengesJsonSignal = cachedFetchSignal(
+  null, 
+   window.location.origin + "/api/weekly_challenges.json"
+);
 
-
-const dailyLevelsJsonLsk = "dailyLevelsJsonCache";
-// TODO: correctly treat this once start using Capacitor:
-const dailyLevelsJsonUrl = window.location.origin + "/api/daily_levels.json";
-const dailyLevelsJsonSignal = new Signal(localStorage.getItem(dailyLevelsJsonLsk));
-
-
-(async function () {
-  const response = await fetch(weeklyChallengesJsonUrl);
-  const text = await response.text();
-  localStorage.setItem(weeklyChallengesJsonLSK, text);
-  weeklyChallengesJsonSignal.set(text);
-})();
-
-(async function () {
-  const response = await fetch(dailyLevelsJsonUrl);
-  const text = await response.text();
-  localStorage.setItem(dailyLevelsJsonLsk, text);
-  dailyLevelsJsonSignal.set(text);
-})();
+const dailyLevelsJsonSignal = cachedFetchSignal(
+  null, 
+   window.location.origin + "/api/daily_levels.json"
+);
 
 export const weeklyChallengesBookSignal = Signal.pipeline(
   getWeeklyChallengesBook,
