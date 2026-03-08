@@ -5,7 +5,6 @@ import { Level } from './Level.ts';
 import { book_reviver, reindexLevels } from './bookUtils.ts';
 import { DAILY_UNLOCK_HOUR, DAILY_LEVELS_START_DATE } from '../utils/config.ts';
 import mainBookData from '../../data/2025_nov_11_reordered_solved_fixed_all_solutions.json';
-import dailyLevelsData from '../../data/daily_levels_01_feb_2026.json';
 import { assert } from '../utils/helpers.ts';
 import { getPurchasedProducts } from 'modules/utils/stripe.ts';
 import { onAuthStateChange } from 'modules/utils/auth.ts';
@@ -43,12 +42,19 @@ onAuthStateChange((user) => {
 
 const archiveAccessSignal = new Signal(false);
 
+
+
 const weeklyChallengesJsonLSK = "weeklyChallengesJsonCache";
-
-// TODO: correctly treat this once start using Capacitor.
+// TODO: correctly treat this once start using Capacitor:
 const weeklyChallengesJsonUrl = window.location.origin + "/api/weekly_challenges.json";
-
 const weeklyChallengesJsonSignal = new Signal(localStorage.getItem(weeklyChallengesJsonLSK));
+
+
+const dailyLevelsJsonLsk = "dailyLevelsJsonCache";
+// TODO: correctly treat this once start using Capacitor:
+const dailyLevelsJsonUrl = window.location.origin + "/api/daily_levels.json";
+const dailyLevelsJsonSignal = new Signal(localStorage.getItem(dailyLevelsJsonLsk));
+
 
 (async function () {
   const response = await fetch(weeklyChallengesJsonUrl);
@@ -57,12 +63,21 @@ const weeklyChallengesJsonSignal = new Signal(localStorage.getItem(weeklyChallen
   weeklyChallengesJsonSignal.set(text);
 })();
 
-
-export const dailyLevelsBookSignal: Signal<Book> = new Signal(getDailyLevelsBook());
+(async function () {
+  const response = await fetch(dailyLevelsJsonUrl);
+  const text = await response.text();
+  localStorage.setItem(dailyLevelsJsonLsk, text);
+  dailyLevelsJsonSignal.set(text);
+})();
 
 export const weeklyChallengesBookSignal = Signal.pipeline(
   getWeeklyChallengesBook,
   [archiveAccessSignal, weeklyChallengesJsonSignal]
+)
+
+export const dailyLevelsBookSignal: Signal<Book | null> = Signal.pipeline(
+  getDailyLevelsBook,
+  [archiveAccessSignal, dailyLevelsJsonSignal]
 )
 
 archiveAccessSignal.on(async _ => {
@@ -111,9 +126,11 @@ function getDailyLevelsFirstIndex(lastIndex:number): number {
  * Get the daily levels book
  * Returns last 7 levels including today's, or all levels if user has archive access
  */
-function getDailyLevelsBook(): Book {
+function getDailyLevelsBook(): Book | null {
+  const dailyLevelsJson = dailyLevelsJsonSignal.get();
+  if (dailyLevelsJson === null) return null;
   // Load all daily levels
-  const allLevels = (JSON.parse(JSON.stringify(dailyLevelsData), book_reviver) as Book).levels;
+  const allLevels = (JSON.parse(dailyLevelsJson, book_reviver) as Book).levels;
   const numLevels = allLevels.length;
   assert( numLevels > 0);
 
