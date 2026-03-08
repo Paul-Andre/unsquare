@@ -102,7 +102,6 @@ export class AppContext {
 
   goToDailyArchive(): void {
     this.gridLevelMenu.bindBookSignal(dailyLevelsBookSignal);
-    this.gridLevelMenu.openBook(dailyLevelsBookSignal.get());
     this.screenManager.switchTo("gridLevelMenu");
   }
 

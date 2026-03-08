@@ -17,7 +17,7 @@ export class GridLevelMenuScreen {
   levelMenu: LevelIconGrid;
   unlockSectionContainer: HTMLElement;
   book: Book | null = null;
-  bookSignalConsumer: SingleSignalConsumer<Book>;
+  bookSignalConsumer: SingleSignalConsumer<Book | null>;
 
   constructor(root: HTMLElement) {
     this.root = root;
@@ -34,13 +34,15 @@ export class GridLevelMenuScreen {
 
     this.unlockSectionContainer = cast(root.querySelector(".footer"), HTMLElement);
     this.bookSignalConsumer = new SingleSignalConsumer((book) => {
-      console.log("openeind from consumer");
-      this.openBook(book);
+      console.log("opened from consumer");
+      if (book !== null) {
+        this.openBook(book);
+      }
     });
   }
 
-  bindBookSignal(signal: Signal<Book>){
-    this.bookSignalConsumer.bind(signal);
+  bindBookSignal(signal: Signal<Book | null>){
+    this.bookSignalConsumer.bindAndFire(signal);
   }
 
   openBook(book: Book): void {

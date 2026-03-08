@@ -17,15 +17,12 @@ import { SingleSignalConsumer } from 'modules/utils/Signal.ts';
 
 export class MainLevelMenuScreen {
   root: HTMLElement;
-  dailyLevelsBook: Book;
+  dailyLevelsBookSlot: SingleSignalConsumer<Book | null>;
   weeklyChallengesBookSlot: SingleSignalConsumer<Book | null>;
   levelMenu: LevelIconGrid;
   
   constructor(root: HTMLElement) {
     this.root = root;
-    
-    // Load daily levels
-    this.dailyLevelsBook = dailyLevelsBookSignal.get();
 
     const iconContainer = cast(root.querySelector("#iconContainer"), HTMLElement);
     this.levelMenu = new LevelIconGrid(iconContainer, false, {
@@ -40,7 +37,15 @@ export class MainLevelMenuScreen {
 
     this.loadMainBook();
 
-    this.displayDailyIcon();
+    this.dailyLevelsBookSlot = new SingleSignalConsumer((book: Book | null) => {
+      if (book === null) {
+        return;
+      }
+      this.displayDailyIcon(book);
+    });
+
+    this.dailyLevelsBookSlot.bindAndFire(dailyLevelsBookSignal);
+
     this.weeklyChallengesBookSlot = new SingleSignalConsumer((book:Book|null) => {
       if (book === null) {
         return;
@@ -80,7 +85,6 @@ export class MainLevelMenuScreen {
 
   onShow() {
     this.levelMenu.onShow();
-    this.displayDailyIcon();
   }
 
   /**
@@ -91,7 +95,7 @@ export class MainLevelMenuScreen {
       <button
         // href="#"
         style={{ alignSelf: "flex-end", marginLeft: "20px" }}
-        onClick={onClick} >
+        onclick={onClick} >
         {text}
       </button>
     ) as any as HTMLElement;
@@ -111,7 +115,7 @@ export class MainLevelMenuScreen {
     }
   }
 
-  displayDailyIcon() {
+  displayDailyIcon(book: Book) {
     const iconSlot = this.root.querySelector("#dailyIconContainer .challenge_icon_wrapper");
     const heading = this.root.querySelector("#dailyLevelHeading");
     
@@ -120,11 +124,11 @@ export class MainLevelMenuScreen {
     }
 
     // Get today's daily level (last level in the dailies book)
-    if (this.dailyLevelsBook.levels.length === 0) {
+    if (book.levels.length === 0) {
       return;
     }
 
-    const dailyLevel = this.dailyLevelsBook.levels[this.dailyLevelsBook.levels.length - 1];
+    const dailyLevel = book.levels[book.levels.length - 1];
 
     heading.textContent = dailyLevel.longName;
 
@@ -135,7 +139,7 @@ export class MainLevelMenuScreen {
       level: dailyLevel,
       state,
       onClick: () => {
-        appContext.playLevel(dailyLevel, this.dailyLevelsBook);
+        appContext.playLevel(dailyLevel, book);
       },
     });
     iconElement.style.flexShrink = "0";
@@ -143,9 +147,7 @@ export class MainLevelMenuScreen {
     iconSlot.appendChild(iconElement);
 
     const seeAllButton = this.createSeeAllButton("See previous daily", () => {
-      this.dailyLevelsBook = dailyLevelsBookSignal.get();
       appContext.gridLevelMenu.bindBookSignal(dailyLevelsBookSignal);
-      appContext.gridLevelMenu.openBook(dailyLevelsBookSignal.get());
       appContext.screenManager.switchTo("gridLevelMenu");
     });
     iconSlot.appendChild(seeAllButton);
