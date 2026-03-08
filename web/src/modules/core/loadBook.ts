@@ -65,11 +65,6 @@ export const dailyLevelsBookSignal: Signal<Book | null> = Signal.pipeline(
   [archiveAccessSignal, dailyLevelsJsonSignal]
 )
 
-archiveAccessSignal.on(async _ => {
-  console.log("setting books", archiveAccessSignal.get());
-  dailyLevelsBookSignal.set(getDailyLevelsBook());
-});
-
 
 
 /**
