@@ -288,9 +288,10 @@ return;
     const newLevel = this.level.clone();
     newLevel.id = generate_id("level");
     newLevel.index = this.book.levels.length;
+    newLevel.book = this.book;
     this.book.levels.push(newLevel);
     save_editor_book(this.book);
-    super.openLevel(newLevel, this.book);
+    this.openLevel(newLevel, this.book);
   }
 
   setText(text: string): void {
