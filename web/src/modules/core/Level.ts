@@ -222,6 +222,7 @@ export class Level {
     return json;
   }
 
+  // Clones level, but keeps the same id.
   clone(): Level {
     const level = new Level(1);
     level.copyFrom(this);

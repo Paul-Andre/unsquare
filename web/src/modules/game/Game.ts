@@ -16,6 +16,7 @@ import { Level } from '../core/Level.ts';
 import { Book, BookNavigation } from '../core/Book.ts';
 import { Move } from './GameBase.ts';
 import { getCurrentContestId } from 'modules/core/contests.ts';
+import { saveLevelCopyAsDaily } from 'modules/core/editorBooks.ts';
 
 const firstDemoDrag = {
   start: { x: 0.33, y: 0.33 },
@@ -62,6 +63,20 @@ export class Game extends GameBase {
 
     // Hint system properties
     this.hintState = null; // null when no hint, or { hintSquare: {x, y, size} | null, suggestRestart: boolean }
+
+    const saveDailyButton = this.div.querySelector("#saveDailyLocalButton");
+    const isLocalhost =
+      window.location.hostname === "localhost";
+    if (saveDailyButton instanceof HTMLButtonElement) {
+      saveDailyButton.style.display = isLocalhost ? "" : "none";
+      if (isLocalhost) {
+        saveDailyButton.onclick = () => {
+          assert(this.level !== null);
+          saveLevelCopyAsDaily(this.level);
+          console.log("Saved level copy as daily", this.level.id);
+        };
+      }
+    }
   }
 
   // this specifies what happens when you activate squares

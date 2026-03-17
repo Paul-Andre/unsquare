@@ -53,3 +53,9 @@ export function save_editor_book(book: Book): void {
   localStorage.setItem(key, JSON.stringify(book, book_replacer));
 }
 
+export function pushLevelToBook(book: Book, level: Level): void {
+  level.index = book.levels.length;
+  level.book = book;
+  book.levels.push(level);
+  save_editor_book(book);
+}

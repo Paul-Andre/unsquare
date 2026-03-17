@@ -1,44 +1,11 @@
 "use strict";
 
-import { cast, ensureNotNull, generate_id } from '../utils/helpers.ts';
+import { cast } from '../utils/helpers.ts';
 import { htmlStringToElement } from '../utils/helpers.ts';
 import { createLevelIconElement } from './icon.ts';
 import { appContext } from '../core/AppContext.ts';
-import { book_reviver, book_replacer, create_empty_book, save_editor_book } from '../core/bookUtils.ts';
-import book1OldData from '../../data/book1Old.json';
-import basicBlackWhiteData from '../../data/basicBlackWhite.json';
-import niceLevelsData from '../../data/niceLevels.json';
 import { Book } from '../core/Book.ts';
-import { Level } from '../core/Level.ts';
-
-//let static_books = load_static_books();
-
-let editor_books: Book[] = [];
-
-export function load_editor_books() {
-  editor_books = [];
-  for (let i = 0; i < localStorage.length; i++) {
-    let key = localStorage.key(i);
-    if (key && key.startsWith("editor_book")) {
-      let value = localStorage.getItem(key);
-      let book = JSON.parse(value!, book_reviver);
-      book.source = key;
-      editor_books.push(book);
-    }
-  }
-}
-
-export function getDailyLevelsSavingTarget(): Book {
-  // TODO: somehow get this storage better;
-  load_editor_books();
-  for (let book of editor_books) {
-    if (book.title.toLowerCase().includes("daily")) {
-      return book;
-    }
-  }
-
-
-}
+import { editorBookRepo, selectBookIconLevel } from '../core/editorBooks';
 
 export class BookMenuScreen {
   books: Book[] = [];
@@ -50,8 +17,7 @@ export class BookMenuScreen {
   }
 
   onShow() {
-    load_editor_books();
-    this.books = editor_books;
+    this.books = editorBookRepo.list();
 
     // this.books = static_books;
     this.showBooks();
@@ -70,9 +36,7 @@ export class BookMenuScreen {
   }
 
   newBook() {
-
-    let book = create_empty_book();
-    save_editor_book(book);
+    const book = editorBookRepo.createNew();
 
     this.books.push(book);
 
@@ -81,18 +45,15 @@ export class BookMenuScreen {
 
   saveAll() {
     for (let i = 0; i < this.books.length; i++) {
-      save_editor_book(this.books[i]);
+      editorBookRepo.save(this.books[i]);
     }
   }
 
   addFromJson() {
     let saveStr = prompt("Paste JSON");
     if (saveStr) {
-      let book = JSON.parse(saveStr, book_reviver);
-      book.id = generate_id("book");
-
+      const book = editorBookRepo.importSingleBookFromJson(saveStr);
       console.log(book);
-      save_editor_book(book);
 
       this.books.push(book);
 
@@ -103,7 +64,7 @@ export class BookMenuScreen {
   copyAllBooksToClipboard() {
     let confirmation = window.confirm("Copy all books to clipboard?");
     if (!confirmation) return;
-    const booksJson = JSON.stringify(this.books, book_replacer);
+    const booksJson = editorBookRepo.serializeAll(this.books);
     navigator.clipboard.writeText(booksJson).then(() => {
       alert("All books copied to clipboard");
     }).catch((err) => {
@@ -116,25 +77,8 @@ export class BookMenuScreen {
     const booksJson = window.prompt("Paste json of all books. This will overwrite and delete all existing books.)");
     if (booksJson) {
       try {
-        const books = JSON.parse(booksJson, book_reviver);
-        if (!Array.isArray(books)) {
-          alert("Invalid JSON: expected an array of books");
-          return;
-        }
-        
-        // Clear existing books from localStorage
-        for (let i = 0; i < this.books.length; i++) {
-          let source = this.books[i].source;
-          if (source) {
-            localStorage.removeItem(source);
-          }
-        }
-        
-        // Save new books
+        const books = editorBookRepo.overwriteAllFromJson(booksJson);
         this.books = books;
-        for (let i = 0; i < this.books.length; i++) {
-          save_editor_book(this.books[i]);
-        }
         
         this.showBooks();
         alert(`Successfully loaded ${books.length} book${books.length !== 1 ? 's' : ''}`);
@@ -158,7 +102,7 @@ export class BookMenuScreen {
       bn.innerHTML = `${book.id} (${book.levels.length} level${book.levels.length !== 1 ? 's' : ''})`;
     }
 
-    let icon_level = select_book_icon_level(book);
+    let icon_level = selectBookIconLevel(book);
     if (icon_level) {
       let icon = createLevelIconElement(icon_level);
 
@@ -176,7 +120,7 @@ export class BookMenuScreen {
     hideBtn.onclick = (e) => {
       e.stopPropagation();
       book.collapsedInEditor = !book.collapsedInEditor;
-      save_editor_book(book);
+      editorBookRepo.save(book);
       node.classList.toggle('collapsed');
     };
 
@@ -194,10 +138,7 @@ export class BookMenuScreen {
         );
       }
       if (proceed) {
-        // Remove from localStorage
-        if (book.source) {
-          localStorage.removeItem(book.source);
-        }
+        editorBookRepo.delete(book);
         // Remove from books array
         const index = this.books.indexOf(book);
         if (index > -1) {
@@ -217,7 +158,7 @@ export class BookMenuScreen {
   }
 }
 
-let bookTemplate =
+const bookTemplate =
   "<div class='bookSummary'> \
   <button class='bookHideBtn'>−</button>\
   <button class='bookDeleteBtn'>×</button>\
@@ -235,16 +176,3 @@ let bookTemplate =
 </div>\
   </div>\
 </div>";
-
-export function select_book_icon_level(book: Book): Level | null {
-  for (let i = 0; i < book.levels.length; i++) {
-    let level = book.levels[i];
-    if (level.isIcon) {
-      return level;
-    }
-  }
-  if (book.levels.length >= 1) {
-    return book.levels[0];
-  }
-  return null;
-}
