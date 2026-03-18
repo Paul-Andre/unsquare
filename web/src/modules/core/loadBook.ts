@@ -3,7 +3,7 @@
 import { Book, BookNavigation } from './Book.ts';
 import { Level } from './Level.ts';
 import { book_reviver, reindexLevels } from './bookUtils.ts';
-import { DAILY_UNLOCK_HOUR, DAILY_LEVELS_START_DATE } from '../utils/config.ts';
+import { DAILY_UNLOCK_HOUR } from '../utils/config.ts';
 import mainBookData from '../../data/2025_nov_11_reordered_solved_fixed_all_solutions.json';
 import { assert } from '../utils/helpers.ts';
 import { getPurchasedProducts } from 'modules/utils/stripe.ts';
@@ -47,12 +47,12 @@ const archiveAccessSignal = new Signal(false);
 
 const weeklyChallengesJsonSignal = cachedFetchSignal(
   null, 
-   window.location.origin + "/api/weekly_challenges.json"
+   window.location.origin + "/api/weekly_challenges_book.json"
 );
 
 const dailyLevelsJsonSignal = cachedFetchSignal(
   null, 
-   window.location.origin + "/api/daily_levels.json"
+   window.location.origin + "/api/daily_levels_book.json"
 );
 
 export const weeklyChallengesBookSignal = Signal.pipeline(
@@ -71,18 +71,14 @@ export const dailyLevelsBookSignal: Signal<Book | null> = Signal.pipeline(
  * Calculate which daily level index to show based on current date and unlock time
  * Returns the index of the level to display (today's if unlocked, yesterday's if locked)
  */
-function getDailyLevelIndex(totalLevels: number): number {
+function getDailyLevelIndex(totalLevels: number, startDate: Date): number {
   assert(totalLevels > 0);
   const now = new Date();
   const currentHour = now.getHours();
   
   // Set both dates to midnight for accurate day calculation
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const startDate = new Date(
-    DAILY_LEVELS_START_DATE.getFullYear(),
-    DAILY_LEVELS_START_DATE.getMonth(),
-    DAILY_LEVELS_START_DATE.getDate()
-  );
+ 
   const daysSinceStart = Math.floor((today.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
   
   // If current time is before unlock hour, show yesterday's level
@@ -110,11 +106,12 @@ function getDailyLevelsBook(): Book | null {
   const dailyLevelsJson = dailyLevelsJsonSignal.get();
   if (dailyLevelsJson === null) return null;
   // Load all daily levels
-  const allLevels = (JSON.parse(dailyLevelsJson, book_reviver) as Book).levels;
+  const book = (JSON.parse(dailyLevelsJson, book_reviver) as Book);
+  const allLevels = book.levels;
   const numLevels = allLevels.length;
   assert( numLevels > 0);
-
-  let currentIndex = getDailyLevelIndex(numLevels);
+  assert(book.startDate !== undefined);
+  let currentIndex = getDailyLevelIndex(numLevels, book.startDate);
   let firstIndex = getDailyLevelsFirstIndex(currentIndex);
   // Extract the levels and set their names
   const selectedLevels: Level[] = [];

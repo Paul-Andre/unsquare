@@ -1,8 +1,8 @@
 "use strict";
 
+import { start } from 'repl';
 import { vector_sum, ericTilesNumber, obviousScore } from '../core/algo.ts';
 import { Level } from '../core/Level.ts';
-import { DAILY_LEVELS_START_DATE } from '../utils/config.ts';
 
 export type IconDisplayType = "par" | "eric" | "obv" | "eric/par" | "obv/par" | "daily" | "none";
 
@@ -37,7 +37,11 @@ export function calculateIconDisplayValue(level: Level, displayType: IconDisplay
     if (nonHiddenIndex === null) {
       return null;
     }
-    const date = new Date(DAILY_LEVELS_START_DATE.getTime() + nonHiddenIndex * 24 * 60 * 60 * 1000);
+    const startDate = level.book?.startDate?? null;
+    if (startDate === null) {
+      return null;
+    }
+    const date = new Date(startDate.getTime() + nonHiddenIndex * 24 * 60 * 60 * 1000);
     const monthAbbr = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
     const month = monthAbbr[date.getMonth()];
     const day = String(date.getDate()).padStart(2, '0');

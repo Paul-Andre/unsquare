@@ -14,6 +14,7 @@ export type Book = {
   previous?: BookNavigation;
   next?: BookNavigation;
   fullAmount?: number;
+  startDate?: Date;
+  startIndex?: number;
   collapsedInEditor?: boolean;
-  isDailyLevelsSavingTarget?: boolean;
 };

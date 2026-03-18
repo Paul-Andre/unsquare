@@ -17,6 +17,8 @@ import { Move } from './GameBase.ts';
 import { getCurrentContestId } from 'modules/core/contests.ts';
 import { saveLevelCopyAsDaily } from 'modules/core/editorBooks.ts';
 
+
+// Used for the "demonstation" animation in the first level of how you need to drag the s quare.
 const firstDemoDrag = {
   start: { x: 0.33, y: 0.33 },
   end: { x: 0.67, y: 0.67 },
@@ -71,7 +73,10 @@ export class Game extends GameBase {
       if (isLocalhost) {
         saveDailyButton.onclick = () => {
           assert(this.level !== null);
-          saveLevelCopyAsDaily(this.level);
+          assert(this.tiles !== null);
+          const levelCopy = this.level.clone();
+          levelCopy.tiles = this.tiles.clone();
+          saveLevelCopyAsDaily(levelCopy);
           console.log("Saved level copy as daily", this.level.id);
         };
       }

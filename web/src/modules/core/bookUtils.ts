@@ -25,7 +25,9 @@ export function book_reviver(key: string, value: any) {
     }
     if (value.levels) {
       reindexLevels(value.levels);
-      return value;
+    }
+    if (value.startDate) {
+      value.startDate = new Date(value.startDate);
     }
   }
   return value;
