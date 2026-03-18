@@ -4,13 +4,13 @@ import { GameBase, Move } from './GameBase.ts';
 import { TileAnimationState } from '../core/TileAnimationState.ts';
 import { Grid } from '../core/Grid';
 import { compute_operations_for_level, vector_sum, level_check_solution, get_level_compact_solution, vector_equal, vector_simplify_arithmetic, level_get_arithmetic, ericTilesNumber, obviousScore, ericBordersNumber, ericUnionNumber } from '../core/algo';
-import { save_editor_book } from '../core/bookUtils.ts';
 import { appContext } from '../core/AppContext.ts';
 import { Level, compute_gaussian_solution } from '../core/Level.ts';
 import { assert, cast, ensureNotNull, generate_id } from '../utils/helpers.ts';
 import { Book } from 'modules/core/Book.ts';
 import { createLevelIconDataUrl } from '../ui/icon.ts';
 import { ICON_SIZE } from '../utils/config.ts';
+import { save_editor_book } from 'modules/core/editorBooks.ts';
 
 
 export class Editor extends GameBase {

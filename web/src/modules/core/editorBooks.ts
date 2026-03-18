@@ -6,8 +6,13 @@ import {
   book_reviver,
   create_empty_book,
   pushLevelToBook,
-  save_editor_book,
 } from './bookUtils.ts';
+
+export function save_editor_book(book: Book): void {
+  let key = "editor_" + book.id;
+  book.source = key;
+  localStorage.setItem(key, JSON.stringify(book, book_replacer));
+}
 
 /**
  * Repository for editor books stored in localStorage.
@@ -17,19 +22,21 @@ export class EditorBookRepo {
   // The reason this says "editor_book" is because the books are stored in localStorage with the key "editor_<id>", and the id has "book_" as a prefix.
   private readonly listKeyPrefix = 'editor_book';
 
+  books: Book[] = [];
+
   list(): Book[] {
-    const books: Book[] = [];
     for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i);
       if (key && key.startsWith(this.listKeyPrefix)) {
         const value = localStorage.getItem(key);
         if (value === null) continue;
+        if (this.books.find(b => b.id === key)) continue;
         const book = JSON.parse(value, book_reviver) as Book;
         book.source = key;
-        books.push(book);
+        this.books.push(book);
       }
     }
-    return books;
+    return this.books;
   }
 
   save(book: Book): void {

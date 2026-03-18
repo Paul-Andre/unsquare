@@ -3,7 +3,6 @@
 import { GameBase } from './GameBase.ts';
 import { calculateStates, LEVEL_STATES } from '../ui/levelStateUtils.ts';
 import { obviousScore, vector_sum, vector_simplify_arithmetic, level_get_arithmetic, vector_sub, operation_index_to_move, level_get_geometry, ericTilesNumber, vector_equal, ericBordersNumber, ericUnionNumber, ericUnionWeightedNumber, boundingBoxAreaScore, fractionBlackScore, involvedScore } from '../core/algo';
-import { save_editor_book } from '../core/bookUtils.ts';
 import { trackLevelEnd } from '../utils/analytics.ts';
 import { getBestNumMoves, setBestNumMoves, getCachedChallengeStatistics, saveChallengeStatistics } from '../core/levelUtils.ts';
 import * as config from '../utils/config.ts';
