@@ -1,15 +1,8 @@
 #/usr/bin/env python3
 """
-Solver script for Unflip levels.
-
-This script:
-1. Reads a JSON file containing levels
-2. For each BW (Black/White) level:
-   - Converts the tiles to binary format
-   - Runs toZnDual.cpp to generate a MiniZinc data file
-   - Solves using MiniZinc
-   - Parses the solution and updates the JSON
-3. Writes the updated JSON back to a file
+Solver script for Unflip levels, given a book of levels.
+Uses the "DFS" (it's not just DFS, it has a bit more intelligence to it) algorithm,
+that gives the exhaustive list of all the best solutions.
 """
 
 import argparse
