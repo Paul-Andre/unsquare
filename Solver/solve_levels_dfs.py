@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#/usr/bin/env python3
 """
 Solver script for Unflip levels.
 
@@ -23,7 +23,6 @@ from dataclasses import dataclass
 from pathlib import Path
 
 # Constants
-MINIZINC_TIMEOUT = 300
 DFS_TIMEOUT = 300
 CPP_SOURCE = 'dfs.cpp'
 CPP_EXECUTABLE = 'dfs'
@@ -131,12 +130,18 @@ def validate_level(level, force):
         return False, "Not a square tile shape"
     if not level.get('tiles'):
         return False, "No tiles"
-    # if not force and level.get('solutionType') == 'minizinc':
-    #     return False, "Already solved (minizinc)"
-    if not force and level.get('hidden'):
-        return False, "Hidden level"
+    if not force and level.get('solutionType') == 'exhaustive':
+        return False, "Already solved (exhaustive)"
     return True, None
 
+def level_get_solutions(level):
+    solutions = level.get("solutions");
+    if solutions:
+        return solutions;
+    single_solution = level.get("solutionVector");
+    if single_solution:
+        return [single_solution]
+    return []
 
 def solve_level(level, solver_dir, force=False):
     """Solve a single level"""
@@ -153,16 +158,20 @@ def solve_level(level, solver_dir, force=False):
         return SolveResult(None, reason, False)
     
     # Verify existing solution if present
-    existing_solution = level.get('solutionVector')
-    existing_ops = sum(existing_solution) if existing_solution else None
-    if existing_solution:
-        print(f"    Verifying existing solution ({existing_ops} operations)...", end=' ', flush=True)
+    # Verify existing solution if present
+    existing_solutions = level_get_solutions(level);
+    print(f"There are {len(existing_solutions)} existing solutions.");
+    existing_ops = sum(existing_solutions[0]) if existing_solutions else None
+    for i, solution in enumerate(existing_solutions):
+        print(f"    Verifying existing solution {i+1} ({sum(solution)} operations)...", end=' ', flush=True)
         try:
-            verify_solution(tiles, existing_solution)
+            verify_solution(tiles, solution)
             print("✓ PASSED")
         except AssertionError as e:
             print("✗ FAILED")
-            raise AssertionError(f"Existing solution in level {level_id} failed verification: {e}") from e
+            print(f"WARNING: Existing solution in level {level_id} failed verification: {e}")
+            traceback.print_exc();
+            existing_ops = None
     
     # Convert tiles to binary and create input file
     print("    Converting tiles to binary format...")
@@ -289,8 +298,12 @@ def main():
     parser.add_argument('input', help='Input JSON file containing levels')
     parser.add_argument('output', nargs='?', help='Output JSON file (default: input with _solved suffix)')
     parser.add_argument('--force', action='store_true', help='Force re-solving of already solved levels')
+    parser.add_argument('--timeout', type=int, default=DFS_TIMEOUT, help='How long should the dfs run for each level')
     
     args = parser.parse_args()
+
+    global DFS_TIMEOUT
+    DFS_TIMEOUT = args.timeout
     
     input_path = Path(args.input)
     output_path = Path(args.output) if args.output else input_path.with_name(input_path.stem + '_exhaustive.json')

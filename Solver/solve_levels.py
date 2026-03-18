@@ -21,6 +21,7 @@ import tempfile
 import time
 from dataclasses import dataclass
 from pathlib import Path
+import traceback
 
 # Constants
 MINIZINC_TIMEOUT = 300
@@ -144,14 +145,15 @@ def verify_solution(tiles, solution_vector):
 
 def validate_level(level, force):
     """Check if level can be solved. Returns (can_solve, reason) tuple."""
+    # TODO: most of these should probably raise, as they are a logic error...
     if level.get('colorScheme') != 'BW':
         return False, "Not a BW level"
     if level.get('tileShape') != 'square':
         return False, "Not a square tile shape"
     if not level.get('tiles'):
         return False, "No tiles"
-    if not force and level.get('solutionType') == 'minizinc':
-        return False, "Already solved (minizinc)"
+    if not force and level.get('solutionType') in ('minizinc', "exhaustive", "optimal"):
+        return False, f"Already solved ({level.get('solutionType')})"
     return True, None
 
 
@@ -181,7 +183,9 @@ def solve_level(level, solver_dir, force=False):
             print("✓ PASSED")
         except AssertionError as e:
             print("✗ FAILED")
-            raise AssertionError(f"Existing solution in level {level_id} failed verification: {e}") from e
+            print(f"WARNING: Existing solution in level {level_id} failed verification: {e}")
+            traceback.print_exc();
+            existing_ops = None
     
     # Convert tiles to binary and create input file
     print("    Converting tiles to binary format...")
@@ -351,6 +355,7 @@ def main():
         print(f"Error: Input file not found: {input_path}", file=sys.stderr)
         sys.exit(1)
     
+    print("force", args.force);
     solve_json_file(str(input_path), str(output_path), str(solver_dir), args.force)
 
 
