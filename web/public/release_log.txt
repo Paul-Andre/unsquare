@@ -396,3 +396,7 @@ Load weekly and daily levels via json fetch.
 15 Mar 2026
 0.12.34
 Weekly Challenge #17
+
+18 Mar 2026
+0.13.0
+api versioning v1 + daily levels are back
