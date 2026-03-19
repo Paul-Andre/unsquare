@@ -40,6 +40,7 @@ if [ -n "$1" ]; then
         echo "Error: Invalid version format. Use X.Y.Z (e.g., 0.7.5)"
         exit 1
     fi
+    echo "New version: $NEW_VERSION"
 else
     # Auto-increment patch version
     IFS='.' read -r major minor patch <<< "$CURRENT_VERSION"
