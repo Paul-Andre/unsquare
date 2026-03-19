@@ -41,7 +41,7 @@ export class MainLevelMenuScreen {
       if (book === null) {
         return;
       }
-      this.displayDailyIcon(book);
+      this.displayDailySection(book);
     });
 
     this.dailyLevelsBookSlot.bindAndFire(dailyLevelsBookSignal);
@@ -50,23 +50,8 @@ export class MainLevelMenuScreen {
       if (book === null) {
         return;
       }
-      let weeklyChallengeCardContainer = root.querySelector("#weeklyChallengCardContainer");
-
-      if (weeklyChallengeCardContainer instanceof HTMLElement) {
-        const seeAllButton = this.createSeeAllButton("See previous weekly",
-          () => {
-            appContext.challengeLevelMenu.bindBookSignal(weeklyChallengesBookSignal);
-            appContext.screenManager.switchTo("challengeLevelMenu");
-          }
-        );
-
-        createWeeklyChallengeCard({
-          level: book.levels.at(-1)!,
-          book: book,
-          container: weeklyChallengeCardContainer,
-          additionallyAppended: seeAllButton,
-        });
-      }
+      
+      this.displayWeeklySection(book);
     });
 
     this.weeklyChallengesBookSlot.bindAndFire(weeklyChallengesBookSignal);
@@ -85,6 +70,14 @@ export class MainLevelMenuScreen {
 
   onShow() {
     this.levelMenu.onShow();
+    let dailyBook = this.dailyLevelsBookSlot.get()
+    if (dailyBook) {
+      this.displayDailySection(dailyBook);
+    }
+    let weeklyBook = this.weeklyChallengesBookSlot.get();
+    if (weeklyBook) {
+      this.displayWeeklySection(weeklyBook);
+    }
   }
 
   /**
@@ -115,7 +108,8 @@ export class MainLevelMenuScreen {
     }
   }
 
-  displayDailyIcon(book: Book) {
+  // book is the daily levels book.
+  displayDailySection(book: Book) {
     const iconSlot = this.root.querySelector("#dailyIconContainer .challenge_icon_wrapper");
     const heading = this.root.querySelector("#dailyLevelHeading");
     
@@ -151,5 +145,25 @@ export class MainLevelMenuScreen {
       appContext.screenManager.switchTo("gridLevelMenu");
     });
     iconSlot.appendChild(seeAllButton);
+  }
+
+  displayWeeklySection(book: Book) {
+    let weeklyChallengeCardContainer = this.root.querySelector("#weeklyChallengCardContainer");
+
+      if (weeklyChallengeCardContainer instanceof HTMLElement) {
+        const seeAllButton = this.createSeeAllButton("See previous weekly",
+          () => {
+            appContext.challengeLevelMenu.bindBookSignal(weeklyChallengesBookSignal);
+            appContext.screenManager.switchTo("challengeLevelMenu");
+          }
+        );
+
+        createWeeklyChallengeCard({
+          level: book.levels.at(-1)!,
+          book: book,
+          container: weeklyChallengeCardContainer,
+          additionallyAppended: seeAllButton,
+        });
+      }
   }
 }
