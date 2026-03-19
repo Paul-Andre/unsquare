@@ -15,6 +15,6 @@ export type Book = {
   next?: BookNavigation;
   fullAmount?: number;
   startDate?: Date;
-  startIndex?: number;
+  seqOffset?: number;
   collapsedInEditor?: boolean;
 };

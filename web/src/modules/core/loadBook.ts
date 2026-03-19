@@ -47,12 +47,12 @@ const archiveAccessSignal = new Signal(false);
 
 const weeklyChallengesJsonSignal = cachedFetchSignal(
   null, 
-   window.location.origin + "/api/weekly_challenges_book.json"
+  window.location.origin + "/api/v1/weekly_challenges_book.json"
 );
 
 const dailyLevelsJsonSignal = cachedFetchSignal(
   null, 
-   window.location.origin + "/api/daily_levels_book.json"
+  window.location.origin + "/api/v1/daily_levels_book.json"
 );
 
 export const weeklyChallengesBookSignal = Signal.pipeline(
@@ -100,7 +100,7 @@ function getDailyLevelsFirstIndex(lastIndex:number): number {
 
 /**
  * Get the daily levels book
- * Returns last 7 levels including today's, or all levels if user has archive access
+ * Returns last few levels, or all levels if user has archive access
  */
 function getDailyLevelsBook(): Book | null {
   const dailyLevelsJson = dailyLevelsJsonSignal.get();
@@ -111,14 +111,15 @@ function getDailyLevelsBook(): Book | null {
   const numLevels = allLevels.length;
   assert( numLevels > 0);
   assert(book.startDate !== undefined);
+  const offset = book.seqOffset ?? 0;
   let currentIndex = getDailyLevelIndex(numLevels, book.startDate);
   let firstIndex = getDailyLevelsFirstIndex(currentIndex);
   // Extract the levels and set their names
   const selectedLevels: Level[] = [];
   for (let i = firstIndex; i <= currentIndex; i++) {
     const level = allLevels[i].clone();
-    level.shortName = `Daily #${i + 1}`;
-    level.longName = `Daily Level #${i + 1}`;
+    level.shortName = `Daily #${i + 1 + offset}`;
+    level.longName = `Daily Level #${i + 1 + offset}`;
     selectedLevels.push(level);
   }
 
@@ -130,7 +131,7 @@ function getDailyLevelsBook(): Book | null {
     source: "daily",
     levels: selectedLevels,
     ...(firstIndex==0)?{}:{previous: PREVIOUS_OBJECT},
-    fullAmount: currentIndex + 1,
+    fullAmount: currentIndex + offset + 1,
   };
 }
 
