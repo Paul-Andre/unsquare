@@ -82,6 +82,7 @@ export class ChallengeLevelMenuScreen {
       createUnlockAllSection({
         book: this.book,
         container: this.unlockSectionContainer,
+        showText: true, 
       });
     }
   }

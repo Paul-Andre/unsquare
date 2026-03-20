@@ -152,13 +152,15 @@ function getWeeklyChallengesBook(): Book|null {
   const lastTwoLevels = allLevels.slice(-NUM_WEEKLY_CHALLENGES_PREVIEW);
   reindexLevels(lastTwoLevels);
 
+  const fullAmount = allLevels.length + (weeklyBook.seqOffset ?? 0);
+
   return {
     id: "weekly",
     title: "Unflip Weekly Challenges",
     source: "challenge",
     levels: lastTwoLevels,
     previous: PREVIOUS_OBJECT,
-    fullAmount: allLevels.length,
+    fullAmount: fullAmount,
   };
 }
 
