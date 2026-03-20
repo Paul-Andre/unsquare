@@ -400,3 +400,7 @@ Weekly Challenge #17
 18 Mar 2026
 0.13.0
 api versioning v1 + daily levels are back
+
+20 Mar 2026
+0.13.1
+update daily and weekly (make gold) when return to level menu
