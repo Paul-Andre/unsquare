@@ -101,6 +101,9 @@ return;
     this.updatePreviewIcon();
   }
 
+  /**
+   * Copy the tiles as they are in the editor object into the open level object. 
+   */
   syncTilesToLevel(): void {
     assert(this.tiles !== null);
     assert(this.level !== null);
