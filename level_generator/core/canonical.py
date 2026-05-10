@@ -1,21 +1,21 @@
 """Canonical forms for symmetry-aware deduplication.
 
-The square has 8 symmetries (the dihedral group D4): the identity, three
-rotations (90/180/270), and four reflections (horizontal, vertical, the
-two diagonals). For a non-square (w != h) grid only 4 symmetries preserve
-shape (identity, 180 rotation, horizontal flip, vertical flip).
-
-Two levels are *visually equivalent* if some symmetry maps one tile pattern
-to the other. To dedupe, we map each level to a canonical key that is
-constant across visual equivalence.
+Every grid level has up to **8 visual variants** under the dihedral
+group D4: the identity, three rotations (90/180/270) and four reflections
+(horizontal, vertical, both diagonals). For a square grid (w == h) all
+eight live in the same shape; for a non-square grid (w != h) the four
+non-rotational variants live in the transposed shape (h, w). We always
+generate all eight so that, for instance, a 4x5 candidate is recognised
+as the same level as a 5x4 corpus entry.
 
 We additionally consider the *colour-complement* (swap black and white).
 Players can perceive ``A`` and ``not A`` as essentially the same puzzle
 and the existing daily set has avoided most such duplicates. This module
 emits two flavours of key:
 
-  * ``canonical_shape_key``  : invariant under D4 / D2 only.
-  * ``canonical_full_key``   : invariant under D4 / D2 *and* complement.
+  * ``canonical_shape_key``  : invariant under the 8 symmetries.
+  * ``canonical_full_key``   : invariant under the 8 symmetries *and*
+    colour-complement (so up to 16 equivalent forms collapse to one).
 
 Use :func:`canonical_full_key` when you want the strictest dedup.
 """
@@ -56,28 +56,32 @@ def _flip_y(bits: int, w: int, h: int) -> Tuple[int, int, int]:
 
 
 def all_symmetries(bits: int, w: int, h: int) -> List[Tuple[int, int, int]]:
-    """All distinct symmetric variants of ``(bits, w, h)``.
+    """All distinct symmetric variants of ``(bits, w, h)`` under D4.
 
-    For a square grid (w==h) this returns up to 8 variants; for non-square
-    grids, up to 4.
+    Returns up to 8 distinct ``(bits, w, h)`` tuples. For a square grid
+    every variant has the same shape; for a non-square grid four of them
+    live in the transposed shape ``(h, w)``. Including the transposes is
+    important so that, e.g. a 4x5 pattern and its 5x4 transpose match.
     """
     seen = set()
     variants: List[Tuple[int, int, int]] = []
     base = (bits, w, h)
 
-    # Generate by composing flips & transposes (covers D4 / D2).
-    candidates: List[Tuple[int, int, int]] = [base]
     fx = _flip_x(*base)
     fy = _flip_y(*base)
-    candidates.append(fx)
-    candidates.append(fy)
-    candidates.append(_flip_y(*fx))  # 180 rotation
-    if w == h:
-        tr = _transpose(*base)
-        candidates.append(tr)
-        candidates.append(_flip_x(*tr))
-        candidates.append(_flip_y(*tr))
-        candidates.append(_flip_y(*_flip_x(*tr)))
+    candidates: List[Tuple[int, int, int]] = [
+        base,
+        fx,
+        fy,
+        _flip_y(*fx),   # 180 rotation
+    ]
+    tr = _transpose(*base)
+    candidates.extend([
+        tr,
+        _flip_x(*tr),
+        _flip_y(*tr),
+        _flip_y(*_flip_x(*tr)),
+    ])
 
     for v in candidates:
         if v not in seen:

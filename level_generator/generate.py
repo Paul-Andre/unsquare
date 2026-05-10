@@ -42,6 +42,7 @@ from typing import Dict, Iterable, List, Optional, Sequence, Set, Tuple
 
 from .core.book import GeneratedLevel, write_book
 from .core.canonical import canonical_full_key
+from .core.dedup import keys_for_level_from_record
 from .core.existing import collect_existing_keys
 from .core.geometry import int_to_tiles, num_operations, popcount, tiles_to_int
 from .core.par import compute_par
@@ -221,7 +222,7 @@ def run(config: GenerationConfig, *, dedupe_against_existing: bool = True, verbo
     rng = random.Random(config.seed)
 
     # ----- 1. existing-key set -----
-    existing_keys: Set[Tuple[int, int, int]] = set()
+    existing_keys: Set[Tuple] = set()
     if dedupe_against_existing:
         if verbose:
             print("Loading existing levels for de-dup...")
@@ -229,7 +230,7 @@ def run(config: GenerationConfig, *, dedupe_against_existing: bool = True, verbo
         existing_keys = corpus.keys
         if verbose:
             print(f"  {corpus.level_count} existing levels from {corpus.file_count} files; "
-                  f"{len(existing_keys)} unique canonical keys.")
+                  f"{len(existing_keys)} unique crop-aware canonical keys.")
 
     # ----- 2. spawn generators -----
     sources: List[Iterable[GeneratedLevel]] = []
@@ -278,7 +279,7 @@ def run(config: GenerationConfig, *, dedupe_against_existing: bool = True, verbo
 
     # ----- 3. hard-filter, par-refine, dedup, score -----
     accepted: List[Tuple[float, GeneratedLevel]] = []
-    seen_keys_in_batch: Set[Tuple[int, int, int]] = set()
+    seen_keys_in_batch: Set[Tuple] = set()
     counts: Dict[str, int] = {}
     rejects: Dict[str, int] = {}
 
@@ -306,14 +307,19 @@ def run(config: GenerationConfig, *, dedupe_against_existing: bool = True, verbo
                 continue
 
             bits, w, h = tiles_to_int(refined.tiles)
-            key = canonical_full_key(bits, w, h)
-            if key in existing_keys:
+            cand_keys = keys_for_level_from_record(
+                bits, w, h,
+                recorded_solutions=[refined.solution] if refined.solution else None,
+            )
+            if not cand_keys:
+                cand_keys = {canonical_full_key(bits, w, h)}
+            if any(k in existing_keys for k in cand_keys):
                 rejects["dup-existing"] = rejects.get("dup-existing", 0) + 1
                 continue
-            if key in seen_keys_in_batch:
+            if any(k in seen_keys_in_batch for k in cand_keys):
                 rejects["dup-batch"] = rejects.get("dup-batch", 0) + 1
                 continue
-            seen_keys_in_batch.add(key)
+            seen_keys_in_batch.update(cand_keys)
 
             refined = _annotate(refined)
             sc = score_level(refined, weights)

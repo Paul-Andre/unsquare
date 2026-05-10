@@ -2,3 +2,4 @@ a.out
 node_modules
 __pycache__/
 *.pyc
+level_generator/.dedup_cache.json
