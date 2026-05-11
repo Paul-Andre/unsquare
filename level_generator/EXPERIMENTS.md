@@ -329,6 +329,42 @@ the top-50 is drawn from a slightly different slice of the candidate
 pool.
 
 
+## `dailies_smoke_v5_centered_full` — 2026-05-10
+
+*Purpose:* dump the *entire* accepted candidate pool (not just top-50)
+for the v5_centered command, ranked by score descending, to inspect the
+full distribution of what the v2-mix + centering pipeline produces.
+
+*Code state:* same as `v5_centered` (HEAD with isolated compute_par /
+recenter RNGs).
+
+*Command:* same as `v5_centered` plus `--count 1000` (the pool happens
+to contain exactly 270 accepted candidates after dedup, so 270 are
+returned).
+
+```
+python3 -m level_generator.generate \
+  --out generated_levels/dailies_smoke_v5_centered_full.json \
+  --count 1000 \
+  --sizes "5x5,5x5,6x6,6x6,7x7" \
+  --par-range 3 8 \
+  --target-par 5 \
+  --mix "random_walk=120,symmetric=120,motifs=60,targeted_par=60,perturb=40" \
+  --seed 1 \
+  --padding auto \
+  --pretty \
+  --label v5_centered_full_pool
+```
+
+*Output:* `generated_levels/dailies_smoke_v5_centered_full.json`.
+
+*Observations:* 270 levels in strict score-descending order, scores from
+0.7648 down to 0.3349. The top 50 here are exactly the top-50 of
+`v5_centered`; the remaining 220 are the rest of the accepted pool
+(same crop-aware accepted set as `v5_legacy_all`, just re-ranked under
+the post-recenter scoring).
+
+
 ## RNG notes (as of 2026-05-10, post v5)
 
 There are now two independent RNG-isolation choices in the pipeline:
