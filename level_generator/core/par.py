@@ -86,7 +86,12 @@ def compute_par(
         best = _enumerate_kernel_min(sol_bits, kernel)
         return ParResult(par=popcount(best), solution_bits=best, is_optimal=True)
 
-    rng = rng or random.Random()
+    # When no rng is supplied, derive one from the input so the heuristic
+    # path is deterministic *per input* without consuming from any shared
+    # pipeline RNG. This keeps `compute_par` from perturbing the
+    # orchestrator's candidate stream while still being reproducible.
+    if rng is None:
+        rng = random.Random(f"compute_par:{width}x{height}:{target_bits}")
     best_bits = _local_descent(sol_bits, kernel, with_triples=local_search_triples)
     for _ in range(random_restarts):
         kick = 0

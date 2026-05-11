@@ -240,15 +240,16 @@ def _resolve_padding_distribution(spec: str, *, verbose: bool = False) -> Tuple[
     return dist, f"spec:{spec}"
 
 
-def _refine_par(level: GeneratedLevel, *, rng: Optional[random.Random] = None) -> Tuple[GeneratedLevel, bool]:
+def _refine_par(level: GeneratedLevel) -> Tuple[GeneratedLevel, bool]:
     """Replace the level's par/solution with the optimised version.
 
-    Returns ``(level, was_reachable)``. The shared ``rng`` is threaded
-    through so that par refinement is deterministic per ``--seed`` (the
-    heuristic restart kicks consume from it on 7x7+ grids).
+    Returns ``(level, was_reachable)``. ``compute_par`` derives its own
+    content-stable RNG internally, so this function does not consume
+    from the shared pipeline stream -- the candidate stream is
+    unaffected by which levels exercise the heuristic path.
     """
     bits, w, h = tiles_to_int(level.tiles)
-    par_res = compute_par(w, h, bits, rng=rng)
+    par_res = compute_par(w, h, bits)
     if par_res is None:
         return level, False
     m = num_operations(w, h)
@@ -274,20 +275,26 @@ def _recenter_level(
     *,
     distribution: PaddingDistribution,
     keep_square: bool,
-    rng: random.Random,
 ) -> GeneratedLevel:
     """Crop + re-pad + centre a refined level. Par is preserved.
 
     Updates ``width``, ``height``, ``tiles`` and ``solution`` in place by
     returning a new :class:`GeneratedLevel` with the new geometry. Adds
     a ``_pad`` entry to ``metadata`` describing what happened.
+
+    The RNG used for padding-amount sampling and odd-split direction is
+    derived from the level's content + par, so this step is
+    deterministic per input and does not consume from the shared
+    pipeline stream.
     """
+    bits, w, h = tiles_to_int(level.tiles)
+    sub_rng = random.Random(f"recenter:{w}x{h}:{bits}:{level.par}")
     res = recenter_and_pad(
         level.tiles,
         level.solution,
         distribution=distribution,
         square=keep_square,
-        rng=rng,
+        rng=sub_rng,
     )
     pad_meta = {
         "tight_size": list(res.info.get("tight_size", (level.width, level.height))),
@@ -424,7 +431,7 @@ def run(config: GenerationConfig, *, dedupe_against_existing: bool = True, verbo
                 rejects[reason] = rejects.get(reason, 0) + 1
                 continue
 
-            refined, ok = _refine_par(level, rng=rng)
+            refined, ok = _refine_par(level)
             if not ok:
                 rejects["unreachable"] = rejects.get("unreachable", 0) + 1
                 continue
@@ -443,7 +450,6 @@ def run(config: GenerationConfig, *, dedupe_against_existing: bool = True, verbo
                     refined,
                     distribution=padding_dist,
                     keep_square=config.keep_square,
-                    rng=rng,
                 )
 
             bits, w, h = tiles_to_int(refined.tiles)

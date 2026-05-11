@@ -253,33 +253,106 @@ rejected — the top-50 has to come from a slightly different region of
 the candidate pool.
 
 
-## RNG notes (as of 2026-05-10)
+## `dailies_smoke_v5_legacy` — 2026-05-10
 
-`compute_par`'s heuristic path (kernel dim > 22, i.e. 7x7+) currently
-takes an `rng` argument that, if `None`, falls back to a fresh
-`random.Random()` seeded from OS entropy. That makes the result
-non-deterministic across runs — different OS-RNG state of the day can
-yield different par-optimal solutions for the same input (par itself
-usually agrees but the specific minimum-weight coset member can differ).
+*Purpose:* same v2 command + `--no-recenter`, after switching
+`compute_par` and `_recenter_level` to use *content-derived sub-rngs*
+that do not consume from the shared pipeline RNG. Goal: per-seed
+deterministic *and* preserve the v2 candidate stream.
 
-Because the new crop-aware dedup keys depend on the *solution's*
-support bbox (not just the tile pattern), this non-determinism
-*cascades*: a different solution chosen for one 7x7 candidate can flip
-dedup decisions for unrelated 5x5/6x6 candidates later in the stream.
+*Code state:* HEAD after this entry's parent commit
+("Isolate compute_par and recenter RNGs from the pipeline stream"):
+`compute_par` seeds its own internal `random.Random(f"compute_par:{w}x{h}:{bits}")`
+when no rng is supplied; `_recenter_level` seeds its own
+`random.Random(f"recenter:{w}x{h}:{bits}:{par}")`; neither consumes
+from the pipeline stream.
 
-A `_refine_par` patch threading the shared pipeline RNG into
-`compute_par` (and similarly inside `targeted_par`) makes the orchestrator
-deterministic per `--seed`, but at the cost of perturbing the shared
-RNG stream relative to the pre-patch behaviour. So a "deterministic run"
-of the v2 command no longer matches the historic v2 output.
+*Command:*
 
-A planned follow-up is to give `compute_par` an isolated RNG
-seeded from a content-derived hash (or a small derived sub-rng), so
-that:
+```
+python3 -m level_generator.generate \
+  --out generated_levels/dailies_smoke_v5_legacy.json \
+  --count 50 \
+  --sizes "5x5,5x5,6x6,6x6,7x7" \
+  --par-range 3 8 \
+  --target-par 5 \
+  --mix "random_walk=120,symmetric=120,motifs=60,targeted_par=60,perturb=40" \
+  --seed 1 \
+  --no-recenter \
+  --pretty \
+  --label v5_legacy_isolated_rngs
+```
 
-1. `compute_par` is deterministic per input, regardless of pipeline timing.
-2. The shared pipeline RNG is *not* consumed by `compute_par`, so
-   v2-style commands still produce v2-style output.
+*Output:* `generated_levels/dailies_smoke_v5_legacy.json`.
 
-The current `v4_legacy` and `v4_centered` artefacts pre-date that
-follow-up.
+*Observations:* 49/50 full-canonical and 49/50 crop-aware overlap with
+v2 (vs ~1/50 for `v4_legacy`). Two consecutive runs are
+byte-identical at the level-content level (tiles + solutions + par),
+confirming per-seed determinism. The single differing level is the
+expected 7x7 `compute_par` solution-pick difference between
+content-derived seed and the original v2 OS-rng pick.
+
+
+## `dailies_smoke_v5_centered` — 2026-05-10
+
+*Purpose:* same as `v5_legacy` but with the centering / padding
+post-step on (`--padding auto`). Goal: deterministic, v2-style
+candidates *plus* centered output.
+
+*Code state:* same as `v5_legacy`.
+
+*Command:*
+
+```
+python3 -m level_generator.generate \
+  --out generated_levels/dailies_smoke_v5_centered.json \
+  --count 50 \
+  --sizes "5x5,5x5,6x6,6x6,7x7" \
+  --par-range 3 8 \
+  --target-par 5 \
+  --mix "random_walk=120,symmetric=120,motifs=60,targeted_par=60,perturb=40" \
+  --seed 1 \
+  --padding auto \
+  --pretty \
+  --label v5_centered_isolated_rngs
+```
+
+*Output:* `generated_levels/dailies_smoke_v5_centered.json`.
+
+*Observations:* 0/50 full-canonical (expected: different paddings) and
+24/50 crop-aware overlap with v2; 23/50 crop-aware overlap with
+v5_legacy. Output sizes shift up to 5x5..10x10. The 24/50 (not 49/50)
+crop-aware figure is the same effect described in
+`repro_v2_centered_workaround`: centering expands each candidate's
+dedup-key footprint so more candidates collide with one another, and
+the top-50 is drawn from a slightly different slice of the candidate
+pool.
+
+
+## RNG notes (as of 2026-05-10, post v5)
+
+There are now two independent RNG-isolation choices in the pipeline:
+
+1. **`compute_par`** seeds an internal `random.Random` from
+   `(width, height, target_bits)` when its `rng` argument is `None`.
+   That makes the heuristic path deterministic per input and ensures
+   pipeline-stream perturbation is no longer cascaded by which levels
+   happen to be 7x7+.
+
+2. **`_recenter_level`** seeds an internal `random.Random` from
+   `(width, height, bits, par)` of the input level. The padding-amount
+   and odd-split direction draws are deterministic per level and do
+   not consume from the pipeline stream.
+
+The shared pipeline RNG (`random.Random(config.seed)`) is now used
+only by the generators themselves. Result: same `--seed` -> same
+output, byte-for-byte at the level-content level, even when sizes /
+mix / recenter flags are unchanged. Verified for v5_legacy by running
+the same command twice.
+
+Earlier artifacts (`v4_legacy`, `v4_centered`) pre-date this change:
+they were generated with a "thread the pipeline rng into compute_par"
+patch that achieved determinism but at the cost of perturbing the
+candidate stream relative to v2. The `repro_v2_*` runs reproduced the
+*pre*-fix HEAD behaviour by temporarily reverting the plumbing. The
+v5_* runs are the proper, permanent fix.
