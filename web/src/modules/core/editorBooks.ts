@@ -30,7 +30,7 @@ export class EditorBookRepo {
       if (key && key.startsWith(this.listKeyPrefix)) {
         const value = localStorage.getItem(key);
         if (value === null) continue;
-        if (this.books.find(b => b.id === key)) continue;
+        if (this.books.find(b => "editor_" + b.id === key)) continue;
         const book = JSON.parse(value, book_reviver) as Book;
         book.source = key;
         this.books.push(book);
