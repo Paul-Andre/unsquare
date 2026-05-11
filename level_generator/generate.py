@@ -138,7 +138,12 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> argparse.Namespace:
                    help="Par the scorer prefers (Gaussian-bump centred here).")
     p.add_argument("--seed", type=int, default=None)
     p.add_argument("--pretty", action="store_true", help="Pretty-print the output JSON.")
-    p.add_argument("--title", default="Generated daily-level candidates")
+    p.add_argument(
+        "--title",
+        default=None,
+        help="Title written into the output book. "
+             "Defaults to the basename of --out (e.g. 'my_run.json').",
+    )
     p.add_argument(
         "--mix",
         default="random_walk=200,symmetric=200,motifs=100,targeted_par=80,perturb=80",
@@ -207,7 +212,7 @@ def _build_config(ns: argparse.Namespace) -> GenerationConfig:
         perturb_sources=perturb_sources,
         output_count=ns.count,
         pretty_json=ns.pretty,
-        title=ns.title,
+        title=ns.title if ns.title is not None else os.path.basename(ns.out),
         padding_spec=ns.padding,
         keep_square=not ns.no_keep_square,
         recenter=not ns.no_recenter,

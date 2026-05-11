@@ -365,6 +365,42 @@ python3 -m level_generator.generate \
 the post-recenter scoring).
 
 
+## `dailies_smoke_v3_repro` — 2026-05-11
+
+*Purpose:* re-run the *exact* original-v3 parameter set (the
+deprecated entry above) with the current pipeline, including the
+post-v5 isolated-RNG behaviour. Not byte-identical to the original v3,
+just the same intent (larger-grid pool, no perturb, deeper par range,
+seed 42). Stored under `_repro` to avoid colliding with the deleted
+deprecated artifact.
+
+*Code state:* HEAD with the new `--title` default (basename of `--out`).
+
+*Command:*
+
+```
+python3 -m level_generator.generate \
+  --out generated_levels/dailies_smoke_v3_repro.json \
+  --count 40 \
+  --sizes 5x5,6x6,6x6,7x7,7x7,8x8 \
+  --par-range 3 9 \
+  --target-par 5 \
+  --seed 42 \
+  --mix random_walk=80,symmetric=80,motifs=40,targeted_par=30,perturb=0 \
+  --padding auto \
+  --pretty \
+  --verbose
+```
+
+*Output:* `generated_levels/dailies_smoke_v3_repro.json` (title field
+defaults to `'dailies_smoke_v3_repro.json'`).
+
+*Observations:* 40 levels, output sizes 6x6..10x10 (post-centering),
+pars 3..6, tight crops up to 8x8; scores 0.686..0.749. The larger
+size pool and deeper par range produce visibly different style from
+the v2/v5 runs, which is the whole point of revisiting v3-parameters.
+
+
 ## RNG notes (as of 2026-05-10, post v5)
 
 There are now two independent RNG-isolation choices in the pipeline:
