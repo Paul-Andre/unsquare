@@ -43,8 +43,14 @@ from typing import Dict, Iterable, List, Optional, Sequence, Set, Tuple
 from .core.book import GeneratedLevel, write_book
 from .core.canonical import canonical_full_key
 from .core.dedup import keys_for_level_from_record
-from .core.existing import collect_existing_keys
+from .core.existing import DEFAULT_SOURCES, collect_existing_keys
 from .core.geometry import int_to_tiles, num_operations, popcount, tiles_to_int
+from .core.padding import (
+    DEFAULT_PADDING,
+    PaddingDistribution,
+    derive_padding_distribution,
+    recenter_and_pad,
+)
 from .core.par import compute_par
 from .filters.quality import (
     FilterConfig,
@@ -89,6 +95,16 @@ class GenerationConfig:
     output_count: int = 200
     pretty_json: bool = False
     title: str = "Generated daily-level candidates"
+    # Padding policy applied as a post-processing pass on each candidate.
+    # ``"auto"`` -> derive an empirical distribution from the existing
+    # daily-levels book at startup; ``"none"`` -> always P=0 (still
+    # re-centres); ``"0:0.5,1:0.3,2:0.2"`` -> explicit distribution.
+    padding_spec: str = "auto"
+    keep_square: bool = True
+    # If False, the post-generation crop / re-pad / centre step is
+    # skipped entirely (and does not consume RNG draws). Useful to
+    # reproduce pre-padding generator output for comparison.
+    recenter: bool = True
 
 
 # ----------------------------------------------------------------------
@@ -135,6 +151,38 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> argparse.Namespace:
     )
     p.add_argument("--no-dedupe-against-existing", action="store_true",
                    help="(debug) skip the dedup-against-existing pass.")
+    p.add_argument(
+        "--padding",
+        default="auto",
+        help=(
+            "Post-processing padding policy. 'auto' (default) derives the "
+            "distribution from the existing daily-levels corpus; 'none' "
+            "always picks P=0 (still re-centres); '0:0.5,1:0.3,2:0.2' "
+            "explicitly weights P amounts."
+        ),
+    )
+    p.add_argument(
+        "--no-keep-square",
+        action="store_true",
+        help="Allow non-square output after padding. Default keeps grids square.",
+    )
+    p.add_argument(
+        "--no-recenter",
+        action="store_true",
+        help=(
+            "Skip the crop+pad+centre post-processing step entirely. "
+            "Useful to reproduce pre-padding generator output. When set, "
+            "--padding / --no-keep-square are ignored."
+        ),
+    )
+    p.add_argument(
+        "--label",
+        default=None,
+        help=(
+            "Optional short name written to _gen_config.label. Useful to "
+            "tie a run to a named entry in level_generator/EXPERIMENTS.md."
+        ),
+    )
     p.add_argument("--verbose", action="store_true")
     return p.parse_args(argv)
 
@@ -160,16 +208,47 @@ def _build_config(ns: argparse.Namespace) -> GenerationConfig:
         output_count=ns.count,
         pretty_json=ns.pretty,
         title=ns.title,
+        padding_spec=ns.padding,
+        keep_square=not ns.no_keep_square,
+        recenter=not ns.no_recenter,
     )
 
 
-def _refine_par(level: GeneratedLevel) -> Tuple[GeneratedLevel, bool]:
+def _resolve_padding_distribution(spec: str, *, verbose: bool = False) -> Tuple[PaddingDistribution, str]:
+    """Turn a CLI string into a :class:`PaddingDistribution`.
+
+    Returns ``(dist, source_label)`` where ``source_label`` describes
+    where the distribution came from for logging / metadata.
+    """
+    s = (spec or "").strip().lower()
+    if s in ("auto", ""):
+        # Derive from the daily levels corpus (single source).
+        repo_root = Path(__file__).resolve().parents[1]
+        for rel in DEFAULT_SOURCES:
+            if "daily_levels_book" in rel:
+                p = repo_root / rel
+                if p.exists():
+                    derived = derive_padding_distribution([p])
+                    if derived is not None:
+                        if verbose:
+                            print(f"  padding distribution (auto from {rel}): {derived.as_dict()}")
+                        return derived, f"auto:{rel}"
+        if verbose:
+            print(f"  padding distribution (auto fallback): {DEFAULT_PADDING.as_dict()}")
+        return DEFAULT_PADDING, "auto:default"
+    dist = PaddingDistribution.from_spec(spec)
+    return dist, f"spec:{spec}"
+
+
+def _refine_par(level: GeneratedLevel, *, rng: Optional[random.Random] = None) -> Tuple[GeneratedLevel, bool]:
     """Replace the level's par/solution with the optimised version.
 
-    Returns ``(level, was_reachable)``.
+    Returns ``(level, was_reachable)``. The shared ``rng`` is threaded
+    through so that par refinement is deterministic per ``--seed`` (the
+    heuristic restart kicks consume from it on 7x7+ grids).
     """
     bits, w, h = tiles_to_int(level.tiles)
-    par_res = compute_par(w, h, bits)
+    par_res = compute_par(w, h, bits, rng=rng)
     if par_res is None:
         return level, False
     m = num_operations(w, h)
@@ -188,6 +267,46 @@ def _refine_par(level: GeneratedLevel) -> Tuple[GeneratedLevel, bool]:
         },
     )
     return new_level, True
+
+
+def _recenter_level(
+    level: GeneratedLevel,
+    *,
+    distribution: PaddingDistribution,
+    keep_square: bool,
+    rng: random.Random,
+) -> GeneratedLevel:
+    """Crop + re-pad + centre a refined level. Par is preserved.
+
+    Updates ``width``, ``height``, ``tiles`` and ``solution`` in place by
+    returning a new :class:`GeneratedLevel` with the new geometry. Adds
+    a ``_pad`` entry to ``metadata`` describing what happened.
+    """
+    res = recenter_and_pad(
+        level.tiles,
+        level.solution,
+        distribution=distribution,
+        square=keep_square,
+        rng=rng,
+    )
+    pad_meta = {
+        "tight_size": list(res.info.get("tight_size", (level.width, level.height))),
+        "output_size": list(res.info.get("output_size", (res.width, res.height))),
+        "padding_lrtb": res.info.get("padding"),
+        "pad_amount": res.info.get("pad_amount"),
+        "transformed": bool(res.info.get("transformed")),
+    }
+    if "skipped" in res.info:
+        pad_meta["skipped"] = res.info["skipped"]
+    return GeneratedLevel(
+        tiles=res.tiles,
+        par=level.par,
+        solution=res.solution,
+        solution_type=level.solution_type,
+        width=res.width,
+        height=res.height,
+        metadata={**level.metadata, "_pad": pad_meta},
+    )
 
 
 def _annotate(level: GeneratedLevel) -> GeneratedLevel:
@@ -220,6 +339,15 @@ def _annotate(level: GeneratedLevel) -> GeneratedLevel:
 
 def run(config: GenerationConfig, *, dedupe_against_existing: bool = True, verbose: bool = False) -> List[GeneratedLevel]:
     rng = random.Random(config.seed)
+    if config.recenter:
+        padding_dist, padding_src = _resolve_padding_distribution(
+            config.padding_spec, verbose=verbose,
+        )
+    else:
+        padding_dist = DEFAULT_PADDING
+        padding_src = "disabled"
+        if verbose:
+            print("  recenter/pad post-step DISABLED (--no-recenter)")
 
     # ----- 1. existing-key set -----
     existing_keys: Set[Tuple] = set()
@@ -296,7 +424,7 @@ def run(config: GenerationConfig, *, dedupe_against_existing: bool = True, verbo
                 rejects[reason] = rejects.get(reason, 0) + 1
                 continue
 
-            refined, ok = _refine_par(level)
+            refined, ok = _refine_par(level, rng=rng)
             if not ok:
                 rejects["unreachable"] = rejects.get("unreachable", 0) + 1
                 continue
@@ -305,6 +433,18 @@ def run(config: GenerationConfig, *, dedupe_against_existing: bool = True, verbo
             if reason:
                 rejects[f"post-refine: {reason}"] = rejects.get(f"post-refine: {reason}", 0) + 1
                 continue
+
+            # Post-process: crop to the support bbox, then re-pad and
+            # centre. The output may be a different (typically larger)
+            # size than the input -- that is intentional. Skipped (and
+            # no RNG draw consumed) when --no-recenter is passed.
+            if config.recenter:
+                refined = _recenter_level(
+                    refined,
+                    distribution=padding_dist,
+                    keep_square=config.keep_square,
+                    rng=rng,
+                )
 
             bits, w, h = tiles_to_int(refined.tiles)
             cand_keys = keys_for_level_from_record(
@@ -351,6 +491,10 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         verbose=ns.verbose,
     )
     elapsed = time.perf_counter() - t0
+    # Record the literal invocation so the output file is self-identifying.
+    # ``argv`` may be ``None`` when called as a CLI, in which case sys.argv
+    # is the actual command. See level_generator/EXPERIMENTS.md.
+    invocation = list(argv) if argv is not None else list(sys.argv[1:])
     book = write_book(
         levels,
         ns.out,
@@ -360,6 +504,21 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
             "par_range": list(cfg.par_range),
             "target_par": cfg.target_par,
             "seed": cfg.seed,
+            "padding_spec": cfg.padding_spec,
+            "keep_square": cfg.keep_square,
+            "recenter": cfg.recenter,
+            "mix": {
+                "random_walk": cfg.mix.random_walk,
+                "symmetric": cfg.mix.symmetric,
+                "motifs": cfg.mix.motifs,
+                "targeted_par": cfg.mix.targeted_par,
+                "perturb": cfg.mix.perturb,
+            },
+            "perturb_sources": list(cfg.perturb_sources),
+            "output_count": cfg.output_count,
+            "invocation": invocation,
+            "label": ns.label,
+            "elapsed_s": round(elapsed, 2),
         }},
         pretty=cfg.pretty_json,
     )

@@ -35,6 +35,12 @@ from level_generator.core.geometry import (
     tiles_to_int,
 )
 from level_generator.core.linalg import solve_and_kernel, vec_to_bits
+from level_generator.core.padding import (
+    DEFAULT_PADDING,
+    PaddingDistribution,
+    derive_padding_distribution,
+    recenter_and_pad,
+)
 from level_generator.core.par import compute_par
 from level_generator.generate import GenerationConfig, GeneratorMix, run
 from level_generator.generators import (
@@ -295,6 +301,146 @@ class DedupTests(unittest.TestCase):
             big_keys = keys_for_level_from_record(big_bits, 5, 5, recorded_solutions=[big_sol])
             self.assertTrue(small_keys & big_keys,
                             f"padded twin not deduped: bits={small_bits}")
+
+
+class PaddingTests(unittest.TestCase):
+    def _solution_to_list(self, w, h, sol_bits):
+        return [(sol_bits >> i) & 1 for i in range(num_operations(w, h))]
+
+    def test_recenter_off_center_level(self):
+        # The pattern from the user-reported level_0880616688761078:
+        # content sits in the top-left 4x4 of a 6x6 grid. After
+        # recenter_and_pad with P=0, it must occupy a centred 4x4 region
+        # of a 4x4 (or 6x6 / 5x5 if P>0) grid; with square+P=0 we expect
+        # an exactly tight 4x4 grid.
+        tiles = [
+            [1, 1, 1, 1, 1, 1],
+            [1, 2, 2, 1, 1, 1],
+            [2, 2, 2, 2, 1, 1],
+            [2, 1, 2, 1, 1, 1],
+            [1, 1, 2, 2, 1, 1],
+            [1, 1, 1, 1, 1, 1],
+        ]
+        bits, w, h = tiles_to_int(tiles)
+        par_res = compute_par(w, h, bits)
+        self.assertIsNotNone(par_res)
+        sol = self._solution_to_list(w, h, par_res.solution_bits)
+        # The bbox of THIS solution determines the crop.
+        res = recenter_and_pad(
+            tiles, sol,
+            distribution=PaddingDistribution.constant(0),
+            square=True,
+            rng=random.Random(0),
+        )
+        # Output must be square and at most as large as 6x6.
+        self.assertEqual(res.width, res.height)
+        self.assertLessEqual(res.width, 6)
+        # Recorded solution must still solve the new tiles.
+        new_bits, _, _ = tiles_to_int(res.tiles)
+        self.assertEqual(apply_solution(res.width, res.height, res.solution), new_bits)
+        # Content must be centred: the support bbox of the new solution
+        # should sit symmetrically (left padding equals right padding +/-
+        # 1).
+        from level_generator.core.dedup import packed_solution_from_list, support_bbox
+        new_sol_bits = packed_solution_from_list(res.solution)
+        bbox = support_bbox(new_sol_bits, res.width, res.height)
+        self.assertIsNotNone(bbox)
+        minx, miny, maxx, maxy = bbox
+        p_l = minx
+        p_r = res.width - 1 - maxx
+        p_t = miny
+        p_b = res.height - 1 - maxy
+        self.assertLessEqual(abs(p_l - p_r), 1)
+        self.assertLessEqual(abs(p_t - p_b), 1)
+
+    def test_recenter_preserves_par(self):
+        rng = random.Random(0)
+        for _ in range(20):
+            w, h = 5, 5
+            # Make a 3-op pattern.
+            from level_generator.core.geometry import Move
+            moves = enumerate_moves(w, h)
+            chosen_idx = rng.sample(range(len(moves)), 3)
+            sol_bits = sum(1 << i for i in chosen_idx)
+            target = apply_solution(w, h, [(sol_bits >> i) & 1 for i in range(len(moves))])
+            tiles = int_to_tiles(target, w, h)
+            sol = [(sol_bits >> i) & 1 for i in range(len(moves))]
+            for P in (0, 1, 2, 3):
+                res = recenter_and_pad(
+                    tiles, sol,
+                    distribution=PaddingDistribution.constant(P),
+                    square=True,
+                    rng=random.Random(0),
+                )
+                new_bits, nw, nh = tiles_to_int(res.tiles)
+                self.assertEqual(nw, res.width)
+                self.assertEqual(nh, res.height)
+                # New solution must reproduce the new tiles.
+                self.assertEqual(
+                    apply_solution(nw, nh, res.solution),
+                    new_bits,
+                    (P, target, tiles),
+                )
+                # And it must weight as much as the par we threw in.
+                self.assertEqual(sum(res.solution), 3)
+
+    def test_recenter_pads_to_target_size_when_P_set(self):
+        # 2x2 stamp at (0,0) on a 3x3 grid -> tight is 2x2; with P=2 and
+        # square, output side must be max(2, 2) + 2 = 4. Content centred.
+        from level_generator.core.geometry import Move
+        target = move_mask(3, 3, Move(0, 0, 2))
+        tiles = int_to_tiles(target, 3, 3)
+        sol = [0] * num_operations(3, 3)
+        # The op (0,0,2) is the first move on a 3x3 grid by canonical order.
+        moves = enumerate_moves(3, 3)
+        idx = next(i for i, m in enumerate(moves) if (m.x, m.y, m.size) == (0, 0, 2))
+        sol[idx] = 1
+        res = recenter_and_pad(
+            tiles, sol,
+            distribution=PaddingDistribution.constant(2),
+            square=True,
+            rng=random.Random(0),
+        )
+        self.assertEqual((res.width, res.height), (4, 4))
+        # The single 2x2 op must now sit centred on a 4x4 grid.
+        new_bits, _, _ = tiles_to_int(res.tiles)
+        # On a 4x4, 2x2 ops live at (x,y) with x,y in {0,1,2}. Centred
+        # = (1, 1).
+        from level_generator.core.dedup import packed_solution_from_list, support_bbox
+        new_sol_bits = packed_solution_from_list(res.solution)
+        bbox = support_bbox(new_sol_bits, 4, 4)
+        self.assertEqual(bbox, (1, 1, 2, 2))
+
+    def test_recenter_skips_when_no_solution(self):
+        tiles = [[1, 1], [1, 1]]
+        res = recenter_and_pad(tiles, [], distribution=PaddingDistribution.constant(0))
+        # Untouched.
+        self.assertEqual(res.tiles, tiles)
+        self.assertIn("skipped", res.info)
+
+    def test_padding_distribution_sampling(self):
+        dist = PaddingDistribution([(0, 1.0), (2, 3.0)])
+        rng = random.Random(0)
+        counts = {0: 0, 2: 0}
+        N = 4000
+        for _ in range(N):
+            counts[dist.sample(rng)] += 1
+        # Expect roughly 25 / 75 split.
+        self.assertAlmostEqual(counts[0] / N, 0.25, delta=0.03)
+        self.assertAlmostEqual(counts[2] / N, 0.75, delta=0.03)
+
+    def test_padding_distribution_from_corpus(self):
+        # If the daily-levels book is present, the auto-derived
+        # distribution must be a strict superset of {0} (i.e. dailies
+        # are not all P=0).
+        path = REPO_ROOT / "web/public/api/v1/daily_levels_book.json"
+        if not path.exists():
+            self.skipTest("daily levels book not present")
+        dist = derive_padding_distribution([path])
+        self.assertIsNotNone(dist)
+        amounts = {a for a, _ in dist.weights}
+        self.assertIn(0, amounts)
+        self.assertGreater(len(amounts), 1)
 
 
 class GeneratorTests(unittest.TestCase):

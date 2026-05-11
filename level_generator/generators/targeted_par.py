@@ -57,7 +57,7 @@ def generate_targeted_par(
                 pattern ^= masks[idx]
             if pattern == 0:
                 continue
-            par_res = compute_par(w, h, pattern)
+            par_res = compute_par(w, h, pattern, rng=rng)
             if par_res is None:
                 continue
             if par_res.par == k:
