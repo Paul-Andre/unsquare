@@ -1,5 +1,13 @@
 a.out
 node_modules
+
+# Supabase CLI local state (linked project metadata, versions)
+supabase/.temp/
+
+# Local env files (never commit secrets)
+.env
+.env.*
+!.env.example
 __pycache__/
 *.pyc
 level_generator/.dedup_cache.json
