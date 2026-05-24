@@ -1,6 +1,10 @@
 // create-checkout-session/index.ts
 // Supabase Edge Function (Deno) — Create a Stripe checkout session
 
+import Stripe from "npm:stripe@^17";
+import { createClient } from "jsr:@supabase/supabase-js@2";
+import { corsOptionsResponse, errorResponse, jsonResponse } from "../_shared/http.ts";
+
 const STRIPE_SECRET_KEY = Deno.env.get("STRIPE_SECRET_KEY");
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
 const SUPABASE_ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY");
@@ -44,17 +48,6 @@ function getPriceId(product: string): string|null {
     return PRODUCT_PRICES[product]??null;
 }
 
-// Import Stripe SDK and Supabase client for Deno
-import Stripe from "npm:stripe@^17";
-import { createClient } from "jsr:@supabase/supabase-js@2";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-  "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-  "Access-Control-Max-Age": "86400",
-};
-
 interface RequestBody {
   product?: string;
   products?: string[];
@@ -64,33 +57,10 @@ interface RequestBody {
   customer_email?: string;
 }
 
-function errorResponse(message: string, status: number = 400, details?: unknown): Response {
-  return new Response(
-    JSON.stringify({ error: message, details }),
-    {
-      status,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    }
-  );
-}
-
-function jsonResponse(data: unknown, status: number = 200): Response {
-  return new Response(
-    JSON.stringify(data),
-    {
-      status,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    }
-  );
-}
-
 Deno.serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
-    return new Response(null, { 
-      status: 204,
-      headers: corsHeaders 
-    });
+    return corsOptionsResponse();
   }
 
   try {
@@ -263,4 +233,3 @@ Deno.serve(async (req) => {
     );
   }
 });
-

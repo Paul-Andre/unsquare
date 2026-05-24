@@ -1,6 +1,10 @@
 // stripe-webhook/index.ts
 // Supabase Edge Function (Deno) — Handle Stripe webhook events
 
+import Stripe from "npm:stripe@^17";
+import { createClient } from "jsr:@supabase/supabase-js@2";
+import { errorResponse, jsonResponse } from "../_shared/http.ts";
+
 const STRIPE_SECRET_KEY = Deno.env.get("STRIPE_SECRET_KEY");
 const STRIPE_WEBHOOK_SECRET = Deno.env.get("STRIPE_WEBHOOK_SECRET");
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
@@ -14,30 +18,6 @@ if (!STRIPE_WEBHOOK_SECRET) {
 }
 if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
   console.error("Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY environment variables.");
-}
-
-// Import Stripe SDK and Supabase client for Deno
-import Stripe from "npm:stripe@^17";
-import { createClient } from "jsr:@supabase/supabase-js@2";
-
-function errorResponse(message: string, status: number = 400, details?: unknown): Response {
-  return new Response(
-    JSON.stringify({ error: message, details }),
-    {
-      status,
-      headers: { "Content-Type": "application/json" },
-    }
-  );
-}
-
-function jsonResponse(data: unknown, status: number = 200): Response {
-  return new Response(
-    JSON.stringify(data),
-    {
-      status,
-      headers: { "Content-Type": "application/json" },
-    }
-  );
 }
 
 Deno.serve(async (req) => {
@@ -111,7 +91,8 @@ Deno.serve(async (req) => {
           console.log("Line item:", lineItem);
           // TODO TypeScript type is incorrect...
           // perhaps we need to make sure we're using the most recent version of the Stripe SDK
-          const product = lineItem.metadata?.product;
+          const product = (lineItem as Stripe.LineItem & { metadata?: { product?: string } })
+            .metadata?.product;
           
           if (!product) {
             console.error(`No product found for line item ${lineItem.id}`);
@@ -205,4 +186,3 @@ Deno.serve(async (req) => {
     );
   }
 });
-

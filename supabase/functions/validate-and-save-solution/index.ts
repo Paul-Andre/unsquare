@@ -2,6 +2,8 @@
 // Supabase Edge Function (Deno) — Validate a puzzle solution and save it to Postgres via REST.
 // Self-contained version with embedded validation logic.
 
+import { corsOptionsResponse, errorResponse, jsonResponse } from "../_shared/http.ts";
+
 // @ts-ignore: Deno is available in Supabase Edge Function runtime
 declare const Deno: any;
 
@@ -10,12 +12,6 @@ const SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
 if (!SUPABASE_URL || !SERVICE_ROLE_KEY) {
   console.error("Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY environment variables.");
 }
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-  "Access-Control-Allow-Methods": "GET, POST, OPTIONS"
-};
 
 // ============================================================================
 // Embedded validation code (minimal subset from algo.js)
@@ -182,21 +178,6 @@ function buildLevelFromJson(json: LevelData): { tiles: { array: number[]; width:
 // Helper functions
 // ============================================================================
 
-function jsonResponse(data: unknown, status: number = 200): Response {
-  return new Response(JSON.stringify(data), {
-    status,
-    headers: { ...corsHeaders, "Content-Type": "application/json" }
-  });
-}
-
-function errorResponse(message: string, status: number = 400, details?: unknown): Response {
-  const response: { error: string; details?: unknown } = { error: message };
-  if (details !== undefined) {
-    response.details = details;
-  }
-  return jsonResponse(response, status);
-}
-
 function parseSolution(solution: unknown): number[] {
   if (typeof solution === "string") {
     try {
@@ -269,7 +250,7 @@ interface RequestBody {
 
 Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
+    return corsOptionsResponse();
   }
 
   try {
