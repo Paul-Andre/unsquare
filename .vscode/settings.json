@@ -5,6 +5,6 @@
   "files.associations": {
     "*.js": "javascript"
   },
-  "kiroAgent.configureMCP": "Disabled"
+  "typescript.tsserver.experimental.enableProjectDiagnostics": true
 }
 
