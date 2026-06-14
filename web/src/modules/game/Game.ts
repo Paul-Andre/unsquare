@@ -4,7 +4,8 @@ import { GameBase } from './GameBase.ts';
 import { calculateStates, LEVEL_STATES } from '../ui/levelStateUtils.ts';
 import { obviousScore, vector_sum, vector_simplify_arithmetic, level_get_arithmetic, vector_sub, operation_index_to_move, level_get_geometry, ericTilesNumber, vector_equal, ericBordersNumber, ericUnionNumber, ericUnionWeightedNumber, boundingBoxAreaScore, fractionBlackScore, involvedScore } from '../core/algo';
 import { trackLevelEnd } from '../utils/analytics.ts';
-import { getBestNumMoves, setBestNumMoves, getCachedChallengeStatistics, saveChallengeStatistics } from '../core/levelUtils.ts';
+import { getCachedChallengeStatistics, saveChallengeStatistics } from '../core/levelUtils.ts';
+import { storage } from '../core/storage.ts';
 import * as config from '../utils/config.ts';
 import { renderHistogram } from '../ui/ChallengeHistogram.tsx';
 import { drawIcon, getCachedLevelIconDataUrl } from '../ui/icon.ts';
@@ -263,6 +264,9 @@ export class Game extends GameBase {
       }
 
       console.log(data);
+
+      // TODO: create a function that parses (or at least casts) the data to the approprate type.
+      
       
       // Cache challenge statistics if available
       if (data?.player_summary && level.mode === "challenge") {
@@ -360,7 +364,7 @@ export class Game extends GameBase {
       return;
     }
     assert(this.level !== null);
-    const playerMoves = getBestNumMoves(this.level);
+    const playerMoves = storage.getLevelBest(this.level);
     renderHistogram(container, this.allHistogramData[select.value], playerMoves);
   }
 
@@ -397,12 +401,12 @@ export class Game extends GameBase {
       }
     }
 
-    let prevBest = getBestNumMoves(this.level);
+    let prevBest = storage.getLevelBest(this.level);
 
     let numMoves = this.numMoves;
 
     if (prevBest === null || numMoves < prevBest) {
-      setBestNumMoves(this.level, numMoves);
+      storage.setLevelBest(this.level, numMoves);
     }
 
     assert(this.book !== null);
@@ -488,7 +492,7 @@ export class Game extends GameBase {
 
   getCurrentBest() {
     if (this.level) {
-      return getBestNumMoves(this.level);
+      return storage.getLevelBest(this.level);
     }
     return null;
   }
@@ -745,7 +749,7 @@ export class Game extends GameBase {
     assert(parIndicator instanceof HTMLElement);
     const parTextSpan = parIndicator.querySelector(".parText");
     if (level.mode === "challenge") {
-      const cachedStats = getBestNumMoves(level) !== null 
+      const cachedStats = storage.getLevelBest(level) !== null 
         ? getCachedChallengeStatistics(level.id) 
         : null;
       const topBest = cachedStats?.top_best ?? null;
@@ -758,11 +762,11 @@ export class Game extends GameBase {
       // Show histogram icon only if player has solved the challenge
       const histogramIcon = this.div.querySelector("#histogramViewIcon");
       if (histogramIcon instanceof HTMLElement) {
-        histogramIcon.style.display = getBestNumMoves(level) !== null ? "inline" : "none";
+        histogramIcon.style.display = storage.getLevelBest(level) !== null ? "inline" : "none";
       }
     } else {
       const par = level.par;
-      const showPar = !config.DONT_SHOW_PAR_FOR_UNSOLVED_LEVELS || getBestNumMoves(level) !== null;
+      const showPar = !config.DONT_SHOW_PAR_FOR_UNSOLVED_LEVELS || storage.getLevelBest(level) !== null;
       const parDisplay = (par === null || !showPar) ? "?" : par;
       const parText = level.isCustom ? `creator par: ${parDisplay}` : `par: ${parDisplay}`;
       if (parTextSpan instanceof HTMLElement) {
@@ -842,7 +846,7 @@ export class Game extends GameBase {
       return false;
     }
     // TODO: when multiple books, rethink this.
-    const totSolved = this.book.levels.filter(level => getBestNumMoves(level)).length;
+    const totSolved = this.book.levels.filter(level => storage.getLevelBest(level)).length;
     // Todo: make this be a parameter on posthog
     return totSolved >= 35 && this.numSolvedThisSession >= 10 && !this.showedDiscordOverlay;
   }

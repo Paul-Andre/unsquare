@@ -7,7 +7,7 @@ import { appContext } from '../core/AppContext.ts';
 import { book_reviver, reindexLevels } from '../core/bookUtils.ts';
 import { save_editor_book } from 'modules/core/editorBooks.ts';
 import { book_replacer } from '../core/bookUtils.ts';
-import { clearBestNumMoves } from '../core/levelUtils.ts';
+import { storage } from '../core/storage.ts';
 import { level_check_solution } from '../core/algo.ts';
 import { LevelIconGrid } from './LevelIconGrid.tsx';
 import { showJsonModal } from './JsonModal.tsx';
@@ -251,7 +251,7 @@ export class EditorLevelMenuScreen {
     assert(this.levelMenu.book !== null);
     this.saveUndoState("clear_bests");
     for (let i = 0; i < this.levelMenu.book.levels.length; i++) {
-      clearBestNumMoves(this.levelMenu.book.levels[i]);
+      storage.clearLevelBest(this.levelMenu.book.levels[i]);
     }
     this.levelMenu.displayIcons();
   }
