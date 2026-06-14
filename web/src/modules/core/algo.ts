@@ -120,11 +120,6 @@ export function vector_equal(a: number[], b: number[]): boolean {
   }
   return true;
 }
-{
-  assert(vector_equal([1, 2, 3], [1, 2, 3]));
-  assert(vector_equal([1, 2, 3], [1, 2, 2]) == false);
-  assert(vector_equal([], []));
-}
 
 export function compute_operations_for_level(level:Level): number[][] {
   if (level.geometry) {
@@ -287,7 +282,7 @@ export function vector_multiply_matrix(applications: number[], operations: numbe
   return ret;
 }
 
-let MOD_2: Arithmetic = {
+export const MOD_2: Arithmetic = {
   type: "modular",
   modulus: 2,
 };
@@ -304,71 +299,6 @@ export function transpose_matrix<T>(a: T[][]): T[][] {
     ret.push(rr);
   }
   return ret;
-}
-
-{
-  let a = [
-    [0, 1, 2],
-    [3, 4, 5],
-  ];
-  let b = transpose_matrix(a);
-  console.log("transpose_matrix", a, b);
-}
-{
-  let a = [1, 0, 1];
-  let b = [
-    [1, 0, 1, 0],
-    [0, 1, 0, 0],
-    [0, 0, 0, 1],
-  ];
-  test_multiply_and_gaussian(a, b);
-}
-
-// Used to rapidly create tests where it's possible to have
-export function test_multiply_and_gaussian(a: number[], b: number[][]): void {
-  let c = vector_multiply_matrix(a, b);
-  vector_apply_modulus(c, 2);
-  console.log(a, b, c);
-  let ret = solve_gaussian(b, c, MOD_2);
-  console.log(ret, b, c);
-}
-{
-  let a = [1, 0, 1];
-  let b = [
-    [1, 0, 1, 0],
-    [1, 0, 0, 0],
-    [0, 0, 1, 0],
-  ];
-  test_multiply_and_gaussian(a, b);
-}
-
-export function random_vector(n: number, mod: number): number[] {
-  let rr = [];
-  for (let j = 0; j < n; j++) {
-    rr.push(Math.floor(Math.random() * mod));
-  }
-  return rr;
-}
-export function random_matrix(m: number, n: number, mod: number): number[][]  {
-  let ret = [];
-  for (let i = 0; i < m; i++) {
-    let rr = [];
-    for (let j = 0; j < n; j++) {
-      rr.push(Math.floor(Math.random() * mod));
-    }
-    ret.push(rr);
-  }
-  return ret;
-}
-
-if (false) {
-  for (let i = 0; i < 100; i++) {
-    let n = Math.floor(Math.random() * 10) + 1;
-    let m = Math.floor(Math.random() * 10) + 1;
-    let a = random_vector(m, 2);
-    let b = random_matrix(m, n, 2);
-    test_multiply_and_gaussian(a, b);
-  }
 }
 
 // Aw man, gaussian elimination
