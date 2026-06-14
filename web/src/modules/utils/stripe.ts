@@ -5,7 +5,6 @@ import { supabase } from './api.ts';
 import { getCurrentUser, isAnonymousUser } from './auth.ts';
 import { appContext } from '../core/AppContext.ts';
 import { Continuation, buildUrl } from '../core/Continuation.ts';
-import type { AuthResult } from '../ui/AuthModal.ts';
 import type { User } from '@supabase/supabase-js';
 import { assert } from './helpers.ts';
 
@@ -197,7 +196,7 @@ export async function getPurchasedProducts():Promise<Record<string, boolean>>{
   }
   let request = {
     p_user_id: user.id,
-    p_email: (user.email??null),
+    p_email: (user.email??undefined),
   };
   console.log(request);
 
@@ -205,14 +204,14 @@ export async function getPurchasedProducts():Promise<Record<string, boolean>>{
   if (error) {
     throw error;
   }
+  if (data === null) {
+    return {};
+  }
   let ret: Record<string, boolean> = {};
   for (let row of data) {
-    
     let product = row.product;
     assert( typeof product == "string");
     ret[product] = true;
   }
-  console.log(data, error);
-
   return ret;
 }
