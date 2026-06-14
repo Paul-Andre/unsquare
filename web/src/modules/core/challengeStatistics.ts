@@ -2,6 +2,7 @@
 
 import { supabase } from '../utils/api.ts';
 import { saveChallengeStatistics } from './levelUtils.ts';
+import { storage } from './storage.ts';
 
 export type ChallengeStatistics = {
   player_best: number;
@@ -23,7 +24,7 @@ export function parseChallengeStatistics(data: any): ChallengeStatistics {
  * Fetches challenge statistics for a given level from Supabase
  */
 export async function fetchChallengeStatistics(levelId: string): Promise<ChallengeStatistics | null> {
-  const player_id = localStorage.player_id;
+  const player_id = storage.getPlayerId();
   if (!player_id) {
     return null;
   }

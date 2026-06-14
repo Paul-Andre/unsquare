@@ -1,5 +1,6 @@
 import { supabase } from "modules/utils/api";
 import { ensureNotNull } from "modules/utils/helpers";
+import { storage } from "./storage";
 
 function getCurrentContestIdFromUrl(): string | null {
   const contestId = new URLSearchParams(window.location.search).get("contest")?.trim() ?? null;
@@ -30,7 +31,7 @@ export async function submitParticipantName(name: string): Promise<void> {
 
 
     // Submit to Supabase using the SQL function
-    const playerId = ensureNotNull(localStorage.getItem("player_id"));
+    const playerId = ensureNotNull(storage.getPlayerId());
     const { error } = await supabase.rpc('submit_participant_name', {
         p_contest_hashid: currentContestId,
         p_player_id: playerId,

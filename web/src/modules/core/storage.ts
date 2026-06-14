@@ -41,6 +41,13 @@ export class Storage {
         localStorage.removeItem(getLskForBestNumMoves(level, getCurrentContestId()));
         localStorage.removeItem(getLskForBestNumMoves(level, null));
     }
+
+    // TODO: does this belong here, or maybe simply as a global, or as
+    // part of some kind of global "context" object instead.
+    getPlayerId(): string | null {
+        return localStorage.getItem("player_id");
+    }
+
 }
 
 export const storage = new Storage();

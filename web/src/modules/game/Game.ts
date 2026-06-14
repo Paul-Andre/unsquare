@@ -208,7 +208,7 @@ export class Game extends GameBase {
     const level = this.level;
     assert(level !== null);
     const solution = this.playerSolution;
-    const player_id = localStorage.player_id;
+    const player_id = storage.getPlayerId();
     console.log("solution to be posted", JSON.stringify(solution));
     
     (async () => {
@@ -248,7 +248,7 @@ export class Game extends GameBase {
       return null;
     }
 
-    const player_id = localStorage.player_id;
+    const player_id = storage.getPlayerId();
     if (!player_id) {
       return null;
     }
@@ -266,10 +266,7 @@ export class Game extends GameBase {
 
       console.log(rawData);
 
-      const data = parseHistogramsAndSummary(rawData);
-
-      // TODO: create a function that parses (or at least casts) the data to the approprate type.
-      
+      const data = parseHistogramsAndSummary(rawData);      
       
       // Cache challenge statistics if available
       if (data?.player_summary && level.mode === "challenge") {
