@@ -3,15 +3,7 @@
 
 import { supabase } from "modules/utils/api";
 import { Level } from "./Level";
-import { getCurrentContestId } from "./contests";
-
-export type ChallengeStatistics = {
-  player_best: number;
-  top_best: number;
-  rank: number;
-  total_players: number;
-}
-
+import { ChallengeStatistics } from "./challengeStatistics";
 
 // Challenge statistics storage methods
 export function getChallengeStatsCacheKey(levelId: string): string {

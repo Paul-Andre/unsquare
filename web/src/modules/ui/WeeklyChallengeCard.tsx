@@ -9,7 +9,7 @@ import { LEVEL_STATES } from './levelStateUtils.ts';
 import { appContext } from '../core/AppContext.ts';
 import { getCachedChallengeStatistics } from '../core/levelUtils.ts';
 import { fetchChallengeStatistics, updateChallengeStatistics } from '../core/challengeStatistics.ts';
-import { ChallengeStatistics } from '../core/levelUtils.ts';
+import { ChallengeStatistics } from '../core/challengeStatistics.ts';
 
 export interface WeeklyChallengeCardProps {
   level: Level;

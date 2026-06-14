@@ -1,4 +1,4 @@
-import { ChallengeStatistics } from "./levelUtils";
+import { ChallengeStatistics } from "./challengeStatistics";
 
 export type Histogram = Record<number, number>;
 export type AllHistogramData = {

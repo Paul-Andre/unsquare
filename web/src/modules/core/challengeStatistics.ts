@@ -1,7 +1,23 @@
 "use strict";
 
 import { supabase } from '../utils/api.ts';
-import { ChallengeStatistics, getCachedChallengeStatistics, saveChallengeStatistics } from './levelUtils.ts';
+import { saveChallengeStatistics } from './levelUtils.ts';
+
+export type ChallengeStatistics = {
+  player_best: number;
+  top_best: number;
+  rank: number;
+  total_players: number;
+}
+
+export function parseChallengeStatistics(data: any): ChallengeStatistics {
+  return {
+    player_best: data.player_best,
+    top_best: data.top_best,
+    rank: data.rank,
+    total_players: data.total_players,
+  }
+}
 
 /**
  * Fetches challenge statistics for a given level from Supabase
@@ -23,7 +39,7 @@ export async function fetchChallengeStatistics(levelId: string): Promise<Challen
       return null;
     }
 
-    return data;
+    return parseChallengeStatistics(data);
   } catch (e) {
     console.error("Failed to fetch challenge statistics", e);
     return null;
