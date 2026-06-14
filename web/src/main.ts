@@ -1,16 +1,12 @@
 // Main entry point for the application
 import { appContext } from './modules/core/AppContext.ts';
-import { checkAndOpenCustomLevel, setupInitialScreen } from './modules/ui/openInitial.ts';
+import { setupInitialScreen } from './modules/ui/openInitial.ts';
 import * as config from './modules/utils/config.ts';
 import * as algo from './modules/core/algo';
-import { assert, cast, generate_id } from './modules/utils/helpers.ts';
-import { onAuthStateChange, getCurrentUser } from './modules/utils/auth.ts';
+import { generate_id } from './modules/utils/helpers.ts';
 import { supabase } from './modules/utils/api.ts';
-import { testCheckout, createCheckoutSession, purchaseDailyWeeklyArchive, getPurchasedProducts } from './modules/utils/stripe.ts';
+import { testCheckout, createCheckoutSession } from './modules/utils/stripe.ts';
 import * as auth from './modules/utils/auth.ts'
-import { saveLevelToSupabase } from 'modules/core/levelUtils.ts';
-import { Level } from 'modules/core/Level.ts';
-import { weeklyChallengesBookSignal } from 'modules/core/loadBook.ts';
 
 // Global configuration
 window.config = config;
@@ -20,45 +16,12 @@ window.appContext = appContext;
 
 window.algo = algo;
 
-window.weeklyChallengesBookSignal = weeklyChallengesBookSignal;
 
 // Expose functions and modules for testing
 window.testCheckout = testCheckout;
 window.createCheckoutSession = createCheckoutSession;
-window.purchaseDailyWeeklyArchive = purchaseDailyWeeklyArchive;
 window.auth = auth;
 window.supabase = supabase;
-window.showDailyWeeklyArchiveOfferModal = () => {
-  appContext.dailyWeeklyArchiveOfferModal.show([]);
-};
-window.showSignInModal = () => {
-  appContext.showAuthModal([])
-};
-
-window.getPurchasedProducts = getPurchasedProducts;
-
-window.saveLevelToSupabase = saveLevelToSupabase;
-
-window.saveLevelsToSupabase = async (levels: Level[]) => {
-  for (let level of levels) {
-    console.log("submitting", level);
-    try {await saveLevelToSupabase(level, true);}
-    catch(e){console.error(e)}
-  }
-};
-
-window.checkDuplicateLevelIds = (levels: Level[]) => {
-  let seen = new Map<string, Level>();
-  for (let level of levels) {
-    if (seen.has(level.id)) {
-      console.log("Duplicate level id found:", level.id);
-      console.log("Level A:", seen.get(level.id));
-      console.log("Level B:", level);
-    } else {
-      seen.set(level.id, level);
-    }
-  }
-};
 
 // patch duplicate level_id
 if (localStorage.getItem("level_1692766116470$s_6_6$m_2$t$1_1_1_1_1_1_1_2_2_1_1_1_1_1_1_1_2_1_1_2_2_1_2_1_1_2_2_2_1_1_1_1_1_1_1_1 bestNumMoves") === null 
