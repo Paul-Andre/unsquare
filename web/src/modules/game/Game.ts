@@ -17,6 +17,7 @@ import { Book, BookNavigation } from '../core/Book.ts';
 import { Move } from './GameBase.ts';
 import { getCurrentContestId } from 'modules/core/contests.ts';
 import { saveLevelCopyAsDaily } from 'modules/core/editorBooks.ts';
+import { AllHistogramData, parseAllHistogramDataKey, parseHistogramsAndSummary } from 'modules/core/histogram.ts';
 
 
 // Used for the "demonstation" animation in the first level of how you need to drag the s quare.
@@ -33,7 +34,7 @@ export class Game extends GameBase {
   showedDiscordOverlay: boolean;
   demoDrag: {start: {x: number, y: number}, end: {x: number, y: number}} | null;
   demoDragTime: number;
-  allHistogramData: any | null;
+  allHistogramData: AllHistogramData | null;
   hintState: {
     hintSquare: { x: number; y: number; size: number; } | null;
     suggestRestart: boolean;
@@ -253,7 +254,7 @@ export class Game extends GameBase {
     }
 
     try {
-      const { data, error } = await supabase.rpc('get_player_level_histograms_and_summary', {
+      const { data: rawData, error } = await supabase.rpc('get_player_level_histograms_and_summary', {
         p_player_id: player_id,
         p_level_id: level.id
       });
@@ -263,7 +264,9 @@ export class Game extends GameBase {
         return null;
       }
 
-      console.log(data);
+      console.log(rawData);
+
+      const data = parseHistogramsAndSummary(rawData);
 
       // TODO: create a function that parses (or at least casts) the data to the approprate type.
       
@@ -365,7 +368,8 @@ export class Game extends GameBase {
     }
     assert(this.level !== null);
     const playerMoves = storage.getLevelBest(this.level);
-    renderHistogram(container, this.allHistogramData[select.value], playerMoves);
+    const selectValue = parseAllHistogramDataKey(select.value);
+    renderHistogram(container, this.allHistogramData[selectValue], playerMoves);
   }
 
   hideHistogramView(): void {
@@ -438,7 +442,8 @@ export class Game extends GameBase {
     
     const select = element.querySelector("#histogramTypeSelect");
     assert(select instanceof HTMLSelectElement);
-    renderHistogram(container, this.allHistogramData[select.value], this.numMoves);
+    const selectValue = parseAllHistogramDataKey(select.value);
+    renderHistogram(container, this.allHistogramData[selectValue], this.numMoves);
   }
 
 
