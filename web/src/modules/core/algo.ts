@@ -131,7 +131,6 @@ export function compute_operations_for_level(level:Level): number[][] {
       height: level.tiles.height,
     });
   }
-  console.log(level);
   throw new Error("Did not understand how to compute operations for level");
 }
 
@@ -146,7 +145,6 @@ export function compute_moves_for_level(level:Level): Move[] {
       height: level.tiles.height,
     });
   }
-  console.log(level);
   throw new Error("Did not understand how to compute operations for level");
 }
 
@@ -408,8 +406,6 @@ export function solve_gaussian(operations: number[][], tiles: number[], arithmet
   // sanity check, that the solution actually multiplies to the desired value
   {
     let target_reach = vector_multiply_matrix(solution, operations, arithmetic);
-    // console.log("want", solution, operations, tiles);
-    // console.log("got", solution, operations, target_reach);
     assert(vector_equal(tiles, target_reach));
   }
 
@@ -443,10 +439,8 @@ export function level_check_solution(level:Level, solution: number[]): boolean {
 }
 
 export function get_gaussian_solution_for_level(level:Level): number[] | null {
-  //let level.tiles.array
   let arithmetic = level.colorScheme.arithmetic;
   let operations = compute_operations_for_level(level);
-  //console.log(
   let tilesVector = get_level_tiles_vector(level);
 
   let sol = solve_gaussian(operations, tilesVector, arithmetic);
@@ -461,7 +455,6 @@ export function ericTilesPartition(level: Level, solution: number[]): Set<string
   let operations = compute_operations_for_level(level);
   assert(operations.length == solution.length);
   let m = new Set<string>();
-  //console.log(vector_sum(solution));
   let emptyArea = "0".repeat(vector_sum(solution));
   m.add(emptyArea);
   for (let j=0; j<operations[0].length; j++) {
@@ -483,7 +476,6 @@ export function ericTilesPartition(level: Level, solution: number[]): Set<string
 
 export function ericTilesNumber(level: Level, solution: number[]): number {
   let m = ericTilesPartition(level, solution);
-  console.log(m);
   return m.size;
 }
 
@@ -538,14 +530,12 @@ export function ericBordersPartition(level:Level, solution: number[], squares: M
 
 export function ericBordersNumber(level:Level, solution: number[], squares: Move[] | null = null): number {
   let m = ericBordersPartition(level, solution, squares);
-  console.log(m);
   return m.size;
 }
 
 export function ericUnionNumber(level:Level, solution: number[], squares: Move[] | null = null): number {
   let m = ericTilesPartition(level, solution)
   ericBordersPartition(level, solution, squares).forEach(item => m.add(item));
-  console.log(m);
   return m.size;
 }
 
@@ -598,7 +588,6 @@ export function obviousScore(level:Level, solution: number[], squares: Move[] | 
   
   let cnt = solution.length;
   let tot = 0;
-  console.log("Calculating obviousScore");
   for (let i = 0; i < solution.length; i++) {
     let square = squares[i];
 
@@ -608,7 +597,6 @@ export function obviousScore(level:Level, solution: number[], squares: Move[] | 
 
 
     let obv = border / sides;
-    //console.log(JSON.stringify(square), border, sides, obv, solution[i]);
 
 
     let diff = Math.abs(obv - solution[i]);
@@ -634,7 +622,6 @@ export function obviousScore(level:Level, solution: number[], squares: Move[] | 
 
 
   let ret = tot / cnt;
-  console.log(ret);
   return ret;
 }
 
