@@ -55,6 +55,13 @@ export class AppStorage {
         } else {
             this.playerId = currentPlayerId;
         }
+
+        // Patch bestNumMoves for level whose levelId was migrated after a duplicate levelId was found.
+        if (localStorage.getItem("level_1692766116470$s_6_6$m_2$t$1_1_1_1_1_1_1_2_2_1_1_1_1_1_1_1_2_1_1_2_2_1_2_1_1_2_2_2_1_1_1_1_1_1_1_1 bestNumMoves") === null 
+        && localStorage.getItem("level_1692766116468$s_6_6$m_2$t$1_1_1_1_1_1_1_2_2_1_1_1_1_1_1_1_2_1_1_2_2_1_2_1_1_2_2_2_1_1_1_1_1_1_1_1 bestNumMoves") !== null) {
+            localStorage.setItem("level_1692766116470$s_6_6$m_2$t$1_1_1_1_1_1_1_2_2_1_1_1_1_1_1_1_2_1_1_2_2_1_2_1_1_2_2_2_1_1_1_1_1_1_1_1 bestNumMoves",
+            localStorage.getItem("level_1692766116468$s_6_6$m_2$t$1_1_1_1_1_1_1_2_2_1_1_1_1_1_1_1_2_1_1_2_2_1_2_1_1_2_2_2_1_1_1_1_1_1_1_1 bestNumMoves")!);
+        }
     }
 
     private getItem(key: string): string | null {
