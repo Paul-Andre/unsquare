@@ -225,8 +225,6 @@ export class Game extends GameBase {
       if (error) {
         console.error("Error calling validate-and-save-solution:", error);
         throw error;
-        callback();
-        return;
       }
     
       console.log("data", data);
