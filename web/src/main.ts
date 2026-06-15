@@ -38,6 +38,9 @@ window.addEventListener('load',
         if (key.startsWith('utm_')) {
           url.searchParams.delete(key);
         }
+        if (key === "prefix") {
+          url.searchParams.delete(key);
+        }
       });
       window.history.replaceState({}, '', url.toString());
     }, 5000);
