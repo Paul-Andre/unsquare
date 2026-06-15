@@ -22,8 +22,17 @@ function lskForLevelBest(level: Level, contestId: string | null): string {
     return `${level.getFullIdentifier()} bestNumMoves`;
 }
 
-// Storage is a central place for persistent storage
-export class Storage {
+// AppStorage is a central place for local persistent storage.
+// It's called AppStorage to indicate that it contains app-specific logic,
+// as opposed to a generic storage class.
+// Among other things, having this in one place will make it easier to transition to Capacitor Preferences
+// (since localStorage is known to not be reliable in WebViews)
+// Some of the storage logic might be implemented differently for different stored information (including
+// caching where appropriate to avoid async once Capacitor Preferences are used)
+// Currently (2026-06-15), online storage hasn't been figured out yet -- it may or may not involve this class.
+// TODO: Consitder extracting generic storage logic to a separate class (if applicable/appropriate considering
+// how things will be done with Capacitor Preferences.)
+export class AppStorage {
     prefix: string | null;
     contestId: string | null;
     playerId: string;
@@ -114,4 +123,4 @@ export class Storage {
     }
 }
 
-export const storage = new Storage(getPrefixFromUrl());
+export const appStorage = new AppStorage(getPrefixFromUrl());

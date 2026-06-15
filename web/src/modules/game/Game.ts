@@ -5,7 +5,7 @@ import { calculateStates, LEVEL_STATES } from '../ui/levelStateUtils.ts';
 import { obviousScore, vector_sum, vector_simplify_arithmetic, level_get_arithmetic, vector_sub, operation_index_to_move, level_get_geometry, ericTilesNumber, vector_equal, ericBordersNumber, ericUnionNumber, ericUnionWeightedNumber, boundingBoxAreaScore, fractionBlackScore, involvedScore } from '../core/algo';
 import { trackLevelEnd } from '../utils/analytics.ts';
 import { getCachedChallengeStatistics, saveChallengeStatistics } from '../core/levelUtils.ts';
-import { storage } from '../core/storage.ts';
+import { appStorage } from '../core/appStorage.ts';
 import * as config from '../utils/config.ts';
 import { renderHistogram } from '../ui/ChallengeHistogram.tsx';
 import { drawIcon, getCachedLevelIconDataUrl } from '../ui/icon.ts';
@@ -208,7 +208,7 @@ export class Game extends GameBase {
     const level = this.level;
     assert(level !== null);
     const solution = this.playerSolution;
-    const player_id = storage.getPlayerId();
+    const player_id = appStorage.getPlayerId();
     console.log("solution to be posted", JSON.stringify(solution));
     
     (async () => {
@@ -246,7 +246,7 @@ export class Game extends GameBase {
       return null;
     }
 
-    const player_id = storage.getPlayerId();
+    const player_id = appStorage.getPlayerId();
     if (!player_id) {
       return null;
     }
@@ -362,7 +362,7 @@ export class Game extends GameBase {
       return;
     }
     assert(this.level !== null);
-    const playerMoves = storage.getLevelBest(this.level);
+    const playerMoves = appStorage.getLevelBest(this.level);
     const selectValue = parseAllHistogramDataKey(select.value);
     renderHistogram(container, this.allHistogramData[selectValue], playerMoves);
   }
@@ -400,12 +400,12 @@ export class Game extends GameBase {
       }
     }
 
-    let prevBest = storage.getLevelBest(this.level);
+    let prevBest = appStorage.getLevelBest(this.level);
 
     let numMoves = this.numMoves;
 
     if (prevBest === null || numMoves < prevBest) {
-      storage.setLevelBest(this.level, numMoves);
+      appStorage.setLevelBest(this.level, numMoves);
     }
 
     assert(this.book !== null);
@@ -492,7 +492,7 @@ export class Game extends GameBase {
 
   getCurrentBest() {
     if (this.level) {
-      return storage.getLevelBest(this.level);
+      return appStorage.getLevelBest(this.level);
     }
     return null;
   }
@@ -749,7 +749,7 @@ export class Game extends GameBase {
     assert(parIndicator instanceof HTMLElement);
     const parTextSpan = parIndicator.querySelector(".parText");
     if (level.mode === "challenge") {
-      const cachedStats = storage.getLevelBest(level) !== null 
+      const cachedStats = appStorage.getLevelBest(level) !== null 
         ? getCachedChallengeStatistics(level.id) 
         : null;
       const topBest = cachedStats?.top_best ?? null;
@@ -762,11 +762,11 @@ export class Game extends GameBase {
       // Show histogram icon only if player has solved the challenge
       const histogramIcon = this.div.querySelector("#histogramViewIcon");
       if (histogramIcon instanceof HTMLElement) {
-        histogramIcon.style.display = storage.getLevelBest(level) !== null ? "inline" : "none";
+        histogramIcon.style.display = appStorage.getLevelBest(level) !== null ? "inline" : "none";
       }
     } else {
       const par = level.par;
-      const showPar = !config.DONT_SHOW_PAR_FOR_UNSOLVED_LEVELS || storage.getLevelBest(level) !== null;
+      const showPar = !config.DONT_SHOW_PAR_FOR_UNSOLVED_LEVELS || appStorage.getLevelBest(level) !== null;
       const parDisplay = (par === null || !showPar) ? "?" : par;
       const parText = level.isCustom ? `creator par: ${parDisplay}` : `par: ${parDisplay}`;
       if (parTextSpan instanceof HTMLElement) {
@@ -846,7 +846,7 @@ export class Game extends GameBase {
       return false;
     }
     // TODO: when multiple books, rethink this.
-    const totSolved = this.book.levels.filter(level => storage.getLevelBest(level)).length;
+    const totSolved = this.book.levels.filter(level => appStorage.getLevelBest(level)).length;
     // Todo: make this be a parameter on posthog
     return totSolved >= 35 && this.numSolvedThisSession >= 10 && !this.showedDiscordOverlay;
   }

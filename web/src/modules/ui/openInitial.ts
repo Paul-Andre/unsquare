@@ -5,7 +5,7 @@ import { processContinuations } from 'modules/core/processContinuations.ts';
 import { reindexLevels } from 'modules/core/bookUtils.ts';
 import { Book } from 'modules/core/Book.ts';
 import { getCurrentContestId, getParticipantName } from 'modules/core/contests.ts';
-import { storage } from 'modules/core/storage.ts';
+import { appStorage } from 'modules/core/appStorage.ts';
 
 export function checkAndOpenCustomLevel(): boolean {
   let customLevelString = new URLSearchParams(location.search).get("custom");
@@ -77,7 +77,7 @@ export function setupInitialScreen() {
   if (getCurrentContestId() !== null && getParticipantName() === null) {
     appContext.screenManager.switchTo('namePicking');
   } else {
-    if (storage.checkIfUserHasExperience() && !forcedOnboarding) {
+    if (appStorage.checkIfUserHasExperience() && !forcedOnboarding) {
       appContext.openingInstructions.hasAlreadyWentToFirstLevel = true;
       appContext.screenManager.switchTo('mainLevelMenu');
     } else {
