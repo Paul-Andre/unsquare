@@ -92,6 +92,26 @@ export class Storage {
     getPlayerId(): string {
         return this.playerId;
     }
+
+    checkIfUserHasExperience(): boolean {
+        let num_levels_done = 0;
+        if (this.prefix !== null) {
+            for (let key in localStorage) {
+                if (key.startsWith(this.prefix) && key.endsWith("bestNumMoves")) {
+                    num_levels_done += 1;
+                    if (num_levels_done >= 5) return true;
+                }
+            }
+        } else {
+            for (let key in localStorage) {
+                if (key.endsWith("bestNumMoves")) {
+                    num_levels_done += 1;
+                    if (num_levels_done >= 5) return true;
+                }
+            }
+        }   
+        return false;
+    }
 }
 
 export const storage = new Storage(getPrefixFromUrl());

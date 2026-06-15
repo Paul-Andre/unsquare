@@ -5,6 +5,7 @@ import { processContinuations } from 'modules/core/processContinuations.ts';
 import { reindexLevels } from 'modules/core/bookUtils.ts';
 import { Book } from 'modules/core/Book.ts';
 import { getCurrentContestId, getParticipantName } from 'modules/core/contests.ts';
+import { storage } from 'modules/core/storage.ts';
 
 export function checkAndOpenCustomLevel(): boolean {
   let customLevelString = new URLSearchParams(location.search).get("custom");
@@ -57,17 +58,6 @@ function getUrlCustomLevelBook(): Book | null {
   return null;
 }
 
-function hasUserExperience(): boolean {
-  let num_levels_done = 0;
-  for (let key in localStorage) {
-    if (key.endsWith("bestNumMoves")) {
-      num_levels_done += 1;
-    }
-  }
-  return num_levels_done >= 5;
-}
-
-
 // Initial screen selection based on user experience
 export function setupInitialScreen() {
   let continuations = getUrlContinuations();
@@ -87,7 +77,7 @@ export function setupInitialScreen() {
   if (getCurrentContestId() !== null && getParticipantName() === null) {
     appContext.screenManager.switchTo('namePicking');
   } else {
-    if (hasUserExperience()&& !forcedOnboarding) {
+    if (storage.checkIfUserHasExperience() && !forcedOnboarding) {
       appContext.openingInstructions.hasAlreadyWentToFirstLevel = true;
       appContext.screenManager.switchTo('mainLevelMenu');
     } else {
