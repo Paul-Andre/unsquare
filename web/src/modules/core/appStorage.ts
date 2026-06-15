@@ -64,25 +64,21 @@ export class AppStorage {
         }
     }
 
-    private getItem(key: string): string | null {
-        if (this.prefix !== null) {
-            return localStorage.getItem(`${this.prefix} ${key}`);
-        }
-        return localStorage.getItem(key);
+    private prefixedKey(key: string): string {
+        if (this.prefix === null) return key;
+        return `${this.prefix} ${key}`;
     }
 
-    private setItem(key: string, value: string): void {
-        if (this.prefix !== null) {
-            localStorage.setItem(`${this.prefix} ${key}`, value);
-        }
-        localStorage.setItem(key, value);
+    private getItem(key: string): string | null {
+        return localStorage.getItem(this.prefixedKey(key));
+    }
+
+    private setItem(key: string, value: string): void {  
+        localStorage.setItem(this.prefixedKey(key), value);
     }
 
     private removeItem(key: string): void {
-        if (this.prefix !== null) {
-            localStorage.removeItem(`${this.prefix} ${key}`);
-        }
-        localStorage.removeItem(key);
+        localStorage.removeItem(this.prefixedKey(key));
     }
 
     private setMin(key: string, value: number): void {
