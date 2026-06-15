@@ -4,6 +4,7 @@
 import { supabase } from "modules/utils/api";
 import { Level } from "./Level";
 import { ChallengeStatistics } from "./challengeStatistics";
+import { appCache } from "./appCache";
 
 // Challenge statistics storage methods
 export function getChallengeStatsCacheKey(levelId: string): string {
@@ -11,7 +12,7 @@ export function getChallengeStatsCacheKey(levelId: string): string {
 }
 
 export function getCachedChallengeStatistics(levelId: string): ChallengeStatistics | null {
-  const cached = localStorage.getItem(getChallengeStatsCacheKey(levelId));
+  const cached = appCache.getItem(getChallengeStatsCacheKey(levelId));
   if (!cached) return null;
   try {
     return JSON.parse(cached) as ChallengeStatistics;
@@ -21,7 +22,7 @@ export function getCachedChallengeStatistics(levelId: string): ChallengeStatisti
 }
 
 export function saveChallengeStatistics(levelId: string, stats: ChallengeStatistics): void {
-  localStorage.setItem(getChallengeStatsCacheKey(levelId), JSON.stringify(stats));
+  appCache.setItem(getChallengeStatsCacheKey(levelId), JSON.stringify(stats));
 }
 
 export async function saveLevelToSupabase(level: Level, saveSolution: boolean): Promise<void> {
