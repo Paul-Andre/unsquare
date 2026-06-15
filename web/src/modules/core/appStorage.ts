@@ -1,6 +1,8 @@
-import { generate_id } from 'modules/utils/helpers.ts';
+import { ensureNotNull, generate_id } from 'modules/utils/helpers.ts';
 import { Level } from './Level.ts';
 import { getCurrentContestId } from './contests.ts';
+import { Book } from './Book.ts';
+import { book_replacer, book_reviver } from './bookUtils.ts';
 
 
 
@@ -12,6 +14,9 @@ function getPrefixFromUrl(): string | null {
     return null;
 }
 
+function participantNameLskForContest(contestId: string): string {
+    return `contest_${contestId}_participant_name`;
+}
 
 // "lsk" = local storage key
 // Best moves storage methods
@@ -32,6 +37,7 @@ function lskForLevelBest(level: Level, contestId: string | null): string {
 // Currently (2026-06-15), online storage hasn't been figured out yet -- it may or may not involve this class.
 // TODO: Consitder extracting generic storage logic to a separate class (if applicable/appropriate considering
 // how things will be done with Capacitor Preferences.)
+// TODO: Consider perhaps splitting into multiple "repositories" (e.g. EditorBookRepo, LevelBestRepo, etc.)?
 export class AppStorage {
     prefix: string | null;
     contestId: string | null;
@@ -80,6 +86,8 @@ export class AppStorage {
         }
     }
 
+    // Level best storage methods
+
     getLevelBest(level: Level): number | null {
         let sol = this.getItem(lskForLevelBest(level, this.contestId));
         if (sol === null) return null;
@@ -94,12 +102,6 @@ export class AppStorage {
 
     clearLevelBest(level: Level): void {
         this.removeItem(lskForLevelBest(level, this.contestId));
-    }
-
-    // TODO: does this belong here, or maybe simply as a global, or as
-    // part of some kind of global "context" object instead?
-    getPlayerId(): string {
-        return this.playerId;
     }
 
     checkIfUserHasExperience(): boolean {
@@ -120,6 +122,58 @@ export class AppStorage {
             }
         }   
         return false;
+    }
+
+    // TODO: does this belong here, or maybe simply as a global, or as
+    // part of some kind of global "context" object instead?
+    getPlayerId(): string {
+        return this.playerId;
+    }
+
+    getParticipantName(): string | null {
+        if (this.contestId === null) return null;
+        return this.getItem(participantNameLskForContest(this.contestId));
+    }
+
+    setParticipantName(name: string): void {
+        if (this.contestId === null) throw new Error("Can't set participant name if no contest id.");
+        this.setItem(participantNameLskForContest(this.contestId), name);
+    }
+
+
+    // Editor books storage methods
+
+    saveEditorBook(book: Book): void {
+        // Note that the book's id already starts with "book_", resulting in a key
+        // that starts with "editor_book_".
+        let key = "editor_" + book.id;
+        book.source = key;
+        localStorage.setItem(key, JSON.stringify(book, book_replacer));
+    }
+
+    deleteEditorBook(book: Book): void {
+        if (book.source) {
+            localStorage.removeItem(book.source);
+        }
+    }
+    private fullLskPrefix(subPrefix: string): string {
+        if (this.prefix !== null) {
+            return `${this.prefix} ${subPrefix}`;
+        }
+        return subPrefix;
+    }
+
+    listEditorBookStrings(): Record<string, string> {
+        const fullLskPrefix = this.fullLskPrefix("editor_book_");
+        const books: Record<string, string> = {};
+        for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (key && key.startsWith(fullLskPrefix)) {
+                const value = localStorage.getItem(key);
+                books[key] = ensureNotNull(value);
+            }
+        }
+        return books;
     }
 }
 

@@ -1,6 +1,7 @@
 import { generate_id } from '../utils/helpers';
 import { Book } from './Book';
 import { Level } from './Level';
+import { appStorage } from './appStorage.ts';
 import {
   book_replacer,
   book_reviver,
@@ -9,32 +10,26 @@ import {
 } from './bookUtils.ts';
 
 export function save_editor_book(book: Book): void {
-  let key = "editor_" + book.id;
-  book.source = key;
-  localStorage.setItem(key, JSON.stringify(book, book_replacer));
+  appStorage.saveEditorBook(book);
 }
 
 /**
- * Repository for editor books stored in localStorage.
+ * Repository for editor books
  *
  */
 export class EditorBookRepo {
-  // The reason this says "editor_book" is because the books are stored in localStorage with the key "editor_<id>", and the id has "book_" as a prefix.
-  private readonly listKeyPrefix = 'editor_book';
 
   books: Book[] = [];
 
   list(): Book[] {
-    for (let i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i);
-      if (key && key.startsWith(this.listKeyPrefix)) {
-        const value = localStorage.getItem(key);
-        if (value === null) continue;
-        if (this.books.find(b => "editor_" + b.id === key)) continue;
-        const book = JSON.parse(value, book_reviver) as Book;
-        book.source = key;
-        this.books.push(book);
-      }
+    const bookStrings = appStorage.listEditorBookStrings();
+    for (const key in bookStrings) {
+      // We don't recreate books that already exist in memory, to preserve identity.
+      if (this.books.find(b => "editor_" + b.id === key)) continue;
+      const value = bookStrings[key];
+      const book = JSON.parse(value, book_reviver) as Book;
+      book.source = key;
+      this.books.push(book);
     }
     return this.books;
   }
@@ -44,9 +39,7 @@ export class EditorBookRepo {
   }
 
   delete(book: Book): void {
-    if (book.source) {
-      localStorage.removeItem(book.source);
-    }
+    appStorage.deleteEditorBook(book);
   }
 
   createNew(): Book {

@@ -16,13 +16,6 @@ export function getCurrentContestId(): string | null {
     return currentContestId;
 }
 
-let participantNameLsk = `contest_${currentContestId}_participant_name`;
-
-export function getParticipantName(): string | null {
-    if (currentContestId === null) return null;
-    return localStorage.getItem(participantNameLsk);
-}
-
 export async function submitParticipantName(name: string): Promise<void> {
     if (currentContestId === null) {
         console.warn("No current contest ID; cannot submit participant name.");
@@ -42,5 +35,5 @@ export async function submitParticipantName(name: string): Promise<void> {
         throw error;
     }
 
-    localStorage.setItem(participantNameLsk, name);
+    appStorage.setParticipantName(name);
 }
