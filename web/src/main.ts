@@ -3,7 +3,6 @@ import { appContext } from './modules/core/AppContext.ts';
 import { setupInitialScreen } from './modules/ui/openInitial.ts';
 import * as config from './modules/utils/config.ts';
 import * as algo from './modules/core/algo';
-import { generate_id } from './modules/utils/helpers.ts';
 import { supabase } from './modules/utils/api.ts';
 import { testCheckout, createCheckoutSession } from './modules/utils/stripe.ts';
 import * as auth from './modules/utils/auth.ts'
@@ -45,10 +44,6 @@ window.addEventListener('load',
   });
 
 
-if (localStorage.getItem("player_id") === null) {
-  let player_id = generate_id("anon");
-  localStorage.setItem("player_id", player_id);
-}
 
 setupInitialScreen();
 
