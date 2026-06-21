@@ -1431,6 +1431,13 @@ section header {
   margin-right: 4px;
   font-weight: 700;
   color: #c918c9;
+  background: rgba(255, 255, 255, 0.8);
+  text-shadow:
+    /* 1px 1px 0 white,
+    -1px -1px 0 white,
+    1px -1px 0 white,
+    -1px 1px 0 white, */
+    0 0 2px 2px white;
 }
 
 footer a {
