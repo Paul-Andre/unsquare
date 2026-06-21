@@ -353,9 +353,19 @@ int main(int __argc, char** __argv) {
     initial_moves_target = atoi(__argv[1]);
   }
 
-  for (moves_target = initial_moves_target; moves_target<20 && !found_solution; moves_target++) {
+  const int MAX_MOVES = 50;
+
+  if (initial_moves_target > 0) {
+    // Known optimal count: enumerate all solutions at exactly that depth.
+    moves_target = initial_moves_target;
     cerr<<"trying with "<<moves_target<<" moves."<<endl;
     solve1(state, 0, 0);
+  } else {
+    // Unknown optimal: search increasing depths until a solution is found or MAX_MOVES is reached.
+    for (moves_target = 0; moves_target < MAX_MOVES && !found_solution; moves_target++) {
+      cerr<<"trying with "<<moves_target<<" moves."<<endl;
+      solve1(state, 0, 0);
+    }
   }
 
     /* Square square = squares[4]; */

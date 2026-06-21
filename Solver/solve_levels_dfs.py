@@ -194,8 +194,12 @@ def solve_level(level, solver_dir, force=False):
         print(data.strip())
         print()
 
-        # data is multiple lines. split by lines
-        solutions = [[int(a) for a in line.strip()] for line in data.strip().split('\n')]
+        # data is multiple lines. split by lines (ignore blank lines)
+        solutions = [[int(a) for a in line.strip()] for line in data.strip().split('\n') if line.strip()]
+        if not solutions:
+            print("    ✗ ERROR: No solutions found")
+            return SolveResult(None, "No solutions found", False)
+
         print(f"Found {len(solutions)} solution(s).")
         print(solutions)
         for solution_vector in solutions:
