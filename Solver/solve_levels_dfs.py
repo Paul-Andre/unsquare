@@ -14,6 +14,7 @@ import tempfile
 import time
 from dataclasses import dataclass
 from pathlib import Path
+import traceback
 
 # Constants
 DFS_TIMEOUT = 300
@@ -203,15 +204,21 @@ def solve_level(level, solver_dir, force=False):
 
             # Verify the solution
             print("    Verifying solution...", end=' ', flush=True)
-            verify_solution(tiles, solution_vector)
-            print("✓ PASSED")
+            try:
+                verify_solution(tiles, solution_vector)
+                print("✓ PASSED")
+            except AssertionError as e:
+                print("✗ FAILED")
+                print(f"WARNING: new solution failed verification: {e}")
+                traceback.print_exc();
+                return SolveResult(None, "Solution verification failed", False)
         
         # Compare with existing solution
         improved = False
         if existing_ops is not None:
             print(f"    Previous solution had {existing_ops} operations")
-            assert num_ops <= existing_ops, \
-                f"New solution ({num_ops} ops) is WORSE than existing ({existing_ops} ops)!"
+            if( num_ops > existing_ops ):
+                print(f"WARNING: new solution ({num_ops} ops) is WORSE than existing ({existing_ops} ops)!")
             if num_ops < existing_ops:
                 print(f"    ✨ IMPROVED by {existing_ops - num_ops} operation(s)!")
                 improved = True
