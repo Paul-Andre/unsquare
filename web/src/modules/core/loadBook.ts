@@ -4,12 +4,24 @@ import { Book, BookNavigation } from './Book.ts';
 import { Level } from './Level.ts';
 import { book_reviver, reindexLevels } from './bookUtils.ts';
 import { DAILY_UNLOCK_HOUR } from '../utils/config.ts';
-import mainBookData from '../../data/2025_nov_11_reordered_solved_fixed_all_solutions.json';
 import { assert } from '../utils/helpers.ts';
 import { getPurchasedProducts } from 'modules/utils/stripe.ts';
 import { onAuthStateChange } from 'modules/utils/auth.ts';
 import { Signal } from 'modules/utils/Signal.ts';
 import { cachedFetchSignal } from '../utils/cachedFetchSignal.ts';
+
+
+import mainBookData from '../../data/main_levels_book.json';
+
+/**
+ * Get the main book
+ */
+export function getMainBook(): Book {
+  const data = JSON.parse(JSON.stringify(mainBookData), book_reviver);
+  data.source = "../../data/main_levels_book.json";
+  return data;
+}
+
 
 const PREVIOUS_OBJECT: BookNavigation = {
       action: "offerDailyWeeklyArchive",
@@ -164,11 +176,3 @@ function getWeeklyChallengesBook(): Book|null {
   };
 }
 
-/**
- * Get the main book
- */
-export function getMainBook(): Book {
-  const data = JSON.parse(JSON.stringify(mainBookData), book_reviver);
-  data.source = "../../data/2025_nov_11_reordered_solved_fixed_all_solutions.json";
-  return data;
-}
