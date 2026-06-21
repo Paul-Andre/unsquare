@@ -76,7 +76,10 @@
           <div class="variant_container" id="onboardingSlides">
             <div class="variant_shown">
               <p> Game Instructions: </p>
-              <img class="instruction_image" src="/drag.gif" alt="Drag to flip" />
+              <picture>
+                <source srcset="/drag.webp" type="image/webp" />
+                <img class="instruction_image" src="/drag.gif" alt="Drag to flip" />
+              </picture>
               <p>Select <strong>square areas</strong> (2x2 or larger) to flip the tiles.</p>
               <div class="footer">
                 <!-- <button id="onboardingPrevBtn" onclick="appContext.openingInstructions.prev();">&#60; Previous</button> -->
@@ -87,7 +90,10 @@
             </div>
             <div>
               <p> Game Instructions: </p>
-              <img class="instruction_image" src="/flip.gif" alt="Colors flip" loading="lazy" />
+              <picture>
+                <source srcset="/flip.webp" type="image/webp" />
+                <img class="instruction_image" src="/flip.gif" alt="Colors flip" loading="lazy" />
+              </picture>
               <p>White tiles flip to black. Black tiles flip to white.</p>
               <div class="footer">
                 <button id="onboardingPrevBtn" onclick="appContext.openingInstructions.prev();">&#60; Prev</button>
@@ -550,7 +556,10 @@
           2x2 or more to invert the colors (black turns white and white turns
           black)
         </p>
-        <img src="demo_2_3.gif" alt="Demo gif" width="484" height="484" style="height: auto; width: 100%" loading="lazy" />
+        <picture>
+          <source srcset="demo_2_3.webp" type="image/webp" />
+          <img src="demo_2_3.gif" alt="Demo gif" width="484" height="484" style="height: auto; width: 100%" loading="lazy" />
+        </picture>
 
         <p>
           "Par" is the minimum number of moves needed to solve a level. Use it
