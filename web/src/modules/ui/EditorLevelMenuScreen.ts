@@ -66,7 +66,7 @@ export class EditorLevelMenuScreen {
       level.hidden = !level.hidden;
       this.reindexLevels();
       this.levelMenu.displayIcons();
-      this.updateLevelCounter();
+      this.updateBookIncator();
       this.saveBook();
     } else {
       assert(this.levelMenu.book !== null);
@@ -76,7 +76,7 @@ export class EditorLevelMenuScreen {
 
   handleBookOpened(book: Book): void {
     this.reindexLevels();
-    this.updateLevelCounter();
+    this.updateBookIncator();
   }
 
   reindexLevels() {
@@ -84,14 +84,18 @@ export class EditorLevelMenuScreen {
     reindexLevels(this.levelMenu.book.levels);
   }
 
-  updateLevelCounter() {
+  updateBookIncator() {
     if (!this.levelMenu.book) {
       return;
     }
     const counter = this.root.querySelector("#levelCounter");
     if (counter instanceof HTMLElement) {
       const nonHiddenCount = this.levelMenu.book.levels.filter(level => !level.hidden).length;
-      counter.innerText = `Levels: ${nonHiddenCount}`;
+      counter.innerText = `(${nonHiddenCount} levels)`;
+    }
+    const title = this.root.querySelector("#editorLevelMenuLevelTitle");
+    if (title instanceof HTMLElement) {
+      title.innerText = this.levelMenu.book.title;
     }
   }
 
@@ -113,7 +117,7 @@ export class EditorLevelMenuScreen {
       }
     );
     this.reindexLevels();
-    this.updateLevelCounter();
+    this.updateBookIncator();
     this.levelMenu.displayIcons(); // Refresh icons to update nonHiddenIndex values
     this.saveBook();
   }
@@ -172,7 +176,7 @@ export class EditorLevelMenuScreen {
     // Update book state
     this.reindexLevels();
     this.levelMenu.displayIcons();
-    this.updateLevelCounter();
+    this.updateBookIncator();
     this.saveBook();
   }
 
@@ -184,7 +188,7 @@ export class EditorLevelMenuScreen {
     this.levelMenu.book.levels.push(level);
     this.levelMenu.displayIcons();
     this.reindexLevels();
-    this.updateLevelCounter();
+    this.updateBookIncator();
     this.saveBook();
   }
 
@@ -243,6 +247,7 @@ export class EditorLevelMenuScreen {
     if (new_title) {
       this.saveUndoState("change_title");
       this.levelMenu.book.title = new_title;
+      this.updateBookIncator();
     }
     save_editor_book(this.levelMenu.book);
   }
@@ -377,7 +382,7 @@ export class EditorLevelMenuScreen {
     this.levelMenu.book = undoEntry.book;
     // Refresh the UI
     this.levelMenu.displayIcons();
-    this.updateLevelCounter();
+    this.updateBookIncator();
     this.saveBook();
     return true;
   }
