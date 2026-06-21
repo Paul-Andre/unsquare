@@ -71,12 +71,12 @@ def compile_and_run_toZnDual(input_file, solver_dir):
     return run_result.stdout, run_result.stderr
 
 
-def solve_with_minizinc(dzn_file, model_file):
+def solve_with_minizinc(dzn_file, model_file, timeout=MINIZINC_TIMEOUT):
     """Run MiniZinc solver: minizinc model.mzn data.dzn -a --solver highs"""
     cmd = ['minizinc', str(model_file), str(dzn_file), '-a', '--solver', 'highs']
     
     try:
-        result = subprocess.run(cmd, capture_output=True, text=True, timeout=MINIZINC_TIMEOUT)
+        result = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout)
         if result.returncode != 0:
             print(f"MiniZinc error: {result.stderr}", file=sys.stderr)
             return None
@@ -158,7 +158,7 @@ def validate_level(level, force):
 
 
 
-def solve_level(level, solver_dir, force=False):
+def solve_level(level, solver_dir, force=False, timeout=MINIZINC_TIMEOUT):
     """Solve a single level"""
     level_id = level.get('id', 'unknown')
     tiles = level.get('tiles', [])
@@ -225,7 +225,7 @@ def solve_level(level, solver_dir, force=False):
         
             # Solve with MiniZinc
             print("    Running MiniZinc solver...", end=' ', flush=True)
-            solution_output = solve_with_minizinc(dzn_path, model_file)
+            solution_output = solve_with_minizinc(dzn_path, model_file, timeout)
             
             if not solution_output:
                 print("✗ FAILED")
@@ -277,7 +277,7 @@ def enrich_solutions(solutions):
     # TODO: use symmetric (or whatever else) to enrich solution set
     return solutions;
 
-def solve_json_file(input_path, output_path, solver_dir, force=False):
+def solve_json_file(input_path, output_path, solver_dir, force=False, timeout=MINIZINC_TIMEOUT):
     """Process all levels in a JSON file"""
     with open(input_path, 'r') as f:
         data = json.load(f)
@@ -302,7 +302,7 @@ def solve_json_file(input_path, output_path, solver_dir, force=False):
         old_ops = sum(old_solutions[0]) if old_solutions else None
         
         start_time = time.perf_counter()
-        result = solve_level(level, solver_dir, force)
+        result = solve_level(level, solver_dir, force, timeout)
         elapsed_time = time.perf_counter() - start_time
         
         print(f"    Time: {elapsed_time * 1000:.1f}ms")
@@ -344,6 +344,8 @@ def main():
     parser.add_argument('input', help='Input JSON file containing levels')
     parser.add_argument('output', nargs='?', help='Output JSON file (default: input with _solved suffix)')
     parser.add_argument('--force', action='store_true', help='Force re-solving of already solved levels')
+    parser.add_argument('--timeout', type=int, default=MINIZINC_TIMEOUT,
+                        help=f'MiniZinc solver timeout in seconds (default: {MINIZINC_TIMEOUT})')
     
     args = parser.parse_args()
     
@@ -356,7 +358,7 @@ def main():
         sys.exit(1)
     
     print("force", args.force);
-    solve_json_file(str(input_path), str(output_path), str(solver_dir), args.force)
+    solve_json_file(str(input_path), str(output_path), str(solver_dir), args.force, args.timeout)
 
 
 if __name__ == '__main__':
