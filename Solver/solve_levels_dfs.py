@@ -287,6 +287,8 @@ def solve_json_file(input_path, output_path, solver_dir, force=False):
 
 
 def main():
+    global DFS_TIMEOUT
+
     parser = argparse.ArgumentParser(description='Solve Unflip levels using MiniZinc')
     parser.add_argument('input', help='Input JSON file containing levels')
     parser.add_argument('output', nargs='?', help='Output JSON file (default: input with _solved suffix)')
@@ -295,8 +297,8 @@ def main():
     
     args = parser.parse_args()
 
-    global DFS_TIMEOUT
-    DFS_TIMEOUT = args.timeout
+    if args.timeout:
+        DFS_TIMEOUT = args.timeout
     
     input_path = Path(args.input)
     output_path = Path(args.output) if args.output else input_path.with_name(input_path.stem + '_exhaustive.json')
